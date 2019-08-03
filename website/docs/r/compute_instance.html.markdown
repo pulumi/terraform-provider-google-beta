@@ -81,7 +81,7 @@ The following arguments are supported:
 
 - - -
 
-* `allow_stopping_for_update` - (Optional) If true, allows Terraform to stop the instance to update its properties.
+* `allow_stopping_for_update` - (Optional) If true, allows this provider to stop the instance to update its properties.
   If you try to update a property that requires stopping the instance without setting this field, the update will fail.
 
 * `attached_disk` - (Optional) Additional disks to attach to the instance. Can be repeated multiple times for multiple disks. Structure is documented below.
@@ -93,7 +93,7 @@ The following arguments are supported:
 * `description` - (Optional) A brief description of this resource.
 
 * `deletion_protection` - (Optional) Enable deletion protection on this instance. Defaults to false.
-    **Note:** you must disable deletion protection before removing the resource (e.g., via `terraform destroy`), or the instance cannot be deleted and the Terraform run will not complete successfully.
+    **Note:** you must disable deletion protection before removing the resource, or the instance cannot be deleted and the deployment will not complete successfully.
 
 * `hostname` - (Optional) A custom hostname for the instance. Must be a fully qualified DNS name and RFC-1035-valid.
   Valid format is a series of labels 1-63 characters long matching the regular expression `[a-z]([-a-z0-9]*[a-z0-9])`, concatenated with periods.
@@ -237,7 +237,7 @@ The `network_interface` block supports:
 * `access_config` - (Optional) Access configurations, i.e. IPs via which this
     instance can be accessed via the Internet. Omit to ensure that the instance
     is not accessible from the Internet. If omitted, ssh provisioners will not
-    work unless Terraform can send traffic to the instance's network (e.g. via
+    work unless this provider can send traffic to the instance's network (e.g. via
     tunnel or because it is running on another cloud instance on that network).
     This block can be repeated multiple times. Structure documented below.
 
