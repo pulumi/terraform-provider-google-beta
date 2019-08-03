@@ -61,8 +61,8 @@ resource "google_storage_object_acl" "image-store-acl" {
 * `role_entity` - (Optional) List of role/entity pairs in the form `ROLE:entity`. See [GCS Object ACL documentation](https://cloud.google.com/storage/docs/json_api/v1/objectAccessControls) for more details.
 Must be set if `predefined_acl` is not.
 
--> The object's creator will always have `OWNER` permissions for their object, and any attempt to modify that permission would return an error. Instead, Terraform automatically
-adds that role/entity pair to your `terraform plan` results when it is omitted in your config; `terraform plan` will show the correct final state at every point except for at
+-> The object's creator will always have `OWNER` permissions for their object, and any attempt to modify that permission would return an error. Instead, this provider automatically
+adds that role/entity pair to your deploymentwhen it is omitted in your config; it will show the correct final state at every point except for at
 `Create` time, where the object role/entity pair is omitted if not explicitly set.
 
 

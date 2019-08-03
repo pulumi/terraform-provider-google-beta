@@ -26,7 +26,7 @@ A `KeyRing` is a toplevel logical grouping of `CryptoKeys`.
 
 
 ~> **Note:** KeyRings cannot be deleted from Google Cloud Platform.
-Destroying a Terraform-managed KeyRing will remove it from state but
+Destroying a KeyRing will remove it from state but
 *will not delete the resource on the server.*
 
 
@@ -95,7 +95,7 @@ $ terraform import google_kms_key_ring.default {{location}}/{{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 
