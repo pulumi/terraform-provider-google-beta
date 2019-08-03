@@ -38,9 +38,6 @@ and Route, reflecting their statuses and conditions as its own.
 See also:
 https://github.com/knative/serving/blob/master/docs/spec/overview.md#service
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/provider_versions.html) for more details on beta resources.
-
 To get more information about Service, see:
 
 * [API documentation](https://cloud.google.com/run/docs/reference/rest/v1alpha1/projects.locations.services)
@@ -73,7 +70,7 @@ resource "google_cloud_run_service" "default" {
 }
 
 # The Service is ready to be used when the "Ready" condition is True
-# Due to Terraform and API limitations this is best accessed through a local variable
+# Due to provider and API limitations this is best accessed through a local variable
 locals {
   cloud_run_status = {
     for cond in google_cloud_run_service.default.status[0].conditions :
@@ -400,7 +397,7 @@ $ terraform import -provider=google-beta google_cloud_run_service.default {{loca
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 
