@@ -26,8 +26,6 @@ Resource to hold the state and status of a user's domain mapping.
 **Note:** Cloud Run as a product is in beta, however the REST API is currently still an alpha.
 Please use this with caution as it may change when the API moves to beta.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/provider_versions.html) for more details on beta resources.
 
 To get more information about DomainMapping, see:
 
@@ -224,4 +222,4 @@ $ terraform import -provider=google-beta google_cloud_run_domain_mapping.default
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.

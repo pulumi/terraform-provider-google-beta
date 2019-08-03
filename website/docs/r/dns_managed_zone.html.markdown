@@ -210,7 +210,7 @@ The following arguments are supported:
 
 * `description` -
   (Optional)
-  A textual description field. Defaults to 'Managed by Terraform'.
+  A textual description field. Defaults to 'Managed by Pulumi'.
 
 * `dnssec_config` -
   (Optional)
@@ -294,9 +294,9 @@ The `private_visibility_config` block supports:
 
 * `networks` -
   (Optional)
-  The list of VPC networks that can see this zone. Until the provider updates to use the Terraform 0.12 SDK in a future release, you
+  The list of VPC networks that can see this zone. Until the provider updates to use the 0.12 SDK in a future release, you
   may experience issues with this resource while updating. If you've defined a `networks` block and
-  add another `networks` block while keeping the old block, Terraform will see an incorrect diff
+  add another `networks` block while keeping the old block, this provider will see an incorrect diff
   and apply an incorrect update to the resource. If you encounter this issue, remove all `networks`
   blocks in an update and then apply another update adding all of them back simultaneously.  Structure is documented below.
 
@@ -369,4 +369,4 @@ $ terraform import google_dns_managed_zone.default {{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.

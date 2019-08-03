@@ -13,28 +13,28 @@ Allows creation and management of a Google Cloud Platform project.
 Projects created with this resource must be associated with an Organization.
 See the [Organization documentation](https://cloud.google.com/resource-manager/docs/quickstarts) for more details.
 
-The service account used to run Terraform when creating a `google_project`
+The service account used to run this provider when creating a `google_project`
 resource must have `roles/resourcemanager.projectCreator`. See the
 [Access Control for Organizations Using IAM](https://cloud.google.com/resource-manager/docs/access-control-org)
 doc for more information.
 
 Note that prior to 0.8.5, `google_project` functioned like a data source,
 meaning any project referenced by it had to be created and managed outside
-Terraform. As of 0.8.5, `google_project` functions like any other Terraform
-resource, with Terraform creating and managing the project. To replicate the old
+this provider. As of 0.8.5, `google_project` functions like any other
+resource, with this provider creating and managing the project. To replicate the old
 behavior, either:
 
 * Use the project ID directly in whatever is referencing the project, using the
   [google_project_iam_policy](/docs/providers/google/r/google_project_iam.html)
   to replace the old `policy_data` property.
 * Use the [import](/docs/import/usage.html) functionality
-  to import your pre-existing project into Terraform, where it can be referenced and
-  used just like always, keeping in mind that Terraform will attempt to undo any changes
-  made outside Terraform.
+  to import your pre-existing project into this provider, where it can be referenced and
+  used just like always, keeping in mind that this provider will attempt to undo any changes
+  made outside this provider.
 
-~> It's important to note that any project resources that were added to your Terraform config
+~> It's important to note that any project resources that were added to your config
 prior to 0.8.5 will continue to function as they always have, and will not be managed by
-Terraform. Only newly added projects are affected.
+this provider. Only newly added projects are affected.
 
 ## Example Usage
 
@@ -83,12 +83,12 @@ The following arguments are supported:
    project to be migrated to the newly specified folder.
 
 * `billing_account` - (Optional) The alphanumeric ID of the billing account this project
-    belongs to. The user or service account performing this operation with Terraform
+    belongs to. The user or service account performing this operation with this provider
     must have Billing Account Administrator privileges (`roles/billing.admin`) in
     the organization. See [Google Cloud Billing API Access Control](https://cloud.google.com/billing/v1/how-tos/access-control)
     for more details.
 
-* `skip_delete` - (Optional) If true, the Terraform resource can be deleted
+* `skip_delete` - (Optional) If true, the resource can be deleted
     without deleting the Project via the Google API.
 
 * `labels` - (Optional) A set of key/value label pairs to assign to the project.

@@ -116,4 +116,4 @@ $ terraform import google_sourcerepo_repository_iam_member.editor "{{project}}/{
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
