@@ -24,9 +24,6 @@ description: |-
 
 A ScanConfig resource contains the configurations to launch a scan.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about ScanConfig, see:
 
 * [API documentation](https://cloud.google.com/security-scanner/docs/reference/rest/v1beta/projects.scanConfigs)
@@ -48,8 +45,8 @@ resource "google_compute_address" "scanner_static_ip" {
 }
 
 resource "google_security_scanner_scan_config" "scan-config" {
-  provider         = google-beta
-  display_name     = "terraform-scan-config"
+  provider         = "google-beta"
+  display_name     = "scan-config"
   starting_urls    = ["http://${google_compute_address.scanner_static_ip.address}"]
   target_platforms = ["COMPUTE"]
 }
@@ -191,7 +188,7 @@ $ terraform import -provider=google-beta google_security_scanner_scan_config.def
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 
