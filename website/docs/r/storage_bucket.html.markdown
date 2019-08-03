@@ -49,7 +49,7 @@ The following arguments are supported:
 
 * `force_destroy` - (Optional, Default: false) When deleting a bucket, this
     boolean option will delete all contained objects. If you try to delete a
-    bucket that contains objects, Terraform will fail that run.
+    bucket that contains objects, this provider will fail that run.
 
 * `location` - (Optional, Default: 'US') The [GCS location](https://cloud.google.com/storage/docs/bucket-locations)
 
@@ -168,8 +168,8 @@ $ terraform import google_storage_bucket.image-store image-store-bucket
 $ terraform import google_storage_bucket.image-store tf-test-project/image-store-bucket
 ```
 
-~> **Note:** Terraform will import this resource with `force_destroy` set to
-`false` in state. If you've set it to `true` in config, run `terraform apply` to
+~> **Note:** This provider will import this resource with `force_destroy` set to
+`false` in state. If you've set it to `true` in config, perform a deployment to
 update the value set in state. If you delete this resource before updating the
 value, objects in the bucket will not be destroyed.
 
