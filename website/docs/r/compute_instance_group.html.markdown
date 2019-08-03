@@ -14,15 +14,14 @@ For more information, see [the official documentation](https://cloud.google.com/
 and [API](https://cloud.google.com/compute/docs/reference/latest/instanceGroups)
 
 -> Recreating an instance group that's in use by another resource will give a
-`resourceInUseByAnotherResource` error. You can avoid this error with a
-Terraform `lifecycle` block as outlined in the example below.
+`resourceInUseByAnotherResource` error.
 
 ## Example Usage - Empty instance group
 
 ```hcl
 resource "google_compute_instance_group" "test" {
-  name        = "terraform-test"
-  description = "Terraform test instance group"
+  name        = "test"
+  description = "Test instance group"
   zone        = "us-central1-a"
   network     = google_compute_network.default.self_link
 }
@@ -32,8 +31,8 @@ resource "google_compute_instance_group" "test" {
 
 ```hcl
 resource "google_compute_instance_group" "webservers" {
-  name        = "terraform-webservers"
-  description = "Terraform test instance group"
+  name        = "webservers"
+  description = "Test instance group"
 
   instances = [
     google_compute_instance.test.self_link,
