@@ -250,6 +250,9 @@ This resource provides the following
 ## Import
 
 Attestor can be imported using any of these accepted formats:
+website/docs/r/binary_authorization_policy.html.markdown
+
+
 
 ```
 $ terraform import google_binary_authorization_attestor.default projects/{{project}}/attestors/{{name}}
@@ -258,7 +261,7 @@ $ terraform import google_binary_authorization_attestor.default {{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 

@@ -62,7 +62,7 @@ resource "google_compute_router_nat" "nat" {
 	region                             = google_compute_router.router.region
 	nat_ip_allocate_option             = "AUTO_ONLY"
 	source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
-	
+
 	log_config {
 	  enable = true
 	  filter = "ERRORS_ONLY"
@@ -100,10 +100,10 @@ resource "google_compute_router_nat" "nat_manual" {
 	name                               = "my-router-nat"
 	router                             = google_compute_router.router.name
 	region                             = google_compute_router.router.region
-	
+
 	nat_ip_allocate_option             = "MANUAL_ONLY"
 	nat_ips                            = google_compute_address.address[*].self_link
-	
+
 	source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
 	subnetwork {
 		name                    = google_compute_subnetwork.default.self_link
@@ -251,7 +251,8 @@ $ terraform import google_compute_router_nat.default {{router}}/{{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 
