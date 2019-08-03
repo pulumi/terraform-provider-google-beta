@@ -131,6 +131,7 @@ this will force recreation of the resource.
     See the [official documentation](https://cloud.google.com/kubernetes-engine/docs/how-to/flexible-pod-cidr)
     for more information.
 
+<<<<<<< HEAD
 * `node_locations` - (Optional, [Beta](https://terraform.io/docs/providers/google/provider_versions.html))
 The list of zones in which the node pool's nodes should be located. Nodes must
 be in the region of their regional cluster or in the same region as their
@@ -141,7 +142,7 @@ cluster's zone for zonal clusters. If unspecified, the cluster-level
 upon being unset. You must manually reconcile the list of zones with your
 cluster.
 
-* `name` - (Optional) The name of the node pool. If left blank, Terraform will
+* `name` - (Optional) The name of the node pool. If left blank, this provider will
     auto-generate a unique name.
 
 * `node_config` - (Optional) The node configuration of the pool. See
@@ -156,9 +157,9 @@ cluster.
 * `version` - (Optional) The Kubernetes version for the nodes in this pool. Note that if this field
     and `auto_upgrade` are both specified, they will fight each other for what the node version should
     be, so setting both is highly discouraged. While a fuzzy version can be specified, it's
-    recommended that you specify explicit versions as Terraform will see spurious diffs
+    recommended that you specify explicit versions as this provider will see spurious diffs
     when fuzzy versions are used. See the `google_container_engine_versions` data source's
-    `version_prefix` field to approximate fuzzy versions in a Terraform-compatible way.
+    `version_prefix` field to approximate fuzzy versions.
 
 The `autoscaling` block supports:
 

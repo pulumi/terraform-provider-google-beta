@@ -228,8 +228,7 @@ Structure is documented below.
     If unset, the cluster's version will be set by GKE to the version of the most recent
     official release (which is not necessarily the latest version).  Most users will find
     the `google_container_engine_versions` data source useful - it indicates which versions
-    are available, and can be use to approximate fuzzy versions in a
-    Terraform-compatible way. If you intend to specify versions manually,
+    are available, and can be use to approximate fuzzy versions. If you intend to specify versions manually,
     [the docs](https://cloud.google.com/kubernetes-engine/versioning-and-upgrades#specifying_cluster_version)
     describe the various acceptable formats for this field.
 
@@ -257,7 +256,7 @@ to the datasource. A `region` can have a different set of supported versions tha
     Generally, this field should not be used at the same time as a
     `google_container_node_pool` or a `node_pool` block; this configuration
     manages the default node pool, which isn't recommended to be used with
-    Terraform. Structure is documented below.
+    this provider. Structure is documented below.
 
 * `node_pool` - (Optional) List of node pools associated with this cluster.
     See [google_container_node_pool](container_node_pool.html) for schema.
@@ -270,9 +269,9 @@ to the datasource. A `region` can have a different set of supported versions tha
     or set to the same value as `min_master_version` on create. Defaults to the default
     version set by GKE which is not necessarily the latest version. This only affects
     nodes in the default node pool. While a fuzzy version can be specified, it's
-    recommended that you specify explicit versions as Terraform will see spurious diffs
+    recommended that you specify explicit versions as this provider will see spurious diffs
     when fuzzy versions are used. See the `google_container_engine_versions` data source's
-    `version_prefix` field to approximate fuzzy versions in a Terraform-compatible way.
+    `version_prefix` field to approximate fuzzy versions.
     To update nodes in other node pools, use the `version` attribute on the node pool.
 
 * `pod_security_policy_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/provider_versions.html)) Configuration for the
@@ -526,9 +525,7 @@ The `node_config` block supports:
 
 * `guest_accelerator` - (Optional) List of the type and count of accelerator cards attached to the instance.
     Structure documented below.
-    To support removal of guest_accelerators in Terraform 0.12 this field is an
-    [Attribute as Block](/docs/configuration/attr-as-blocks.html)
-
+    
 * `image_type` - (Optional) The image type to use for this node. Note that changing the image type
     will delete and recreate all nodes in the node pool.
 
@@ -544,7 +541,7 @@ The `node_config` block supports:
 * `metadata` - (Optional) The metadata key/value pairs assigned to instances in
     the cluster. From GKE `1.12` onwards, `disable-legacy-endpoints` is set to
     `true` by the API; if `metadata` is set but that default value is not
-    included, Terraform will attempt to unset the value. To avoid this, set the
+    included, this provider will attempt to unset the value. To avoid this, set the
     value in your config.
 
 * `min_cpu_platform` - (Optional) Minimum CPU platform to be used by this instance.
@@ -580,7 +577,7 @@ The `node_config` block supports:
     [roles/logging.logWriter](https://cloud.google.com/iam/docs/understanding-roles#stackdriver_logging_roles) and
     [roles/monitoring.metricWriter](https://cloud.google.com/iam/docs/understanding-roles#stackdriver_monitoring_roles) roles.
 
-     -> Projects that enable the [Cloud Compute Engine API](https://cloud.google.com/compute/) with Terraform may need these roles added manually to the service account. Projects that enable the API in the Cloud Console should have them added automatically.
+     -> Projects that enable the [Cloud Compute Engine API](https://cloud.google.com/compute/) with this provider may need these roles added manually to the service account. Projects that enable the API in the Cloud Console should have them added automatically.
 
 * `shielded_instance_config` - (Optional) Shielded Instance options. Structure is documented below.
 
@@ -757,7 +754,7 @@ $ terraform import google_container_cluster.mycluster my-gcp-project/us-east1-a/
 $ terraform import google_container_cluster.mycluster us-east1-a/my-cluster
 ```
 
-~> **Note:** This resource has several fields that control Terraform-specific behavior and aren't present in the API. If they are set in config and you import a cluster, Terraform may need to perform an update immediately after import. Most of these updates should be no-ops but some may modify your cluster if the imported state differs.
+~> **Note:** This resource has several fields that control behavior specific to this provider and aren't present in the API. If they are set in config and you import a cluster, this provider may need to perform an update immediately after import. Most of these updates should be no-ops but some may modify your cluster if the imported state differs.
 
 For example, the following fields will show diffs if set in config:
 

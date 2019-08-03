@@ -81,7 +81,7 @@ resource "google_compute_disk" "foobar" {
 ## Using with Instance Group Manager
 
 Instance Templates cannot be updated after creation with the Google
-Cloud Platform API. In order to update an Instance Template, Terraform will
+Cloud Platform API. In order to update an Instance Template, this provider will
 destroy the existing resource and create a replacement. In order to effectively
 use an Instance Template resource with an [Instance Group Manager resource][1],
 it's recommended to specify `create_before_destroy` in a [lifecycle][2] block.
@@ -118,7 +118,7 @@ resource "google_compute_instance_group_manager" "instance_group_manager" {
 }
 ```
 
-With this setup Terraform generates a unique name for your Instance
+With this setup this provider generates a unique name for your Instance
 Template and can then update the Instance Group manager without conflict before
 destroying the previous Instance Template.
 
@@ -126,17 +126,17 @@ destroying the previous Instance Template.
 
 A common way to use instance templates and managed instance groups is to deploy the
 latest image in a family, usually the latest build of your application. There are two
-ways to do this in Terraform, and they have their pros and cons. The difference ends
+ways to do this in this provider, and they have their pros and cons. The difference ends
 up being in how "latest" is interpreted. You can either deploy the latest image available
-when Terraform runs, or you can have each instance check what the latest image is when
+when this provider runs, or you can have each instance check what the latest image is when
 it's being created, either as part of a scaling event or being rebuilt by the instance
 group manager.
 
-If you're not sure, we recommend deploying the latest image available when Terraform runs,
+If you're not sure, we recommend deploying the latest image available when this provider runs,
 because this means all the instances in your group will be based on the same image, always,
-and means that no upgrades or changes to your instances happen outside of a `terraform apply`.
+and means that no upgrades or changes to your instances happen outside of a deployment.
 You can achieve this by using the [`google_compute_image`](../d/datasource_compute_image.html)
-data source, which will retrieve the latest image on every `terraform apply`, and will update
+data source, which will retrieve the latest image on every deployment, and will update
 the template to use that specific image:
 
 ```tf
@@ -190,7 +190,7 @@ The following arguments are supported:
 
 - - -
 * `name` - (Optional) The name of the instance template. If you leave
-  this blank, Terraform will auto-generate a unique name.
+  this blank, this provider will auto-generate a unique name.
 
 * `name_prefix` - (Optional) Creates a unique name beginning with the specified
   prefix. Conflicts with `name`.
@@ -319,8 +319,8 @@ The `network_interface` block supports:
 
 * `access_config` - (Optional) Access configurations, i.e. IPs via which this
     instance can be accessed via the Internet. Omit to ensure that the instance
-    is not accessible from the Internet (this means that ssh provisioners will
-    not work unless you are running Terraform can send traffic to the instance's
+    is not accessible from the Internet - this means that ssh provisioners will
+    not work unless the machine you are running this provider on can send traffic to the instance's
     network (e.g. via tunnel or because it is running on another cloud instance
     on that network). This block can be repeated multiple times. Structure documented below.
 

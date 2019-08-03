@@ -34,7 +34,7 @@ resource "google_project_services" "project" {
 The following arguments are supported:
 
 * `project` - (Required) The project ID.
-    Changing this forces Terraform to attempt to disable all previously managed
+    Changing this forces this provider to attempt to disable all previously managed
     API services in the previous project.
 
 * `services` - (Required) The list of services that are enabled. Supports
@@ -42,8 +42,8 @@ The following arguments are supported:
 
 * `disable_on_destroy` - (Optional) Whether or not to disable APIs on project
     when destroyed. Defaults to true. **Note**: When `disable_on_destroy` is
-    true and the project is changed, Terraform will force disable API services
-    managed by Terraform for the previous project.
+    true and the project is changed, this provider will force disable API services
+    managed by this provider for the previous project.
 
 ## Import
 

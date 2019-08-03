@@ -25,9 +25,6 @@ description: |-
 A policy is a collection of DNS rules applied to one or more Virtual
 Private Cloud resources.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/provider_versions.html) for more details on beta resources.
-
 To get more information about Policy, see:
 
 * [API documentation](https://cloud.google.com/dns/docs/reference/v1beta2/policies)
@@ -109,7 +106,7 @@ The following arguments are supported:
 
 * `description` -
   (Optional)
-  A textual description field. Defaults to 'Managed by Terraform'.
+  A textual description field. Defaults to 'Managed by Pulumi'.
 
 * `enable_inbound_forwarding` -
   (Optional)
@@ -175,8 +172,8 @@ $ terraform import -provider=google-beta google_dns_policy.default {{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 
-This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/provider_reference.html#user_project_override).
+This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/provider_reference.html#user_project_override).  
