@@ -120,7 +120,7 @@ The following arguments are supported:
 
 * `update_strategy` - (Optional, Default `"REPLACE"`) If the `instance_template`
     resource is modified, a value of `"NONE"` will prevent any of the managed
-    instances from being restarted by Terraform. A value of `"REPLACE"` will
+    instances from being restarted by this provider. A value of `"REPLACE"` will
     restart all of the instances at once. This field is only present in the
     `google` provider.
 
@@ -133,7 +133,7 @@ The following arguments are supported:
     not affect existing instances.
 
 * `wait_for_instances` - (Optional) Whether to wait for all instances to be created/updated before
-    returning. Note that if this is set to true and the operation does not succeed, Terraform will
+    returning. Note that if this is set to true and the operation does not succeed, this provider will
     continue trying until it times out.
 
 ---
