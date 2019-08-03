@@ -11,7 +11,7 @@ description: |-
 
 Manages a single key/value pair on metadata common to all instances for
 a project in GCE. Using `google_compute_project_metadata_item` lets you
-manage a single key/value setting in Terraform rather than the entire
+manage a single key/value setting with this provider rather than the entire
 project metadata map.
 
 ## Example Usage
