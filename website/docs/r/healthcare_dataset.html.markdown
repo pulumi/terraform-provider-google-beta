@@ -23,9 +23,6 @@ description: |-
 
 A Healthcare `Dataset` is a toplevel logical grouping of `dicomStores`, `fhirStores` and `hl7V2Stores`.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/provider_versions.html) for more details on beta resources.
-
 To get more information about Dataset, see:
 
 * [API documentation](https://cloud.google.com/healthcare/docs/reference/rest/v1beta1/projects.locations.datasets)
@@ -100,7 +97,7 @@ $ terraform import -provider=google-beta google_healthcare_dataset.default {{loc
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 

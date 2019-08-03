@@ -33,7 +33,7 @@ To get more information about BackendServiceSignedUrlKey, see:
 ~> **Warning:** All arguments including the key's value will be stored in the raw
 state as plain-text. [Read more about sensitive data in state](/docs/state/sensitive-data.html).
 Because the API does not return the sensitive key value,
-we cannot confirm or reverse changes to a key outside of Terraform.
+we cannot confirm or reverse changes to a key outside of this provider.
 
 ## Example Usage - Backend Service Signed Url Key
 
@@ -137,7 +137,7 @@ $ terraform import google_compute_backend_service_signed_url_key.default {{backe
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 

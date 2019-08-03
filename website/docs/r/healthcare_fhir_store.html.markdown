@@ -24,9 +24,6 @@ description: |-
 A FhirStore is a datastore inside a Healthcare dataset that conforms to the FHIR (https://www.hl7.org/fhir/STU3/)
 standard for Healthcare information exchange
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/provider_versions.html) for more details on beta resources.
-
 To get more information about FhirStore, see:
 
 * [API documentation](https://cloud.google.com/healthcare/docs/reference/rest/v1beta1/projects.locations.datasets.fhirStores)
@@ -178,4 +175,4 @@ $ terraform import -provider=google-beta google_healthcare_fhir_store.default {{
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.

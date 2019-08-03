@@ -25,9 +25,6 @@ description: |-
 A DicomStore is a datastore inside a Healthcare dataset that conforms to the DICOM
 (https://www.dicomstandard.org/about/) standard for Healthcare information exchange
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/provider_versions.html) for more details on beta resources.
-
 To get more information about DicomStore, see:
 
 * [API documentation](https://cloud.google.com/healthcare/docs/reference/rest/v1beta1/projects.locations.datasets.dicomStores)
@@ -138,4 +135,4 @@ $ terraform import -provider=google-beta google_healthcare_dicom_store.default {
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.

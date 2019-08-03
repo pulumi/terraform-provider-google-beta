@@ -86,7 +86,7 @@ For `google_bigtable_instance_iam_member` or `google_bigtable_instance_iam_bindi
 - - -
 
 * `project` - (Optional) The project in which the instance belongs. If it
-    is not provided, Terraform will use the provider default.
+    is not provided, this provider will use the provider default.
 
 ## Attributes Reference
 
