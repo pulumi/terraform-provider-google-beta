@@ -12,7 +12,7 @@ Creates a new Google SQL Database Instance. For more information, see the [offic
 or the [JSON API](https://cloud.google.com/sql/docs/admin-api/v1beta4/instances).
 
 ~> **NOTE on `google_sql_database_instance`:** - Second-generation instances include a
-default 'root'@'%' user with no password. This user will be deleted by Terraform on
+default 'root'@'%' user with no password. This user will be deleted by this provider on
 instance creation. You should use `google_sql_user` to define a custom user with
 a restricted host and strong password.
 
@@ -197,7 +197,7 @@ The following arguments are supported:
     for more information.
 
 * `name` - (Optional, Computed) The name of the instance. If the name is left
-    blank, Terraform will randomly generate one when the instance is first
+    blank, this provider will randomly generate one when the instance is first
     created. This is done because after a name is used, it cannot be reused for
     up to [one week](https://cloud.google.com/sql/docs/delete-instance).
 
@@ -373,15 +373,11 @@ instance. This property is applicable only to Second Generation instances.
 support accessing the [first address in the list in a terraform output](https://github.com/terraform-providers/terraform-provider-google/issues/912)
 when the resource is configured with a `count`.
 
-* `public_ip_address` - The first public (`PRIMARY`) IPv4 address assigned. This is
-a workaround for an [issue fixed in Terraform 0.12](https://github.com/hashicorp/terraform/issues/17048)
-but also provides a convenient way to access an IP of a specific type without
-performing filtering in a Terraform config.
+* `public_ip_address` - The first public (`PRIMARY`) IPv4 address assigned. This provides a convenient way to access an IP of a specific type without
+performing filtering.
 
-* `private_ip_address` - The first private (`PRIVATE`) IPv4 address assigned. This is
-a workaround for an [issue fixed in Terraform 0.12](https://github.com/hashicorp/terraform/issues/17048)
-but also provides a convenient way to access an IP of a specific type without
-performing filtering in a Terraform config.
+* `private_ip_address` - The first private (`PRIVATE`) IPv4 address assigned. This provides a convenient way to access an IP of a specific type without
+performing filtering.
 
 * `settings.version` - Used to make sure changes to the `settings` block are
     atomic.

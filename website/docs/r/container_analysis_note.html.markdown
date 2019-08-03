@@ -23,9 +23,6 @@ description: |-
 
 Provides a detailed description of a Note.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/provider_versions.html) for more details on beta resources.
-
 To get more information about Note, see:
 
 * [API documentation](https://cloud.google.com/container-analysis/api/reference/rest/)
@@ -129,7 +126,7 @@ $ terraform import -provider=google-beta google_container_analysis_note.default 
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 

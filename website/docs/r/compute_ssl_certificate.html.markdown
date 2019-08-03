@@ -97,7 +97,7 @@ resource "random_id" "certificate" {
 // Using with Target HTTPS Proxies
 //
 // SSL certificates cannot be updated after creation. In order to apply
-// the specified configuration, Terraform will destroy the existing
+// the specified configuration, this provider will destroy the existing
 // resource and create a replacement. To effectively use an SSL
 // certificate resource with a Target HTTPS Proxy resource, it's
 // recommended to specify create_before_destroy in a lifecycle block.
@@ -233,8 +233,8 @@ $ terraform import google_compute_ssl_certificate.default {{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 
-This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/provider_reference.html#user_project_override).
+This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/provider_reference.html#user_project_override).  

@@ -25,7 +25,7 @@ data "google_container_engine_versions" "central1b" {
 }
 
 resource "google_container_cluster" "foo" {
-  name               = "terraform-test-cluster"
+  name               = "test-cluster"
   location               = "us-central1-b"
   node_version       = "${data.google_container_engine_versions.central1b.latest_node_version}"
   initial_node_count = 1
@@ -57,7 +57,7 @@ deprecated in favour of `location`.
 * `project` (Optional) - ID of the project to list available cluster versions for. Should match the project the cluster will be deployed to.
   Defaults to the project that the provider is authenticated with.
 
-* `version_prefix` (Optional) - If provided, Terraform will only return versions
+* `version_prefix` (Optional) - If provided, this provider will only return versions
 that match the string prefix. For example, `1.11.` will match all `1.11` series
 releases. Since this is just a string match, it's recommended that you append a
 `.` after minor versions to ensure that prefixes such as `1.1` don't match
