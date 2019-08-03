@@ -18,7 +18,7 @@ A folder can contain projects, other folders, or a combination of both. You can 
 
 Folders created live inside an Organization. See the [Organization documentation](https://cloud.google.com/resource-manager/docs/quickstarts) for more details.
 
-The service account used to run Terraform when creating a `google_folder`
+The service account used to run this provider when creating a `google_folder`
 resource must have `roles/resourcemanager.folderCreator`. See the
 [Access Control for Folders Using IAM](https://cloud.google.com/resource-manager/docs/access-control-folders)
 doc for more information.

@@ -33,7 +33,7 @@ and labels to configure that channel. Each `type` has specific labels that need 
 present for that channel to be correctly configured. The labels that are required to be
 present for one channel `type` are often different than those required for another.
 Due to these loose constraints it's often best to set up a channel through the UI
-and import to Terraform when setting up a brand new channel type to determine which
+and import when setting up a brand new channel type to determine which
 labels are required.
 
 A list of supported channels per project the `list` endpoint can be
@@ -92,11 +92,11 @@ The following arguments are supported:
   sensitive and the API will return an partially-obfuscated value.
   For example, for `"type": "slack"` channels, an `auth_token`
   label with value "SECRET" will be obfuscated as "**CRET". In order
-  to avoid a diff, Terraform will use the state value if it appears
+  to avoid a diff, this provider will use the state value if it appears
   that the obfuscated value matches the state value in
-  length/unobfuscated characters. However, Terraform will not detect a
+  length/unobfuscated characters. However, this provider will not detect a
   a diff if the obfuscated portion of the value was changed outside of
-  Terraform.
+  this provider.
 
 * `user_labels` -
   (Optional)
@@ -146,7 +146,7 @@ $ terraform import google_monitoring_notification_channel.default {{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 
