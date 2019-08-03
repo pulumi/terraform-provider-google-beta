@@ -64,7 +64,7 @@ resource "google_redis_instance" "cache" {
   authorized_network = "${google_compute_network.auto-network.self_link}"
 
   redis_version     = "REDIS_3_2"
-  display_name      = "Terraform Test Instance"
+  display_name      = "Test Instance"
   reserved_ip_range = "192.168.0.0/29"
 
   labels = {
@@ -204,7 +204,7 @@ $ terraform import google_redis_instance.default {{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
+as an argument so that this provider uses the correct provider to import your resource.
 
 ## User Project Overrides
 
