@@ -1,4 +1,4 @@
-## 2.16.0 (September 24, 2019)
+s## 2.16.0 (September 24, 2019)
 
 FEATURES:
 * **New Resource**: `google_compute_region_url_map` is now available. To support this, the `protocol` for `google_compute_region_backend_service` can now be set to `HTTP`, `HTTPS`, `HTTP2`, and `SSL`. ([#1161](https://github.com/terraform-providers/terraform-provider-google-beta/issues/1161))
