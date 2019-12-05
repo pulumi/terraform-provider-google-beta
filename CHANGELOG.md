@@ -36,13 +36,21 @@ FEATURES:
 * **New Resource:** `google_organization_iam_audit_config` ([#1427](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1427))
 
 IMPROVEMENTS:
+<<<<<<< HEAD
 * accesscontextmanager: added support for `require_admin_approval` and `require_corp_owned` in `google_access_context_manager_access_level`'s `device_policy`. ([#1403](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1403))
+=======
+* accesscontextmanager: added support for `requireAdminApproval` and `requireCorpOwned` in `google_access_context_manager_access_level`'s `devicePolicy`. ([#1403](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1403))
+>>>>>>> Update CHANGELOG.md
 * all: added retries for timeouts while fetching operations ([#1356](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1356))
 * cloudbuild: Added build timeout to `google_cloudbuild_trigger` ([#1404](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1404))
 * cloudresourcemanager: added support for importing `google_folder` in the form of the bare folder id, rather than requiring `folders/{bare_id}` ([#1430](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1430))
 * compute: Updated default timeouts on `google_compute_project_metadata_item`. ([#1436](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1436))
 * compute: `google_compute_disk` `disk_encryption_key.raw_key` is now sensitive ([#1445](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1445))
+<<<<<<< HEAD
 * compute: `google_compute_disk` `source_image_encryption_key.raw_key` is now sensitive ([#1452](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1452))
+=======
+* compute: `google_compute_disk` `disk_encryption_key.raw_key` is now sensitive ([#1452](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1452))
+>>>>>>> Update CHANGELOG.md
 * compute: `google_compute_network_peering` resource can now be imported ([#1439](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1439))
 * compute: computed attribute `management_type` in `google_compute_router_peer` is now available. ([#1396](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1396))
 * compute: field `network` can now be specified on `google_compute_region_backend_service`, which allows internal load balancers to target the non-primary interface of an instance. ([#1418](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1418))
@@ -65,6 +73,10 @@ BUG FIXES:
 * compute: field `advertised_ip_ranges` in `google_compute_router_peer` can now be updated without recreating the resource. ([#1396](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1396))
 * compute: marked `min_cpu_platform` on `google_compute_instance` as computed so if it is not specified it will not cause diffs ([#1429](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1429))
 * dataproc: Changed default for `google_dataproc_autoscaling_policy` `secondary_worker_config.min_instances` from 2 to 0. ([#1408](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1408))
+<<<<<<< HEAD
+=======
+* dns: Fixed bug causing `google_dns_managed_zone` datasource to always return a 404 ([#1405](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1405))
+>>>>>>> Update CHANGELOG.md
 * dns: Fixed issue causing `google_dns_record_set` deletion to fail when the managed zone ceased to exist before the deletion event. ([#1446](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1446))
 * iam: disallowed `deleted:` principals in IAM resources ([#1417](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1417))
 * sql: added retries to `google_sql_user` create and update to reduce flakiness ([#1399](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1399))
@@ -635,7 +647,7 @@ NOTE:
 BACKWARDS INCOMPATIBILITIES:
 * cloudfunctions: `google_cloudfunctions_function.runtime` now has an explicit default value of `nodejs6`. Users who have a different value set in the API but the value undefined in their config will see a diff. ([#697](https://github.com/terraform-providers/terraform-provider-google-beta/issues/697))
 
-FEATURES: 
+FEATURES:
 * **New Resources**: `google_compute_instance_iam_binding`, `google_compute_instance_iam_member`, and `google_compute_instance_iam_policy` are now available. ([#685](https://github.com/terraform-providers/terraform-provider-google-beta/pull/685))
 * **New Resources**: IAM resources for Dataproc jobs and clusters (`google_dataproc_job_iam_policy`, `google_dataproc_job_iam_member`, `google_dataproc_job_iam_binding`, `google_dataproc_cluster_iam_policy`, `google_dataproc_cluster_iam_member`, `google_dataproc_cluster_iam_binding`) are now available. [#709](https://github.com/terraform-providers/terraform-provider-google-beta/pull/709)
 * **New Resources**: `google_iap_tunnel_instance_iam_binding`, `google_iap_tunnel_instance_iam_member`, and `google_iap_tunnel_instance_iam_policy` are now available. ([#687](https://github.com/terraform-providers/terraform-provider-google-beta/issues/687))
@@ -663,7 +675,7 @@ KNOWN ISSUES:
 DEPRECATIONS:
 * monitoring: `google_monitoring_alert_policy` `labels` was deprecated, as the field was never used and it was typed incorrectly. ([#635](https://github.com/terraform-providers/terraform-provider-google-beta/issues/635))
 
-FEATURES: 
+FEATURES:
 * **New Datasource**: `google_compute_node_types` for sole-tenant node types is now available. ([#614](https://github.com/terraform-providers/terraform-provider-google-beta/pull/614))
 * **New Resource**: `google_compute_node_group` for sole-tenant nodes is now available. ([#643](https://github.com/terraform-providers/terraform-provider-google-beta/pull/643))
 * **New Resource**: `google_compute_node_template` for sole-tenant nodes is now available. ([#614](https://github.com/terraform-providers/terraform-provider-google-beta/pull/614))
@@ -1012,7 +1024,7 @@ BACKWARDS INCOMPATIBILITIES:
 * project: `google_project`'s `app_engine` sub-block has been deprecated. Please use the `google_app_engine_app` resource instead. Changing between the two should not force project re-creation. (#2147)[https://github.com/terraform-providers/terraform-provider-google/pull/2147]
 * project: `google_project_iam_policy`'s `restore_policy` field is now deprecated ([#2186](https://github.com/terraform-providers/terraform-provider-google/issues/2186))
 
-FEATURES: 
+FEATURES:
 * **New Datasource**: `google_compute_instance` ([#1906](https://github.com/terraform-providers/terraform-provider-google/issues/1906))
 * **New Resource**: `google_compute_interconnect_attachment` ([#1140](https://github.com/terraform-providers/terraform-provider-google/issues/1140))
 * **New Resource**: `google_filestore_instance` ([#2088](https://github.com/terraform-providers/terraform-provider-google/issues/2088))
@@ -1040,7 +1052,7 @@ BACKWARDS INCOMPATIBILITIES:
 * iam: `google_*_custom_roles` now treats `delete` as deprecated - to actually delete roles, remove from config.  
 * provider: This is the first release tested against and built with Go 1.11, which required go fmt changes to the code. If you are building a custom version of this provider or running tests using the repository Make targets (e.g. make build) when using a previous version of Go, you will receive errors. You can use the underlying go commands (e.g. go build) to workaround the go fmt check in the Make targets until you are able to upgrade Go.
 
-FEATURES: 
+FEATURES:
 * **New Resource**: `google_compute_attached_disk` ([#1585](https://github.com/terraform-providers/terraform-provider-google/issues/1585))
 * **New Resource**: `google_composer_environment` ([#2001](https://github.com/terraform-providers/terraform-provider-google/issues/2001))
 
@@ -1292,7 +1304,7 @@ FEATURES:
 IMPROVEMENTS:
 * all: Read `GOOGLE_CLOUD_PROJECT` environment variable also ([#1271](https://github.com/terraform-providers/terraform-provider-google/issues/1271))
 * bigquery: Add time partitioning field to `google_bigquery_table` resource ([#1240](https://github.com/terraform-providers/terraform-provider-google/issues/1240))
-* config: Add OAuth access token to `google_client_config` data source [[#1277](https://github.com/terraform-providers/terraform-provider-google/issues/1277)] 
+* config: Add OAuth access token to `google_client_config` data source [[#1277](https://github.com/terraform-providers/terraform-provider-google/issues/1277)]
 * compute: Add `wait_for_instances` field to `google_compute_instance_group_manager` and self_link option to the `google_compute_instance_group` data source ([#1222](https://github.com/terraform-providers/terraform-provider-google/issues/1222))
 * compute: add support for security policies in backend services ([#1243](https://github.com/terraform-providers/terraform-provider-google/issues/1243))
 * compute: regional instance group managers now support rolling updates ([#1260](https://github.com/terraform-providers/terraform-provider-google/issues/1260))
@@ -1497,7 +1509,7 @@ IMPROVEMENTS:
 * compute: Add partial import support for `google_compute_url_map` ([#678](https://github.com/terraform-providers/terraform-provider-google/issues/678))
 * compute: Add import support for `google_compute_backend_bucket` ([#736](https://github.com/terraform-providers/terraform-provider-google/issues/736))
 * compute: Add configurable timeouts for disks ([#717](https://github.com/terraform-providers/terraform-provider-google/issues/717))
-* compute: Use v1 API now that all beta features are in GA for `google_compute_firewall` [[#768](https://github.com/terraform-providers/terraform-provider-google/issues/768)] 
+* compute: Use v1 API now that all beta features are in GA for `google_compute_firewall` [[#768](https://github.com/terraform-providers/terraform-provider-google/issues/768)]
 * compute: Add Alias IP and Guest Accelerator support to Instance Templates ([#639](https://github.com/terraform-providers/terraform-provider-google/issues/639))
 * container: Relax diff on `daily_maintenance_window.start_time` for `google_container_cluster` ([#726](https://github.com/terraform-providers/terraform-provider-google/issues/726))
 * container: Allow node pools with size 0 ([#752](https://github.com/terraform-providers/terraform-provider-google/issues/752))
@@ -1740,12 +1752,12 @@ BUG FIXES:
 * compute: `compute_firewall` will no longer display a perpetual diff if `source_ranges` isn't set ([#147](https://github.com/terraform-providers/terraform-provider-google/issues/147))
 * compute: Fix read method + test/document import for `google_compute_health_check` ([#155](https://github.com/terraform-providers/terraform-provider-google/issues/155))
 * compute: Read named ports changes properly in `google_compute_instance_group` ([#188](https://github.com/terraform-providers/terraform-provider-google/issues/188))
-* compute: `google_compute_image` `description` property can now be set [[#199](https://github.com/terraform-providers/terraform-provider-google/issues/199)] 
+* compute: `google_compute_image` `description` property can now be set [[#199](https://github.com/terraform-providers/terraform-provider-google/issues/199)]
 * compute: `google_compute_target_https_proxy` will no longer display a diff if ssl certificates are referenced using only the path ([#210](https://github.com/terraform-providers/terraform-provider-google/issues/210))
 
 ## 0.1.1 (June 21, 2017)
 
-BUG FIXES: 
+BUG FIXES:
 
 * compute: Restrict the number of health_checks in Backend Service resources to 1. ([#145](https://github.com/terraform-providers/terraform-provider-google/issues/145))
 
