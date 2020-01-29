@@ -105,6 +105,7 @@ IMPROVEMENTS:
 * monitoring: Added `labels` and `user_labels` filters to data source `google_monitoring_notification_channel` ([#1666](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1666))
 
 BUG FIXES:
+<<<<<<< HEAD
 * bigtable: fixed diff for DEVELOPMENT instances that are returned from the API with one node ([#1704](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1704))
 * compute: `google_compute_instance_template` added plan time check for any disks marked `boot` outside of the first disk ([#1684](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1684))
 * container: Fixed perma-diff in `google_container_cluster`'s `cluster_autoscaling.auto_provisioning_defaults`. ([#1679](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1679))
@@ -134,6 +135,12 @@ BUG FIXES:
 * compute: Fixed `google_compute_instance_from_template` with existing boot disks ([#1655](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1655))
 * compute: Fixed a bug in `google_compute_instance` when attempting to update a field that requires stopping and starting an instance with an encrypted disk ([#1658](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1658))
 
+=======
+* compute: `google_compute_instance_template` added plan time check for any disks marked `boot` outside of the first disk ([#1684](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1684))
+* container: Fixed perma-diff in `google_container_cluster`'s `cluster_autoscaling.auto_provisioning_defaults`. ([#1679](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1679))
+* storage: Stopped `project-owner` showing up in the diff for `google_storage_bucket_acl` ([#1674](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1674))
+
+>>>>>>> Update CHANGELOG.md
 ## 3.5.0 (January 22, 2020)
 
 DEPRECATIONS:
