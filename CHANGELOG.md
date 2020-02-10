@@ -22,6 +22,7 @@ BUG FIXES:
 * kms: Fixed issue where `google_kms_crypto_key_version` datasource would throw an Invalid Index error on plan ([#1740](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1740))
 
 ## 3.8.0 (February 10, 2020)
+
 NOTES:
 * provider: added documentation for the `id` field for many resources, including format ([#1697](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1697))
 BREAKING CHANGES:
