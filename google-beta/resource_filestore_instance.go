@@ -230,13 +230,6 @@ func resourceFilestoreInstanceCreate(d *schema.ResourceData, meta interface{}) e
 		return fmt.Errorf("Error waiting to create Instance: %s", err)
 	}
 
-	// This may have caused the ID to update - update it if so.
-	id, err = replaceVars(d, config, "projects/{{project}}/locations/{{zone}}/instances/{{name}}")
-	if err != nil {
-		return fmt.Errorf("Error constructing id: %s", err)
-	}
-	d.SetId(id)
-
 	log.Printf("[DEBUG] Finished creating Instance %q: %#v", d.Id(), res)
 
 	return resourceFilestoreInstanceRead(d, meta)
