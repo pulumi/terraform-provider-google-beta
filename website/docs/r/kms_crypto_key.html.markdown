@@ -26,9 +26,9 @@ A `CryptoKey` represents a logical key that can be used for cryptographic operat
 
 
 ~> **Note:** CryptoKeys cannot be deleted from Google Cloud Platform.
-Destroying a Terraform-managed CryptoKey will remove it from state
+Destroying a provider-managed CryptoKey will remove it from state
 and delete all CryptoKeyVersions, rendering the key unusable, but *will
-not delete the resource on the server.* When Terraform destroys these keys,
+not delete the resource on the server.* When the provider destroys these keys,
 any data previously encrypted with these keys will be irrecoverable.
 For this reason, it is strongly recommended that you add lifecycle hooks
 to the resource to prevent accidental destruction.

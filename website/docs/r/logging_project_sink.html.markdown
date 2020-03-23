@@ -15,7 +15,7 @@ Manages a project-level logging sink. For more information see
 and
 [API](https://cloud.google.com/logging/docs/reference/v2/rest/).
 
-~> **Note:** You must have [granted the "Logs Configuration Writer"](https://cloud.google.com/logging/docs/access-control) IAM role (`roles/logging.configWriter`) to the credentials used with terraform.
+~> **Note:** You must have [granted the "Logs Configuration Writer"](https://cloud.google.com/logging/docs/access-control) IAM role (`roles/logging.configWriter`) to the credentials used with this provider.
 
 ~> **Note** You must [enable the Cloud Resource Manager API](https://console.cloud.google.com/apis/library/cloudresourcemanager.googleapis.com)
 
@@ -39,7 +39,7 @@ resource "google_logging_project_sink" "my-sink" {
 A more complete example follows: this creates a compute instance, as well as a log sink that logs all activity to a
 cloud storage bucket. Because we are using `unique_writer_identity`, we must grant it access to the bucket. Note that
 this grant requires the "Project IAM Admin" IAM role (`roles/resourcemanager.projectIamAdmin`) granted to the credentials
-used with terraform.
+used with this provider.
 
 ```hcl
 # Our logged compute instance

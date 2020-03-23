@@ -24,9 +24,6 @@ description: |-
 
 A Secret is a logical secret whose value and versions can be accessed.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about Secret, see:
 
 * [API documentation](https://cloud.google.com/secret-manager/docs/reference/rest/v1beta1/projects.secrets)

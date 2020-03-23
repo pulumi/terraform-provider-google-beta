@@ -74,7 +74,7 @@ The following arguments are supported:
 
 * `force_destroy` - (Optional, Default: false) When deleting a bucket, this
     boolean option will delete all contained objects. If you try to delete a
-    bucket that contains objects, Terraform will fail that run.
+    bucket that contains objects, the provider will fail that run.
 
 * `location` - (Optional, Default: 'US') The [GCS location](https://cloud.google.com/storage/docs/bucket-locations)
 

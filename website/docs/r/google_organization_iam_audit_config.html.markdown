@@ -7,9 +7,11 @@ description: |-
  Allows management of audit logging config for a given service for a Google Cloud Platform Organization.
 ---
 
-## google\_organization\_iam\_audit\_config
+# google\_organization\_iam\_audit\_config
 
 Allows management of audit logging config for a given service for a Google Cloud Platform Organization.
+
+## Example Usage
 
 ```hcl
 resource "google_organization_iam_audit_config" "config" {

@@ -13,7 +13,7 @@ Manages a node pool in a Google Kubernetes Engine (GKE) cluster separately from
 the cluster control plane. For more information see [the official documentation](https://cloud.google.com/container-engine/docs/node-pools)
 and [the API reference](https://cloud.google.com/container-engine/reference/rest/v1/projects.zones.clusters.nodePools).
 
-### Example Usage - using a separately managed node pool (recommended)
+## Example Usage - using a separately managed node pool (recommended)
 
 ```hcl
 resource "google_container_cluster" "primary" {
@@ -45,7 +45,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 }
 ```
 
-### Example Usage - 2 node pools, 1 separately managed + the default node pool
+## Example Usage - 2 node pools, 1 separately managed + the default node pool
 
 ```hcl
 resource "google_container_node_pool" "np" {
@@ -122,7 +122,7 @@ this will force recreation of the resource.
     See the [official documentation](https://cloud.google.com/kubernetes-engine/docs/how-to/flexible-pod-cidr)
     for more information.
 
-* `node_locations` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `node_locations` - (Optional)
 The list of zones in which the node pool's nodes should be located. Nodes must
 be in the region of their regional cluster or in the same region as their
 cluster's zone for zonal clusters. If unspecified, the cluster-level
@@ -132,7 +132,7 @@ cluster's zone for zonal clusters. If unspecified, the cluster-level
 upon being unset. You must manually reconcile the list of zones with your
 cluster.
 
-* `name` - (Optional) The name of the node pool. If left blank, Terraform will
+* `name` - (Optional) The name of the node pool. If left blank, the provider will
     auto-generate a unique name.
 
 * `name_prefix` - (Optional) Creates a unique name for the node pool beginning
@@ -147,16 +147,16 @@ cluster.
 * `project` - (Optional) The ID of the project in which to create the node pool. If blank,
     the provider-configured project will be used.
 
-* `upgrade_settings` (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Specify node upgrade settings to change how many nodes GKE attempts to
+* `upgrade_settings` (Optional) Specify node upgrade settings to change how many nodes GKE attempts to
     upgrade at once. The number of nodes upgraded simultaneously is the sum of `max_surge` and `max_unavailable`.
     The maximum number of nodes upgraded simultaneously is limited to 20.
 
 * `version` - (Optional) The Kubernetes version for the nodes in this pool. Note that if this field
     and `auto_upgrade` are both specified, they will fight each other for what the node version should
     be, so setting both is highly discouraged. While a fuzzy version can be specified, it's
-    recommended that you specify explicit versions as Terraform will see spurious diffs
+    recommended that you specify explicit versions as the provider will see spurious diffs
     when fuzzy versions are used. See the `google_container_engine_versions` data source's
-    `version_prefix` field to approximate fuzzy versions in a Terraform-compatible way.
+    `version_prefix` field to approximate fuzzy versions in a provider-compatible way.
 
 The `autoscaling` block supports:
 

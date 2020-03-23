@@ -15,12 +15,12 @@ or the [JSON API](https://cloud.google.com/sql/docs/admin-api/v1beta4/instances)
 ~> **NOTE on `google_sql_database_instance`:** - First-generation instances have been
 deprecated and should no longer be created, see [upgrade docs](https://cloud.google.com/sql/docs/mysql/upgrade-2nd-gen)
 for more details.
-To upgrade your First-generation instance, update your Terraform config that the instance has
+To upgrade your First-generation instance, update your config that the instance has
 * `settings.ip_configuration.ipv4_enabled=true`
 * `settings.backup_configuration.enabled=true`
 * `settings.backup_configuration.binary_log_enabled=true`.  
-Apply the terraform config, then upgrade the instance in the console as described in the documentation.
-Once upgraded, update the following attributes in your Terraform config to the correct value according to
+Apply the config, then upgrade the instance in the console as described in the documentation.
+Once upgraded, update the following attributes in your config to the correct value according to
 the above documentation:
 * `region`
 * `database_version` (if applicable)
@@ -35,7 +35,7 @@ And change values to appropriate values for Second-generation instances for:
 Change `settings.backup_configuration.enabled` attribute back to its desired value and apply as necessary.
 
 ~> **NOTE on `google_sql_database_instance`:** - Second-generation instances include a
-default 'root'@'%' user with no password. This user will be deleted by Terraform on
+default 'root'@'%' user with no password. This user will be deleted by the provider on
 instance creation. You should use `google_sql_user` to define a custom user with
 a restricted host and strong password.
 
@@ -200,7 +200,7 @@ SQL Server (beta) version to use. Supported values include `MYSQL_5_6`,
 includes an up-to-date reference of supported versions.
 
 * `name` - (Optional, Computed) The name of the instance. If the name is left
-    blank, Terraform will randomly generate one when the instance is first
+    blank, the provider will randomly generate one when the instance is first
     created. This is done because after a name is used, it cannot be reused for
     up to [one week](https://cloud.google.com/sql/docs/delete-instance).
 
@@ -214,11 +214,11 @@ includes an up-to-date reference of supported versions.
 * `replica_configuration` - (Optional) The configuration for replication. The
     configuration is detailed below.
     
-* `root_password` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Initial root password. Required for MS SQL Server, ignored by MySQL and PostgreSQL.
+* `root_password` - (Optional) Initial root password. Required for MS SQL Server, ignored by MySQL and PostgreSQL.
 
-* `encryption_key_name` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `encryption_key_name` - (Optional)
     The full path to the encryption key used for the CMEK disk encryption.  Setting
-    up disk encryption currently requires manual steps outside of Terraform.
+    up disk encryption currently requires manual steps outside of this provider.
     The provided key must be in the same region as the SQL instance.  In order
     to use this feature, a special kind of service account must be created and
     granted permission on this key.  This step can currently only be done
@@ -249,7 +249,7 @@ The required `settings` block supports:
     Specific to read instances, indicates
     when crash-safe replication flags are enabled.
 
-* `disk_autoresize` - (Optional, Default: `true`) Configuration to increase storage size automatically.  Note that future `terraform apply` calls will attempt to resize the disk to the value specified in `disk_size` - if this is set, do not set `disk_size`.
+* `disk_autoresize` - (Optional, Default: `true`) Configuration to increase storage size automatically.  Note that future `pulumi apply` calls will attempt to resize the disk to the value specified in `disk_size` - if this is set, do not set `disk_size`.
 
 * `disk_size` - (Optional, Default: `10`) The size of data disk, in GB. Size of a running instance cannot be reduced but can be increased.
 
@@ -387,19 +387,11 @@ instance.
 
   * A `PRIVATE` address is an address for an instance which has been configured to use private networking see: [Private IP](https://cloud.google.com/sql/docs/mysql/private-ip).
 
-* `first_ip_address` - The first IPv4 address of any type assigned. This is to
-support accessing the [first address in the list in a terraform output](https://github.com/terraform-providers/terraform-provider-google/issues/912)
-when the resource is configured with a `count`.
+* `first_ip_address` - The first IPv4 address of any type assigned.
 
-* `public_ip_address` - The first public (`PRIMARY`) IPv4 address assigned. This is
-a workaround for an [issue fixed in Terraform 0.12](https://github.com/hashicorp/terraform/issues/17048)
-but also provides a convenient way to access an IP of a specific type without
-performing filtering in a Terraform config.
+* `public_ip_address` - The first public (`PRIMARY`) IPv4 address assigned. 
 
-* `private_ip_address` - The first private (`PRIVATE`) IPv4 address assigned. This is
-a workaround for an [issue fixed in Terraform 0.12](https://github.com/hashicorp/terraform/issues/17048)
-but also provides a convenient way to access an IP of a specific type without
-performing filtering in a Terraform config.
+* `private_ip_address` - The first private (`PRIVATE`) IPv4 address assigned. 
 
 * `settings.version` - Used to make sure changes to the `settings` block are
     atomic.

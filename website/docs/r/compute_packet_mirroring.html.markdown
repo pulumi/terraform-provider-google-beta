@@ -26,9 +26,6 @@ Packet Mirroring mirrors traffic to and from particular VM instances.
 You can use the collected traffic to help you detect security threats
 and monitor application performance.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about PacketMirroring, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/v1/packetMirroring)

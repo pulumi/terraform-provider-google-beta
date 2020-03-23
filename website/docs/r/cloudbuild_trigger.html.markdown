@@ -115,7 +115,7 @@ The following arguments are supported:
   One of `trigger_template` or `github` must be provided.  Structure is documented below.
 
 * `github` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Describes the configuration of a trigger that creates a build whenever a GitHub event is received.
   One of `trigger_template` or `github` must be provided.  Structure is documented below.
 
