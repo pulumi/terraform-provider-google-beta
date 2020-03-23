@@ -28,7 +28,7 @@ Four different resources help you manage your IAM policy for a project. Each of 
    from anyone without organization-level access to the project. Proceed with caution.
    It's not recommended to use `google_project_iam_policy` with your provider project
    to avoid locking yourself out, and it should generally only be used with projects
-   fully managed by Terraform.
+   fully managed by this provider.
 
 ```hcl
 resource "google_project_iam_policy" "project" {
@@ -47,7 +47,7 @@ data "google_iam_policy" "admin" {
 }
 ```
 
-With IAM Conditions ([beta](https://terraform.io/docs/providers/google/provider_versions.html)):
+With IAM Conditions):
 
 ```hcl
 resource "google_project_iam_policy" "project" {
@@ -87,7 +87,7 @@ resource "google_project_iam_binding" "project" {
 }
 ```
 
-With IAM Conditions ([beta](https://terraform.io/docs/providers/google/provider_versions.html)):
+With IAM Conditions:
 
 ```hcl
 resource "google_project_iam_binding" "project" {
@@ -116,7 +116,7 @@ resource "google_project_iam_member" "project" {
 }
 ```
 
-With IAM Conditions ([beta](https://terraform.io/docs/providers/google/provider_versions.html)):
+With IAM Conditions:
 
 ```hcl
 resource "google_project_iam_member" "project" {
@@ -179,7 +179,7 @@ will not be inferred from the provider.
 
 * `audit_log_config` - (Required only by google\_project\_iam\_audit\_config) The configuration for logging of each type of permission.  This can be specified multiple times.  Structure is documented below.
 
-* `condition` - (Optional, [Beta](https://terraform.io/docs/providers/google/provider_versions.html)) An [IAM Condition](https://cloud.google.com/iam/docs/conditions-overview) for a given binding.
+* `condition` - (Optional) An [IAM Condition](https://cloud.google.com/iam/docs/conditions-overview) for a given binding.
   Structure is documented below.
 
 ---
@@ -198,8 +198,8 @@ The `condition` block supports:
 
 * `description` - (Optional) An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.
 
-~> **Warning:** Terraform considers the `role` and condition contents (`title`+`description`+`expression`) as the
-  identifier for the binding. This means that if any part of the condition is changed out-of-band, Terraform will
+~> **Warning:** This provider considers the `role` and condition contents (`title`+`description`+`expression`) as the
+  identifier for the binding. This means that if any part of the condition is changed out-of-band, the provider will
   consider it to be an entirely different resource and will treat it as such.
 
 ## Attributes Reference

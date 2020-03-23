@@ -26,9 +26,6 @@ description: |-
 Represents a RegionTargetHttpsProxy resource, which is used by one or more
 forwarding rules to route incoming HTTPS requests to a URL map.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about RegionTargetHttpsProxy, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/beta/regionTargetHttpsProxies)

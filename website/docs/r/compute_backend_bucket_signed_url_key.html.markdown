@@ -31,11 +31,6 @@ To get more information about BackendBucketSignedUrlKey, see:
 * How-to Guides
     * [Using Signed URLs](https://cloud.google.com/cdn/docs/using-signed-urls/)
 
-~> **Warning:** All arguments including the key's value will be stored in the raw
-state as plain-text. [Read more about sensitive data in state](/docs/state/sensitive-data.html).
-Because the API does not return the sensitive key value,
-we cannot confirm or reverse changes to a key outside of Terraform.
-
 ## Example Usage - Backend Bucket Signed Url Key
 
 
