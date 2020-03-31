@@ -135,7 +135,7 @@ The following arguments are supported:
   These images can be referred by family name here.
 
 * `resource_policies` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Resource policies applied to this disk for automatic snapshot creations.
 
 * `zone` -

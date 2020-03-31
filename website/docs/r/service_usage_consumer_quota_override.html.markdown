@@ -26,9 +26,6 @@ A consumer override is applied to the consumer on its own authority to limit its
 Consumer overrides cannot be used to grant more quota than would be allowed by admin overrides,
 producer overrides, or the default limit of the service.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about ConsumerQuotaOverride, see:
 
 * How-to Guides

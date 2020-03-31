@@ -101,7 +101,7 @@ resource "random_id" "certificate" {
 // Using with Region Target HTTPS Proxies
 //
 // SSL certificates cannot be updated after creation. In order to apply
-// the specified configuration, Terraform will destroy the existing
+// the specified configuration, the provider will destroy the existing
 // resource and create a replacement. To effectively use an SSL
 // certificate resource with a Target HTTPS Proxy resource, it's
 // recommended to specify create_before_destroy in a lifecycle block.
