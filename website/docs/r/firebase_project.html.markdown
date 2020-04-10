@@ -74,7 +74,7 @@ The following arguments are supported:
 
 In addition to the arguments listed above, the following computed attributes are exported:
 
-* `id` - an identifier for the resource with format `projects/{{project}}/{{name}}`
+* `id` - an identifier for the resource with format `projects/{{project}}`
 
 * `project_number` -
   The number of the google project that firebase is enabled on.

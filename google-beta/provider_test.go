@@ -176,7 +176,7 @@ func closeRecorder(t *testing.T) {
 }
 
 func getTestAccProviders(testName string) map[string]terraform.ResourceProvider {
-	prov := Provider().(*schema.Provider)
+	prov := testAccProvider
 	provRand := random.Provider().(*schema.Provider)
 	envPath := os.Getenv("VCR_PATH")
 	recordingMode := os.Getenv("VCR_MODE")
@@ -249,6 +249,8 @@ func readSeedFromFile(fileName string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	// Remove NULL characters from seed
+	data = bytes.Trim(data, "\x00")
 	seed := string(data)
 	return strconv.ParseInt(seed, 10, 64)
 }

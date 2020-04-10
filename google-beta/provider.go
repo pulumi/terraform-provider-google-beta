@@ -553,6 +553,7 @@ func Provider() terraform.ResourceProvider {
 			"google_folder":                                   dataSourceGoogleFolder(),
 			"google_folder_organization_policy":               dataSourceGoogleFolderOrganizationPolicy(),
 			"google_monitoring_notification_channel":          dataSourceMonitoringNotificationChannel(),
+			"google_monitoring_uptime_check_ips":              dataSourceGoogleMonitoringUptimeCheckIps(),
 			"google_netblock_ip_ranges":                       dataSourceGoogleNetblockIpRanges(),
 			"google_organization":                             dataSourceGoogleOrganization(),
 			"google_project":                                  dataSourceGoogleProject(),
@@ -586,9 +587,9 @@ func Provider() terraform.ResourceProvider {
 	return provider
 }
 
-// Generated resources: 135
+// Generated resources: 136
 // Generated IAM resources: 54
-// Total generated resources: 189
+// Total generated resources: 190
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -699,6 +700,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_dns_policy":                                            resourceDNSPolicy(),
 			"google_filestore_instance":                                    resourceFilestoreInstance(),
 			"google_firebase_project":                                      resourceFirebaseProject(),
+			"google_firebase_project_location":                             resourceFirebaseProjectLocation(),
 			"google_firestore_index":                                       resourceFirestoreIndex(),
 			"google_game_services_realm":                                   resourceGameServicesRealm(),
 			"google_game_services_game_server_cluster":                     resourceGameServicesGameServerCluster(),

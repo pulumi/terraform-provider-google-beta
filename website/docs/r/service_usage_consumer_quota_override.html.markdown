@@ -42,6 +42,7 @@ To get more information about ConsumerQuotaOverride, see:
 
 ```hcl
 resource "google_project" "my_project" {
+  provider   = google-beta
   name       = "tf-test-project"
   project_id = "quota"
   org_id     = "123456789"
@@ -49,7 +50,7 @@ resource "google_project" "my_project" {
 
 resource "google_service_usage_consumer_quota_override" "override" {
   provider       = google-beta
-  project        = google_project.my_project.name
+  project        = google_project.my_project.project_id
   service        = "servicemanagement.googleapis.com"
   metric         = "servicemanagement.googleapis.com%2Fdefault_requests"
   limit          = "%2Fmin%2Fproject"

@@ -101,6 +101,8 @@ func TestAccCloudFunctionsFunction_basic(t *testing.T) {
 						"available_memory_mb", "128"),
 					resource.TestCheckResourceAttr(funcResourceName,
 						"max_instances", "10"),
+					resource.TestCheckResourceAttr(funcResourceName,
+						"ingress_settings", "ALLOW_INTERNAL_ONLY"),
 					testAccCloudFunctionsFunctionSource(fmt.Sprintf("gs://%s/index.zip", bucketName), &function),
 					testAccCloudFunctionsFunctionTrigger(FUNCTION_TRIGGER_HTTP, &function),
 					resource.TestCheckResourceAttr(funcResourceName,
@@ -167,6 +169,8 @@ func TestAccCloudFunctionsFunction_update(t *testing.T) {
 						"timeout", "91"),
 					resource.TestCheckResourceAttr(funcResourceName,
 						"max_instances", "15"),
+					resource.TestCheckResourceAttr(funcResourceName,
+						"ingress_settings", "ALLOW_ALL"),
 					testAccCloudFunctionsFunctionHasLabel("my-label", "my-updated-label-value", &function),
 					testAccCloudFunctionsFunctionHasLabel("a-new-label", "a-new-label-value", &function),
 					testAccCloudFunctionsFunctionHasEnvironmentVariable("TEST_ENV_VARIABLE",
@@ -509,7 +513,8 @@ func createZIPArchiveForCloudFunctionSource(t *testing.T, sourcePath string) str
 func sweepCloudFunctionSourceZipArchives(_ string) error {
 	files, err := ioutil.ReadDir(os.TempDir())
 	if err != nil {
-		return err
+		log.Printf("Error reading files: %s", err)
+		return nil
 	}
 	for _, f := range files {
 		if f.IsDir() {
@@ -518,7 +523,8 @@ func sweepCloudFunctionSourceZipArchives(_ string) error {
 		if strings.HasPrefix(f.Name(), testFunctionsSourceArchivePrefix) {
 			filepath := fmt.Sprintf("%s/%s", os.TempDir(), f.Name())
 			if err := os.Remove(filepath); err != nil {
-				return err
+				log.Printf("Error removing files: %s", err)
+				return nil
 			}
 			log.Printf("[INFO] cloud functions sweeper removed old file %s", filepath)
 		}
@@ -548,6 +554,7 @@ resource "google_cloudfunctions_function" "function" {
   trigger_http          = true
   timeout               = 61
   entry_point           = "helloGET"
+  ingress_settings      = "ALLOW_INTERNAL_ONLY"
   labels = {
     my-label = "my-label-value"
   }
@@ -581,6 +588,7 @@ resource "google_cloudfunctions_function" "function" {
   runtime               = "nodejs8"
   timeout               = 91
   entry_point           = "helloGET"
+  ingress_settings      = "ALLOW_ALL"
   labels = {
     my-label    = "my-updated-label-value"
     a-new-label = "a-new-label-value"
@@ -822,6 +830,7 @@ resource "google_cloudfunctions_function" "function" {
   }
   max_instances = 10
   vpc_connector = google_vpc_access_connector.%s.self_link
+  vpc_connector_egress_settings = "PRIVATE_RANGES_ONLY"
 
   depends_on = [google_project_iam_member.gcfadmin]
 }
