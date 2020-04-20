@@ -558,9 +558,12 @@ func Provider() terraform.ResourceProvider {
 			"google_kms_key_ring":                             dataSourceGoogleKmsKeyRing(),
 			"google_kms_secret":                               dataSourceGoogleKmsSecret(),
 			"google_kms_secret_ciphertext":                    dataSourceGoogleKmsSecretCiphertext(),
+			"google_firebase_web_app":                         dataSourceGoogleFirebaseWebApp(),
+			"google_firebase_web_app_config":                  dataSourceGoogleFirebaseWebappConfig(),
 			"google_folder":                                   dataSourceGoogleFolder(),
 			"google_folder_organization_policy":               dataSourceGoogleFolderOrganizationPolicy(),
 			"google_monitoring_notification_channel":          dataSourceMonitoringNotificationChannel(),
+			"google_monitoring_app_engine_service":            dataSourceMonitoringServiceAppEngine(),
 			"google_monitoring_uptime_check_ips":              dataSourceGoogleMonitoringUptimeCheckIps(),
 			"google_netblock_ip_ranges":                       dataSourceGoogleNetblockIpRanges(),
 			"google_organization":                             dataSourceGoogleOrganization(),
@@ -595,9 +598,9 @@ func Provider() terraform.ResourceProvider {
 	return provider
 }
 
-// Generated resources: 139
+// Generated resources: 144
 // Generated IAM resources: 54
-// Total generated resources: 193
+// Total generated resources: 198
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -664,6 +667,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_compute_network":                                       resourceComputeNetwork(),
 			"google_compute_network_endpoint":                              resourceComputeNetworkEndpoint(),
 			"google_compute_network_endpoint_group":                        resourceComputeNetworkEndpointGroup(),
+			"google_compute_global_network_endpoint":                       resourceComputeGlobalNetworkEndpoint(),
+			"google_compute_global_network_endpoint_group":                 resourceComputeGlobalNetworkEndpointGroup(),
 			"google_compute_node_group":                                    resourceComputeNodeGroup(),
 			"google_compute_network_peering_routes_config":                 resourceComputeNetworkPeeringRoutesConfig(),
 			"google_compute_node_template":                                 resourceComputeNodeTemplate(),
@@ -711,6 +716,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_filestore_instance":                                    resourceFilestoreInstance(),
 			"google_firebase_project":                                      resourceFirebaseProject(),
 			"google_firebase_project_location":                             resourceFirebaseProjectLocation(),
+			"google_firebase_web_app":                                      resourceFirebaseWebApp(),
 			"google_firestore_index":                                       resourceFirestoreIndex(),
 			"google_game_services_realm":                                   resourceGameServicesRealm(),
 			"google_game_services_game_server_cluster":                     resourceGameServicesGameServerCluster(),
@@ -759,6 +765,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_monitoring_alert_policy":                               resourceMonitoringAlertPolicy(),
 			"google_monitoring_group":                                      resourceMonitoringGroup(),
 			"google_monitoring_notification_channel":                       resourceMonitoringNotificationChannel(),
+			"google_monitoring_custom_service":                             resourceMonitoringService(),
+			"google_monitoring_slo":                                        resourceMonitoringSlo(),
 			"google_monitoring_uptime_check_config":                        resourceMonitoringUptimeCheckConfig(),
 			"google_os_login_ssh_public_key":                               resourceOSLoginSSHPublicKey(),
 			"google_pubsub_topic":                                          resourcePubsubTopic(),
