@@ -45,15 +45,11 @@ To get more information about ManagedZone, see:
 ```hcl
 resource "google_dns_managed_zone" "example-zone" {
   name        = "example-zone"
-  dns_name    = "example-${random_id.rnd.hex}.com."
+  dns_name    = "my-domain.com."
   description = "Example DNS zone"
   labels = {
     foo = "bar"
   }
-}
-
-resource "random_id" "rnd" {
-  byte_length = 4
 }
 ```
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
