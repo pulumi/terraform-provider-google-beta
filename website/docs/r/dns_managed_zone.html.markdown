@@ -206,7 +206,7 @@ The following arguments are supported:
 
 * `description` -
   (Optional)
-  A textual description field. Defaults to 'Managed by Terraform'.
+  A textual description field. Defaults to 'Managed by Pulumi'.
 
 * `dnssec_config` -
   (Optional)
@@ -228,18 +228,18 @@ The following arguments are supported:
   resources that the zone is visible from.  Structure is documented below.
 
 * `forwarding_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The presence for this field indicates that outbound forwarding is enabled
   for this zone. The value of this field contains the set of destinations
   to forward to.  Structure is documented below.
 
 * `peering_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The presence of this field indicates that DNS Peering is enabled for this
   zone. The value of this field contains the network to peer with.  Structure is documented below.
 
 * `reverse_lookup` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Specifies if this is a managed reverse lookup zone. If true, Cloud DNS will resolve reverse
   lookup queries using automatically configured records for VPC resources. This only applies
   to networks listed under `private_visibility_config`.
@@ -298,11 +298,7 @@ The `private_visibility_config` block supports:
 
 * `networks` -
   (Required)
-  The list of VPC networks that can see this zone. Until the provider updates to use the Terraform 0.12 SDK in a future release, you
-  may experience issues with this resource while updating. If you've defined a `networks` block and
-  add another `networks` block while keeping the old block, Terraform will see an incorrect diff
-  and apply an incorrect update to the resource. If you encounter this issue, remove all `networks`
-  blocks in an update and then apply another update adding all of them back simultaneously.  Structure is documented below.
+  The list of VPC networks that can see this zone. Structure is documented below.
 
 
 The `networks` block supports:

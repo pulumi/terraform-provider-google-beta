@@ -172,7 +172,7 @@ The following arguments are supported:
   creation time.
 
 * `purpose` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The purpose of the resource. This field can be either PRIVATE
   or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to
   INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is
@@ -181,7 +181,7 @@ The following arguments are supported:
   If set to INTERNAL_HTTPS_LOAD_BALANCER you must also set the role.
 
 * `role` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The role of subnetwork. Currently, this field is only used when
   purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE
   or BACKUP. An ACTIVE subnetwork is one that is currently being used
@@ -193,12 +193,7 @@ The following arguments are supported:
   An array of configurations for secondary IP ranges for VM instances
   contained in this subnetwork. The primary IP of such VM must belong
   to the primary ipCidrRange of the subnetwork. The alias IPs may belong
-  to either primary or secondary ranges.
-  **Note**: This field uses [attr-as-block mode](https://www.terraform.io/docs/configuration/attr-as-blocks.html) to avoid
-  breaking users during the 0.12 upgrade. To explicitly send a list
-  of zero objects you must use the following syntax:
-  `example=[]`
-  For more details about this behavior, see [this section](https://www.terraform.io/docs/configuration/attr-as-blocks.html#defining-a-fixed-object-collection-value).  Structure is documented below.
+  to either primary or secondary ranges. Structure is documented below.
 
 * `private_ip_google_access` -
   (Optional)

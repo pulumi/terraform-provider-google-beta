@@ -365,7 +365,7 @@ The following arguments are supported:
 
 
 * `is_mirroring_collector` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Indicates whether or not this load balancer can be used
   as a collector for packet mirroring. To prevent mirroring loops,
   instances behind this load balancer will not have their traffic
@@ -397,7 +397,7 @@ The following arguments are supported:
   of the subnet or network configured for this forwarding rule.
   An address must be specified by a literal IP address. ~> **NOTE**: While
   the API allows you to specify various resource paths for an address resource
-  instead, Terraform requires this to specifically be an IP address to
+  instead, this provider requires this to specifically be an IP address to
   avoid needing to fetching the IP address from resource paths on refresh
   or unnecessary diffs.
 
@@ -480,7 +480,7 @@ The following arguments are supported:
   Otherwise only allows from the local region the ILB is located at.
 
 * `labels` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Labels to apply to this forwarding rule.  A list of key->value pairs.
 
 * `all_ports` -

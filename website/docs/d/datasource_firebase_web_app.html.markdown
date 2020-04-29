@@ -11,10 +11,6 @@ description: |-
 
 A Google Cloud Firebase web application instance
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
-
 ## Argument Reference
 
 The following arguments are supported:

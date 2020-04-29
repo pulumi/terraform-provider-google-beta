@@ -70,10 +70,11 @@ type Config struct {
 	// It controls the interval at which we poll for successful operations
 	PollInterval time.Duration
 
-	client           *http.Client
-	context          context.Context
-	terraformVersion string
-	userAgent        string
+	client              *http.Client
+	wrappedPubsubClient *http.Client
+	context             context.Context
+	terraformVersion    string
+	userAgent           string
 
 	tokenSource oauth2.TokenSource
 
@@ -117,6 +118,7 @@ type Config struct {
 	SecretManagerBasePath        string
 	SecurityCenterBasePath       string
 	SecurityScannerBasePath      string
+	ServiceDirectoryBasePath     string
 	ServiceManagementBasePath    string
 	ServiceUsageBasePath         string
 	SourceRepoBasePath           string
@@ -262,6 +264,7 @@ var RuntimeConfigDefaultBasePath = "https://runtimeconfig.googleapis.com/v1beta1
 var SecretManagerDefaultBasePath = "https://secretmanager.googleapis.com/v1beta1/"
 var SecurityCenterDefaultBasePath = "https://securitycenter.googleapis.com/v1/"
 var SecurityScannerDefaultBasePath = "https://websecurityscanner.googleapis.com/v1beta/"
+var ServiceDirectoryDefaultBasePath = "https://servicedirectory.googleapis.com/v1beta1/"
 var ServiceManagementDefaultBasePath = "https://servicemanagement.googleapis.com/v1/"
 var ServiceUsageDefaultBasePath = "https://serviceusage.googleapis.com/v1beta1/"
 var SourceRepoDefaultBasePath = "https://sourcerepo.googleapis.com/v1/"
@@ -416,6 +419,7 @@ func (c *Config) LoadAndValidate(ctx context.Context) error {
 	pubsubClientBasePath := removeBasePathVersion(c.PubsubBasePath)
 	log.Printf("[INFO] Instantiating Google Pubsub client for path %s", pubsubClientBasePath)
 	wrappedPubsubClient := ClientWithAdditionalRetries(client, retryTransport, pubsubTopicProjectNotReady)
+	c.wrappedPubsubClient = wrappedPubsubClient
 	c.clientPubsub, err = pubsub.NewService(ctx, option.WithHTTPClient(wrappedPubsubClient))
 	if err != nil {
 		return err
@@ -780,6 +784,7 @@ func ConfigureBasePaths(c *Config) {
 	c.SecretManagerBasePath = SecretManagerDefaultBasePath
 	c.SecurityCenterBasePath = SecurityCenterDefaultBasePath
 	c.SecurityScannerBasePath = SecurityScannerDefaultBasePath
+	c.ServiceDirectoryBasePath = ServiceDirectoryDefaultBasePath
 	c.ServiceManagementBasePath = ServiceManagementDefaultBasePath
 	c.ServiceUsageBasePath = ServiceUsageDefaultBasePath
 	c.SourceRepoBasePath = SourceRepoDefaultBasePath

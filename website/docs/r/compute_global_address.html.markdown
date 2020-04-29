@@ -76,7 +76,7 @@ The following arguments are supported:
   An optional description of this resource.
 
 * `labels` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Labels to apply to this address.  A list of key->value pairs.
 
 * `ip_version` -

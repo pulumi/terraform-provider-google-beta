@@ -17,7 +17,6 @@ package google
 import (
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 )
 
@@ -26,10 +25,10 @@ func TestAccFirebaseWebApp_firebaseWebAppBasicExample(t *testing.T) {
 
 	context := map[string]interface{}{
 		"org_id":        getTestOrgFromEnv(t),
-		"random_suffix": acctest.RandString(10),
+		"random_suffix": randString(t, 10),
 	}
 
-	resource.Test(t, resource.TestCase{
+	vcrTest(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProvidersOiCS,
 		Steps: []resource.TestStep{
@@ -80,12 +79,12 @@ resource "google_storage_bucket_object" "default" {
 
     content = jsonencode({
         appId              = google_firebase_web_app.basic.app_id
-        apiKey             = data.google_firebase_web_app_config.api_key
-        authDomain         = data.google_firebase_web_app_config.auth_domain
-        databaseURL        = lookup(data.google_firebase_web_app_config, "database_url", "")
-        storageBucket      = lookup(data.google_firebase_web_app_config, "storage_bucket", "")
-        messagingSenderId  = lookup(data.google_firebase_web_app_config, "messaging_sender_id", "")
-        measurementId      = lookup(data.google_firebase_web_app_config, "measurement_id", "")
+        apiKey             = data.google_firebase_web_app_config.basic.api_key
+        authDomain         = data.google_firebase_web_app_config.basic.auth_domain
+        databaseURL        = lookup(data.google_firebase_web_app_config.basic, "database_url", "")
+        storageBucket      = lookup(data.google_firebase_web_app_config.basic, "storage_bucket", "")
+        messagingSenderId  = lookup(data.google_firebase_web_app_config.basic, "messaging_sender_id", "")
+        measurementId      = lookup(data.google_firebase_web_app_config.basic, "measurement_id", "")
     })
 }
 `, context)

@@ -1,3 +1,25 @@
+## 3.19.0 (April 27, 2020)
+
+FEATURES:
+* **New Resource:** `google_bigquery_job` ([#1959](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1959))
+* **New Resource:** `google_monitoring_slo` ([#1953](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1953))
+* **New Resource:** `google_service_directory_endpoint` ([#1964](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1964))
+* **New Resource:** `google_service_directory_namespace` ([#1964](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1964))
+* **New Resource:** `google_service_directory_service` ([#1964](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1964))
+
+IMPROVEMENTS:
+* bigtable: Reduced the minimum number of nodes for the `bigtable_instace` resource from 3 to 1. ([#1968](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1968))
+* container: Added support for `google_container_cluster` Compute Engine persistent disk CSI driver ([#1969](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1969))
+* compute: Added support for `google_compute_instance` `resource_policies` field ([#1957](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1957))
+* compute: Added support for `google_compute_resource_policy` group placement policies ([#1957](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1957))
+* healthcare: Added `schema` field to `google_healthcare_hl7_v2_store` ([#1962](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1962))
+
+BUG FIXES:
+* dataproc: Fixed diff when `google_dataproc_cluster` `preemptible_worker_config.0.num_instances` is sized to 0 and other `preemptible_worker_config` subfields are set ([#1954](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1954))
+* resourcemanager: added a wait to `google_project` so that projects are more likely to be ready before the resource finishes creation ([#1970](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1970))
+* sql: Allowed `binary_log_enabled` to be disabled. ([#1973](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1973))
+* sql: Fixed behaviour in `google_sql_database` when the parent instance is deleted, removing it from state ([#1972](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1972))
+
 ## 3.18.0 (April 20, 2020)
 
 FEATURES:
@@ -1699,11 +1721,7 @@ FEATURES:
 IMPROVEMENTS:
 * all: Read `GOOGLE_CLOUD_PROJECT` environment variable also ([#1271](https://github.com/terraform-providers/terraform-provider-google/issues/1271))
 * bigquery: Add time partitioning field to `google_bigquery_table` resource ([#1240](https://github.com/terraform-providers/terraform-provider-google/issues/1240))
-<<<<<<< HEAD
-* config: Add OAuth access token to `google_client_config` data source [[#1277](https://github.com/terraform-providers/terraform-provider-google/issues/1277)]
-=======
 * config: Add OAuth access token to `google_client_config` data source ([#1277](https://github.com/terraform-providers/terraform-provider-google/issues/1277))
->>>>>>> v3.18.0
 * compute: Add `wait_for_instances` field to `google_compute_instance_group_manager` and self_link option to the `google_compute_instance_group` data source ([#1222](https://github.com/terraform-providers/terraform-provider-google/issues/1222))
 * compute: add support for security policies in backend services ([#1243](https://github.com/terraform-providers/terraform-provider-google/issues/1243))
 * compute: regional instance group managers now support rolling updates ([#1260](https://github.com/terraform-providers/terraform-provider-google/issues/1260))
@@ -1908,11 +1926,7 @@ IMPROVEMENTS:
 * compute: Add partial import support for `google_compute_url_map` ([#678](https://github.com/terraform-providers/terraform-provider-google/issues/678))
 * compute: Add import support for `google_compute_backend_bucket` ([#736](https://github.com/terraform-providers/terraform-provider-google/issues/736))
 * compute: Add configurable timeouts for disks ([#717](https://github.com/terraform-providers/terraform-provider-google/issues/717))
-<<<<<<< HEAD
 * compute: Use v1 API now that all beta features are in GA for `google_compute_firewall` [[#768](https://github.com/terraform-providers/terraform-provider-google/issues/768)]
-=======
-* compute: Use v1 API now that all beta features are in GA for `google_compute_firewall` ([#768](https://github.com/terraform-providers/terraform-provider-google/issues/768))
->>>>>>> v3.18.0
 * compute: Add Alias IP and Guest Accelerator support to Instance Templates ([#639](https://github.com/terraform-providers/terraform-provider-google/issues/639))
 * container: Relax diff on `daily_maintenance_window.start_time` for `google_container_cluster` ([#726](https://github.com/terraform-providers/terraform-provider-google/issues/726))
 * container: Allow node pools with size 0 ([#752](https://github.com/terraform-providers/terraform-provider-google/issues/752))
@@ -2155,11 +2169,7 @@ BUG FIXES:
 * compute: `compute_firewall` will no longer display a perpetual diff if `source_ranges` isn't set ([#147](https://github.com/terraform-providers/terraform-provider-google/issues/147))
 * compute: Fix read method + test/document import for `google_compute_health_check` ([#155](https://github.com/terraform-providers/terraform-provider-google/issues/155))
 * compute: Read named ports changes properly in `google_compute_instance_group` ([#188](https://github.com/terraform-providers/terraform-provider-google/issues/188))
-<<<<<<< HEAD
 * compute: `google_compute_image` `description` property can now be set [[#199](https://github.com/terraform-providers/terraform-provider-google/issues/199)]
-=======
-* compute: `google_compute_image` `description` property can now be set ([#199](https://github.com/terraform-providers/terraform-provider-google/issues/199))
->>>>>>> v3.18.0
 * compute: `google_compute_target_https_proxy` will no longer display a diff if ssl certificates are referenced using only the path ([#210](https://github.com/terraform-providers/terraform-provider-google/issues/210))
 
 ## 0.1.1 (June 21, 2017)

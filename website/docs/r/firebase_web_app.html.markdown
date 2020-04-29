@@ -24,9 +24,6 @@ description: |-
 
 A Google Cloud Firebase web application instance
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about WebApp, see:
 
 * [API documentation](https://firebase.google.com/docs/projects/api/reference/rest/v1beta1/projects.webApps)
@@ -80,12 +77,12 @@ resource "google_storage_bucket_object" "default" {
 
     content = jsonencode({
         appId              = google_firebase_web_app.basic.app_id
-        apiKey             = data.google_firebase_web_app_config.api_key
-        authDomain         = data.google_firebase_web_app_config.auth_domain
-        databaseURL        = lookup(data.google_firebase_web_app_config, "database_url", "")
-        storageBucket      = lookup(data.google_firebase_web_app_config, "storage_bucket", "")
-        messagingSenderId  = lookup(data.google_firebase_web_app_config, "messaging_sender_id", "")
-        measurementId      = lookup(data.google_firebase_web_app_config, "measurement_id", "")
+        apiKey             = data.google_firebase_web_app_config.basic.api_key
+        authDomain         = data.google_firebase_web_app_config.basic.auth_domain
+        databaseURL        = lookup(data.google_firebase_web_app_config.basic, "database_url", "")
+        storageBucket      = lookup(data.google_firebase_web_app_config.basic, "storage_bucket", "")
+        messagingSenderId  = lookup(data.google_firebase_web_app_config.basic, "messaging_sender_id", "")
+        measurementId      = lookup(data.google_firebase_web_app_config.basic, "measurement_id", "")
     })
 }
 ```

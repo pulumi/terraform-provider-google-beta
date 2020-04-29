@@ -372,7 +372,7 @@ The following arguments are supported:
   A nested object resource  Structure is documented below.
 
 * `log_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Configure logging on this health check.  Structure is documented below.
 
 * `project` - (Optional) The ID of the project in which the resource belongs.

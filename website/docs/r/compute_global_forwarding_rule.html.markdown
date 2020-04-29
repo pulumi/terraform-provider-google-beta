@@ -258,7 +258,7 @@ The following arguments are supported:
   of the subnet or network configured for this forwarding rule.
   An address must be specified by a literal IP address. ~> **NOTE**: While
   the API allows you to specify various resource paths for an address resource
-  instead, Terraform requires this to specifically be an IP address to
+  instead, this provider requires this to specifically be an IP address to
   avoid needing to fetching the IP address from resource paths on refresh
   or unnecessary diffs.
 
@@ -274,7 +274,7 @@ The following arguments are supported:
   Valid options are IPV4 or IPV6.
 
 * `labels` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Labels to apply to this forwarding rule.  A list of key->value pairs.
 
 * `load_balancing_scheme` -
@@ -305,7 +305,7 @@ The following arguments are supported:
   loadBalancingScheme set to INTERNAL_SELF_MANAGED.  Structure is documented below.
 
 * `network` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   This field is not used for external load balancing.
   For INTERNAL_SELF_MANAGED load balancing, this field
   identifies the network that the load balanced IP should belong to

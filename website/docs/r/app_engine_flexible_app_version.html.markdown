@@ -255,7 +255,7 @@ The `liveness_check` block supports:
 
 * `env_variables` -
   (Optional)
-  Environment variables available to the application.  As these are not returned in the API request, Terraform will not detect any changes made outside of the Terraform config.
+  Environment variables available to the application.  As these are not returned in the API request, the provider will not detect any changes made outside of the config.
 
 * `default_expiration` -
   (Optional)

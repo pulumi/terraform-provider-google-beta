@@ -27,10 +27,15 @@ standard for Healthcare information exchange
 
 To get more information about Hl7V2Store, see:
 
-* [API documentation](https://cloud.google.com/healthcare/docs/reference/rest/v1beta1/projects.locations.datasets.hl7V2Stores)
+* [API documentation](https://cloud.google.com/healthcare/docs/reference/rest/v1/projects.locations.datasets.hl7V2Stores)
 * How-to Guides
     * [Creating a HL7v2 Store](https://cloud.google.com/healthcare/docs/how-tos/hl7v2)
 
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=healthcare_hl7_v2_store_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
 ## Example Usage - Healthcare Hl7 V2 Store Basic
 
 
@@ -39,11 +44,6 @@ resource "google_healthcare_hl7_v2_store" "default" {
   name    = "example-hl7-v2-store"
   dataset = google_healthcare_dataset.dataset.id
 
-  parser_config {
-    allow_null_header  = false
-    segment_terminator = "Jw=="
-  }
-
   notification_config {
     pubsub_topic = google_pubsub_topic.topic.id
   }
@@ -51,18 +51,121 @@ resource "google_healthcare_hl7_v2_store" "default" {
   labels = {
     label1 = "labelvalue1"
   }
-  provider = google-beta
 }
 
 resource "google_pubsub_topic" "topic" {
   name     = "hl7-v2-notifications"
-  provider = google-beta
 }
 
 resource "google_healthcare_dataset" "dataset" {
   name     = "example-dataset"
   location = "us-central1"
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=healthcare_hl7_v2_store_parser_config&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Healthcare Hl7 V2 Store Parser Config
+
+
+```hcl
+resource "google_healthcare_hl7_v2_store" "default" {
   provider = google-beta
+  name    = "example-hl7-v2-store"
+  dataset = google_healthcare_dataset.dataset.id
+
+  parser_config {
+    allow_null_header  = false
+    segment_terminator = "Jw=="
+    schema = <<EOF
+{
+  "schemas": [{
+    "messageSchemaConfigs": {
+      "ADT_A01": {
+        "name": "ADT_A01",
+        "minOccurs": 1,
+        "maxOccurs": 1,
+        "members": [{
+            "segment": {
+              "type": "MSH",
+              "minOccurs": 1,
+              "maxOccurs": 1
+            }
+          },
+          {
+            "segment": {
+              "type": "EVN",
+              "minOccurs": 1,
+              "maxOccurs": 1
+            }
+          },
+          {
+            "segment": {
+              "type": "PID",
+              "minOccurs": 1,
+              "maxOccurs": 1
+            }
+          },
+          {
+            "segment": {
+              "type": "ZPD",
+              "minOccurs": 1,
+              "maxOccurs": 1
+            }
+          },
+          {
+            "segment": {
+              "type": "OBX"
+            }
+          },
+          {
+            "group": {
+              "name": "PROCEDURE",
+              "members": [{
+                  "segment": {
+                    "type": "PR1",
+                    "minOccurs": 1,
+                    "maxOccurs": 1
+                  }
+                },
+                {
+                  "segment": {
+                    "type": "ROL"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "segment": {
+              "type": "PDA",
+              "maxOccurs": 1
+            }
+          }
+        ]
+      }
+    }
+  }],
+  "types": [{
+    "type": [{
+        "name": "ZPD",
+        "primitive": "VARIES"
+      }
+
+    ]
+  }],
+  "ignoreMinOccurs": true
+}
+EOF
+  }
+}
+
+resource "google_healthcare_dataset" "dataset" {
+  provider = google-beta
+  name     = "example-dataset"
+  location = "us-central1"
 }
 ```
 
@@ -116,6 +219,11 @@ The `parser_config` block supports:
   Byte(s) to be used as the segment terminator. If this is unset, '\r' will be used as segment terminator.
   A base64-encoded string.
 
+* `schema` -
+  (Optional)
+  JSON encoded string for schemas used to parse messages in this
+  store if schematized parsing is desired.
+
 The `notification_config` block supports:
 
 * `pubsub_topic` -
@@ -151,8 +259,8 @@ This resource provides the following
 Hl7V2Store can be imported using any of these accepted formats:
 
 ```
-$ terraform import -provider=google-beta google_healthcare_hl7_v2_store.default {{dataset}}/hl7V2Stores/{{name}}
-$ terraform import -provider=google-beta google_healthcare_hl7_v2_store.default {{dataset}}/{{name}}
+$ terraform import google_healthcare_hl7_v2_store.default {{dataset}}/hl7V2Stores/{{name}}
+$ terraform import google_healthcare_hl7_v2_store.default {{dataset}}/{{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`

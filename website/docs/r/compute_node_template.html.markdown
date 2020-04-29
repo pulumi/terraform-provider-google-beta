@@ -123,7 +123,7 @@ The following arguments are supported:
   be specified.  Structure is documented below.
 
 * `server_binding` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The server binding policy for nodes using this template. Determines
   where the nodes should restart following a maintenance event.  Structure is documented below.
 

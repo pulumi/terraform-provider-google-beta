@@ -23,15 +23,15 @@ import (
 )
 
 func init() {
-	resource.AddTestSweepers("SecretManagerSecretVersion", &resource.Sweeper{
-		Name: "SecretManagerSecretVersion",
-		F:    testSweepSecretManagerSecretVersion,
+	resource.AddTestSweepers("BigQueryJob", &resource.Sweeper{
+		Name: "BigQueryJob",
+		F:    testSweepBigQueryJob,
 	})
 }
 
 // At the time of writing, the CI only passes us-central1 as the region
-func testSweepSecretManagerSecretVersion(region string) error {
-	resourceName := "SecretManagerSecretVersion"
+func testSweepBigQueryJob(region string) error {
+	resourceName := "BigQueryJob"
 	log.Printf("[INFO][SWEEPER_LOG] Starting sweeper for %s", resourceName)
 
 	config, err := sharedConfigForRegion(region)
@@ -56,7 +56,7 @@ func testSweepSecretManagerSecretVersion(region string) error {
 		},
 	}
 
-	listTemplate := strings.Split("https://secretmanager.googleapis.com/v1beta1/{{name}}", "?")[0]
+	listTemplate := strings.Split("https://www.googleapis.com/bigquery/v2/projects/{{project}}/jobs", "?")[0]
 	listUrl, err := replaceVars(d, config, listTemplate)
 	if err != nil {
 		log.Printf("[INFO][SWEEPER_LOG] error preparing sweeper list url: %s", err)
@@ -69,7 +69,7 @@ func testSweepSecretManagerSecretVersion(region string) error {
 		return nil
 	}
 
-	resourceList, ok := res["secretVersions"]
+	resourceList, ok := res["jobs"]
 	if !ok {
 		log.Printf("[INFO][SWEEPER_LOG] Nothing found in response.")
 		return nil
@@ -94,7 +94,7 @@ func testSweepSecretManagerSecretVersion(region string) error {
 			continue
 		}
 
-		deleteTemplate := "https://secretmanager.googleapis.com/v1beta1/{{name}}:destroy"
+		deleteTemplate := "https://www.googleapis.com/bigquery/v2/projects/{{project}}/jobs/{{job_id}}"
 		deleteUrl, err := replaceVars(d, config, deleteTemplate)
 		if err != nil {
 			log.Printf("[INFO][SWEEPER_LOG] error preparing delete url: %s", err)
