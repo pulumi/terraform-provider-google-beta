@@ -20,6 +20,7 @@ import (
 	"log"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/hashcode"
@@ -85,7 +86,7 @@ default_key_specs can only be updated when the state is 'off'.`,
 										Type:         schema.TypeString,
 										Optional:     true,
 										ValidateFunc: validation.StringInSlice([]string{"ecdsap256sha256", "ecdsap384sha384", "rsasha1", "rsasha256", "rsasha512", ""}, false),
-										Description:  `String mnemonic specifying the DNSSEC algorithm of this key`,
+										Description:  `String mnemonic specifying the DNSSEC algorithm of this key Possible values: ["ecdsap256sha256", "ecdsap384sha384", "rsasha1", "rsasha256", "rsasha512"]`,
 									},
 									"key_length": {
 										Type:        schema.TypeInt,
@@ -101,7 +102,7 @@ signing key (ZSK). Key signing keys have the Secure Entry
 Point flag set and, when active, will only be used to sign
 resource record sets of type DNSKEY. Zone signing keys do
 not have the Secure Entry Point flag set and will be used
-to sign all other types of resource record sets.`,
+to sign all other types of resource record sets. Possible values: ["keySigning", "zoneSigning"]`,
 									},
 									"kind": {
 										Type:        schema.TypeString,
@@ -126,14 +127,14 @@ to sign all other types of resource record sets.`,
 							Optional:     true,
 							ValidateFunc: validation.StringInSlice([]string{"nsec", "nsec3", ""}, false),
 							Description: `Specifies the mechanism used to provide authenticated denial-of-existence responses.
-non_existence can only be updated when the state is 'off'.`,
+non_existence can only be updated when the state is 'off'. Possible values: ["nsec", "nsec3"]`,
 							AtLeastOneOf: []string{"dnssec_config.0.kind", "dnssec_config.0.non_existence", "dnssec_config.0.state", "dnssec_config.0.default_key_specs"},
 						},
 						"state": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							ValidateFunc: validation.StringInSlice([]string{"off", "on", "transfer", ""}, false),
-							Description:  `Specifies whether DNSSEC is enabled, and what mode it is in`,
+							Description:  `Specifies whether DNSSEC is enabled, and what mode it is in Possible values: ["off", "on", "transfer"]`,
 							AtLeastOneOf: []string{"dnssec_config.0.kind", "dnssec_config.0.non_existence", "dnssec_config.0.state", "dnssec_config.0.default_key_specs"},
 						},
 					},
@@ -243,6 +244,36 @@ blocks in an update and then apply another update adding all of them back simult
 lookup queries using automatically configured records for VPC resources. This only applies
 to networks listed under 'private_visibility_config'.`,
 			},
+			"service_directory_config": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				ForceNew:    true,
+				Description: `The presence of this field indicates that this zone is backed by Service Directory. The value of this field contains information related to the namespace associated with the zone.`,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"namespace": {
+							Type:        schema.TypeList,
+							Required:    true,
+							Description: `The namespace associated with the zone.`,
+							MaxItems:    1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"namespace_url": {
+										Type:     schema.TypeString,
+										Required: true,
+										Description: `The fully qualified or partial URL of the service directory namespace that should be
+associated with the zone. This should be formatted like
+'https://servicedirectory.googleapis.com/v1/projects/{project}/locations/{location}/namespaces/{namespace_id}'
+or simply 'projects/{project}/locations/{location}/namespaces/{namespace_id}'
+Ignored for 'public' visibility zones.`,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			"visibility": {
 				Type:             schema.TypeString,
 				Optional:         true,
@@ -250,8 +281,7 @@ to networks listed under 'private_visibility_config'.`,
 				ValidateFunc:     validation.StringInSlice([]string{"private", "public", ""}, false),
 				DiffSuppressFunc: caseDiffSuppress,
 				Description: `The zone's visibility: public zones are exposed to the Internet,
-while private zones are visible only to Virtual Private Cloud resources.
-Must be one of: 'public', 'private'.`,
+while private zones are visible only to Virtual Private Cloud resources. Default value: "public" Possible values: ["private", "public"]`,
 				Default: "public",
 			},
 			"name_servers": {
@@ -302,7 +332,7 @@ func dnsManagedZoneForwardingConfigTargetNameServersSchema() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"default", "private", ""}, false),
 				Description: `Forwarding path for this TargetNameServer. If unset or 'default' Cloud DNS will make forwarding
 decision based on address ranges, i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go
-to the Internet. When set to 'private', Cloud DNS will always send queries through VPC for this target`,
+to the Internet. When set to 'private', Cloud DNS will always send queries through VPC for this target Possible values: ["default", "private"]`,
 			},
 		},
 	}
@@ -371,6 +401,12 @@ func resourceDNSManagedZoneCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	} else if v, ok := d.GetOkExists("reverse_lookup"); !isEmptyValue(reflect.ValueOf(reverseLookupConfigProp)) && (ok || !reflect.DeepEqual(v, reverseLookupConfigProp)) {
 		obj["reverseLookupConfig"] = reverseLookupConfigProp
+	}
+	serviceDirectoryConfigProp, err := expandDNSManagedZoneServiceDirectoryConfig(d.Get("service_directory_config"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("service_directory_config"); !isEmptyValue(reflect.ValueOf(serviceDirectoryConfigProp)) && (ok || !reflect.DeepEqual(v, serviceDirectoryConfigProp)) {
+		obj["serviceDirectoryConfig"] = serviceDirectoryConfigProp
 	}
 
 	url, err := replaceVars(d, config, "{{DNSBasePath}}projects/{{project}}/managedZones")
@@ -452,6 +488,9 @@ func resourceDNSManagedZoneRead(d *schema.ResourceData, meta interface{}) error 
 		return fmt.Errorf("Error reading ManagedZone: %s", err)
 	}
 	if err := d.Set("reverse_lookup", flattenDNSManagedZoneReverseLookup(res["reverseLookupConfig"], d, config)); err != nil {
+		return fmt.Errorf("Error reading ManagedZone: %s", err)
+	}
+	if err := d.Set("service_directory_config", flattenDNSManagedZoneServiceDirectoryConfig(res["serviceDirectoryConfig"], d, config)); err != nil {
 		return fmt.Errorf("Error reading ManagedZone: %s", err)
 	}
 
@@ -801,6 +840,43 @@ func flattenDNSManagedZoneReverseLookup(v interface{}, d *schema.ResourceData, c
 	return v != nil
 }
 
+func flattenDNSManagedZoneServiceDirectoryConfig(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	if v == nil {
+		return nil
+	}
+	original := v.(map[string]interface{})
+	if len(original) == 0 {
+		return nil
+	}
+	transformed := make(map[string]interface{})
+	transformed["namespace"] =
+		flattenDNSManagedZoneServiceDirectoryConfigNamespace(original["namespace"], d, config)
+	return []interface{}{transformed}
+}
+func flattenDNSManagedZoneServiceDirectoryConfigNamespace(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	if v == nil {
+		return nil
+	}
+	original := v.(map[string]interface{})
+	if len(original) == 0 {
+		return nil
+	}
+	transformed := make(map[string]interface{})
+	transformed["namespace_url"] =
+		flattenDNSManagedZoneServiceDirectoryConfigNamespaceNamespaceUrl(original["namespaceUrl"], d, config)
+	return []interface{}{transformed}
+}
+func flattenDNSManagedZoneServiceDirectoryConfigNamespaceNamespaceUrl(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	if v == nil {
+		return v
+	}
+	relative, err := getRelativePath(v.(string))
+	if err != nil {
+		return v
+	}
+	return relative
+}
+
 func expandDNSManagedZoneDescription(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
@@ -1090,4 +1166,55 @@ func expandDNSManagedZoneReverseLookup(v interface{}, d TerraformResourceData, c
 	}
 
 	return struct{}{}, nil
+}
+
+func expandDNSManagedZoneServiceDirectoryConfig(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+	raw := l[0]
+	original := raw.(map[string]interface{})
+	transformed := make(map[string]interface{})
+
+	transformedNamespace, err := expandDNSManagedZoneServiceDirectoryConfigNamespace(original["namespace"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedNamespace); val.IsValid() && !isEmptyValue(val) {
+		transformed["namespace"] = transformedNamespace
+	}
+
+	return transformed, nil
+}
+
+func expandDNSManagedZoneServiceDirectoryConfigNamespace(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+	raw := l[0]
+	original := raw.(map[string]interface{})
+	transformed := make(map[string]interface{})
+
+	transformedNamespaceUrl, err := expandDNSManagedZoneServiceDirectoryConfigNamespaceNamespaceUrl(original["namespace_url"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedNamespaceUrl); val.IsValid() && !isEmptyValue(val) {
+		transformed["namespaceUrl"] = transformedNamespaceUrl
+	}
+
+	return transformed, nil
+}
+
+func expandDNSManagedZoneServiceDirectoryConfigNamespaceNamespaceUrl(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	if v == nil || v.(string) == "" {
+		return "", nil
+	} else if strings.HasPrefix(v.(string), "https://") {
+		return v, nil
+	}
+	url, err := replaceVars(d, config, "{{ServiceDirectoryBasePath}}"+v.(string))
+	if err != nil {
+		return "", err
+	}
+	return url, nil
 }

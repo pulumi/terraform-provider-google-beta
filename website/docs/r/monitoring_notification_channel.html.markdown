@@ -12,7 +12,7 @@
 #     .github/CONTRIBUTING.md.
 #
 # ----------------------------------------------------------------------------
-subcategory: "Stackdriver Monitoring"
+subcategory: "Cloud (Stackdriver) Monitoring"
 layout: "google"
 page_title: "Google: google_monitoring_notification_channel"
 sidebar_current: "docs-google-monitoring-notification-channel"
@@ -47,6 +47,9 @@ To get more information about NotificationChannel, see:
 * How-to Guides
     * [Notification Options](https://cloud.google.com/monitoring/support/notification-options)
     * [Monitoring API Documentation](https://cloud.google.com/monitoring/api/v3/)
+
+~> **Warning:** All arguments including `sensitive_labels.auth_token`, `sensitive_labels.password`, and `sensitive_labels.service_key` will be stored in the raw
+state as plain-text. [Read more about sensitive data in state](/docs/state/sensitive-data.html).
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=notification_channel_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -136,15 +139,15 @@ The `sensitive_labels` block supports:
 
 * `auth_token` -
   (Optional)
-  An authorization token for a notification channel. Channel types that support this field include: slack
+  An authorization token for a notification channel. Channel types that support this field include: slack  **Note**: This property is sensitive and will not be displayed in the plan.
 
 * `password` -
   (Optional)
-  An password for a notification channel. Channel types that support this field include: webhook_basicauth
+  An password for a notification channel. Channel types that support this field include: webhook_basicauth  **Note**: This property is sensitive and will not be displayed in the plan.
 
 * `service_key` -
   (Optional)
-  An servicekey token for a notification channel. Channel types that support this field include: pagerduty
+  An servicekey token for a notification channel. Channel types that support this field include: pagerduty  **Note**: This property is sensitive and will not be displayed in the plan.
 
 ## Attributes Reference
 

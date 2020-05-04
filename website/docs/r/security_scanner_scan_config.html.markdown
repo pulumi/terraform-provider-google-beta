@@ -30,6 +30,9 @@ To get more information about ScanConfig, see:
 * How-to Guides
     * [Using Cloud Security Scanner](https://cloud.google.com/security-scanner/docs/scanning)
 
+~> **Warning:** All arguments including `authentication.google_account.password` and `authentication.custom_account.password` will be stored in the raw
+state as plain-text. [Read more about sensitive data in state](/docs/state/sensitive-data.html).
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=scan_config_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
@@ -88,6 +91,13 @@ The following arguments are supported:
   (Optional)
   Type of the user agents used for scanning
 
+  Default value: `CHROME_LINUX`
+  Possible values are:
+  * `USER_AGENT_UNSPECIFIED`
+  * `CHROME_LINUX`
+  * `CHROME_ANDROID`
+  * `SAFARI_IPHONE`
+
 * `blacklist_patterns` -
   (Optional)
   The blacklist URL patterns as described in
@@ -104,6 +114,11 @@ The following arguments are supported:
 * `export_to_security_command_center` -
   (Optional)
   Controls export of scan configurations and results to Cloud Security Command Center.
+
+  Default value: `ENABLED`
+  Possible values are:
+  * `ENABLED`
+  * `DISABLED`
 
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.
@@ -129,7 +144,7 @@ The `google_account` block supports:
 * `password` -
   (Required)
   The password of the Google account. The credential is stored encrypted
-  in GCP.
+  in GCP.  **Note**: This property is sensitive and will not be displayed in the plan.
 
 The `custom_account` block supports:
 
@@ -140,7 +155,7 @@ The `custom_account` block supports:
 * `password` -
   (Required)
   The password of the custom account. The credential is stored encrypted
-  in GCP.
+  in GCP.  **Note**: This property is sensitive and will not be displayed in the plan.
 
 * `login_url` -
   (Required)

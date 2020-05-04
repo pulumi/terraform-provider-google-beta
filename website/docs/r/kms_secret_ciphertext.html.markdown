@@ -12,7 +12,7 @@
 #     .github/CONTRIBUTING.md.
 #
 # ----------------------------------------------------------------------------
-subcategory: "Cloud KMS"
+subcategory: "Cloud Key Management Service"
 layout: "google"
 page_title: "Google: google_kms_secret_ciphertext"
 sidebar_current: "docs-google-kms-secret-ciphertext"
@@ -36,6 +36,9 @@ To get more information about SecretCiphertext, see:
 * [API documentation](https://cloud.google.com/kms/docs/reference/rest/v1/projects.locations.keyRings.cryptoKeys/encrypt)
 * How-to Guides
     * [Encrypting and decrypting data with a symmetric key](https://cloud.google.com/kms/docs/encrypt-decrypt)
+
+~> **Warning:** All arguments including `plaintext` and `additional_authenticated_data` will be stored in the raw
+state as plain-text. [Read more about sensitive data in state](/docs/state/sensitive-data.html).
 
 ## Example Usage - Kms Secret Ciphertext Basic
 
@@ -92,7 +95,7 @@ The following arguments are supported:
 
 * `plaintext` -
   (Required)
-  The plaintext to be encrypted.
+  The plaintext to be encrypted.  **Note**: This property is sensitive and will not be displayed in the plan.
 
 * `crypto_key` -
   (Required)
@@ -105,7 +108,7 @@ The following arguments are supported:
 
 * `additional_authenticated_data` -
   (Optional)
-  The additional authenticated data used for integrity checks during encryption and decryption.
+  The additional authenticated data used for integrity checks during encryption and decryption.  **Note**: This property is sensitive and will not be displayed in the plan.
 
 
 ## Attributes Reference

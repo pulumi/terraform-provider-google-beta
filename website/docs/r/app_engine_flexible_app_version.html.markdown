@@ -238,7 +238,11 @@ The `liveness_check` block supports:
 * `serving_status` -
   (Optional)
   Current serving status of this version. Only the versions with a SERVING status create instances and can be billed.
-  Defaults to SERVING.
+
+  Default value: `SERVING`
+  Possible values are:
+  * `SERVING`
+  * `STOPPED`
 
 * `runtime_api_version` -
   (Optional)
@@ -363,11 +367,22 @@ The `api_config` block supports:
 
 * `auth_fail_action` -
   (Optional)
-  Action to take when users access resources that require authentication. Defaults to "AUTH_FAIL_ACTION_REDIRECT".
+  Action to take when users access resources that require authentication.
+
+  Default value: `AUTH_FAIL_ACTION_REDIRECT`
+  Possible values are:
+  * `AUTH_FAIL_ACTION_REDIRECT`
+  * `AUTH_FAIL_ACTION_UNAUTHORIZED`
 
 * `login` -
   (Optional)
-  Level of login required to access this resource. Defaults to "LOGIN_OPTIONAL".
+  Level of login required to access this resource.
+
+  Default value: `LOGIN_OPTIONAL`
+  Possible values are:
+  * `LOGIN_OPTIONAL`
+  * `LOGIN_ADMIN`
+  * `LOGIN_REQUIRED`
 
 * `script` -
   (Required)
@@ -376,6 +391,12 @@ The `api_config` block supports:
 * `security_level` -
   (Optional)
   Security (HTTPS) enforcement for this URL.
+
+  Possible values are:
+  * `SECURE_DEFAULT`
+  * `SECURE_NEVER`
+  * `SECURE_OPTIONAL`
+  * `SECURE_ALWAYS`
 
 * `url` -
   (Optional)
@@ -459,7 +480,12 @@ The `endpoints_api_service` block supports:
 
 * `rollout_strategy` -
   (Optional)
-  Endpoints rollout strategy. If FIXED, configId must be specified. If MANAGED, configId must be omitted. Default is "FIXED".
+  Endpoints rollout strategy. If FIXED, configId must be specified. If MANAGED, configId must be omitted.
+
+  Default value: `FIXED`
+  Possible values are:
+  * `FIXED`
+  * `MANAGED`
 
 * `disable_trace_sampling` -
   (Optional)
@@ -591,7 +617,9 @@ The `manual_scaling` block supports:
 
 * `instances` -
   (Required)
-  Number of instances to assign to the service at the start. This number can later be altered by using the Modules API set_num_instances() function.
+  Number of instances to assign to the service at the start.
+  **Note:** When managing the number of instances at runtime through the App Engine Admin API or the (now deprecated) Python 2 
+  Modules API set_num_instances() you must use `lifecycle.ignore_changes = ["manual_scaling"[0].instances]` to prevent drift detection.
 
 ## Attributes Reference
 

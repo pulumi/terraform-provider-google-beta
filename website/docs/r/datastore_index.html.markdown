@@ -12,7 +12,7 @@
 #     .github/CONTRIBUTING.md.
 #
 # ----------------------------------------------------------------------------
-subcategory: "Cloud Datastore"
+subcategory: "Datastore"
 layout: "google"
 page_title: "Google: google_datastore_index"
 sidebar_current: "docs-google-datastore-index"
@@ -68,8 +68,12 @@ The following arguments are supported:
 
 * `ancestor` -
   (Optional)
-  Policy for including ancestors in the index.  Either `ALL_ANCESTORS` or `NONE`,
-  the default is `NONE`.
+  Policy for including ancestors in the index.
+
+  Default value: `NONE`
+  Possible values are:
+  * `NONE`
+  * `ALL_ANCESTORS`
 
 * `properties` -
   (Optional)
@@ -87,7 +91,11 @@ The `properties` block supports:
 
 * `direction` -
   (Required)
-  The direction the index should optimize for sorting. Possible values are ASCENDING and DESCENDING.
+  The direction the index should optimize for sorting.
+
+  Possible values are:
+  * `ASCENDING`
+  * `DESCENDING`
 
 ## Attributes Reference
 

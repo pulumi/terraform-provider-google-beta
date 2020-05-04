@@ -31,6 +31,9 @@ To get more information about BackendBucketSignedUrlKey, see:
 * How-to Guides
     * [Using Signed URLs](https://cloud.google.com/cdn/docs/using-signed-urls/)
 
+~> **Warning:** All arguments including `key_value` will be stored in the raw
+state as plain-text.
+
 ## Example Usage - Backend Bucket Signed Url Key
 
 
@@ -66,7 +69,7 @@ The following arguments are supported:
 * `key_value` -
   (Required)
   128-bit key value used for signing the URL. The key value must be a
-  valid RFC 4648 Section 5 base64url encoded string.
+  valid RFC 4648 Section 5 base64url encoded string.  **Note**: This property is sensitive and will not be displayed in the plan.
 
 * `backend_bucket` -
   (Required)

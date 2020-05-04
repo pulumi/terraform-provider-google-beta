@@ -12,7 +12,7 @@
 #     .github/CONTRIBUTING.md.
 #
 # ----------------------------------------------------------------------------
-subcategory: "Stackdriver Monitoring"
+subcategory: "Cloud (Stackdriver) Monitoring"
 layout: "google"
 page_title: "Google: google_monitoring_uptime_check_config"
 sidebar_current: "docs-google-monitoring-uptime-check-config"
@@ -30,6 +30,9 @@ To get more information about UptimeCheckConfig, see:
 * [API documentation](https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs)
 * How-to Guides
     * [Official Documentation](https://cloud.google.com/monitoring/uptime-checks/)
+
+~> **Warning:** All arguments including `http_check.auth_info.password` will be stored in the raw
+state as plain-text. [Read more about sensitive data in state](/docs/state/sensitive-data.html).
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=uptime_check_config_http&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -214,7 +217,7 @@ The `auth_info` block supports:
 
 * `password` -
   (Required)
-  The password to authenticate.
+  The password to authenticate.  **Note**: This property is sensitive and will not be displayed in the plan.
 
 * `username` -
   (Required)
@@ -231,6 +234,11 @@ The `resource_group` block supports:
 * `resource_type` -
   (Optional)
   The resource type of the group members.
+
+  Possible values are:
+  * `RESOURCE_TYPE_UNSPECIFIED`
+  * `INSTANCE`
+  * `AWS_ELB_LOAD_BALANCER`
 
 * `group_id` -
   (Optional)

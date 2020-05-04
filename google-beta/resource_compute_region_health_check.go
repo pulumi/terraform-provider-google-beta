@@ -124,7 +124,7 @@ following values:
   checking.
 
 If not specified, HTTP2 health check follows behavior specified in 'port' and
-'portName' fields.`,
+'portName' fields. Possible values: ["USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"]`,
 							AtLeastOneOf: []string{"http2_health_check.0.host", "http2_health_check.0.request_path", "http2_health_check.0.response", "http2_health_check.0.port", "http2_health_check.0.port_name", "http2_health_check.0.proxy_header", "http2_health_check.0.port_specification"},
 						},
 						"proxy_header": {
@@ -132,7 +132,7 @@ If not specified, HTTP2 health check follows behavior specified in 'port' and
 							Optional:     true,
 							ValidateFunc: validation.StringInSlice([]string{"NONE", "PROXY_V1", ""}, false),
 							Description: `Specifies the type of proxy header to append before sending data to the
-backend, either NONE or PROXY_V1. The default is NONE.`,
+backend. Default value: "NONE" Possible values: ["NONE", "PROXY_V1"]`,
 							Default:      "NONE",
 							AtLeastOneOf: []string{"http2_health_check.0.host", "http2_health_check.0.request_path", "http2_health_check.0.response", "http2_health_check.0.port", "http2_health_check.0.port_name", "http2_health_check.0.proxy_header", "http2_health_check.0.port_specification"},
 						},
@@ -154,8 +154,7 @@ can only be ASCII.`,
 						},
 					},
 				},
-				ConflictsWith: []string{"http_health_check", "https_health_check", "tcp_health_check", "ssl_health_check"},
-				AtLeastOneOf:  []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
+				ExactlyOneOf: []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
 			},
 			"http_health_check": {
 				Type:             schema.TypeList,
@@ -204,7 +203,7 @@ following values:
   checking.
 
 If not specified, HTTP health check follows behavior specified in 'port' and
-'portName' fields.`,
+'portName' fields. Possible values: ["USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"]`,
 							AtLeastOneOf: []string{"http_health_check.0.host", "http_health_check.0.request_path", "http_health_check.0.response", "http_health_check.0.port", "http_health_check.0.port_name", "http_health_check.0.proxy_header", "http_health_check.0.port_specification"},
 						},
 						"proxy_header": {
@@ -212,7 +211,7 @@ If not specified, HTTP health check follows behavior specified in 'port' and
 							Optional:     true,
 							ValidateFunc: validation.StringInSlice([]string{"NONE", "PROXY_V1", ""}, false),
 							Description: `Specifies the type of proxy header to append before sending data to the
-backend, either NONE or PROXY_V1. The default is NONE.`,
+backend. Default value: "NONE" Possible values: ["NONE", "PROXY_V1"]`,
 							Default:      "NONE",
 							AtLeastOneOf: []string{"http_health_check.0.host", "http_health_check.0.request_path", "http_health_check.0.response", "http_health_check.0.port", "http_health_check.0.port_name", "http_health_check.0.proxy_header", "http_health_check.0.port_specification"},
 						},
@@ -234,8 +233,7 @@ can only be ASCII.`,
 						},
 					},
 				},
-				ConflictsWith: []string{"https_health_check", "tcp_health_check", "ssl_health_check", "http2_health_check"},
-				AtLeastOneOf:  []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
+				ExactlyOneOf: []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
 			},
 			"https_health_check": {
 				Type:             schema.TypeList,
@@ -284,7 +282,7 @@ following values:
   checking.
 
 If not specified, HTTPS health check follows behavior specified in 'port' and
-'portName' fields.`,
+'portName' fields. Possible values: ["USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"]`,
 							AtLeastOneOf: []string{"https_health_check.0.host", "https_health_check.0.request_path", "https_health_check.0.response", "https_health_check.0.port", "https_health_check.0.port_name", "https_health_check.0.proxy_header", "https_health_check.0.port_specification"},
 						},
 						"proxy_header": {
@@ -292,7 +290,7 @@ If not specified, HTTPS health check follows behavior specified in 'port' and
 							Optional:     true,
 							ValidateFunc: validation.StringInSlice([]string{"NONE", "PROXY_V1", ""}, false),
 							Description: `Specifies the type of proxy header to append before sending data to the
-backend, either NONE or PROXY_V1. The default is NONE.`,
+backend. Default value: "NONE" Possible values: ["NONE", "PROXY_V1"]`,
 							Default:      "NONE",
 							AtLeastOneOf: []string{"https_health_check.0.host", "https_health_check.0.request_path", "https_health_check.0.response", "https_health_check.0.port", "https_health_check.0.port_name", "https_health_check.0.proxy_header", "https_health_check.0.port_specification"},
 						},
@@ -314,8 +312,7 @@ can only be ASCII.`,
 						},
 					},
 				},
-				ConflictsWith: []string{"http_health_check", "tcp_health_check", "ssl_health_check", "http2_health_check"},
-				AtLeastOneOf:  []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
+				ExactlyOneOf: []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
 			},
 			"log_config": {
 				Type:        schema.TypeList,
@@ -381,7 +378,7 @@ following values:
   checking.
 
 If not specified, SSL health check follows behavior specified in 'port' and
-'portName' fields.`,
+'portName' fields. Possible values: ["USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"]`,
 							AtLeastOneOf: []string{"ssl_health_check.0.request", "ssl_health_check.0.response", "ssl_health_check.0.port", "ssl_health_check.0.port_name", "ssl_health_check.0.proxy_header", "ssl_health_check.0.port_specification"},
 						},
 						"proxy_header": {
@@ -389,7 +386,7 @@ If not specified, SSL health check follows behavior specified in 'port' and
 							Optional:     true,
 							ValidateFunc: validation.StringInSlice([]string{"NONE", "PROXY_V1", ""}, false),
 							Description: `Specifies the type of proxy header to append before sending data to the
-backend, either NONE or PROXY_V1. The default is NONE.`,
+backend. Default value: "NONE" Possible values: ["NONE", "PROXY_V1"]`,
 							Default:      "NONE",
 							AtLeastOneOf: []string{"ssl_health_check.0.request", "ssl_health_check.0.response", "ssl_health_check.0.port", "ssl_health_check.0.port_name", "ssl_health_check.0.proxy_header", "ssl_health_check.0.port_specification"},
 						},
@@ -412,8 +409,7 @@ can only be ASCII.`,
 						},
 					},
 				},
-				ConflictsWith: []string{"http_health_check", "https_health_check", "tcp_health_check", "http2_health_check"},
-				AtLeastOneOf:  []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
+				ExactlyOneOf: []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
 			},
 			"tcp_health_check": {
 				Type:             schema.TypeList,
@@ -454,7 +450,7 @@ following values:
   checking.
 
 If not specified, TCP health check follows behavior specified in 'port' and
-'portName' fields.`,
+'portName' fields. Possible values: ["USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"]`,
 							AtLeastOneOf: []string{"tcp_health_check.0.request", "tcp_health_check.0.response", "tcp_health_check.0.port", "tcp_health_check.0.port_name", "tcp_health_check.0.proxy_header", "tcp_health_check.0.port_specification"},
 						},
 						"proxy_header": {
@@ -462,7 +458,7 @@ If not specified, TCP health check follows behavior specified in 'port' and
 							Optional:     true,
 							ValidateFunc: validation.StringInSlice([]string{"NONE", "PROXY_V1", ""}, false),
 							Description: `Specifies the type of proxy header to append before sending data to the
-backend, either NONE or PROXY_V1. The default is NONE.`,
+backend. Default value: "NONE" Possible values: ["NONE", "PROXY_V1"]`,
 							Default:      "NONE",
 							AtLeastOneOf: []string{"tcp_health_check.0.request", "tcp_health_check.0.response", "tcp_health_check.0.port", "tcp_health_check.0.port_name", "tcp_health_check.0.proxy_header", "tcp_health_check.0.port_specification"},
 						},
@@ -485,8 +481,7 @@ can only be ASCII.`,
 						},
 					},
 				},
-				ConflictsWith: []string{"http_health_check", "https_health_check", "ssl_health_check", "http2_health_check"},
-				AtLeastOneOf:  []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
+				ExactlyOneOf: []string{"http_health_check", "https_health_check", "http2_health_check", "tcp_health_check", "ssl_health_check"},
 			},
 			"timeout_sec": {
 				Type:     schema.TypeInt,

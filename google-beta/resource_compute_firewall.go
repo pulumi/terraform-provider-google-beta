@@ -99,20 +99,18 @@ character, which cannot be a dash.`,
 				Description: `The list of ALLOW rules specified by this firewall. Each rule
 specifies a protocol and port-range tuple that describes a permitted
 connection.`,
-				Elem:          computeFirewallAllowSchema(),
-				Set:           resourceComputeFirewallRuleHash,
-				ConflictsWith: []string{"deny"},
-				AtLeastOneOf:  []string{"allow", "deny"},
+				Elem:         computeFirewallAllowSchema(),
+				Set:          resourceComputeFirewallRuleHash,
+				ExactlyOneOf: []string{"allow", "deny"},
 			},
 			"deny": {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Description: `The list of DENY rules specified by this firewall. Each rule specifies
 a protocol and port-range tuple that describes a denied connection.`,
-				Elem:          computeFirewallDenySchema(),
-				Set:           resourceComputeFirewallRuleHash,
-				ConflictsWith: []string{"allow"},
-				AtLeastOneOf:  []string{"allow", "deny"},
+				Elem:         computeFirewallDenySchema(),
+				Set:          resourceComputeFirewallRuleHash,
+				ExactlyOneOf: []string{"allow", "deny"},
 			},
 			"description": {
 				Type:     schema.TypeString,
@@ -142,7 +140,7 @@ must be expressed in CIDR format. Only IPv4 is supported.`,
 				Description: `Direction of traffic to which this firewall applies; default is
 INGRESS. Note: For INGRESS traffic, it is NOT supported to specify
 destinationRanges; For EGRESS traffic, it is NOT supported to specify
-sourceRanges OR sourceTags.`,
+sourceRanges OR sourceTags. Possible values: ["INGRESS", "EGRESS"]`,
 			},
 			"disabled": {
 				Type:     schema.TypeBool,

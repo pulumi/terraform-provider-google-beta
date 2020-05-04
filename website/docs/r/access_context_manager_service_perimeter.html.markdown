@@ -12,7 +12,7 @@
 #     .github/CONTRIBUTING.md.
 #
 # ----------------------------------------------------------------------------
-subcategory: "Access Context Manager"
+subcategory: "Access Context Manager (VPC Service Controls)"
 layout: "google"
 page_title: "Google: google_access_context_manager_service_perimeter"
 sidebar_current: "docs-google-access-context-manager-service-perimeter"
@@ -154,6 +154,11 @@ The following arguments are supported:
   topologies with many independent perimeters that need to share some data
   with a common perimeter, but should not be able to share data among
   themselves.
+
+  Default value: `PERIMETER_TYPE_REGULAR`
+  Possible values are:
+  * `PERIMETER_TYPE_REGULAR`
+  * `PERIMETER_TYPE_BRIDGE`
 
 * `status` -
   (Optional)

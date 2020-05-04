@@ -12,7 +12,7 @@
 #     .github/CONTRIBUTING.md.
 #
 # ----------------------------------------------------------------------------
-subcategory: "Cloud Filestore"
+subcategory: "Filestore"
 layout: "google"
 page_title: "Google: google_filestore_instance"
 sidebar_current: "docs-google-filestore-instance"
@@ -71,6 +71,11 @@ The following arguments are supported:
 * `tier` -
   (Required)
   The service tier of the instance.
+
+  Possible values are:
+  * `TIER_UNSPECIFIED`
+  * `STANDARD`
+  * `PREMIUM`
 
 * `file_shares` -
   (Required)

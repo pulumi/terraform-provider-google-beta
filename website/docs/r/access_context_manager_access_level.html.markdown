@@ -12,7 +12,7 @@
 #     .github/CONTRIBUTING.md.
 #
 # ----------------------------------------------------------------------------
-subcategory: "Access Context Manager"
+subcategory: "Access Context Manager (VPC Service Controls)"
 layout: "google"
 page_title: "Google: google_access_context_manager_access_level"
 sidebar_current: "docs-google-access-context-manager-access-level"
@@ -44,7 +44,7 @@ resource "google_access_context_manager_access_level" "access-level" {
   basic {
     conditions {
       device_policy {
-        require_screen_lock = false
+        require_screen_lock = true
         os_constraints {
           os_type = "DESKTOP_CHROME_OS"
         }
@@ -105,7 +105,12 @@ The `basic` block supports:
   is granted this AccessLevel. If AND is used, each Condition in
   conditions must be satisfied for the AccessLevel to be applied. If
   OR is used, at least one Condition in conditions must be satisfied
-  for the AccessLevel to be applied. Defaults to AND if unspecified.
+  for the AccessLevel to be applied.
+
+  Default value: `AND`
+  Possible values are:
+  * `AND`
+  * `OR`
 
 * `conditions` -
   (Required)
@@ -206,6 +211,13 @@ The `os_constraints` block supports:
 * `os_type` -
   (Required)
   The operating system type of the device.
+
+  Possible values are:
+  * `OS_UNSPECIFIED`
+  * `DESKTOP_MAC`
+  * `DESKTOP_WINDOWS`
+  * `DESKTOP_LINUX`
+  * `DESKTOP_CHROME_OS`
 
 ## Attributes Reference
 

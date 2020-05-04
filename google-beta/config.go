@@ -38,7 +38,7 @@ import (
 	"google.golang.org/api/dns/v1"
 	dnsBeta "google.golang.org/api/dns/v1beta2"
 	file "google.golang.org/api/file/v1beta1"
-	healthcare "google.golang.org/api/healthcare/v1beta1"
+	healthcare "google.golang.org/api/healthcare/v1"
 	"google.golang.org/api/iam/v1"
 	iamcredentials "google.golang.org/api/iamcredentials/v1"
 	cloudlogging "google.golang.org/api/logging/v2"
@@ -80,7 +80,9 @@ type Config struct {
 
 	AccessContextManagerBasePath string
 	AppEngineBasePath            string
+	ArtifactRegistryBasePath     string
 	BigQueryBasePath             string
+	BigqueryConnectionBasePath   string
 	BigqueryDataTransferBasePath string
 	BigqueryReservationBasePath  string
 	BigtableBasePath             string
@@ -226,7 +228,9 @@ type Config struct {
 // Generated product base paths
 var AccessContextManagerDefaultBasePath = "https://accesscontextmanager.googleapis.com/v1/"
 var AppEngineDefaultBasePath = "https://appengine.googleapis.com/v1/"
+var ArtifactRegistryDefaultBasePath = "https://artifactregistry.googleapis.com/v1beta1/"
 var BigQueryDefaultBasePath = "https://www.googleapis.com/bigquery/v2/"
+var BigqueryConnectionDefaultBasePath = "https://bigqueryconnection.googleapis.com/v1beta1/"
 var BigqueryDataTransferDefaultBasePath = "https://bigquerydatatransfer.googleapis.com/v1/"
 var BigqueryReservationDefaultBasePath = "https://bigqueryreservation.googleapis.com/v1beta1/"
 var BigtableDefaultBasePath = "https://bigtableadmin.googleapis.com/v2/"
@@ -746,7 +750,9 @@ func ConfigureBasePaths(c *Config) {
 	// Generated Products
 	c.AccessContextManagerBasePath = AccessContextManagerDefaultBasePath
 	c.AppEngineBasePath = AppEngineDefaultBasePath
+	c.ArtifactRegistryBasePath = ArtifactRegistryDefaultBasePath
 	c.BigQueryBasePath = BigQueryDefaultBasePath
+	c.BigqueryConnectionBasePath = BigqueryConnectionDefaultBasePath
 	c.BigqueryDataTransferBasePath = BigqueryDataTransferDefaultBasePath
 	c.BigqueryReservationBasePath = BigqueryReservationDefaultBasePath
 	c.BigtableBasePath = BigtableDefaultBasePath

@@ -115,7 +115,7 @@ An empty list allows all types and all versions.`,
 																Type:         schema.TypeString,
 																Required:     true,
 																ValidateFunc: validation.StringInSlice([]string{"OS_UNSPECIFIED", "DESKTOP_MAC", "DESKTOP_WINDOWS", "DESKTOP_LINUX", "DESKTOP_CHROME_OS"}, false),
-																Description:  `The operating system type of the device.`,
+																Description:  `The operating system type of the device. Possible values: ["OS_UNSPECIFIED", "DESKTOP_MAC", "DESKTOP_WINDOWS", "DESKTOP_LINUX", "DESKTOP_CHROME_OS"]`,
 															},
 															"minimum_version": {
 																Type:     schema.TypeString,
@@ -218,7 +218,7 @@ Format: accessPolicies/{policy_id}/accessLevels/{short_name}`,
 is granted this AccessLevel. If AND is used, each Condition in
 conditions must be satisfied for the AccessLevel to be applied. If
 OR is used, at least one Condition in conditions must be satisfied
-for the AccessLevel to be applied. Defaults to AND if unspecified.`,
+for the AccessLevel to be applied. Default value: "AND" Possible values: ["AND", "OR"]`,
 							Default: "AND",
 						},
 					},
@@ -541,7 +541,7 @@ func flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicy(v interfa
 	}
 	transformed := make(map[string]interface{})
 	transformed["require_screen_lock"] =
-		flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyRequireScreenLock(original["requireScreenLock"], d, config)
+		flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyRequireScreenLock(original["requireScreenlock"], d, config)
 	transformed["allowed_encryption_statuses"] =
 		flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyAllowedEncryptionStatuses(original["allowedEncryptionStatuses"], d, config)
 	transformed["allowed_device_management_levels"] =
@@ -733,7 +733,7 @@ func expandAccessContextManagerAccessLevelBasicConditionsDevicePolicy(v interfac
 	if err != nil {
 		return nil, err
 	} else if val := reflect.ValueOf(transformedRequireScreenLock); val.IsValid() && !isEmptyValue(val) {
-		transformed["requireScreenLock"] = transformedRequireScreenLock
+		transformed["requireScreenlock"] = transformedRequireScreenLock
 	}
 
 	transformedAllowedEncryptionStatuses, err := expandAccessContextManagerAccessLevelBasicConditionsDevicePolicyAllowedEncryptionStatuses(original["allowed_encryption_statuses"], d, config)

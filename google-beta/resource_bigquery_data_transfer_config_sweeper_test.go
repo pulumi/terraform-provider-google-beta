@@ -18,6 +18,7 @@ import (
 	"context"
 	"log"
 	"strings"
+	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 )
@@ -46,17 +47,21 @@ func testSweepBigqueryDataTransferConfig(region string) error {
 		return err
 	}
 
+	t := &testing.T{}
+	billingId := getTestBillingAccountFromEnv(t)
+
 	// Setup variables to replace in list template
 	d := &ResourceDataMock{
 		FieldsInSchema: map[string]interface{}{
-			"project":  config.Project,
-			"region":   region,
-			"location": region,
-			"zone":     "-",
+			"project":         config.Project,
+			"region":          region,
+			"location":        region,
+			"zone":            "-",
+			"billing_account": billingId,
 		},
 	}
 
-	listTemplate := strings.Split("https://bigquerydatatransfer.googleapis.com/v1/projects/{{project}}/locations/{{location}}/transferConfigs", "?")[0]
+	listTemplate := strings.Split("https://bigquerydatatransfer.googleapis.com/v1/projects/{{project}}/locations/{{location}}/transferConfigs?serviceAccountName={{service_account_name}}", "?")[0]
 	listUrl, err := replaceVars(d, config, listTemplate)
 	if err != nil {
 		log.Printf("[INFO][SWEEPER_LOG] error preparing sweeper list url: %s", err)

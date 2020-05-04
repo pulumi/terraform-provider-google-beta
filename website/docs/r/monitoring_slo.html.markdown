@@ -12,7 +12,7 @@
 #     .github/CONTRIBUTING.md.
 #
 # ----------------------------------------------------------------------------
-subcategory: "Stackdriver Monitoring"
+subcategory: "Cloud (Stackdriver) Monitoring"
 layout: "google"
 page_title: "Google: google_monitoring_slo"
 sidebar_current: "docs-google-monitoring-slo"
@@ -107,6 +107,12 @@ The following arguments are supported:
   (Optional)
   A calendar period, semantically "since the start of the current
   <calendarPeriod>".
+
+  Possible values are:
+  * `DAY`
+  * `WEEK`
+  * `FORTNIGHT`
+  * `MONTH`
 
 * `slo_id` -
   (Optional)

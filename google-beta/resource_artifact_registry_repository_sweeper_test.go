@@ -18,20 +18,21 @@ import (
 	"context"
 	"log"
 	"strings"
+	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 )
 
 func init() {
-	resource.AddTestSweepers("BigQueryJob", &resource.Sweeper{
-		Name: "BigQueryJob",
-		F:    testSweepBigQueryJob,
+	resource.AddTestSweepers("ArtifactRegistryRepository", &resource.Sweeper{
+		Name: "ArtifactRegistryRepository",
+		F:    testSweepArtifactRegistryRepository,
 	})
 }
 
 // At the time of writing, the CI only passes us-central1 as the region
-func testSweepBigQueryJob(region string) error {
-	resourceName := "BigQueryJob"
+func testSweepArtifactRegistryRepository(region string) error {
+	resourceName := "ArtifactRegistryRepository"
 	log.Printf("[INFO][SWEEPER_LOG] Starting sweeper for %s", resourceName)
 
 	config, err := sharedConfigForRegion(region)
@@ -46,17 +47,21 @@ func testSweepBigQueryJob(region string) error {
 		return err
 	}
 
+	t := &testing.T{}
+	billingId := getTestBillingAccountFromEnv(t)
+
 	// Setup variables to replace in list template
 	d := &ResourceDataMock{
 		FieldsInSchema: map[string]interface{}{
-			"project":  config.Project,
-			"region":   region,
-			"location": region,
-			"zone":     "-",
+			"project":         config.Project,
+			"region":          region,
+			"location":        region,
+			"zone":            "-",
+			"billing_account": billingId,
 		},
 	}
 
-	listTemplate := strings.Split("https://www.googleapis.com/bigquery/v2/projects/{{project}}/jobs", "?")[0]
+	listTemplate := strings.Split("https://artifactregistry.googleapis.com/v1beta1/projects/{{project}}/locations/{{location}}/repositories", "?")[0]
 	listUrl, err := replaceVars(d, config, listTemplate)
 	if err != nil {
 		log.Printf("[INFO][SWEEPER_LOG] error preparing sweeper list url: %s", err)
@@ -69,7 +74,7 @@ func testSweepBigQueryJob(region string) error {
 		return nil
 	}
 
-	resourceList, ok := res["jobs"]
+	resourceList, ok := res["repositories"]
 	if !ok {
 		log.Printf("[INFO][SWEEPER_LOG] Nothing found in response.")
 		return nil
@@ -94,7 +99,7 @@ func testSweepBigQueryJob(region string) error {
 			continue
 		}
 
-		deleteTemplate := "https://www.googleapis.com/bigquery/v2/projects/{{project}}/jobs/{{job_id}}"
+		deleteTemplate := "https://artifactregistry.googleapis.com/v1beta1/projects/{{project}}/locations/{{location}}/repositories/{{name}}"
 		deleteUrl, err := replaceVars(d, config, deleteTemplate)
 		if err != nil {
 			log.Printf("[INFO][SWEEPER_LOG] error preparing delete url: %s", err)
