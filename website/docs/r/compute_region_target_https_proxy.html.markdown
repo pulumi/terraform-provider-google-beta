@@ -28,7 +28,7 @@ forwarding rules to route incoming HTTPS requests to a URL map.
 
 To get more information about RegionTargetHttpsProxy, see:
 
-* [API documentation](https://cloud.google.com/compute/docs/reference/rest/beta/regionTargetHttpsProxies)
+* [API documentation](https://cloud.google.com/compute/docs/reference/rest/v1/regionTargetHttpsProxies)
 * How-to Guides
     * [Official Documentation](https://cloud.google.com/compute/docs/load-balancing/http/target-proxies)
 
@@ -42,8 +42,6 @@ To get more information about RegionTargetHttpsProxy, see:
 
 ```hcl
 resource "google_compute_region_target_https_proxy" "default" {
-  provider = google-beta
-
   region           = "us-central1"
   name             = "test-proxy"
   url_map          = google_compute_region_url_map.default.self_link
@@ -51,8 +49,6 @@ resource "google_compute_region_target_https_proxy" "default" {
 }
 
 resource "google_compute_region_ssl_certificate" "default" {
-  provider = google-beta
-
   region      = "us-central1"
   name        = "my-certificate"
   private_key = file("path/to/private.key")
@@ -60,8 +56,6 @@ resource "google_compute_region_ssl_certificate" "default" {
 }
 
 resource "google_compute_region_url_map" "default" {
-  provider = google-beta
-
   region      = "us-central1"
   name        = "url-map"
   description = "a description"
@@ -85,8 +79,6 @@ resource "google_compute_region_url_map" "default" {
 }
 
 resource "google_compute_region_backend_service" "default" {
-  provider = google-beta
-
   region      = "us-central1"
   name        = "backend-service"
   protocol    = "HTTP"
@@ -96,8 +88,6 @@ resource "google_compute_region_backend_service" "default" {
 }
 
 resource "google_compute_region_health_check" "default" {
-  provider = google-beta
-
   region = "us-central1"
   name   = "http-health-check"
   http_health_check {
@@ -177,10 +167,10 @@ This resource provides the following
 RegionTargetHttpsProxy can be imported using any of these accepted formats:
 
 ```
-$ terraform import -provider=google-beta google_compute_region_target_https_proxy.default projects/{{project}}/regions/{{region}}/targetHttpsProxies/{{name}}
-$ terraform import -provider=google-beta google_compute_region_target_https_proxy.default {{project}}/{{region}}/{{name}}
-$ terraform import -provider=google-beta google_compute_region_target_https_proxy.default {{region}}/{{name}}
-$ terraform import -provider=google-beta google_compute_region_target_https_proxy.default {{name}}
+$ terraform import google_compute_region_target_https_proxy.default projects/{{project}}/regions/{{region}}/targetHttpsProxies/{{name}}
+$ terraform import google_compute_region_target_https_proxy.default {{project}}/{{region}}/{{name}}
+$ terraform import google_compute_region_target_https_proxy.default {{region}}/{{name}}
+$ terraform import google_compute_region_target_https_proxy.default {{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`

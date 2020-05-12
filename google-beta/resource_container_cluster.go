@@ -53,10 +53,11 @@ var (
 		"addons_config.0.http_load_balancing",
 		"addons_config.0.horizontal_pod_autoscaling",
 		"addons_config.0.network_policy_config",
-		"addons_config.0.istio_config",
 		"addons_config.0.cloudrun_config",
+		"addons_config.0.istio_config",
 		"addons_config.0.dns_cache_config",
 		"addons_config.0.gce_persistent_disk_csi_driver_config",
+		"addons_config.0.kalm_config",
 	}
 )
 
@@ -87,6 +88,7 @@ func resourceContainerCluster() *schema.Resource {
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(40 * time.Minute),
+			Read:   schema.DefaultTimeout(40 * time.Minute),
 			Update: schema.DefaultTimeout(60 * time.Minute),
 			Delete: schema.DefaultTimeout(40 * time.Minute),
 		},
@@ -234,6 +236,21 @@ func resourceContainerCluster() *schema.Resource {
 								},
 							},
 						},
+						"cloudrun_config": {
+							Type:         schema.TypeList,
+							Optional:     true,
+							Computed:     true,
+							AtLeastOneOf: addonsConfigKeys,
+							MaxItems:     1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"disabled": {
+										Type:     schema.TypeBool,
+										Required: true,
+									},
+								},
+							},
+						},
 						"istio_config": {
 							Type:         schema.TypeList,
 							Optional:     true,
@@ -256,21 +273,6 @@ func resourceContainerCluster() *schema.Resource {
 								},
 							},
 						},
-						"cloudrun_config": {
-							Type:         schema.TypeList,
-							Optional:     true,
-							Computed:     true,
-							AtLeastOneOf: addonsConfigKeys,
-							MaxItems:     1,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"disabled": {
-										Type:     schema.TypeBool,
-										Required: true,
-									},
-								},
-							},
-						},
 						"dns_cache_config": {
 							Type:         schema.TypeList,
 							Optional:     true,
@@ -287,6 +289,21 @@ func resourceContainerCluster() *schema.Resource {
 							},
 						},
 						"gce_persistent_disk_csi_driver_config": {
+							Type:         schema.TypeList,
+							Optional:     true,
+							Computed:     true,
+							AtLeastOneOf: addonsConfigKeys,
+							MaxItems:     1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"enabled": {
+										Type:     schema.TypeBool,
+										Required: true,
+									},
+								},
+							},
+						},
+						"kalm_config": {
 							Type:         schema.TypeList,
 							Optional:     true,
 							Computed:     true,
@@ -1151,8 +1168,7 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 	d.SetId(containerClusterFullName(project, location, clusterName))
 
 	// Wait until it's created
-	timeoutInMinutes := int(d.Timeout(schema.TimeoutCreate).Minutes())
-	waitErr := containerOperationWait(config, op, project, location, "creating GKE cluster", timeoutInMinutes)
+	waitErr := containerOperationWait(config, op, project, location, "creating GKE cluster", d.Timeout(schema.TimeoutCreate))
 	if waitErr != nil {
 		// Check if the create operation failed because Terraform was prematurely terminated. If it was we can persist the
 		// operation id to state so that a subsequent refresh of this resource will wait until the operation has terminated
@@ -1195,7 +1211,7 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 		if err != nil {
 			return errwrap.Wrapf("Error deleting default node pool: {{err}}", err)
 		}
-		err = containerOperationWait(config, op, project, location, "removing default node pool", timeoutInMinutes)
+		err = containerOperationWait(config, op, project, location, "removing default node pool", d.Timeout(schema.TimeoutCreate))
 		if err != nil {
 			return errwrap.Wrapf("Error while waiting to delete default node pool: {{err}}", err)
 		}
@@ -1237,7 +1253,7 @@ func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) erro
 			Name: operation,
 		}
 		d.Set("operation", "")
-		waitErr := containerOperationWait(config, op, project, location, "resuming GKE cluster", int(d.Timeout(schema.TimeoutCreate).Minutes()))
+		waitErr := containerOperationWait(config, op, project, location, "resuming GKE cluster", d.Timeout(schema.TimeoutRead))
 		if waitErr != nil {
 			return waitErr
 		}
@@ -1374,7 +1390,6 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 	}
 
 	clusterName := d.Get("name").(string)
-	timeoutInMinutes := int(d.Timeout(schema.TimeoutUpdate).Minutes())
 
 	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, d.Timeout(schema.TimeoutUpdate)); err != nil {
 		return err
@@ -1392,7 +1407,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				return err
 			}
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, updateDescription, timeoutInMinutes)
+			return containerOperationWait(config, op, project, location, updateDescription, d.Timeout(schema.TimeoutUpdate))
 		}
 	}
 
@@ -1516,7 +1531,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating GKE Intra Node Visibility", timeoutInMinutes)
+			err = containerOperationWait(config, op, project, location, "updating GKE Intra Node Visibility", d.Timeout(schema.TimeoutUpdate))
 			log.Println("[DEBUG] done updating enable_intranode_visibility")
 			return err
 		}
@@ -1545,7 +1560,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE cluster maintenance policy", timeoutInMinutes)
+			return containerOperationWait(config, op, project, location, "updating GKE cluster maintenance policy", d.Timeout(schema.TimeoutUpdate))
 		}
 
 		// Call update serially.
@@ -1623,7 +1638,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating GKE legacy ABAC", timeoutInMinutes)
+			err = containerOperationWait(config, op, project, location, "updating GKE legacy ABAC", d.Timeout(schema.TimeoutUpdate))
 			log.Println("[DEBUG] done updating enable_legacy_abac")
 			return err
 		}
@@ -1656,7 +1671,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE logging+monitoring service", timeoutInMinutes)
+			return containerOperationWait(config, op, project, location, "updating GKE logging+monitoring service", d.Timeout(schema.TimeoutUpdate))
 		}
 
 		// Call update serially.
@@ -1684,7 +1699,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating GKE cluster network policy", timeoutInMinutes)
+			err = containerOperationWait(config, op, project, location, "updating GKE cluster network policy", d.Timeout(schema.TimeoutUpdate))
 			log.Println("[DEBUG] done updating network_policy")
 			return err
 		}
@@ -1707,7 +1722,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				return err
 			}
 
-			if err := nodePoolUpdate(d, meta, nodePoolInfo, fmt.Sprintf("node_pool.%d.", i), timeoutInMinutes); err != nil {
+			if err := nodePoolUpdate(d, meta, nodePoolInfo, fmt.Sprintf("node_pool.%d.", i), d.Timeout(schema.TimeoutUpdate)); err != nil {
 				return err
 			}
 		}
@@ -1796,7 +1811,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				}
 
 				// Wait until it's updated
-				return containerOperationWait(config, op, project, location, "updating GKE image type", timeoutInMinutes)
+				return containerOperationWait(config, op, project, location, "updating GKE image type", d.Timeout(schema.TimeoutUpdate))
 			}
 
 			// Call update serially.
@@ -1833,7 +1848,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating master auth", timeoutInMinutes)
+			return containerOperationWait(config, op, project, location, "updating master auth", d.Timeout(schema.TimeoutUpdate))
 		}
 
 		// Call update serially.
@@ -1880,7 +1895,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				return err
 			}
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE cluster pod security policy config", timeoutInMinutes)
+			return containerOperationWait(config, op, project, location, "updating GKE cluster pod security policy config", d.Timeout(schema.TimeoutUpdate))
 		}
 		if err := lockedCall(lockKey, updateF); err != nil {
 			return err
@@ -1934,7 +1949,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE resource labels", timeoutInMinutes)
+			return containerOperationWait(config, op, project, location, "updating GKE resource labels", d.Timeout(schema.TimeoutUpdate))
 		}
 
 		// Call update serially.
@@ -1954,7 +1969,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 			log.Printf("[WARN] Container cluster %q default node pool already removed, no change", d.Id())
 		} else {
-			err = containerOperationWait(config, op, project, location, "removing default node pool", timeoutInMinutes)
+			err = containerOperationWait(config, op, project, location, "removing default node pool", d.Timeout(schema.TimeoutUpdate))
 			if err != nil {
 				return errwrap.Wrapf("Error deleting default node pool: {{err}}", err)
 			}
@@ -1976,7 +1991,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				return err
 			}
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE cluster resource usage export config", timeoutInMinutes)
+			return containerOperationWait(config, op, project, location, "updating GKE cluster resource usage export config", d.Timeout(schema.TimeoutUpdate))
 		}
 		if err := lockedCall(lockKey, updateF); err != nil {
 			return err
@@ -2009,7 +2024,6 @@ func resourceContainerClusterDelete(d *schema.ResourceData, meta interface{}) er
 	}
 
 	clusterName := d.Get("name").(string)
-	timeoutInMinutes := int(d.Timeout(schema.TimeoutDelete).Minutes())
 
 	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, d.Timeout(schema.TimeoutDelete)); err != nil {
 		return err
@@ -2043,7 +2057,7 @@ func resourceContainerClusterDelete(d *schema.ResourceData, meta interface{}) er
 	}
 
 	// Wait until it's deleted
-	waitErr := containerOperationWait(config, op, project, location, "deleting GKE cluster", timeoutInMinutes)
+	waitErr := containerOperationWait(config, op, project, location, "deleting GKE cluster", d.Timeout(schema.TimeoutDelete))
 	if waitErr != nil {
 		return waitErr
 	}
@@ -2082,8 +2096,7 @@ func cleanFailedContainerCluster(d *schema.ResourceData, meta interface{}) error
 	}
 
 	// Wait until it's deleted
-	timeoutInMinutes := int(d.Timeout(schema.TimeoutDelete).Minutes())
-	waitErr := containerOperationWait(config, op, project, location, "deleting GKE cluster", timeoutInMinutes)
+	waitErr := containerOperationWait(config, op, project, location, "deleting GKE cluster", d.Timeout(schema.TimeoutDelete))
 	if waitErr != nil {
 		return waitErr
 	}
@@ -2137,6 +2150,10 @@ func getInstanceGroupUrlsFromManagerUrls(config *Config, igmUrls []string) ([]st
 		}
 		matches := instanceGroupManagerURL.FindStringSubmatch(u)
 		instanceGroupManager, err := config.clientCompute.InstanceGroupManagers.Get(matches[1], matches[2], matches[3]).Do()
+		if isGoogleApiErrorWithCode(err, 404) {
+			// The IGM URL is stale; don't include it
+			continue
+		}
 		if err != nil {
 			return nil, fmt.Errorf("Error reading instance group manager returned as an instance group URL: %s", err)
 		}
@@ -2178,19 +2195,19 @@ func expandClusterAddonsConfig(configured interface{}) *containerBeta.AddonsConf
 		}
 	}
 
+	if v, ok := config["cloudrun_config"]; ok && len(v.([]interface{})) > 0 {
+		addon := v.([]interface{})[0].(map[string]interface{})
+		ac.CloudRunConfig = &containerBeta.CloudRunConfig{
+			Disabled:        addon["disabled"].(bool),
+			ForceSendFields: []string{"Disabled"},
+		}
+	}
+
 	if v, ok := config["istio_config"]; ok && len(v.([]interface{})) > 0 {
 		addon := v.([]interface{})[0].(map[string]interface{})
 		ac.IstioConfig = &containerBeta.IstioConfig{
 			Disabled:        addon["disabled"].(bool),
 			Auth:            addon["auth"].(string),
-			ForceSendFields: []string{"Disabled"},
-		}
-	}
-
-	if v, ok := config["cloudrun_config"]; ok && len(v.([]interface{})) > 0 {
-		addon := v.([]interface{})[0].(map[string]interface{})
-		ac.CloudRunConfig = &containerBeta.CloudRunConfig{
-			Disabled:        addon["disabled"].(bool),
 			ForceSendFields: []string{"Disabled"},
 		}
 	}
@@ -2206,6 +2223,14 @@ func expandClusterAddonsConfig(configured interface{}) *containerBeta.AddonsConf
 	if v, ok := config["gce_persistent_disk_csi_driver_config"]; ok && len(v.([]interface{})) > 0 {
 		addon := v.([]interface{})[0].(map[string]interface{})
 		ac.GcePersistentDiskCsiDriverConfig = &containerBeta.GcePersistentDiskCsiDriverConfig{
+			Enabled:         addon["enabled"].(bool),
+			ForceSendFields: []string{"Enabled"},
+		}
+	}
+
+	if v, ok := config["kalm_config"]; ok && len(v.([]interface{})) > 0 {
+		addon := v.([]interface{})[0].(map[string]interface{})
+		ac.KalmConfig = &containerBeta.KalmConfig{
 			Enabled:         addon["enabled"].(bool),
 			ForceSendFields: []string{"Enabled"},
 		}
@@ -2591,19 +2616,19 @@ func flattenClusterAddonsConfig(c *containerBeta.AddonsConfig) []map[string]inte
 		}
 	}
 
+	if c.CloudRunConfig != nil {
+		result["cloudrun_config"] = []map[string]interface{}{
+			{
+				"disabled": c.CloudRunConfig.Disabled,
+			},
+		}
+	}
+
 	if c.IstioConfig != nil {
 		result["istio_config"] = []map[string]interface{}{
 			{
 				"disabled": c.IstioConfig.Disabled,
 				"auth":     c.IstioConfig.Auth,
-			},
-		}
-	}
-
-	if c.CloudRunConfig != nil {
-		result["cloudrun_config"] = []map[string]interface{}{
-			{
-				"disabled": c.CloudRunConfig.Disabled,
 			},
 		}
 	}
@@ -2620,6 +2645,14 @@ func flattenClusterAddonsConfig(c *containerBeta.AddonsConfig) []map[string]inte
 		result["gce_persistent_disk_csi_driver_config"] = []map[string]interface{}{
 			{
 				"enabled": c.GcePersistentDiskCsiDriverConfig.Enabled,
+			},
+		}
+	}
+
+	if c.KalmConfig != nil {
+		result["kalm_config"] = []map[string]interface{}{
+			{
+				"enabled": c.KalmConfig.Enabled,
 			},
 		}
 	}

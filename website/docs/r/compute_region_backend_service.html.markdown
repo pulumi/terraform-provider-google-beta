@@ -70,8 +70,6 @@ resource "google_compute_health_check" "default" {
 
 ```hcl
 resource "google_compute_region_backend_service" "default" {
-  provider = "google-beta"
-
   region = "us-central1"
   name = "region-service"
   health_checks = ["${google_compute_health_check.health_check.self_link}"]
@@ -81,8 +79,6 @@ resource "google_compute_region_backend_service" "default" {
 }
 
 resource "google_compute_health_check" "health_check" {
-  provider = "google-beta"
-
   name               = "rbs-health-check"
   http_health_check {
     port = 80
@@ -99,8 +95,6 @@ resource "google_compute_health_check" "health_check" {
 
 ```hcl
 resource "google_compute_region_backend_service" "default" {
-  provider = "google-beta"
-
   region = "us-central1"
   name = "region-service"
   health_checks = ["${google_compute_health_check.health_check.self_link}"]
@@ -126,8 +120,6 @@ resource "google_compute_region_backend_service" "default" {
 }
 
 resource "google_compute_health_check" "health_check" {
-  provider = "google-beta"
-
   name               = "rbs-health-check"
   http_health_check {
     port = 80
@@ -144,8 +136,6 @@ resource "google_compute_health_check" "health_check" {
 
 ```hcl
 resource "google_compute_region_backend_service" "default" {
-  provider = google-beta
-
   load_balancing_scheme = "INTERNAL_MANAGED"
 
   backend {
@@ -163,15 +153,11 @@ resource "google_compute_region_backend_service" "default" {
 }
 
 data "google_compute_image" "debian_image" {
-  provider = google-beta
-
   family   = "debian-9"
   project  = "debian-cloud"
 }
 
 resource "google_compute_region_instance_group_manager" "rigm" {
-  provider = google-beta
-
   region   = "us-central1"
   name     = "rbs-rigm"
   version {
@@ -183,8 +169,6 @@ resource "google_compute_region_instance_group_manager" "rigm" {
 }
 
 resource "google_compute_instance_template" "instance_template" {
-  provider     = google-beta
-
   name         = "template-region-service"
   machine_type = "n1-standard-1"
 
@@ -203,8 +187,6 @@ resource "google_compute_instance_template" "instance_template" {
 }
 
 resource "google_compute_region_health_check" "default" {
-  provider = google-beta
-
   region = "us-central1"
   name   = "rbs-health-check"
   http_health_check {
@@ -213,16 +195,12 @@ resource "google_compute_region_health_check" "default" {
 }
 
 resource "google_compute_network" "default" {
-  provider = google-beta
-
   name                    = "rbs-net"
   auto_create_subnetworks = false
   routing_mode            = "REGIONAL"
 }
 
 resource "google_compute_subnetwork" "default" {
-  provider = google-beta
-
   name          = "rbs-net-default"
   ip_cidr_range = "10.1.2.0/24"
   region        = "us-central1"
@@ -516,7 +494,7 @@ The `backend` block supports:
 The `circuit_breakers` block supports:
 
 * `connect_timeout` -
-  (Optional)
+  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
   The timeout for new network connections to hosts.  Structure is documented below.
 
 * `max_requests_per_connection` -

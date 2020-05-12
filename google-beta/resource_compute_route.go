@@ -247,6 +247,13 @@ func resourceComputeRouteCreate(d *schema.ResourceData, meta interface{}) error 
 		obj["nextHopIlb"] = nextHopIlbProp
 	}
 
+	lockName, err := replaceVars(d, config, "projects/{{project}}/global/networks/{{network}}/peerings")
+	if err != nil {
+		return err
+	}
+	mutexKV.Lock(lockName)
+	defer mutexKV.Unlock(lockName)
+
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/routes")
 	if err != nil {
 		return err
@@ -271,7 +278,7 @@ func resourceComputeRouteCreate(d *schema.ResourceData, meta interface{}) error 
 
 	err = computeOperationWaitTime(
 		config, res, project, "Creating Route",
-		int(d.Timeout(schema.TimeoutCreate).Minutes()))
+		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
 		// The resource didn't actually create
@@ -368,6 +375,13 @@ func resourceComputeRouteDelete(d *schema.ResourceData, meta interface{}) error 
 		return err
 	}
 
+	lockName, err := replaceVars(d, config, "projects/{{project}}/global/networks/{{network}}/peerings")
+	if err != nil {
+		return err
+	}
+	mutexKV.Lock(lockName)
+	defer mutexKV.Unlock(lockName)
+
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/routes/{{name}}")
 	if err != nil {
 		return err
@@ -383,7 +397,7 @@ func resourceComputeRouteDelete(d *schema.ResourceData, meta interface{}) error 
 
 	err = computeOperationWaitTime(
 		config, res, project, "Deleting Route",
-		int(d.Timeout(schema.TimeoutDelete).Minutes()))
+		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {
 		return err

@@ -51,7 +51,7 @@ state as plain-text. [Read more about sensitive data in state](/docs/state/sensi
 ```hcl
 resource "google_compute_backend_service" "default" {
   name          = "backend-service"
-  health_checks = [google_compute_http_health_check.default.self_link]
+  health_checks = [google_compute_http_health_check.default.id]
 }
 
 resource "google_compute_http_health_check" "default" {
@@ -74,7 +74,7 @@ resource "google_compute_backend_service" "default" {
   provider = google-beta
 
   name                  = "backend-service"
-  health_checks         = [google_compute_health_check.health_check.self_link]
+  health_checks         = [google_compute_health_check.health_check.id]
   load_balancing_scheme = "INTERNAL_SELF_MANAGED"
   locality_lb_policy    = "ROUND_ROBIN"
 }
@@ -101,7 +101,7 @@ resource "google_compute_backend_service" "default" {
   provider = google-beta
 
   name                  = "backend-service"
-  health_checks         = [google_compute_health_check.health_check.self_link]
+  health_checks         = [google_compute_health_check.health_check.id]
   load_balancing_scheme = "INTERNAL_SELF_MANAGED"
   locality_lb_policy    = "RING_HASH"
   session_affinity      = "HTTP_COOKIE"
@@ -176,7 +176,7 @@ The following arguments are supported:
   is applicable only when the load_balancing_scheme is set to INTERNAL_SELF_MANAGED.  Structure is documented below.
 
 * `consistent_hash` -
-  (Optional))
+  (Optional)
   Consistent Hash-based load balancing can be used to provide soft session
   affinity based on HTTP headers, cookies or other properties. This load balancing
   policy is applicable only for HTTP connections. The affinity to a particular
@@ -416,7 +416,7 @@ The `backend` block supports:
 The `circuit_breakers` block supports:
 
 * `connect_timeout` -
-  (Optional)
+  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
   The timeout for new network connections to hosts.  Structure is documented below.
 
 * `max_requests_per_connection` -

@@ -15,6 +15,7 @@ import (
 const (
 	testDataflowJobTemplateWordCountUrl = "gs://dataflow-templates/latest/Word_Count"
 	testDataflowJobSampleFileUrl        = "gs://dataflow-samples/shakespeare/various.txt"
+	testDataflowJobTemplateTextToPubsub = "gs://dataflow-templates/latest/Stream_GCS_Text_to_Cloud_PubSub"
 )
 
 func TestAccDataflowJob_basic(t *testing.T) {
@@ -200,6 +201,31 @@ func TestAccDataflowJobWithAdditionalExperiments(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccDataflowJobExists(t, "google_dataflow_job.with_additional_experiments"),
 					testAccDataflowJobHasExperiments(t, "google_dataflow_job.with_additional_experiments", additionalExperiments),
+				),
+			},
+		},
+	})
+}
+
+func TestAccDataflowJob_streamUpdate(t *testing.T) {
+	t.Parallel()
+
+	suffix := randString(t, 10)
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckDataflowJobDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccDataflowJob_updateStream(suffix, "google_storage_bucket.bucket1.url"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccDataflowJobExists(t, "google_dataflow_job.pubsub_stream"),
+				),
+			},
+			{
+				Config: testAccDataflowJob_updateStream(suffix, "google_storage_bucket.bucket2.url"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccDataflowJobHasTempLocation(t, "google_dataflow_job.pubsub_stream", "gs://tf-test-bucket2-"+suffix),
 				),
 			},
 		},
@@ -441,18 +467,46 @@ func testAccDataflowJobHasExperiments(t *testing.T, res string, experiments []st
 	}
 }
 
+func testAccDataflowJobHasTempLocation(t *testing.T, res, targetLocation string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[res]
+		if !ok {
+			return fmt.Errorf("resource %q not found in state", res)
+		}
+
+		if rs.Primary.ID == "" {
+			return fmt.Errorf("No ID is set")
+		}
+		config := googleProviderConfig(t)
+
+		job, err := config.clientDataflow.Projects.Jobs.Get(config.Project, rs.Primary.ID).View("JOB_VIEW_ALL").Do()
+		if err != nil {
+			return fmt.Errorf("dataflow job does not exist")
+		}
+		sdkPipelineOptions, err := ConvertToMap(job.Environment.SdkPipelineOptions)
+		if err != nil {
+			return err
+		}
+		optionsMap := sdkPipelineOptions["options"].(map[string]interface{})
+
+		if optionsMap["tempLocation"] != targetLocation {
+			return fmt.Errorf("Temp locations do not match. Got %s while expecting %s", optionsMap["tempLocation"], targetLocation)
+		}
+
+		return nil
+	}
+}
+
 func testAccDataflowJob_zone(bucket, job, zone string) string {
 	return fmt.Sprintf(`
 resource "google_storage_bucket" "temp" {
   name = "%s"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
  
   zone    = "%s"
-
   machine_type      = "n1-standard-2"
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
@@ -471,18 +525,15 @@ resource "google_storage_bucket" "temp" {
   name = "%s"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
   region  = "us-central1"
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
     inputFile = "%s"
     output    = "${google_storage_bucket.temp.url}/output"
   }
-
   on_delete = "cancel"
 }
 `, bucket, job, testDataflowJobTemplateWordCountUrl, testDataflowJobSampleFileUrl)
@@ -494,17 +545,13 @@ resource "google_storage_bucket" "temp" {
   name = "%s"
   force_destroy = true
 }
-
 resource "google_compute_network" "net" {
   name                    = "%s"
   auto_create_subnetworks = true
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
-
   network           = google_compute_network.net.name
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
@@ -522,23 +569,18 @@ resource "google_storage_bucket" "temp" {
   name = "%s"
   force_destroy = true
 }
-
 resource "google_compute_network" "net" {
   name                    = "%s"
   auto_create_subnetworks = false
 }
-
 resource "google_compute_subnetwork" "subnet" {
   name          = "%s"
   ip_cidr_range = "10.2.0.0/16"
   network       = google_compute_network.net.self_link
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
-
   subnetwork        = google_compute_subnetwork.subnet.self_link
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
@@ -556,37 +598,31 @@ resource "google_storage_bucket" "temp" {
   name = "%s"
   force_destroy = true
 }
-
 resource "google_service_account" "dataflow-sa" {
   account_id   = "%s"
   display_name = "DataFlow Service Account"
 }
-
 resource "google_storage_bucket_iam_member" "dataflow-gcs" {
   bucket = google_storage_bucket.temp.name
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.dataflow-sa.email}"
 }
-
 resource "google_project_iam_member" "dataflow-worker" {
   role   = "roles/dataflow.worker"
   member = "serviceAccount:${google_service_account.dataflow-sa.email}"
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
   depends_on = [
     google_storage_bucket_iam_member.dataflow-gcs, 
     google_project_iam_member.dataflow-worker
   ]
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
     inputFile = "%s"
     output    = "${google_storage_bucket.temp.url}/output"
   }
-
   service_account_email = google_service_account.dataflow-sa.email
 }
 `, bucket, accountId, job, testDataflowJobTemplateWordCountUrl, testDataflowJobSampleFileUrl)
@@ -598,12 +634,9 @@ resource "google_storage_bucket" "temp" {
   name = "%s"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
-
   ip_configuration = "WORKER_IP_PRIVATE"
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
@@ -621,14 +654,11 @@ resource "google_storage_bucket" "temp" {
   name = "%s"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "with_labels" {
   name = "%s"
-
   labels = {
     "%s" = "%s"
   }
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
@@ -647,12 +677,9 @@ resource "google_storage_bucket" "temp" {
   name = "%s"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "with_additional_experiments" {
   name = "%s"
-
   additional_experiments = ["%s"]
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
@@ -662,5 +689,30 @@ resource "google_dataflow_job" "with_additional_experiments" {
   on_delete = "cancel"
 }
 `, bucket, job, strings.Join(experiments, `", "`), testDataflowJobTemplateWordCountUrl, testDataflowJobSampleFileUrl)
+}
 
+func testAccDataflowJob_updateStream(suffix, tempLocation string) string {
+	return fmt.Sprintf(`
+resource "google_pubsub_topic" "topic" {
+	name     = "tf-test-dataflow-job-%s"
+}
+resource "google_storage_bucket" "bucket1" {
+	name = "tf-test-bucket1-%s"
+	force_destroy = true
+}
+resource "google_storage_bucket" "bucket2" {
+	name = "tf-test-bucket2-%s"
+	force_destroy = true
+}
+resource "google_dataflow_job" "pubsub_stream" {
+	name = "tf-test-dataflow-job-%s"
+	template_gcs_path = "%s"
+	temp_gcs_location = %s
+	parameters = {
+	  inputFilePattern = "${google_storage_bucket.bucket1.url}/*.json"
+	  outputTopic    = google_pubsub_topic.topic.id
+	}
+	on_delete = "cancel"
+}
+  `, suffix, suffix, suffix, suffix, testDataflowJobTemplateTextToPubsub, tempLocation)
 }

@@ -330,8 +330,7 @@ func resourceComputeRegionInstanceGroupManagerCreate(d *schema.ResourceData, met
 	d.SetId(id)
 
 	// Wait for the operation to complete
-	timeoutInMinutes := int(d.Timeout(schema.TimeoutCreate).Minutes())
-	err = computeOperationWaitTime(config, op, project, "Creating InstanceGroupManager", timeoutInMinutes)
+	err = computeOperationWaitTime(config, op, project, "Creating InstanceGroupManager", d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return err
 	}
@@ -492,8 +491,7 @@ func resourceComputeRegionInstanceGroupManagerUpdate(d *schema.ResourceData, met
 			return fmt.Errorf("Error updating region managed group instances: %s", err)
 		}
 
-		timeoutInMinutes := int(d.Timeout(schema.TimeoutUpdate).Minutes())
-		err = computeOperationWaitTime(config, op, project, "Updating region managed group instances", timeoutInMinutes)
+		err = computeOperationWaitTime(config, op, project, "Updating region managed group instances", d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
 		}
@@ -515,8 +513,7 @@ func resourceComputeRegionInstanceGroupManagerUpdate(d *schema.ResourceData, met
 			return fmt.Errorf("Error updating RegionInstanceGroupManager: %s", err)
 		}
 
-		timeoutInMinutes := int(d.Timeout(schema.TimeoutUpdate).Minutes())
-		err = computeOperationWaitTime(config, op, project, "Updating RegionInstanceGroupManager", timeoutInMinutes)
+		err = computeOperationWaitTime(config, op, project, "Updating RegionInstanceGroupManager", d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
 		}
@@ -534,8 +531,7 @@ func resourceComputeRegionInstanceGroupManagerUpdate(d *schema.ResourceData, met
 			return fmt.Errorf("Error resizing RegionInstanceGroupManager: %s", err)
 		}
 
-		timeoutInMinutes := int(d.Timeout(schema.TimeoutUpdate).Minutes())
-		err = computeOperationWaitTime(config, op, project, "Resizing RegionInstanceGroupManager", timeoutInMinutes)
+		err = computeOperationWaitTime(config, op, project, "Resizing RegionInstanceGroupManager", d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
 		}
@@ -569,8 +565,7 @@ func resourceComputeRegionInstanceGroupManagerDelete(d *schema.ResourceData, met
 	}
 
 	// Wait for the operation to complete
-	timeoutInMinutes := int(d.Timeout(schema.TimeoutDelete).Minutes())
-	err = computeOperationWaitTime(config, op, project, "Deleting RegionInstanceGroupManager", timeoutInMinutes)
+	err = computeOperationWaitTime(config, op, project, "Deleting RegionInstanceGroupManager", d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return fmt.Errorf("Error waiting for delete to complete: %s", err)
 	}
