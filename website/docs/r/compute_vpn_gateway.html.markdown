@@ -151,7 +151,7 @@ In addition to the arguments listed above, the following computed attributes are
 ## Timeouts
 
 This resource provides the following
-[Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
+[customTimeouts](https://www.pulumi.com/docs/intro/concepts/programming-model/#customtimeouts) configuration options:
 
 - `create` - Default is 4 minutes.
 - `delete` - Default is 4 minutes.

@@ -13,12 +13,6 @@ Creates a Google Bigtable instance. For more information see
 [the official documentation](https://cloud.google.com/bigtable/) and
 [API](https://cloud.google.com/bigtable/docs/go/reference).
 
--> **Note**: It is strongly recommended to set `lifecycle { prevent_destroy = true }`
-on instances in order to prevent accidental data loss. See
-[Terraform docs](https://www.terraform.io/docs/configuration/resources.html#prevent_destroy)
-for more information on lifecycle parameters.
-
-
 ## Example Usage - Production Instance
 
 ```hcl
@@ -93,7 +87,7 @@ for a `DEVELOPMENT` instance.
 `"HDD"`. Defaults to `"SSD"`.
 
 !> **Warning:** Modifying the `storage_type` or `zone` of an existing cluster (by
-`cluster_id`) will cause Terraform to delete/recreate the entire
+`cluster_id`) will cause the provider to delete/recreate the entire
 `google_bigtable_instance` resource. If these values are changing, use a new
 `cluster_id`.
 

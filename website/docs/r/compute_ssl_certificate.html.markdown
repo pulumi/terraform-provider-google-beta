@@ -34,7 +34,7 @@ To get more information about SslCertificate, see:
     * [Official Documentation](https://cloud.google.com/load-balancing/docs/ssl-certificates)
 
 ~> **Warning:** All arguments including `certificate` and `private_key` will be stored in the raw
-state as plain-text. [Read more about sensitive data in state](/docs/state/sensitive-data.html).
+state as plain-text. [Read more about secrets in state](https://www.pulumi.com/docs/intro/concepts/programming-model/#secrets).
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=ssl_certificate_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -101,12 +101,8 @@ resource "random_id" "certificate" {
 // Using with Target HTTPS Proxies
 //
 // SSL certificates cannot be updated after creation. In order to apply
-// the specified configuration, Terraform will destroy the existing
-// resource and create a replacement. To effectively use an SSL
-// certificate resource with a Target HTTPS Proxy resource, it's
-// recommended to specify create_before_destroy in a lifecycle block.
-// Either omit the Instance Template name attribute, specify a partial
-// name with name_prefix, or use random_id resource. Example:
+// the specified configuration, the provider will destroy the existing
+// resource and create a replacement. Example:
 
 resource "google_compute_ssl_certificate" "default" {
   name_prefix = "my-certificate-"
@@ -222,7 +218,7 @@ In addition to the arguments listed above, the following computed attributes are
 ## Timeouts
 
 This resource provides the following
-[Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
+[customTimeouts](https://www.pulumi.com/docs/intro/concepts/programming-model/#customtimeouts) configuration options:
 
 - `create` - Default is 4 minutes.
 - `delete` - Default is 4 minutes.

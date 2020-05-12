@@ -13,12 +13,6 @@ Creates a Google Cloud Bigtable table inside an instance. For more information s
 [the official documentation](https://cloud.google.com/bigtable/) and
 [API](https://cloud.google.com/bigtable/docs/go/reference).
 
--> **Note**: It is strongly recommended to set `lifecycle { prevent_destroy = true }`
-on tables in order to prevent accidental data loss. See
-[Terraform docs](https://www.terraform.io/docs/configuration/resources.html#prevent_destroy)
-for more information on lifecycle parameters.
-
-
 ## Example Usage
 
 ```hcl
@@ -57,7 +51,7 @@ The following arguments are supported:
 * `instance_name` - (Required) The name of the Bigtable instance.
 
 * `split_keys` - (Optional) A list of predefined keys to split the table on.
-!> **Warning:** Modifying the `split_keys` of an existing table will cause Terraform
+!> **Warning:** Modifying the `split_keys` of an existing table will cause the provider
 to delete/recreate the entire `google_bigtable_table` resource.
 
 * `column_family` - (Optional) A group of columns within a table which share a common configuration. This can be specified multiple times. Structure is documented below.

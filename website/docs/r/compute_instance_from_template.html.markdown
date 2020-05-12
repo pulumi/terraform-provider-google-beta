@@ -90,7 +90,7 @@ are marked [Attributes as Blocks](/docs/configuration/attr-as-blocks.html):
 ## Timeouts
 
 This resource provides the following
-[Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
+[customTimeouts](https://www.pulumi.com/docs/intro/concepts/programming-model/#customtimeouts) configuration options:
 
 - `create` - Default is 6 minutes.
 - `update` - Default is 6 minutes.

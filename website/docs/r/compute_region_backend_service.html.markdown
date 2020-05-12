@@ -494,7 +494,7 @@ The `backend` block supports:
 The `circuit_breakers` block supports:
 
 * `connect_timeout` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The timeout for new network connections to hosts.  Structure is documented below.
 
 * `max_requests_per_connection` -
@@ -753,7 +753,7 @@ In addition to the arguments listed above, the following computed attributes are
 ## Timeouts
 
 This resource provides the following
-[Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
+[customTimeouts](https://www.pulumi.com/docs/intro/concepts/programming-model/#customtimeouts) configuration options:
 
 - `create` - Default is 4 minutes.
 - `update` - Default is 4 minutes.

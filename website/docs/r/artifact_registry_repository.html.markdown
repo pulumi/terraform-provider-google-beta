@@ -24,9 +24,6 @@ description: |-
 
 A repository for storing artifacts
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about Repository, see:
 
 * [API documentation](https://cloud.google.com/artifact-registry/docs/reference/rest/)

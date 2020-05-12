@@ -65,7 +65,7 @@ resource "google_redis_instance" "cache" {
   authorized_network = data.google_compute_network.redis-network.self_link
 
   redis_version     = "REDIS_3_2"
-  display_name      = "Terraform Test Instance"
+  display_name      = "Test Instance"
   reserved_ip_range = "192.168.0.0/29"
 
   labels = {
@@ -125,7 +125,7 @@ resource "google_redis_instance" "cache" {
   connect_mode       = "PRIVATE_SERVICE_ACCESS"
 
   redis_version     = "REDIS_3_2"
-  display_name      = "Terraform Test Instance"
+  display_name      = "Test Instance"
 
   depends_on = [ google_service_networking_connection.private_service_connection ]
 

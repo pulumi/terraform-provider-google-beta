@@ -35,5 +35,5 @@ The following arguments are supported:
 
 The following attributes are exported:
 
-See [google_project](https://www.terraform.io/docs/providers/google/r/google_project.html) resource for details of the available attributes.
+See `google_project` resource for details of the available attributes.
 

@@ -37,4 +37,4 @@ The following arguments are supported:
 
 ## Attributes Reference
 
-See [google_compute_router](https://www.terraform.io/docs/providers/google/r/compute_router.html) resource for details of the available attributes.
+See `google_compute_router` resource for details of the available attributes.

@@ -75,7 +75,7 @@ resource "google_tpu_node" "tpu" {
   cidr_block         = "10.3.0.0/29"
   tensorflow_version = data.google_tpu_tensorflow_versions.available.versions[0]
 
-  description = "Terraform Google Provider test TPU"
+  description = "Google Provider test TPU"
   network = "default"
 
   labels = {

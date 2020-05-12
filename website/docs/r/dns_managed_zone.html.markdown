@@ -288,7 +288,7 @@ The following arguments are supported:
   to networks listed under `private_visibility_config`.
 
 * `service_directory_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The presence of this field indicates that this zone is backed by Service Directory. The value of this field contains information related to the namespace associated with the zone.  Structure is documented below.
 
 * `project` - (Optional) The ID of the project in which the resource belongs.
