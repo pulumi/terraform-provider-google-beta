@@ -1,9 +1,28 @@
-<<<<<<< HEAD
-=======
+## 3.23.0 (Unreleased)
+## 3.22.0 (May 18, 2020)
+BREAKING CHANGE:
+* `google_bigtable_instance` resources now cannot be destroyed unless `deletion_protection = false` is set in state for the resource. ([#2061](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2061))
+
+FEATURES:
+* **New Resource:** `google_compute_region_per_instance_config` ([#2046](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2046))
+* **New Resource:** `google_dialogflow_entity_type` ([#2052](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2052))
+
+IMPROVEMENTS:
+* bigtable: added `deletion_protection` field to `google_bigtable_instance` to make deleting them require an explicit intent. ([#2061](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2061))
+* compute: Added `google_compute_region_backend_service` `portName` parameter ([#2048](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2048))
+* dataproc: Updated `google_dataproc_cluster.software_config.optional_components` to include new options. ([#2049](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2049))
+* monitoring: Added `request_based` SLI support to `google_monitoring_slo` ([#2058](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2058))
+* storage: added `google_storage_bucket` bucket name to the error message when the bucket can't be deleted because it's not empty ([#2059](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2059))
+
+BUG FIXES:
+* bigquery: Fixed error where `google_bigquery_dataset_access` resources could not be found post-creation if role was set to a predefined IAM role with an equivalent primative role (e.g. `roles/bigquery.dataOwner` and `OWNER`) ([#2039](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2039))
+* compute: Fixed permadiff in `google_compute_instance_template`'s `network_tier`. ([#2054](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2054))
+* compute: Removed permadiff or errors on update for `google_compute_backend_service` and `google_compute_region_backend_service` when `consistent_hash` values were previously set on  backend service but are not supported by updated value of `locality_lb_policy` ([#2044](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2044))
+* sql: Fixed occasional failure to delete `google_sql_database_instance` and `google_sql_user`. ([#2045](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2045))
+
 ## 3.21.0 (May 11, 2020)
 
 FEATURES:
-* **New Resource:** `google_bigquery_connection` ([#2014](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2014))
 * **New Resource:** `google_compute_per_instance_config` ([#2029](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2029))
 * **New Resource:** `google_logging_billing_account_bucket_config` ([#2008](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2008))
 * **New Resource:** `google_logging_folder_bucket_config` ([#2008](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2008))
@@ -37,7 +56,6 @@ BUG FIXES:
 * storage: Fixed setting/reading `google_storage_bucket_object`  metadata on API object ([#2025](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2025))
 * storage: Marked the credentials field in `google_storage_object_signed_url` as sensitive so it doesn't expose private credentials. ([#2026](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2026))
 
->>>>>>> v3.21.0
 ## 3.20.0 (May 04, 2020)
 
 * **New Resource:** `google_artifact_registry_repository` ([#1981](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1981))
@@ -45,10 +63,6 @@ BUG FIXES:
 * **New Resource:** `google_artifact_registry_repository_iam_binding` ([#1981](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1981))
 * **New Resource:** `google_artifact_registry_repository_iam_member` ([#1981](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1981))
 * **New Resource:** `google_bigquery_connection` ([#2014](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2014))
-* **New Resource:** `google_logging_billing_account_bucket_config` ([#2008](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2008))
-* **New Resource:** `google_logging_folder_bucket_config` ([#2008](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2008))
-* **New Resource:** `google_logging_organization_bucket_config` ([#2008](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2008))
-* **New Resource:** `google_logging_project_bucket_config` ([#2008](https://github.com/terraform-providers/terraform-provider-google-beta/pull/2008))
 
 IMPROVEMENTS:
 * appengine: Added `automatic_scaling`, `basic_scaling`, and `manual_scaling` to `google_app_engine_standard_app_version` ([#1984](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1984))
@@ -1994,7 +2008,7 @@ IMPROVEMENTS:
 * compute: Add partial import support for `google_compute_url_map` ([#678](https://github.com/terraform-providers/terraform-provider-google/issues/678))
 * compute: Add import support for `google_compute_backend_bucket` ([#736](https://github.com/terraform-providers/terraform-provider-google/issues/736))
 * compute: Add configurable timeouts for disks ([#717](https://github.com/terraform-providers/terraform-provider-google/issues/717))
-* compute: Use v1 API now that all beta features are in GA for `google_compute_firewall` [[#768](https://github.com/terraform-providers/terraform-provider-google/issues/768)]
+* compute: Use v1 API now that all beta features are in GA for `google_compute_firewall` ([#768](https://github.com/terraform-providers/terraform-provider-google/issues/768))
 * compute: Add Alias IP and Guest Accelerator support to Instance Templates ([#639](https://github.com/terraform-providers/terraform-provider-google/issues/639))
 * container: Relax diff on `daily_maintenance_window.start_time` for `google_container_cluster` ([#726](https://github.com/terraform-providers/terraform-provider-google/issues/726))
 * container: Allow node pools with size 0 ([#752](https://github.com/terraform-providers/terraform-provider-google/issues/752))
@@ -2237,7 +2251,7 @@ BUG FIXES:
 * compute: `compute_firewall` will no longer display a perpetual diff if `source_ranges` isn't set ([#147](https://github.com/terraform-providers/terraform-provider-google/issues/147))
 * compute: Fix read method + test/document import for `google_compute_health_check` ([#155](https://github.com/terraform-providers/terraform-provider-google/issues/155))
 * compute: Read named ports changes properly in `google_compute_instance_group` ([#188](https://github.com/terraform-providers/terraform-provider-google/issues/188))
-* compute: `google_compute_image` `description` property can now be set [[#199](https://github.com/terraform-providers/terraform-provider-google/issues/199)]
+* compute: `google_compute_image` `description` property can now be set ([#199](https://github.com/terraform-providers/terraform-provider-google/issues/199))
 * compute: `google_compute_target_https_proxy` will no longer display a diff if ssl certificates are referenced using only the path ([#210](https://github.com/terraform-providers/terraform-provider-google/issues/210))
 
 ## 0.1.1 (June 21, 2017)

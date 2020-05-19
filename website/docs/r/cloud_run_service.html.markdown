@@ -95,7 +95,7 @@ resource "google_cloud_run_service" "default" {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "1000"
         "run.googleapis.com/cloudsql-instances" = "my-project-name:us-central1:${google_sql_database_instance.instance.name}"
-        "run.googleapis.com/client-name"        = "cloud-console"
+        "run.googleapis.com/client-name"        = "terraform"
       }
     }
   }
@@ -183,6 +183,37 @@ resource "google_cloud_run_service" "default" {
     latest_revision = true
   }
   autogenerate_revision_name = true
+}
+```
+## Example Usage - Cloud Run Service Traffic Split
+
+
+```hcl
+resource "google_cloud_run_service" "default" {
+  name     = "cloudrun-srv"
+  location = "us-central1"
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/cloudrun/hello"
+      }
+    }
+    metadata {
+      name = "cloudrun-srv-green"
+    }
+  }
+
+  traffic {
+    percent       = 25
+    revision_name = "cloudrun-srv-green"
+  }
+
+  traffic {
+    percent       = 75
+    # This revision needs to already exist
+    revision_name = "cloudrun-srv-blue"
+  }
 }
 ```
 

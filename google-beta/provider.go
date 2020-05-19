@@ -622,9 +622,9 @@ func Provider() terraform.ResourceProvider {
 	return provider
 }
 
-// Generated resources: 151
+// Generated resources: 153
 // Generated IAM resources: 63
-// Total generated resources: 214
+// Total generated resources: 216
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -704,6 +704,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_compute_node_template":                                 resourceComputeNodeTemplate(),
 			"google_compute_packet_mirroring":                              resourceComputePacketMirroring(),
 			"google_compute_per_instance_config":                           resourceComputePerInstanceConfig(),
+			"google_compute_region_per_instance_config":                    resourceComputeRegionPerInstanceConfig(),
 			"google_compute_region_autoscaler":                             resourceComputeRegionAutoscaler(),
 			"google_compute_region_disk":                                   resourceComputeRegionDisk(),
 			"google_compute_region_url_map":                                resourceComputeRegionUrlMap(),
@@ -742,6 +743,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_deployment_manager_deployment":                         resourceDeploymentManagerDeployment(),
 			"google_dialogflow_agent":                                      resourceDialogflowAgent(),
 			"google_dialogflow_intent":                                     resourceDialogflowIntent(),
+			"google_dialogflow_entity_type":                                resourceDialogflowEntityType(),
 			"google_dns_managed_zone":                                      resourceDNSManagedZone(),
 			"google_dns_policy":                                            resourceDNSPolicy(),
 			"google_filestore_instance":                                    resourceFilestoreInstance(),
@@ -894,7 +896,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_dns_record_set":                        resourceDnsRecordSet(),
 			"google_endpoints_service":                     resourceEndpointsService(),
 			"google_folder":                                resourceGoogleFolder(),
-			"google_folder_iam_binding":                    ResourceIamBinding(IamFolderSchema, NewFolderIamUpdater, FolderIdParseFunc),
+			"google_folder_iam_binding":                    ResourceIamBindingWithBatching(IamFolderSchema, NewFolderIamUpdater, FolderIdParseFunc, IamBatchingEnabled),
 			"google_folder_iam_member":                     ResourceIamMember(IamFolderSchema, NewFolderIamUpdater, FolderIdParseFunc),
 			"google_folder_iam_policy":                     ResourceIamPolicy(IamFolderSchema, NewFolderIamUpdater, FolderIdParseFunc),
 			"google_folder_organization_policy":            resourceGoogleFolderOrganizationPolicy(),

@@ -25,7 +25,7 @@ description: |-
 Adds existing resource policies to a disk. You can only add one policy
 which will be applied to this disk for scheduling snapshot creation.
 
-~> **Note:** This resource does not support zonal disks (`google_compute_disk`).
+~> **Note:** This resource does not support zonal disks (`google_compute_disk`). For zonal disks, please refer to [`google_compute_disk_resource_policy_attachment`](https://www.terraform.io/docs/providers/google/r/compute_disk_resource_policy_attachment.html) 
 
 
 
@@ -61,7 +61,7 @@ resource "google_compute_snapshot" "snapdisk" {
 resource "google_compute_region_disk" "ssd" {
   name  = "my-disk"
   replica_zones = ["us-central1-a", "us-central1-f"]
-  snapshot = google_compute_snapshot.snapdisk.self_link
+  snapshot = google_compute_snapshot.snapdisk.id
   size  = 50
   type  = "pd-ssd"
   region  = "us-central1"

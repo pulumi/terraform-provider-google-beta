@@ -44,10 +44,6 @@ resource "google_bigtable_instance" "development-instance" {
     zone         = "us-central1-b"
     storage_type = "HDD"
   }
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 ```
 
@@ -67,6 +63,9 @@ The following arguments are supported:
 * `instance_type` - (Optional) The instance type to create. One of `"DEVELOPMENT"` or `"PRODUCTION"`. Defaults to `"PRODUCTION"`.
 
 * `display_name` - (Optional) The human-readable display name of the Bigtable instance. Defaults to the instance `name`.
+
+* `deletion_protection` - (Optional) Whether or not to allow Terraform to destroy the instance. Unless this field is set to false
+in Terraform state, a `terraform destroy` or `terraform apply` that would delete the instance will fail.
 
 
 -----
@@ -93,7 +92,9 @@ for a `DEVELOPMENT` instance.
 
 ## Attributes Reference
 
-Only the arguments listed above are exposed as attributes.
+In addition to the arguments listed above, the following computed attributes are exported:
+
+* `id` - an identifier for the resource with format `projects/{{project}}/instances/{{name}}`
 
 ## Import
 
