@@ -49,8 +49,10 @@ To get more information about Service, see:
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
-## Example Usage - Cloud Run Service Basic
 
+## Example Usage
+
+### Cloud Run Service Basic
 
 ```hcl
 resource "google_cloud_run_service" "default" {
@@ -76,7 +78,8 @@ resource "google_cloud_run_service" "default" {
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
-## Example Usage - Cloud Run Service Sql
+ 
+### Cloud Run Service Sql
 
 
 ```hcl
@@ -95,7 +98,7 @@ resource "google_cloud_run_service" "default" {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "1000"
         "run.googleapis.com/cloudsql-instances" = "my-project-name:us-central1:${google_sql_database_instance.instance.name}"
-        "run.googleapis.com/client-name"        = "terraform"
+        "run.googleapis.com/client-name"        = "demo"
       }
     }
   }
@@ -115,7 +118,8 @@ resource "google_sql_database_instance" "instance" {
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
-## Example Usage - Cloud Run Service Noauth
+
+###Cloud Run Service Noauth
 
 
 ```hcl
@@ -154,7 +158,8 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
-## Example Usage - Cloud Run Service Multiple Environment Variables
+
+### Cloud Run Service Multiple Environment Variables
 
 
 ```hcl

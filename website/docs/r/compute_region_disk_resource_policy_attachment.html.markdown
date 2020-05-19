@@ -25,7 +25,7 @@ description: |-
 Adds existing resource policies to a disk. You can only add one policy
 which will be applied to this disk for scheduling snapshot creation.
 
-~> **Note:** This resource does not support zonal disks (`google_compute_disk`). For zonal disks, please refer to [`google_compute_disk_resource_policy_attachment`](https://www.terraform.io/docs/providers/google/r/compute_disk_resource_policy_attachment.html) 
+~> **Note:** This resource does not support zonal disks (`google_compute_disk`). For zonal disks, please refer to the `google_compute_disk_resource_policy_attachment` resource.
 
 
 
@@ -34,7 +34,10 @@ which will be applied to this disk for scheduling snapshot creation.
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
-## Example Usage - Region Disk Resource Policy Attachment Basic
+
+## Example Usage 
+
+### Region Disk Resource Policy Attachment Basic
 
 
 ```hcl

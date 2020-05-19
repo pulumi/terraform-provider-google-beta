@@ -64,8 +64,8 @@ The following arguments are supported:
 
 * `display_name` - (Optional) The human-readable display name of the Bigtable instance. Defaults to the instance `name`.
 
-* `deletion_protection` - (Optional) Whether or not to allow Terraform to destroy the instance. Unless this field is set to false
-in Terraform state, a `terraform destroy` or `terraform apply` that would delete the instance will fail.
+* `deletion_protection` - (Optional) Whether or not to allow this provider to destroy the instance. Unless this field is set to false
+in the statefile, a `pulumi destroy` or `pulumi up` that would delete the instance will fail.
 
 
 -----

@@ -26,9 +26,6 @@ A config defined for a single managed instance that belongs to an instance group
 across instance group manager operations and can define stateful disks or metadata that are unique to the instance.
 This resource works with regional instance group managers.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about RegionPerInstanceConfig, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/beta/instanceGroupManagers)
@@ -66,7 +63,7 @@ resource "google_compute_instance_template" "igm-basic" {
 }
 
 resource "google_compute_region_instance_group_manager" "rigm" {
-  description = "Terraform test instance group manager"
+  description = "Demo test instance group manager"
   name        = "my-rigm"
 
   version {

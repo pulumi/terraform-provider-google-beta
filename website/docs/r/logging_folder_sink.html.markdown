@@ -59,11 +59,9 @@ The following arguments are supported:
 
 * `destination` - (Required) The destination of the sink (or, in other words, where logs are written to). Can be a
     Cloud Storage bucket, a PubSub topic, or a BigQuery dataset. Examples:
-```
-"storage.googleapis.com/[GCS_BUCKET]"
-"bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
-"pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"
-```
+    "storage.googleapis.com/[GCS_BUCKET]"
+    "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
+    "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]"
     The writer associated with the sink must have access to write to the above resource.
 
 * `filter` - (Optional) The filter to apply when exporting logs. Only log entries that match the filter are exported.
