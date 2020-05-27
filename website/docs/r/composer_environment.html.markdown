@@ -170,7 +170,7 @@ The `config` block supports:
   The configuration used for the Private IP Cloud Composer environment. Structure is documented below.
 
 * `web_server_network_access_control` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The network-level access control policy for the Airflow web server. If unspecified, no network-level access restrictions will be applied.
 
 
