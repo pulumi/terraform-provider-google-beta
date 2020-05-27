@@ -134,6 +134,7 @@ func TestAccContainerCluster_withAddons(t *testing.T) {
 	t.Parallel()
 
 	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
+	pid := getTestProjectFromEnv()
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -141,7 +142,7 @@ func TestAccContainerCluster_withAddons(t *testing.T) {
 		CheckDestroy: testAccCheckContainerClusterDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccContainerCluster_withAddons(clusterName),
+				Config: testAccContainerCluster_withAddons(pid, clusterName),
 			},
 			{
 				ResourceName:            "google_container_cluster.primary",
@@ -150,7 +151,7 @@ func TestAccContainerCluster_withAddons(t *testing.T) {
 				ImportStateVerifyIgnore: []string{"min_master_version"},
 			},
 			{
-				Config: testAccContainerCluster_updateAddons(clusterName),
+				Config: testAccContainerCluster_updateAddons(pid, clusterName),
 			},
 			{
 				ResourceName:            "google_container_cluster.primary",
@@ -349,37 +350,51 @@ func TestAccContainerCluster_withReleaseChannelEnabled(t *testing.T) {
 				Config: testAccContainerCluster_withReleaseChannelEnabled(clusterName, "STABLE"),
 			},
 			{
-				ResourceName:        "google_container_cluster.with_release_channel",
-				ImportStateIdPrefix: "us-central1-a/",
-				ImportState:         true,
-				ImportStateVerify:   true,
-			},
-			{
-				Config: testAccContainerCluster_withReleaseChannelEnabled(clusterName, "REGULAR"),
-			},
-			{
-				ResourceName:        "google_container_cluster.with_release_channel",
-				ImportStateIdPrefix: "us-central1-a/",
-				ImportState:         true,
-				ImportStateVerify:   true,
-			},
-			{
-				Config: testAccContainerCluster_withReleaseChannelEnabled(clusterName, "RAPID"),
-			},
-			{
-				ResourceName:        "google_container_cluster.with_release_channel",
-				ImportStateIdPrefix: "us-central1-a/",
-				ImportState:         true,
-				ImportStateVerify:   true,
+				ResourceName:            "google_container_cluster.with_release_channel",
+				ImportStateIdPrefix:     "us-central1-a/",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
 			},
 			{
 				Config: testAccContainerCluster_withReleaseChannelEnabled(clusterName, "UNSPECIFIED"),
 			},
 			{
-				ResourceName:        "google_container_cluster.with_release_channel",
-				ImportStateIdPrefix: "us-central1-a/",
-				ImportState:         true,
-				ImportStateVerify:   true,
+				ResourceName:            "google_container_cluster.with_release_channel",
+				ImportStateIdPrefix:     "us-central1-a/",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
+			},
+			{
+				Config: testAccContainerCluster_withReleaseChannelEnabledUpdateToChannelDefaultVersion(clusterName, "REGULAR"),
+			},
+			{
+				ResourceName:            "google_container_cluster.with_release_channel",
+				ImportStateIdPrefix:     "us-central1-a/",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
+			},
+			{
+				Config: testAccContainerCluster_withReleaseChannelEnabled(clusterName, "REGULAR"),
+			},
+			{
+				ResourceName:            "google_container_cluster.with_release_channel",
+				ImportStateIdPrefix:     "us-central1-a/",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
+			},
+			{
+				Config: testAccContainerCluster_withReleaseChannelEnabled(clusterName, "UNSPECIFIED"),
+			},
+			{
+				ResourceName:            "google_container_cluster.with_release_channel",
+				ImportStateIdPrefix:     "us-central1-a/",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
 			},
 		},
 	})
@@ -667,6 +682,8 @@ func TestAccContainerCluster_withVersion(t *testing.T) {
 }
 
 func TestAccContainerCluster_updateVersion(t *testing.T) {
+	// TODO re-enable this test when GKE supports multiple versions concurrently
+	t.Skip("Only a single GKE version is supported currently by the API, this test cannot pass")
 	t.Parallel()
 
 	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
@@ -925,6 +942,8 @@ func TestAccContainerCluster_withNodePoolBasic(t *testing.T) {
 }
 
 func TestAccContainerCluster_withNodePoolUpdateVersion(t *testing.T) {
+	// TODO re-enable this test when GKE supports multiple versions concurrently
+	t.Skip("Only a single GKE version is supported currently by the API, this test cannot pass")
 	t.Parallel()
 
 	clusterName := fmt.Sprintf("tf-test-cluster-nodepool-%s", randString(t, 10))
@@ -1045,6 +1064,8 @@ func TestAccContainerCluster_withNodePoolAutoscaling(t *testing.T) {
 }
 
 func TestAccContainerCluster_withNodePoolNamePrefix(t *testing.T) {
+	// Randomness
+	skipIfVcr(t)
 	t.Parallel()
 
 	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
@@ -1379,6 +1400,41 @@ func TestAccContainerCluster_withShieldedNodes(t *testing.T) {
 				ResourceName:      "google_container_cluster.with_shielded_nodes",
 				ImportState:       true,
 				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+// consider merging this test with TestAccContainerCluster_nodeAutoprovisioningDefaults
+// once the feature is GA
+func TestAccContainerCluster_nodeAutoprovisioningDefaultsMinCpuPlatform(t *testing.T) {
+	t.Parallel()
+
+	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
+	includeMinCpuPlatform := true
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckContainerClusterDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccContainerCluster_autoprovisioningDefaultsMinCpuPlatform(clusterName, includeMinCpuPlatform),
+			},
+			{
+				ResourceName:            "google_container_cluster.with_autoprovisioning",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
+			},
+			{
+				Config: testAccContainerCluster_autoprovisioningDefaultsMinCpuPlatform(clusterName, !includeMinCpuPlatform),
+			},
+			{
+				ResourceName:            "google_container_cluster.with_autoprovisioning",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
 			},
 		},
 	})
@@ -1943,14 +1999,22 @@ resource "google_container_cluster" "primary" {
 `, name)
 }
 
-func testAccContainerCluster_withAddons(clusterName string) string {
+func testAccContainerCluster_withAddons(projectID string, clusterName string) string {
 	return fmt.Sprintf(`
+data "google_project" "project" {
+  project_id = "%s"
+}
+
 resource "google_container_cluster" "primary" {
   name               = "%s"
   location           = "us-central1-a"
   initial_node_count = 1
 
   min_master_version = "latest"
+
+  workload_identity_config {
+    identity_namespace = "${data.google_project.project.project_id}.svc.id.goog"
+  }
 
   addons_config {
     http_load_balancing {
@@ -1977,20 +2041,31 @@ resource "google_container_cluster" "primary" {
     }
     kalm_config {
 	  enabled = false
-     }
+	}
+	config_connector_config {
+	  enabled = false
+	}
   }
 }
-`, clusterName)
+`, projectID, clusterName)
 }
 
-func testAccContainerCluster_updateAddons(clusterName string) string {
+func testAccContainerCluster_updateAddons(projectID string, clusterName string) string {
 	return fmt.Sprintf(`
+data "google_project" "project" {
+  project_id = "%s"
+}	
+
 resource "google_container_cluster" "primary" {
   name               = "%s"
   location           = "us-central1-a"
   initial_node_count = 1
 
   min_master_version = "latest"
+
+  workload_identity_config {
+    identity_namespace = "${data.google_project.project.project_id}.svc.id.goog"
+  }
 
   addons_config {
     http_load_balancing {
@@ -2018,9 +2093,12 @@ resource "google_container_cluster" "primary" {
 	kalm_config {
 	  enabled = true
 	}
+	config_connector_config {
+	  enabled = true
+	}
   }
 }
-`, clusterName)
+`, projectID, clusterName)
 }
 
 func testAccContainerCluster_withMasterAuth(clusterName string) string {
@@ -2118,6 +2196,22 @@ resource "google_container_cluster" "with_release_channel" {
   release_channel {
     channel = "%s"
   }
+}
+`, clusterName, channel)
+}
+
+func testAccContainerCluster_withReleaseChannelEnabledUpdateToChannelDefaultVersion(clusterName string, channel string) string {
+	return fmt.Sprintf(`
+
+data "google_container_engine_versions" "central1a" {
+  location = "us-central1-a"
+}
+
+resource "google_container_cluster" "with_release_channel" {
+  name               = "%s"
+  location           = "us-central1-a"
+  initial_node_count = 1
+  min_master_version = data.google_container_engine_versions.central1a.release_channel_default_version["%s"]
 }
 `, clusterName, channel)
 }
@@ -2964,6 +3058,43 @@ resource "google_container_cluster" "with_autoprovisioning" {
   }
 }`
 	return config
+}
+
+func testAccContainerCluster_autoprovisioningDefaultsMinCpuPlatform(cluster string, includeMinCpuPlatform bool) string {
+	minCpuPlatformCfg := ""
+	if includeMinCpuPlatform {
+		minCpuPlatformCfg = `min_cpu_platform = "Intel Haswell"`
+	}
+
+	return fmt.Sprintf(`
+data "google_container_engine_versions" "central1a" {
+  location = "us-central1-a"
+}
+
+resource "google_container_cluster" "with_autoprovisioning" {
+  name               = "%s"
+  location           = "us-central1-a"
+  initial_node_count = 1
+
+  min_master_version = data.google_container_engine_versions.central1a.latest_master_version
+
+  cluster_autoscaling {
+    enabled = true
+
+    resource_limits {
+      resource_type = "cpu"
+      maximum       = 2
+    }
+    resource_limits {
+      resource_type = "memory"
+      maximum       = 2048
+    }
+
+    auto_provisioning_defaults {
+      %s
+    }
+  }
+}`, cluster, minCpuPlatformCfg)
 }
 
 func testAccContainerCluster_withNodePoolAutoscaling(cluster, np string) string {

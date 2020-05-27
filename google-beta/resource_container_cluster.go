@@ -58,8 +58,26 @@ var (
 		"addons_config.0.dns_cache_config",
 		"addons_config.0.gce_persistent_disk_csi_driver_config",
 		"addons_config.0.kalm_config",
+		"addons_config.0.config_connector_config",
+	}
+
+	forceNewClusterNodeConfigFields = []string{
+		"workload_metadata_config",
 	}
 )
+
+// This uses the node pool nodeConfig schema but sets
+// node-pool-only updatable fields to ForceNew
+func clusterSchemaNodeConfig() *schema.Schema {
+	nodeConfigSch := schemaNodeConfig()
+	schemaMap := nodeConfigSch.Elem.(*schema.Resource).Schema
+	for _, k := range forceNewClusterNodeConfigFields {
+		if sch, ok := schemaMap[k]; ok {
+			changeFieldSchemaToForceNew(sch)
+		}
+	}
+	return nodeConfigSch
+}
 
 func rfc5545RecurrenceDiffSuppress(k, o, n string, d *schema.ResourceData) bool {
 	// This diff gets applied in the cloud console if you specify
@@ -318,6 +336,21 @@ func resourceContainerCluster() *schema.Resource {
 								},
 							},
 						},
+						"config_connector_config": {
+							Type:         schema.TypeList,
+							Optional:     true,
+							Computed:     true,
+							AtLeastOneOf: addonsConfigKeys,
+							MaxItems:     1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"enabled": {
+										Type:     schema.TypeBool,
+										Required: true,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -373,6 +406,11 @@ func resourceContainerCluster() *schema.Resource {
 										Type:     schema.TypeString,
 										Optional: true,
 										Default:  "default",
+									},
+									"min_cpu_platform": {
+										Type:             schema.TypeString,
+										Optional:         true,
+										DiffSuppressFunc: emptyOrDefaultStringSuppress("automatic"),
 									},
 								},
 							},
@@ -635,7 +673,7 @@ func resourceContainerCluster() *schema.Resource {
 				},
 			},
 
-			"node_config": schemaNodeConfig,
+			"node_config": clusterSchemaNodeConfig(),
 
 			"node_pool": {
 				Type:     schema.TypeList,
@@ -846,7 +884,6 @@ func resourceContainerCluster() *schema.Resource {
 
 			"release_channel": {
 				Type:     schema.TypeList,
-				ForceNew: true,
 				Optional: true,
 				Computed: true,
 				MaxItems: 1,
@@ -855,7 +892,6 @@ func resourceContainerCluster() *schema.Resource {
 						"channel": {
 							Type:             schema.TypeString,
 							Required:         true,
-							ForceNew:         true,
 							ValidateFunc:     validation.StringInSlice([]string{"UNSPECIFIED", "RAPID", "REGULAR", "STABLE"}, false),
 							DiffSuppressFunc: emptyOrDefaultStringSuppress("UNSPECIFIED"),
 						},
@@ -1511,7 +1547,6 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 		d.SetPartial("enable_shielded_nodes")
 	}
-
 	if d.HasChange("enable_intranode_visibility") {
 		enabled := d.Get("enable_intranode_visibility").(bool)
 		req := &containerBeta.UpdateClusterRequest{
@@ -1545,7 +1580,35 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 		d.SetPartial("enable_intranode_visibility")
 	}
+	if d.HasChange("release_channel") {
+		req := &containerBeta.UpdateClusterRequest{
+			Update: &containerBeta.ClusterUpdate{
+				DesiredReleaseChannel: expandReleaseChannel(d.Get("release_channel")),
+			},
+		}
+		updateF := func() error {
+			log.Println("[DEBUG] updating release_channel")
+			name := containerClusterFullName(project, location, clusterName)
+			op, err := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req).Do()
+			if err != nil {
+				return err
+			}
 
+			// Wait until it's updated
+			err = containerOperationWait(config, op, project, location, "updating Release Channel", d.Timeout(schema.TimeoutUpdate))
+			log.Println("[DEBUG] done updating release_channel")
+			return err
+		}
+
+		// Call update serially.
+		if err := lockedCall(lockKey, updateF); err != nil {
+			return err
+		}
+
+		log.Printf("[INFO] GKE cluster %s Release Channel has been updated to %#v", d.Id(), req.Update.DesiredReleaseChannel)
+
+		d.SetPartial("release_channel")
+	}
 	if d.HasChange("maintenance_policy") {
 		req := &containerBeta.SetMaintenancePolicyRequest{
 			MaintenancePolicy: expandMaintenancePolicy(d, meta),
@@ -1730,13 +1793,14 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 	}
 
 	// The master must be updated before the nodes
-	if d.HasChange("min_master_version") {
-		desiredMasterVersion := d.Get("min_master_version").(string)
-		currentMasterVersion := d.Get("master_version").(string)
-		des, err := version.NewVersion(desiredMasterVersion)
+	// If set to "", skip this step- any master version satisfies that minimum.
+	if ver := d.Get("min_master_version").(string); d.HasChange("min_master_version") && ver != "" {
+		des, err := version.NewVersion(ver)
 		if err != nil {
 			return err
 		}
+
+		currentMasterVersion := d.Get("master_version").(string)
 		cur, err := version.NewVersion(currentMasterVersion)
 		if err != nil {
 			return err
@@ -1746,7 +1810,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		if cur.LessThan(des) {
 			req := &containerBeta.UpdateClusterRequest{
 				Update: &containerBeta.ClusterUpdate{
-					DesiredMasterVersion: desiredMasterVersion,
+					DesiredMasterVersion: ver,
 				},
 			}
 
@@ -1755,7 +1819,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			if err := lockedCall(lockKey, updateF); err != nil {
 				return err
 			}
-			log.Printf("[INFO] GKE cluster %s: master has been updated to %s", d.Id(), desiredMasterVersion)
+			log.Printf("[INFO] GKE cluster %s: master has been updated to %s", d.Id(), ver)
 		}
 		d.SetPartial("min_master_version")
 	}
@@ -2235,6 +2299,13 @@ func expandClusterAddonsConfig(configured interface{}) *containerBeta.AddonsConf
 			ForceSendFields: []string{"Enabled"},
 		}
 	}
+	if v, ok := config["config_connector_config"]; ok && len(v.([]interface{})) > 0 {
+		addon := v.([]interface{})[0].(map[string]interface{})
+		ac.ConfigConnectorConfig = &containerBeta.ConfigConnectorConfig{
+			Enabled:         addon["enabled"].(bool),
+			ForceSendFields: []string{"Enabled"},
+		}
+	}
 
 	return ac
 }
@@ -2375,10 +2446,18 @@ func expandAutoProvisioningDefaults(configured interface{}, d *schema.ResourceDa
 	}
 	config := l[0].(map[string]interface{})
 
-	return &containerBeta.AutoprovisioningNodePoolDefaults{
+	npd := &containerBeta.AutoprovisioningNodePoolDefaults{
 		OauthScopes:    convertStringArr(config["oauth_scopes"].([]interface{})),
 		ServiceAccount: config["service_account"].(string),
 	}
+
+	cpu := config["min_cpu_platform"].(string)
+	// the only way to unset the field is to pass "automatic" as its value
+	if cpu == "" {
+		cpu = "automatic"
+	}
+	npd.MinCpuPlatform = cpu
+	return npd
 }
 
 func expandAuthenticatorGroupsConfig(configured interface{}) *containerBeta.AuthenticatorGroupsConfig {
@@ -2656,6 +2735,13 @@ func flattenClusterAddonsConfig(c *containerBeta.AddonsConfig) []map[string]inte
 			},
 		}
 	}
+	if c.ConfigConnectorConfig != nil {
+		result["config_connector_config"] = []map[string]interface{}{
+			{
+				"enabled": c.ConfigConnectorConfig.Enabled,
+			},
+		}
+	}
 	return []map[string]interface{}{result}
 }
 
@@ -2845,6 +2931,7 @@ func flattenAutoProvisioningDefaults(a *containerBeta.AutoprovisioningNodePoolDe
 	r := make(map[string]interface{})
 	r["oauth_scopes"] = a.OauthScopes
 	r["service_account"] = a.ServiceAccount
+	r["min_cpu_platform"] = a.MinCpuPlatform
 
 	return []map[string]interface{}{r}
 }
