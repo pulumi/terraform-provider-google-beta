@@ -119,7 +119,7 @@ Secret Manager secret IAM resources can be imported using the resource identifie
 
 IAM member imports use space-delimited identifiers: the resource in question, the role, and the member identity, e.g.
 ```
-$ terraform import -provider=google-beta google_secret_manager_secret_iam_member.editor "projects/{{project}}/secrets/{{secret_id}} roles/viewer jane@example.com"
+$ terraform import google_secret_manager_secret_iam_member.editor "projects/{{project}}/secrets/{{secret_id}} roles/viewer jane@example.com"
 ```
 
 IAM binding imports use space-delimited identifiers: the resource in question and the role, e.g.
@@ -129,7 +129,7 @@ $ terraform import google_secret_manager_secret_iam_binding.editor "projects/{{p
 
 IAM policy imports use the identifier of the resource in question, e.g.
 ```
-$ terraform import -provider=google-beta google_secret_manager_secret_iam_policy.editor projects/{{project}}/secrets/{{secret_id}}
+$ terraform import google_secret_manager_secret_iam_policy.editor projects/{{project}}/secrets/{{secret_id}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`

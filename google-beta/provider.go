@@ -205,6 +205,14 @@ func Provider() terraform.ResourceProvider {
 					"GOOGLE_CLOUD_FUNCTIONS_CUSTOM_ENDPOINT",
 				}, CloudFunctionsDefaultBasePath),
 			},
+			"cloud_iot_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_CLOUD_IOT_CUSTOM_ENDPOINT",
+				}, CloudIotDefaultBasePath),
+			},
 			"cloud_run_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -244,6 +252,14 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CONTAINER_ANALYSIS_CUSTOM_ENDPOINT",
 				}, ContainerAnalysisDefaultBasePath),
+			},
+			"data_catalog_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_DATA_CATALOG_CUSTOM_ENDPOINT",
+				}, DataCatalogDefaultBasePath),
 			},
 			"data_fusion_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -533,7 +549,6 @@ func Provider() terraform.ResourceProvider {
 			IAMCustomEndpointEntryKey:                    IAMCustomEndpointEntry,
 			ServiceNetworkingCustomEndpointEntryKey:      ServiceNetworkingCustomEndpointEntry,
 			ServiceUsageCustomEndpointEntryKey:           ServiceUsageCustomEndpointEntry,
-			CloudIoTCustomEndpointEntryKey:               CloudIoTCustomEndpointEntry,
 			StorageTransferCustomEndpointEntryKey:        StorageTransferCustomEndpointEntry,
 			BigtableAdminCustomEndpointEntryKey:          BigtableAdminCustomEndpointEntry,
 		},
@@ -623,9 +638,9 @@ func Provider() terraform.ResourceProvider {
 	return provider
 }
 
-// Generated resources: 153
-// Generated IAM resources: 63
-// Total generated resources: 216
+// Generated resources: 157
+// Generated IAM resources: 66
+// Total generated resources: 223
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -665,6 +680,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_cloudfunctions_function_iam_binding":                   ResourceIamBinding(CloudFunctionsCloudFunctionIamSchema, CloudFunctionsCloudFunctionIamUpdaterProducer, CloudFunctionsCloudFunctionIdParseFunc),
 			"google_cloudfunctions_function_iam_member":                    ResourceIamMember(CloudFunctionsCloudFunctionIamSchema, CloudFunctionsCloudFunctionIamUpdaterProducer, CloudFunctionsCloudFunctionIdParseFunc),
 			"google_cloudfunctions_function_iam_policy":                    ResourceIamPolicy(CloudFunctionsCloudFunctionIamSchema, CloudFunctionsCloudFunctionIamUpdaterProducer, CloudFunctionsCloudFunctionIdParseFunc),
+			"google_cloudiot_registry":                                     resourceCloudIotDeviceRegistry(),
 			"google_cloud_run_domain_mapping":                              resourceCloudRunDomainMapping(),
 			"google_cloud_run_service":                                     resourceCloudRunService(),
 			"google_cloud_run_service_iam_binding":                         ResourceIamBinding(CloudRunServiceIamSchema, CloudRunServiceIamUpdaterProducer, CloudRunServiceIdParseFunc),
@@ -695,6 +711,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_compute_instance_iam_policy":                           ResourceIamPolicy(ComputeInstanceIamSchema, ComputeInstanceIamUpdaterProducer, ComputeInstanceIdParseFunc),
 			"google_compute_instance_group_named_port":                     resourceComputeInstanceGroupNamedPort(),
 			"google_compute_interconnect_attachment":                       resourceComputeInterconnectAttachment(),
+			"google_compute_machine_image":                                 resourceComputeMachineImage(),
 			"google_compute_network":                                       resourceComputeNetwork(),
 			"google_compute_network_endpoint":                              resourceComputeNetworkEndpoint(),
 			"google_compute_network_endpoint_group":                        resourceComputeNetworkEndpointGroup(),
@@ -738,6 +755,11 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_compute_url_map":                                       resourceComputeUrlMap(),
 			"google_compute_vpn_tunnel":                                    resourceComputeVpnTunnel(),
 			"google_container_analysis_note":                               resourceContainerAnalysisNote(),
+			"google_data_catalog_entry_group":                              resourceDataCatalogEntryGroup(),
+			"google_data_catalog_entry_group_iam_binding":                  ResourceIamBinding(DataCatalogEntryGroupIamSchema, DataCatalogEntryGroupIamUpdaterProducer, DataCatalogEntryGroupIdParseFunc),
+			"google_data_catalog_entry_group_iam_member":                   ResourceIamMember(DataCatalogEntryGroupIamSchema, DataCatalogEntryGroupIamUpdaterProducer, DataCatalogEntryGroupIdParseFunc),
+			"google_data_catalog_entry_group_iam_policy":                   ResourceIamPolicy(DataCatalogEntryGroupIamSchema, DataCatalogEntryGroupIamUpdaterProducer, DataCatalogEntryGroupIdParseFunc),
+			"google_data_catalog_entry":                                    resourceDataCatalogEntry(),
 			"google_data_fusion_instance":                                  resourceDataFusionInstance(),
 			"google_dataproc_autoscaling_policy":                           resourceDataprocAutoscalingPolicy(),
 			"google_datastore_index":                                       resourceDatastoreIndex(),
@@ -864,7 +886,6 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_billing_account_iam_member":            ResourceIamMember(IamBillingAccountSchema, NewBillingAccountIamUpdater, BillingAccountIdParseFunc),
 			"google_billing_account_iam_policy":            ResourceIamPolicy(IamBillingAccountSchema, NewBillingAccountIamUpdater, BillingAccountIdParseFunc),
 			"google_cloudfunctions_function":               resourceCloudFunctionsFunction(),
-			"google_cloudiot_registry":                     resourceCloudIoTRegistry(),
 			"google_composer_environment":                  resourceComposerEnvironment(),
 			"google_compute_attached_disk":                 resourceComputeAttachedDisk(),
 			"google_compute_instance":                      resourceComputeInstance(),
@@ -1028,11 +1049,13 @@ func providerConfigure(d *schema.ResourceData, p *schema.Provider, terraformVers
 	config.BinaryAuthorizationBasePath = d.Get("binary_authorization_custom_endpoint").(string)
 	config.CloudBuildBasePath = d.Get("cloud_build_custom_endpoint").(string)
 	config.CloudFunctionsBasePath = d.Get("cloud_functions_custom_endpoint").(string)
+	config.CloudIotBasePath = d.Get("cloud_iot_custom_endpoint").(string)
 	config.CloudRunBasePath = d.Get("cloud_run_custom_endpoint").(string)
 	config.CloudSchedulerBasePath = d.Get("cloud_scheduler_custom_endpoint").(string)
 	config.CloudTasksBasePath = d.Get("cloud_tasks_custom_endpoint").(string)
 	config.ComputeBasePath = d.Get("compute_custom_endpoint").(string)
 	config.ContainerAnalysisBasePath = d.Get("container_analysis_custom_endpoint").(string)
+	config.DataCatalogBasePath = d.Get("data_catalog_custom_endpoint").(string)
 	config.DataFusionBasePath = d.Get("data_fusion_custom_endpoint").(string)
 	config.DataprocBasePath = d.Get("dataproc_custom_endpoint").(string)
 	config.DatastoreBasePath = d.Get("datastore_custom_endpoint").(string)
@@ -1084,7 +1107,6 @@ func providerConfigure(d *schema.ResourceData, p *schema.Provider, terraformVers
 	config.IAMBasePath = d.Get(IAMCustomEndpointEntryKey).(string)
 	config.ServiceNetworkingBasePath = d.Get(ServiceNetworkingCustomEndpointEntryKey).(string)
 	config.ServiceUsageBasePath = d.Get(ServiceUsageCustomEndpointEntryKey).(string)
-	config.CloudIoTBasePath = d.Get(CloudIoTCustomEndpointEntryKey).(string)
 	config.StorageTransferBasePath = d.Get(StorageTransferCustomEndpointEntryKey).(string)
 	config.BigtableAdminBasePath = d.Get(BigtableAdminCustomEndpointEntryKey).(string)
 

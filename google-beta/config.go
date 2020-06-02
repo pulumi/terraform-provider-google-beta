@@ -91,11 +91,13 @@ type Config struct {
 	BinaryAuthorizationBasePath  string
 	CloudBuildBasePath           string
 	CloudFunctionsBasePath       string
+	CloudIotBasePath             string
 	CloudRunBasePath             string
 	CloudSchedulerBasePath       string
 	CloudTasksBasePath           string
 	ComputeBasePath              string
 	ContainerAnalysisBasePath    string
+	DataCatalogBasePath          string
 	DataFusionBasePath           string
 	DataprocBasePath             string
 	DatastoreBasePath            string
@@ -239,11 +241,13 @@ var BillingDefaultBasePath = "https://billingbudgets.googleapis.com/v1beta1/"
 var BinaryAuthorizationDefaultBasePath = "https://binaryauthorization.googleapis.com/v1/"
 var CloudBuildDefaultBasePath = "https://cloudbuild.googleapis.com/v1/"
 var CloudFunctionsDefaultBasePath = "https://cloudfunctions.googleapis.com/v1/"
+var CloudIotDefaultBasePath = "https://cloudiot.googleapis.com/v1/"
 var CloudRunDefaultBasePath = "https://{{location}}-run.googleapis.com/"
 var CloudSchedulerDefaultBasePath = "https://cloudscheduler.googleapis.com/v1/"
 var CloudTasksDefaultBasePath = "https://cloudtasks.googleapis.com/v2/"
 var ComputeDefaultBasePath = "https://www.googleapis.com/compute/beta/"
 var ContainerAnalysisDefaultBasePath = "https://containeranalysis.googleapis.com/v1beta1/"
+var DataCatalogDefaultBasePath = "https://datacatalog.googleapis.com/v1/"
 var DataFusionDefaultBasePath = "https://datafusion.googleapis.com/v1beta1/"
 var DataprocDefaultBasePath = "https://dataproc.googleapis.com/v1beta2/"
 var DatastoreDefaultBasePath = "https://datastore.googleapis.com/v1/"
@@ -762,11 +766,13 @@ func ConfigureBasePaths(c *Config) {
 	c.BinaryAuthorizationBasePath = BinaryAuthorizationDefaultBasePath
 	c.CloudBuildBasePath = CloudBuildDefaultBasePath
 	c.CloudFunctionsBasePath = CloudFunctionsDefaultBasePath
+	c.CloudIotBasePath = CloudIotDefaultBasePath
 	c.CloudRunBasePath = CloudRunDefaultBasePath
 	c.CloudSchedulerBasePath = CloudSchedulerDefaultBasePath
 	c.CloudTasksBasePath = CloudTasksDefaultBasePath
 	c.ComputeBasePath = ComputeDefaultBasePath
 	c.ContainerAnalysisBasePath = ContainerAnalysisDefaultBasePath
+	c.DataCatalogBasePath = DataCatalogDefaultBasePath
 	c.DataFusionBasePath = DataFusionDefaultBasePath
 	c.DataprocBasePath = DataprocDefaultBasePath
 	c.DatastoreBasePath = DatastoreDefaultBasePath
@@ -816,7 +822,6 @@ func ConfigureBasePaths(c *Config) {
 	c.IAMBasePath = IAMDefaultBasePath
 	c.ServiceNetworkingBasePath = ServiceNetworkingDefaultBasePath
 	c.BigQueryBasePath = BigQueryDefaultBasePath
-	c.CloudIoTBasePath = CloudIoTDefaultBasePath
 	c.StorageTransferBasePath = StorageTransferDefaultBasePath
 	c.BigtableAdminBasePath = BigtableAdminDefaultBasePath
 }

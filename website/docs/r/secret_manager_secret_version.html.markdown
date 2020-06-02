@@ -32,13 +32,12 @@ state as plain-text.
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
+
 ## Example Usage - Secret Version Basic
 
 
 ```hcl
 resource "google_secret_manager_secret" "secret-basic" {
-  provider = google-beta
-
   secret_id = "secret-version"
 
   labels = {
@@ -52,8 +51,6 @@ resource "google_secret_manager_secret" "secret-basic" {
 
 
 resource "google_secret_manager_secret_version" "secret-version-basic" {
-  provider = google-beta
-
   secret = google_secret_manager_secret.secret-basic.id
 
   secret_data = "secret-data"
@@ -112,7 +109,7 @@ This resource provides the following
 SecretVersion can be imported using any of these accepted formats:
 
 ```
-$ terraform import -provider=google-beta google_secret_manager_secret_version.default {{name}}/{{name}}
+$ terraform import google_secret_manager_secret_version.default {{name}}/{{name}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`

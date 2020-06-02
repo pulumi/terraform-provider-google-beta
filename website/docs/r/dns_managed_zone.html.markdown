@@ -96,7 +96,6 @@ resource "google_compute_network" "network-2" {
 
 ```hcl
 resource "google_dns_managed_zone" "private-zone" {
-  provider    = google-beta
   name        = "private-zone"
   dns_name    = "private.example.com."
   description = "Example private DNS zone"
@@ -145,8 +144,6 @@ resource "google_compute_network" "network-2" {
 
 ```hcl
 resource "google_dns_managed_zone" "peering-zone" {
-  provider = google-beta
-
   name        = "peering-zone"
   dns_name    = "peering.example.com."
   description = "Example private DNS peering zone"
@@ -167,22 +164,13 @@ resource "google_dns_managed_zone" "peering-zone" {
 }
 
 resource "google_compute_network" "network-source" {
-  provider = google-beta
-
   name                    = "network-source"
   auto_create_subnetworks = false
 }
 
 resource "google_compute_network" "network-target" {
-  provider = google-beta
-
   name                    = "network-target"
   auto_create_subnetworks = false
-}
-
-provider "google-beta" {
-  region = "us-central1"
-  zone   = "us-central1-a"
 }
 ```
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
