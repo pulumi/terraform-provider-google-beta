@@ -65,6 +65,13 @@ func resourceMonitoringUptimeCheckConfig() *schema.Resource {
 							Required:    true,
 							Description: `String or regex content to match (max 1024 bytes)`,
 						},
+						"matcher": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringInSlice([]string{"CONTAINS_STRING", "NOT_CONTAINS_STRING", "MATCHES_REGEX", "NON_MATCHES_REGEX", ""}, false),
+							Description:  `The type of content matcher that will be applied to the server output, compared to the content string when the check is run. Default value: "CONTAINS_STRING" Possible values: ["CONTAINS_STRING", "NOT_CONTAINS_STRING", "MATCHES_REGEX", "NON_MATCHES_REGEX"]`,
+							Default:      "CONTAINS_STRING",
+						},
 					},
 				},
 			},
@@ -629,11 +636,16 @@ func flattenMonitoringUptimeCheckConfigContentMatchers(v interface{}, d *schema.
 		}
 		transformed = append(transformed, map[string]interface{}{
 			"content": flattenMonitoringUptimeCheckConfigContentMatchersContent(original["content"], d, config),
+			"matcher": flattenMonitoringUptimeCheckConfigContentMatchersMatcher(original["matcher"], d, config),
 		})
 	}
 	return transformed
 }
 func flattenMonitoringUptimeCheckConfigContentMatchersContent(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
+func flattenMonitoringUptimeCheckConfigContentMatchersMatcher(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	return v
 }
 
@@ -832,12 +844,23 @@ func expandMonitoringUptimeCheckConfigContentMatchers(v interface{}, d Terraform
 			transformed["content"] = transformedContent
 		}
 
+		transformedMatcher, err := expandMonitoringUptimeCheckConfigContentMatchersMatcher(original["matcher"], d, config)
+		if err != nil {
+			return nil, err
+		} else if val := reflect.ValueOf(transformedMatcher); val.IsValid() && !isEmptyValue(val) {
+			transformed["matcher"] = transformedMatcher
+		}
+
 		req = append(req, transformed)
 	}
 	return req, nil
 }
 
 func expandMonitoringUptimeCheckConfigContentMatchersContent(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandMonitoringUptimeCheckConfigContentMatchersMatcher(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 

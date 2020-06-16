@@ -113,8 +113,10 @@ type Config struct {
 	IdentityPlatformBasePath     string
 	KMSBasePath                  string
 	LoggingBasePath              string
+	MemcacheBasePath             string
 	MLEngineBasePath             string
 	MonitoringBasePath           string
+	NetworkManagementBasePath    string
 	OSLoginBasePath              string
 	PubsubBasePath               string
 	RedisBasePath                string
@@ -263,8 +265,10 @@ var IapDefaultBasePath = "https://iap.googleapis.com/v1/"
 var IdentityPlatformDefaultBasePath = "https://identitytoolkit.googleapis.com/v2/"
 var KMSDefaultBasePath = "https://cloudkms.googleapis.com/v1/"
 var LoggingDefaultBasePath = "https://logging.googleapis.com/v2/"
+var MemcacheDefaultBasePath = "https://memcache.googleapis.com/v1beta2/"
 var MLEngineDefaultBasePath = "https://ml.googleapis.com/v1/"
 var MonitoringDefaultBasePath = "https://monitoring.googleapis.com/"
+var NetworkManagementDefaultBasePath = "https://networkmanagement.googleapis.com/v1/"
 var OSLoginDefaultBasePath = "https://oslogin.googleapis.com/v1/"
 var PubsubDefaultBasePath = "https://pubsub.googleapis.com/v1/"
 var RedisDefaultBasePath = "https://redis.googleapis.com/v1beta1/"
@@ -788,8 +792,10 @@ func ConfigureBasePaths(c *Config) {
 	c.IdentityPlatformBasePath = IdentityPlatformDefaultBasePath
 	c.KMSBasePath = KMSDefaultBasePath
 	c.LoggingBasePath = LoggingDefaultBasePath
+	c.MemcacheBasePath = MemcacheDefaultBasePath
 	c.MLEngineBasePath = MLEngineDefaultBasePath
 	c.MonitoringBasePath = MonitoringDefaultBasePath
+	c.NetworkManagementBasePath = NetworkManagementDefaultBasePath
 	c.OSLoginBasePath = OSLoginDefaultBasePath
 	c.PubsubBasePath = PubsubDefaultBasePath
 	c.RedisBasePath = RedisDefaultBasePath

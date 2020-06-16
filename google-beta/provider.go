@@ -381,6 +381,14 @@ func Provider() terraform.ResourceProvider {
 					"GOOGLE_LOGGING_CUSTOM_ENDPOINT",
 				}, LoggingDefaultBasePath),
 			},
+			"memcache_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_MEMCACHE_CUSTOM_ENDPOINT",
+				}, MemcacheDefaultBasePath),
+			},
 			"ml_engine_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -396,6 +404,14 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_MONITORING_CUSTOM_ENDPOINT",
 				}, MonitoringDefaultBasePath),
+			},
+			"network_management_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_NETWORK_MANAGEMENT_CUSTOM_ENDPOINT",
+				}, NetworkManagementDefaultBasePath),
 			},
 			"os_login_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -638,9 +654,9 @@ func Provider() terraform.ResourceProvider {
 	return provider
 }
 
-// Generated resources: 159
+// Generated resources: 162
 // Generated IAM resources: 66
-// Total generated resources: 225
+// Total generated resources: 228
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -762,6 +778,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_data_catalog_entry_group_iam_policy":                   ResourceIamPolicy(DataCatalogEntryGroupIamSchema, DataCatalogEntryGroupIamUpdaterProducer, DataCatalogEntryGroupIdParseFunc),
 			"google_data_catalog_entry":                                    resourceDataCatalogEntry(),
 			"google_data_catalog_tag_template":                             resourceDataCatalogTagTemplate(),
+			"google_data_catalog_tag":                                      resourceDataCatalogTag(),
 			"google_data_fusion_instance":                                  resourceDataFusionInstance(),
 			"google_dataproc_autoscaling_policy":                           resourceDataprocAutoscalingPolicy(),
 			"google_datastore_index":                                       resourceDatastoreIndex(),
@@ -819,6 +836,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_kms_crypto_key":                                        resourceKMSCryptoKey(),
 			"google_kms_secret_ciphertext":                                 resourceKMSSecretCiphertext(),
 			"google_logging_metric":                                        resourceLoggingMetric(),
+			"google_memcache_instance":                                     resourceMemcacheInstance(),
 			"google_ml_engine_model":                                       resourceMLEngineModel(),
 			"google_monitoring_alert_policy":                               resourceMonitoringAlertPolicy(),
 			"google_monitoring_group":                                      resourceMonitoringGroup(),
@@ -826,6 +844,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_monitoring_custom_service":                             resourceMonitoringService(),
 			"google_monitoring_slo":                                        resourceMonitoringSlo(),
 			"google_monitoring_uptime_check_config":                        resourceMonitoringUptimeCheckConfig(),
+			"google_network_management_connectivity_test":                  resourceNetworkManagementConnectivityTest(),
 			"google_os_login_ssh_public_key":                               resourceOSLoginSSHPublicKey(),
 			"google_pubsub_topic":                                          resourcePubsubTopic(),
 			"google_pubsub_topic_iam_binding":                              ResourceIamBinding(PubsubTopicIamSchema, PubsubTopicIamUpdaterProducer, PubsubTopicIdParseFunc),
@@ -884,6 +903,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_bigtable_instance_iam_member":          ResourceIamMember(IamBigtableInstanceSchema, NewBigtableInstanceUpdater, BigtableInstanceIdParseFunc),
 			"google_bigtable_instance_iam_policy":          ResourceIamPolicy(IamBigtableInstanceSchema, NewBigtableInstanceUpdater, BigtableInstanceIdParseFunc),
 			"google_bigtable_table":                        resourceBigtableTable(),
+			"google_bigquery_dataset_iam_binding":          ResourceIamBinding(IamBigqueryDatasetSchema, NewBigqueryDatasetIamUpdater, BigqueryDatasetIdParseFunc),
+			"google_bigquery_dataset_iam_member":           ResourceIamMember(IamBigqueryDatasetSchema, NewBigqueryDatasetIamUpdater, BigqueryDatasetIdParseFunc),
+			"google_bigquery_dataset_iam_policy":           ResourceIamPolicy(IamBigqueryDatasetSchema, NewBigqueryDatasetIamUpdater, BigqueryDatasetIdParseFunc),
 			"google_billing_account_iam_binding":           ResourceIamBinding(IamBillingAccountSchema, NewBillingAccountIamUpdater, BillingAccountIdParseFunc),
 			"google_billing_account_iam_member":            ResourceIamMember(IamBillingAccountSchema, NewBillingAccountIamUpdater, BillingAccountIdParseFunc),
 			"google_billing_account_iam_policy":            ResourceIamPolicy(IamBillingAccountSchema, NewBillingAccountIamUpdater, BillingAccountIdParseFunc),
@@ -1073,8 +1095,10 @@ func providerConfigure(d *schema.ResourceData, p *schema.Provider, terraformVers
 	config.IdentityPlatformBasePath = d.Get("identity_platform_custom_endpoint").(string)
 	config.KMSBasePath = d.Get("kms_custom_endpoint").(string)
 	config.LoggingBasePath = d.Get("logging_custom_endpoint").(string)
+	config.MemcacheBasePath = d.Get("memcache_custom_endpoint").(string)
 	config.MLEngineBasePath = d.Get("ml_engine_custom_endpoint").(string)
 	config.MonitoringBasePath = d.Get("monitoring_custom_endpoint").(string)
+	config.NetworkManagementBasePath = d.Get("network_management_custom_endpoint").(string)
 	config.OSLoginBasePath = d.Get("os_login_custom_endpoint").(string)
 	config.PubsubBasePath = d.Get("pubsub_custom_endpoint").(string)
 	config.RedisBasePath = d.Get("redis_custom_endpoint").(string)

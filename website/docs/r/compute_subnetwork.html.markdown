@@ -210,7 +210,7 @@ The following arguments are supported:
 
 * `region` -
   (Optional)
-  URL of the GCP region for this subnetwork.
+  The GCP region for this subnetwork.
 
 * `log_config` -
   (Optional)
