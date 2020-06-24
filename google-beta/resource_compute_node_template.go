@@ -40,6 +40,14 @@ func resourceComputeNodeTemplate() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"cpu_overcommit_type": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.StringInSlice([]string{"ENABLED", "NONE", ""}, false),
+				Description:  `CPU overcommit. Default value: "NONE" Possible values: ["ENABLED", "NONE"]`,
+				Default:      "NONE",
+			},
 			"description": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -201,6 +209,12 @@ func resourceComputeNodeTemplateCreate(d *schema.ResourceData, meta interface{})
 	} else if v, ok := d.GetOkExists("server_binding"); !isEmptyValue(reflect.ValueOf(serverBindingProp)) && (ok || !reflect.DeepEqual(v, serverBindingProp)) {
 		obj["serverBinding"] = serverBindingProp
 	}
+	cpuOvercommitTypeProp, err := expandComputeNodeTemplateCpuOvercommitType(d.Get("cpu_overcommit_type"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("cpu_overcommit_type"); !isEmptyValue(reflect.ValueOf(cpuOvercommitTypeProp)) && (ok || !reflect.DeepEqual(v, cpuOvercommitTypeProp)) {
+		obj["cpuOvercommitType"] = cpuOvercommitTypeProp
+	}
 	regionProp, err := expandComputeNodeTemplateRegion(d.Get("region"), d, config)
 	if err != nil {
 		return err
@@ -285,6 +299,9 @@ func resourceComputeNodeTemplateRead(d *schema.ResourceData, meta interface{}) e
 		return fmt.Errorf("Error reading NodeTemplate: %s", err)
 	}
 	if err := d.Set("server_binding", flattenComputeNodeTemplateServerBinding(res["serverBinding"], d, config)); err != nil {
+		return fmt.Errorf("Error reading NodeTemplate: %s", err)
+	}
+	if err := d.Set("cpu_overcommit_type", flattenComputeNodeTemplateCpuOvercommitType(res["cpuOvercommitType"], d, config)); err != nil {
 		return fmt.Errorf("Error reading NodeTemplate: %s", err)
 	}
 	if err := d.Set("region", flattenComputeNodeTemplateRegion(res["region"], d, config)); err != nil {
@@ -417,6 +434,10 @@ func flattenComputeNodeTemplateServerBindingType(v interface{}, d *schema.Resour
 	return v
 }
 
+func flattenComputeNodeTemplateCpuOvercommitType(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
 func flattenComputeNodeTemplateRegion(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	if v == nil {
 		return v
@@ -512,6 +533,10 @@ func expandComputeNodeTemplateServerBinding(v interface{}, d TerraformResourceDa
 }
 
 func expandComputeNodeTemplateServerBindingType(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandComputeNodeTemplateCpuOvercommitType(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 

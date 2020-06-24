@@ -1,3 +1,4 @@
+//
 package google
 
 import (
@@ -4303,7 +4304,7 @@ data "google_compute_image" "my_image" {
 
 resource "google_compute_instance" "foobar" {
   name         = "%s"
-  machine_type = "n1-standard-2"
+  machine_type = "n1-standard-8"
   zone         = "us-central1-a"
 
   boot_disk {
@@ -4334,11 +4335,9 @@ resource "google_compute_instance" "foobar" {
       operator = "IN"
       values   = [google_compute_node_group.nodes.name]
     }
-  }
-}
 
-data "google_compute_node_types" "central1a" {
-  zone = "us-central1-a"
+    min_node_cpus = 4
+  }
 }
 
 resource "google_compute_node_template" "nodetmpl" {
@@ -4349,7 +4348,9 @@ resource "google_compute_node_template" "nodetmpl" {
     tfacc = "test"
   }
 
-  node_type = data.google_compute_node_types.central1a.names[0]
+  node_type = "n1-node-96-624"
+
+  cpu_overcommit_type = "ENABLED"
 }
 
 resource "google_compute_node_group" "nodes" {
@@ -4371,7 +4372,7 @@ data "google_compute_image" "my_image" {
 
 resource "google_compute_instance" "foobar" {
   name         = "%s"
-  machine_type = "n1-standard-2"
+  machine_type = "n1-standard-8"
   zone         = "us-central1-a"
 
   boot_disk {
@@ -4402,11 +4403,9 @@ resource "google_compute_instance" "foobar" {
       operator = "IN"
       values   = [google_compute_node_group.nodes.name]
     }
-  }
-}
 
-data "google_compute_node_types" "central1a" {
-  zone = "us-central1-a"
+    min_node_cpus = 6
+  }
 }
 
 resource "google_compute_node_template" "nodetmpl" {
@@ -4417,7 +4416,9 @@ resource "google_compute_node_template" "nodetmpl" {
     tfacc = "test"
   }
 
-  node_type = data.google_compute_node_types.central1a.names[0]
+  node_type = "n1-node-96-624"
+
+  cpu_overcommit_type = "ENABLED"
 }
 
 resource "google_compute_node_group" "nodes" {

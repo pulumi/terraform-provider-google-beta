@@ -273,9 +273,9 @@ data "google_compute_image" "debian_image" {
 resource "google_compute_region_instance_group_manager" "rigm" {
   provider = google-beta
   region   = "us-central1"
-  name     = "rigm-internal"
+  name     = "tf-test-website-rigm%{random_suffix}"
   version {
-    instance_template = google_compute_instance_template.instance_template.self_link
+    instance_template = google_compute_instance_template.instance_template.id
     name              = "primary"
   }
   base_instance_name = "internal-glb"
