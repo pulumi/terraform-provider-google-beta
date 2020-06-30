@@ -35,7 +35,7 @@ which will be applied to this disk for scheduling snapshot creation.
   </a>
 </div>
 
-## Example Usage 
+## Example Usage
 
 ### Region Disk Resource Policy Attachment Basic
 

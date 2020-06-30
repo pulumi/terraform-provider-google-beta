@@ -413,6 +413,14 @@ func Provider() terraform.ResourceProvider {
 					"GOOGLE_NETWORK_MANAGEMENT_CUSTOM_ENDPOINT",
 				}, NetworkManagementDefaultBasePath),
 			},
+			"notebooks_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_NOTEBOOKS_CUSTOM_ENDPOINT",
+				}, NotebooksDefaultBasePath),
+			},
 			"os_login_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -636,6 +644,7 @@ func Provider() terraform.ResourceProvider {
 			"google_storage_project_service_account":          dataSourceGoogleStorageProjectServiceAccount(),
 			"google_storage_transfer_project_service_account": dataSourceGoogleStorageTransferProjectServiceAccount(),
 			"google_tpu_tensorflow_versions":                  dataSourceTpuTensorflowVersions(),
+			"google_redis_instance":                           dataSourceGoogleRedisInstance(),
 		},
 
 		ResourcesMap: ResourceMap(),
@@ -654,9 +663,9 @@ func Provider() terraform.ResourceProvider {
 	return provider
 }
 
-// Generated resources: 162
+// Generated resources: 165
 // Generated IAM resources: 66
-// Total generated resources: 228
+// Total generated resources: 231
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -845,6 +854,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_monitoring_slo":                                        resourceMonitoringSlo(),
 			"google_monitoring_uptime_check_config":                        resourceMonitoringUptimeCheckConfig(),
 			"google_network_management_connectivity_test":                  resourceNetworkManagementConnectivityTest(),
+			"google_notebooks_environment":                                 resourceNotebooksEnvironment(),
+			"google_notebooks_instance":                                    resourceNotebooksInstance(),
+			"google_notebooks_location":                                    resourceNotebooksLocation(),
 			"google_os_login_ssh_public_key":                               resourceOSLoginSSHPublicKey(),
 			"google_pubsub_topic":                                          resourcePubsubTopic(),
 			"google_pubsub_topic_iam_binding":                              ResourceIamBinding(PubsubTopicIamSchema, PubsubTopicIamUpdaterProducer, PubsubTopicIdParseFunc),
@@ -1099,6 +1111,7 @@ func providerConfigure(d *schema.ResourceData, p *schema.Provider, terraformVers
 	config.MLEngineBasePath = d.Get("ml_engine_custom_endpoint").(string)
 	config.MonitoringBasePath = d.Get("monitoring_custom_endpoint").(string)
 	config.NetworkManagementBasePath = d.Get("network_management_custom_endpoint").(string)
+	config.NotebooksBasePath = d.Get("notebooks_custom_endpoint").(string)
 	config.OSLoginBasePath = d.Get("os_login_custom_endpoint").(string)
 	config.PubsubBasePath = d.Get("pubsub_custom_endpoint").(string)
 	config.RedisBasePath = d.Get("redis_custom_endpoint").(string)
