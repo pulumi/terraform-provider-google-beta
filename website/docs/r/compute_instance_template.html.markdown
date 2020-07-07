@@ -135,7 +135,7 @@ group manager.
 If you're not sure, we recommend deploying the latest image available when the provider runs,
 because this means all the instances in your group will be based on the same image, always,
 and means that no upgrades or changes to your instances happen outside of a `pulumi up`.
-You can achieve this by using the [`google_compute_image`](../d/datasource_compute_image.html)
+You can achieve this by using the `google_compute_image`
 data source, which will retrieve the latest image on every `pulumi apply`, and will update
 the template to use that specific image:
 
