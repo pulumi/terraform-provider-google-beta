@@ -48,7 +48,7 @@ data "google_iam_policy" "admin" {
 }
 ```
 
-With IAM Conditions):
+With IAM Conditions:
 
 ```hcl
 resource "google_project_iam_policy" "project" {

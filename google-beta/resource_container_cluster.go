@@ -1016,21 +1016,18 @@ func resourceContainerCluster() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
-				ForceNew:    true,
 				Computed:    true,
 				Description: `Application-layer Secrets Encryption settings. The object format is {state = string, key_name = string}. Valid values of state are: "ENCRYPTED"; "DECRYPTED". key_name is the name of a CloudKMS key.`,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"state": {
 							Type:         schema.TypeString,
-							ForceNew:     true,
 							Required:     true,
 							ValidateFunc: validation.StringInSlice([]string{"ENCRYPTED", "DECRYPTED"}, false),
 							Description:  `ENCRYPTED or DECRYPTED.`,
 						},
 						"key_name": {
 							Type:        schema.TypeString,
-							ForceNew:    true,
 							Optional:    true,
 							Description: `The key to use to encrypt/decrypt secrets.`,
 						},
@@ -2098,6 +2095,31 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
+	if d.HasChange("database_encryption") {
+		c := d.Get("database_encryption")
+		req := &containerBeta.UpdateClusterRequest{
+			Update: &containerBeta.ClusterUpdate{
+				DesiredDatabaseEncryption: expandDatabaseEncryption(c),
+			},
+		}
+
+		updateF := func() error {
+			name := containerClusterFullName(project, location, clusterName)
+			op, err := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req).Do()
+			if err != nil {
+				return err
+			}
+			// Wait until it's updated
+			return containerOperationWait(config, op, project, location, "updating GKE cluster database encryption config", d.Timeout(schema.TimeoutUpdate))
+		}
+		if err := lockedCall(lockKey, updateF); err != nil {
+			return err
+		}
+		log.Printf("[INFO] GKE cluster %s database encryption config has been updated", d.Id())
+
+		d.SetPartial("database_encryption")
+	}
+
 	if d.HasChange("pod_security_policy_config") {
 		c := d.Get("pod_security_policy_config")
 		req := &containerBeta.UpdateClusterRequest{
@@ -2494,10 +2516,10 @@ func expandClusterAddonsConfig(configured interface{}) *containerBeta.AddonsConf
 	return ac
 }
 
-func expandIPAllocationPolicy(configured interface{}, networking_mode string) (*containerBeta.IPAllocationPolicy, error) {
+func expandIPAllocationPolicy(configured interface{}, networkingMode string) (*containerBeta.IPAllocationPolicy, error) {
 	l := configured.([]interface{})
 	if len(l) == 0 || l[0] == nil {
-		if networking_mode == "VPC_NATIVE" {
+		if networkingMode == "VPC_NATIVE" {
 			return nil, fmt.Errorf("`ip_allocation_policy` block is required for VPC_NATIVE clusters.")
 		}
 		return &containerBeta.IPAllocationPolicy{
@@ -2508,14 +2530,14 @@ func expandIPAllocationPolicy(configured interface{}, networking_mode string) (*
 
 	config := l[0].(map[string]interface{})
 	return &containerBeta.IPAllocationPolicy{
-		UseIpAliases:          networking_mode == "VPC_NATIVE",
+		UseIpAliases:          networkingMode == "VPC_NATIVE" || networkingMode == "",
 		ClusterIpv4CidrBlock:  config["cluster_ipv4_cidr_block"].(string),
 		ServicesIpv4CidrBlock: config["services_ipv4_cidr_block"].(string),
 
 		ClusterSecondaryRangeName:  config["cluster_secondary_range_name"].(string),
 		ServicesSecondaryRangeName: config["services_secondary_range_name"].(string),
 		ForceSendFields:            []string{"UseIpAliases"},
-		UseRoutes:                  networking_mode == "ROUTES",
+		UseRoutes:                  networkingMode == "ROUTES",
 	}, nil
 }
 
