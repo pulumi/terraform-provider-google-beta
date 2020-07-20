@@ -71,6 +71,7 @@ resource "google_data_fusion_instance" "extended_instance" {
     network = "default"
     ip_allocation = "10.89.48.0/22"
   }
+  version = "6.1.1"
 }
 ```
 
@@ -121,6 +122,10 @@ The following arguments are supported:
 * `options` -
   (Optional)
   Map of additional options used to configure the behavior of Data Fusion instance.
+
+* `version` -
+  (Optional)
+  Current version of the Data Fusion.
 
 * `private_instance` -
   (Optional)
@@ -179,9 +184,6 @@ In addition to the arguments listed above, the following computed attributes are
 
 * `service_endpoint` -
   Endpoint on which the Data Fusion UI and REST APIs are accessible.
-
-* `version` -
-  Current version of the Data Fusion.
 
 * `service_account` -
   Service account which will be used to access resources in the customer project.
