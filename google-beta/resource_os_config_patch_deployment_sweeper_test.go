@@ -61,7 +61,7 @@ func testSweepOSConfigPatchDeployment(region string) error {
 		},
 	}
 
-	listTemplate := strings.Split("https://osconfig.googleapis.com/v1/projects/{{project}}/patchDeployments", "?")[0]
+	listTemplate := strings.Split("https://osconfig.googleapis.com/v1beta/projects/{{project}}/patchDeployments", "?")[0]
 	listUrl, err := replaceVars(d, config, listTemplate)
 	if err != nil {
 		log.Printf("[INFO][SWEEPER_LOG] error preparing sweeper list url: %s", err)
@@ -99,7 +99,7 @@ func testSweepOSConfigPatchDeployment(region string) error {
 			continue
 		}
 
-		deleteTemplate := "https://osconfig.googleapis.com/v1/{{name}}"
+		deleteTemplate := "https://osconfig.googleapis.com/v1beta/{{name}}"
 		deleteUrl, err := replaceVars(d, config, deleteTemplate)
 		if err != nil {
 			log.Printf("[INFO][SWEEPER_LOG] error preparing delete url: %s", err)

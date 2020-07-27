@@ -90,6 +90,7 @@ type Config struct {
 	BigtableBasePath             string
 	BillingBasePath              string
 	BinaryAuthorizationBasePath  string
+	CloudAssetBasePath           string
 	CloudBuildBasePath           string
 	CloudFunctionsBasePath       string
 	CloudIdentityBasePath        string
@@ -247,6 +248,7 @@ var BigqueryReservationDefaultBasePath = "https://bigqueryreservation.googleapis
 var BigtableDefaultBasePath = "https://bigtableadmin.googleapis.com/v2/"
 var BillingDefaultBasePath = "https://billingbudgets.googleapis.com/v1beta1/"
 var BinaryAuthorizationDefaultBasePath = "https://binaryauthorization.googleapis.com/v1/"
+var CloudAssetDefaultBasePath = "https://cloudasset.googleapis.com/v1/"
 var CloudBuildDefaultBasePath = "https://cloudbuild.googleapis.com/v1/"
 var CloudFunctionsDefaultBasePath = "https://cloudfunctions.googleapis.com/v1/"
 var CloudIdentityDefaultBasePath = "https://cloudidentity.googleapis.com/v1beta1/"
@@ -263,7 +265,7 @@ var DatastoreDefaultBasePath = "https://datastore.googleapis.com/v1/"
 var DeploymentManagerDefaultBasePath = "https://www.googleapis.com/deploymentmanager/v2/"
 var DialogflowDefaultBasePath = "https://dialogflow.googleapis.com/v2/"
 var DNSDefaultBasePath = "https://www.googleapis.com/dns/v1beta2/"
-var FilestoreDefaultBasePath = "https://file.googleapis.com/v1/"
+var FilestoreDefaultBasePath = "https://file.googleapis.com/v1beta1/"
 var FirebaseDefaultBasePath = "https://firebase.googleapis.com/v1beta1/"
 var FirestoreDefaultBasePath = "https://firestore.googleapis.com/v1/"
 var GameServicesDefaultBasePath = "https://gameservices.googleapis.com/v1beta/"
@@ -277,7 +279,7 @@ var MLEngineDefaultBasePath = "https://ml.googleapis.com/v1/"
 var MonitoringDefaultBasePath = "https://monitoring.googleapis.com/"
 var NetworkManagementDefaultBasePath = "https://networkmanagement.googleapis.com/v1/"
 var NotebooksDefaultBasePath = "https://notebooks.googleapis.com/v1beta1/"
-var OSConfigDefaultBasePath = "https://osconfig.googleapis.com/v1/"
+var OSConfigDefaultBasePath = "https://osconfig.googleapis.com/v1beta/"
 var OSLoginDefaultBasePath = "https://oslogin.googleapis.com/v1/"
 var PubsubDefaultBasePath = "https://pubsub.googleapis.com/v1/"
 var RedisDefaultBasePath = "https://redis.googleapis.com/v1beta1/"
@@ -783,7 +785,7 @@ func (c *Config) GetCredentials(clientScopes []string) (googleoauth.Credentials,
 
 	defaultTS, err := googleoauth.DefaultTokenSource(context.Background(), clientScopes...)
 	if err != nil {
-		return googleoauth.Credentials{}, fmt.Errorf("Error loading Default TokenSource: %s", err)
+		return googleoauth.Credentials{}, fmt.Errorf("Attempted to load application default credentials since neither `credentials` nor `access_token` was set in the provider block.  No credentials loaded. To use your gcloud credentials, run 'gcloud auth application-default login'.  Original error: %w", err)
 	}
 	return googleoauth.Credentials{
 		TokenSource: defaultTS,
@@ -811,6 +813,7 @@ func ConfigureBasePaths(c *Config) {
 	c.BigtableBasePath = BigtableDefaultBasePath
 	c.BillingBasePath = BillingDefaultBasePath
 	c.BinaryAuthorizationBasePath = BinaryAuthorizationDefaultBasePath
+	c.CloudAssetBasePath = CloudAssetDefaultBasePath
 	c.CloudBuildBasePath = CloudBuildDefaultBasePath
 	c.CloudFunctionsBasePath = CloudFunctionsDefaultBasePath
 	c.CloudIdentityBasePath = CloudIdentityDefaultBasePath
