@@ -68,6 +68,7 @@ resource "google_filestore_instance" "instance" {
 
 ```hcl
 resource "google_filestore_instance" "instance" {
+  provider = google-beta
   name = "test-instance"
   zone = "us-central1-b"
   tier = "BASIC_SSD"
@@ -164,6 +165,7 @@ The `nfs_export_options` block supports:
   or READ_WRITE, for allowing both read and write requests. The default is READ_WRITE.
 
   Default value: `READ_WRITE`
+
   Possible values are:
   * `READ_ONLY`
   * `READ_WRITE`
@@ -174,6 +176,7 @@ The `nfs_export_options` block supports:
   for not allowing root access. The default is NO_ROOT_SQUASH.
 
   Default value: `NO_ROOT_SQUASH`
+
   Possible values are:
   * `NO_ROOT_SQUASH`
   * `ROOT_SQUASH`

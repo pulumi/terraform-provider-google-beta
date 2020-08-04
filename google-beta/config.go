@@ -81,6 +81,7 @@ type Config struct {
 	tokenSource oauth2.TokenSource
 
 	AccessContextManagerBasePath string
+	ActiveDirectoryBasePath      string
 	AppEngineBasePath            string
 	ArtifactRegistryBasePath     string
 	BigQueryBasePath             string
@@ -239,6 +240,7 @@ type Config struct {
 
 // Generated product base paths
 var AccessContextManagerDefaultBasePath = "https://accesscontextmanager.googleapis.com/v1/"
+var ActiveDirectoryDefaultBasePath = "https://managedidentities.googleapis.com/v1/"
 var AppEngineDefaultBasePath = "https://appengine.googleapis.com/v1/"
 var ArtifactRegistryDefaultBasePath = "https://artifactregistry.googleapis.com/v1beta1/"
 var BigQueryDefaultBasePath = "https://www.googleapis.com/bigquery/v2/"
@@ -298,7 +300,7 @@ var StorageDefaultBasePath = "https://www.googleapis.com/storage/v1/"
 var TPUDefaultBasePath = "https://tpu.googleapis.com/v1/"
 var VPCAccessDefaultBasePath = "https://vpcaccess.googleapis.com/v1/"
 
-var defaultClientScopes = []string{
+var DefaultClientScopes = []string{
 	"https://www.googleapis.com/auth/compute",
 	"https://www.googleapis.com/auth/cloud-platform",
 	"https://www.googleapis.com/auth/cloud-identity",
@@ -309,7 +311,7 @@ var defaultClientScopes = []string{
 
 func (c *Config) LoadAndValidate(ctx context.Context) error {
 	if len(c.Scopes) == 0 {
-		c.Scopes = defaultClientScopes
+		c.Scopes = DefaultClientScopes
 	}
 
 	tokenSource, err := c.getTokenSource(c.Scopes)
@@ -804,6 +806,7 @@ func removeBasePathVersion(url string) string {
 func ConfigureBasePaths(c *Config) {
 	// Generated Products
 	c.AccessContextManagerBasePath = AccessContextManagerDefaultBasePath
+	c.ActiveDirectoryBasePath = ActiveDirectoryDefaultBasePath
 	c.AppEngineBasePath = AppEngineDefaultBasePath
 	c.ArtifactRegistryBasePath = ArtifactRegistryDefaultBasePath
 	c.BigQueryBasePath = BigQueryDefaultBasePath

@@ -158,6 +158,7 @@ The `imports` block supports:
   actually affect the deployment, just how it is updated.
 
   Default value: `CREATE_OR_ACQUIRE`
+
   Possible values are:
   * `ACQUIRE`
   * `CREATE_OR_ACQUIRE`
@@ -172,6 +173,7 @@ The `imports` block supports:
   actually change the deployment, just how it is updated.
 
   Default value: `DELETE`
+
   Possible values are:
   * `ABANDON`
   * `DELETE`
