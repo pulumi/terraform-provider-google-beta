@@ -64,7 +64,7 @@ resource "google_redis_instance" "cache" {
 
   authorized_network = data.google_compute_network.redis-network.id
 
-  redis_version     = "REDIS_3_2"
+  redis_version     = "REDIS_4_0"
   display_name      = "Test Instance"
   reserved_ip_range = "192.168.0.0/29"
 
@@ -124,10 +124,10 @@ resource "google_redis_instance" "cache" {
   authorized_network = google_compute_network.network.id
   connect_mode       = "PRIVATE_SERVICE_ACCESS"
 
-  redis_version     = "REDIS_3_2"
+  redis_version     = "REDIS_4_0"
   display_name      = "Test Instance"
 
-  depends_on = [ google_service_networking_connection.private_service_connection ]
+  depends_on = [google_service_networking_connection.private_service_connection]
 
 }
 ```
@@ -165,12 +165,8 @@ The following arguments are supported:
 * `connect_mode` -
   (Optional)
   The connection mode of the Redis instance.
-
-  Default value: `DIRECT_PEERING`
-
-  Possible values are:
-  * `DIRECT_PEERING`
-  * `PRIVATE_SERVICE_ACCESS`
+  Default value is `DIRECT_PEERING`.
+  Possible values are `DIRECT_PEERING` and `PRIVATE_SERVICE_ACCESS`.
 
 * `display_name` -
   (Optional)
@@ -198,6 +194,7 @@ The following arguments are supported:
   (Optional)
   The version of Redis software. If not provided, latest supported
   version will be used. Currently, the supported values are:
+  - REDIS_5_0 for Redis 5.0 compatibility
   - REDIS_4_0 for Redis 4.0 compatibility
   - REDIS_3_2 for Redis 3.2 compatibility
 
@@ -214,12 +211,8 @@ The following arguments are supported:
   The service tier of the instance. Must be one of these values:
   - BASIC: standalone instance
   - STANDARD_HA: highly available primary/replica instances
-
-  Default value: `BASIC`
-
-  Possible values are:
-  * `BASIC`
-  * `STANDARD_HA`
+  Default value is `BASIC`.
+  Possible values are `BASIC` and `STANDARD_HA`.
 
 * `region` -
   (Optional)
@@ -252,6 +245,12 @@ In addition to the arguments listed above, the following computed attributes are
 
 * `port` -
   The port number of the exposed Redis endpoint.
+
+* `persistence_iam_identity` -
+  Output only. Cloud IAM identity used by import / export operations
+  to transfer data to/from Cloud Storage. Format is "serviceAccount:".
+  The value may change over time for a given instance so should be
+  checked before each import/export operation.
 
 
 ## Timeouts

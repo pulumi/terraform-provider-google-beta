@@ -15,6 +15,7 @@
 package google
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"reflect"
@@ -22,9 +23,27 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-sdk/helper/hashcode"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
+
+func resourceSourceRepoRepositoryPubSubConfigsHash(v interface{}) int {
+	if v == nil {
+		return 0
+	}
+
+	var buf bytes.Buffer
+	m := v.(map[string]interface{})
+
+	buf.WriteString(fmt.Sprintf("%s-", GetResourceNameFromSelfLink(m["topic"].(string))))
+	buf.WriteString(fmt.Sprintf("%s-", m["message_format"].(string)))
+	if v, ok := m["service_account_email"]; ok {
+		buf.WriteString(fmt.Sprintf("%s-", v.(string)))
+	}
+
+	return hashcode.String(buf.String())
+}
 
 func resourceSourceRepoRepository() *schema.Resource {
 	return &schema.Resource{
@@ -81,6 +100,7 @@ If unspecified, it defaults to the compute engine default service account.`,
 						},
 					},
 				},
+				Set: resourceSourceRepoRepositoryPubSubConfigsHash,
 			},
 			"size": {
 				Type:        schema.TypeInt,
@@ -227,10 +247,12 @@ func resourceSourceRepoRepositoryUpdate(d *schema.ResourceData, meta interface{}
 	if err != nil {
 		return err
 	}
-	_, err = sendRequestWithTimeout(config, "PATCH", project, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", project, url, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Repository %q: %s", d.Id(), err)
+	} else {
+		log.Printf("[DEBUG] Finished updating Repository %q: %#v", d.Id(), res)
 	}
 
 	return resourceSourceRepoRepositoryRead(d, meta)

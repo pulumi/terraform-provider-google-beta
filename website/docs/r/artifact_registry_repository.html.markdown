@@ -115,9 +115,7 @@ The following arguments are supported:
 * `format` -
   (Required)
   The format of packages that are stored in the repoitory.
-
-  Possible values are:
-  * `DOCKER`
+  Possible values are `DOCKER`.
 
 
 - - -

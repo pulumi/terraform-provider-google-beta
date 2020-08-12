@@ -29,6 +29,10 @@ resource "google_bigtable_instance" "production-instance" {
   lifecycle {
     prevent_destroy = true
   }
+
+  labels = {
+    my-label = "prod-label"
+  }
 }
 ```
 
@@ -44,6 +48,10 @@ resource "google_bigtable_instance" "development-instance" {
     zone         = "us-central1-b"
     storage_type = "HDD"
   }
+
+  labels = {
+    my-label = "dev-label"
+  }
 }
 ```
 
@@ -53,7 +61,8 @@ The following arguments are supported:
 
 * `name` - (Required) The name (also called Instance Id in the Cloud Console) of the Cloud Bigtable instance.
 
-* `cluster` - (Required) A block of cluster configuration options. This can be specified 1 or 2 times. See structure below.
+* `cluster` - (Required) A block of cluster configuration options. This can be specified at least once, and up to 4 times.
+See structure below.
 
 -----
 
@@ -66,6 +75,8 @@ The following arguments are supported:
 
 * `deletion_protection` - (Optional) Whether or not to allow this provider to destroy the instance. Unless this field is set to false
 in the statefile, a `pulumi destroy` or `pulumi up` that would delete the instance will fail.
+
+* `labels` - (Optional) A set of key/value label pairs to assign to the resource. Label keys must follow the requirements at https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements.
 
 
 -----

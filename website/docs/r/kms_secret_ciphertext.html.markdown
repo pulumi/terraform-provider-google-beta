@@ -25,7 +25,7 @@ description: |-
 Encrypts secret data with Google Cloud KMS and provides access to the ciphertext.
 
 
-~> **NOTE**: Using this resource will allow you to conceal secret data within your
+~> **NOTE:** Using this resource will allow you to conceal secret data within your
 resource definitions, but it does not take care of protecting that data in the
 logging output, plan output, or state output.  Please take care to secure your secret
 data outside of resource definitions.
@@ -95,7 +95,8 @@ The following arguments are supported:
 
 * `plaintext` -
   (Required)
-  The plaintext to be encrypted.  **Note**: This property is sensitive and will not be displayed in the plan.
+  The plaintext to be encrypted.
+  **Note**: This property is sensitive and will not be displayed in the plan.
 
 * `crypto_key` -
   (Required)
@@ -108,7 +109,8 @@ The following arguments are supported:
 
 * `additional_authenticated_data` -
   (Optional)
-  The additional authenticated data used for integrity checks during encryption and decryption.  **Note**: This property is sensitive and will not be displayed in the plan.
+  The additional authenticated data used for integrity checks during encryption and decryption.
+  **Note**: This property is sensitive and will not be displayed in the plan.
 
 
 ## Attributes Reference

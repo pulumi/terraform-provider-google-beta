@@ -146,18 +146,20 @@ You can choose the size of the data disk based on how big your notebooks and dat
 If not specified, this defaults to 100.`,
 			},
 			"data_disk_type": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ForceNew:     true,
-				ValidateFunc: validation.StringInSlice([]string{"DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD", ""}, false),
-				Description:  `Possible disk types for notebook instances. Possible values: ["DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD"]`,
+				Type:             schema.TypeString,
+				Optional:         true,
+				ForceNew:         true,
+				ValidateFunc:     validation.StringInSlice([]string{"DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD", ""}, false),
+				DiffSuppressFunc: emptyOrDefaultStringSuppress("DISK_TYPE_UNSPECIFIED"),
+				Description:      `Possible disk types for notebook instances. Possible values: ["DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD"]`,
 			},
 			"disk_encryption": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ForceNew:     true,
-				ValidateFunc: validation.StringInSlice([]string{"DISK_ENCRYPTION_UNSPECIFIED", "GMEK", "CMEK", ""}, false),
-				Description:  `Disk encryption method used on the boot and data disks, defaults to GMEK. Possible values: ["DISK_ENCRYPTION_UNSPECIFIED", "GMEK", "CMEK"]`,
+				Type:             schema.TypeString,
+				Optional:         true,
+				ForceNew:         true,
+				ValidateFunc:     validation.StringInSlice([]string{"DISK_ENCRYPTION_UNSPECIFIED", "GMEK", "CMEK", ""}, false),
+				DiffSuppressFunc: emptyOrDefaultStringSuppress("DISK_ENCRYPTION_UNSPECIFIED"),
+				Description:      `Disk encryption method used on the boot and data disks, defaults to GMEK. Possible values: ["DISK_ENCRYPTION_UNSPECIFIED", "GMEK", "CMEK"]`,
 			},
 			"install_gpu_driver": {
 				Type:     schema.TypeBool,
@@ -608,6 +610,8 @@ func resourceNotebooksInstanceUpdate(d *schema.ResourceData, meta interface{}) e
 		res, err := sendRequestWithTimeout(config, "PATCH", project, url, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating Instance %q: %s", d.Id(), err)
+		} else {
+			log.Printf("[DEBUG] Finished updating Instance %q: %#v", d.Id(), res)
 		}
 
 		err = notebooksOperationWaitTime(

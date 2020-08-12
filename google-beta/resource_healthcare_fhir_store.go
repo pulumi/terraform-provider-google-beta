@@ -204,7 +204,7 @@ value 2. The maximum depth allowed is 5.`,
 						"resource_types": {
 							Type:     schema.TypeList,
 							Optional: true,
-							Description: `Supply a FHIR resource type (such as "Patient" or "Observation"). See 
+							Description: `Supply a FHIR resource type (such as "Patient" or "Observation"). See
 https://www.hl7.org/fhir/valueset-resource-types.html for a list of all FHIR resource types. The server treats
 an empty list as an intent to stream all the supported resource types in this FHIR store.`,
 							Elem: &schema.Schema{
@@ -427,10 +427,12 @@ func resourceHealthcareFhirStoreUpdate(d *schema.ResourceData, meta interface{})
 	if err != nil {
 		return err
 	}
-	_, err = sendRequestWithTimeout(config, "PATCH", "", url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", "", url, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating FhirStore %q: %s", d.Id(), err)
+	} else {
+		log.Printf("[DEBUG] Finished updating FhirStore %q: %#v", d.Id(), res)
 	}
 
 	return resourceHealthcareFhirStoreRead(d, meta)

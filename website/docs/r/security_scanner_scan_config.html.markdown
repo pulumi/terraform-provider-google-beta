@@ -85,19 +85,14 @@ The following arguments are supported:
 * `authentication` -
   (Optional)
   The authentication configuration.
-  If specified, service will use the authentication configuration during scanning.  Structure is documented below.
+  If specified, service will use the authentication configuration during scanning.
+  Structure is documented below.
 
 * `user_agent` -
   (Optional)
   Type of the user agents used for scanning
-
-  Default value: `CHROME_LINUX`
-
-  Possible values are:
-  * `USER_AGENT_UNSPECIFIED`
-  * `CHROME_LINUX`
-  * `CHROME_ANDROID`
-  * `SAFARI_IPHONE`
+  Default value is `CHROME_LINUX`.
+  Possible values are `USER_AGENT_UNSPECIFIED`, `CHROME_LINUX`, `CHROME_ANDROID`, and `SAFARI_IPHONE`.
 
 * `blacklist_patterns` -
   (Optional)
@@ -106,7 +101,8 @@ The following arguments are supported:
 
 * `schedule` -
   (Optional)
-  The schedule of the ScanConfig  Structure is documented below.
+  The schedule of the ScanConfig
+  Structure is documented below.
 
 * `target_platforms` -
   (Optional)
@@ -115,12 +111,8 @@ The following arguments are supported:
 * `export_to_security_command_center` -
   (Optional)
   Controls export of scan configurations and results to Cloud Security Command Center.
-
-  Default value: `ENABLED`
-
-  Possible values are:
-  * `ENABLED`
-  * `DISABLED`
+  Default value is `ENABLED`.
+  Possible values are `ENABLED` and `DISABLED`.
 
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.
@@ -130,11 +122,13 @@ The `authentication` block supports:
 
 * `google_account` -
   (Optional)
-  Describes authentication configuration that uses a Google account.  Structure is documented below.
+  Describes authentication configuration that uses a Google account.
+  Structure is documented below.
 
 * `custom_account` -
   (Optional)
-  Describes authentication configuration that uses a custom account.  Structure is documented below.
+  Describes authentication configuration that uses a custom account.
+  Structure is documented below.
 
 
 The `google_account` block supports:
@@ -146,7 +140,8 @@ The `google_account` block supports:
 * `password` -
   (Required)
   The password of the Google account. The credential is stored encrypted
-  in GCP.  **Note**: This property is sensitive and will not be displayed in the plan.
+  in GCP.
+  **Note**: This property is sensitive and will not be displayed in the plan.
 
 The `custom_account` block supports:
 
@@ -157,7 +152,8 @@ The `custom_account` block supports:
 * `password` -
   (Required)
   The password of the custom account. The credential is stored encrypted
-  in GCP.  **Note**: This property is sensitive and will not be displayed in the plan.
+  in GCP.
+  **Note**: This property is sensitive and will not be displayed in the plan.
 
 * `login_url` -
   (Required)

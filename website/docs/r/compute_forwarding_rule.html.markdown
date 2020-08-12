@@ -395,7 +395,7 @@ The following arguments are supported:
   forwarding rule. By default, if this field is empty, an ephemeral
   internal IP address will be automatically allocated from the IP range
   of the subnet or network configured for this forwarding rule.
-  An address must be specified by a literal IP address. ~> **NOTE**: While
+  An address must be specified by a literal IP address. ~> **NOTE:** While
   the API allows you to specify various resource paths for an address resource
   instead, this provider requires this to specifically be an IP address to
   avoid needing to fetching the IP address from resource paths on refresh
@@ -406,14 +406,7 @@ The following arguments are supported:
   The IP protocol to which this rule applies.
   When the load balancing scheme is INTERNAL, only TCP and UDP are
   valid.
-
-  Possible values are:
-  * `TCP`
-  * `UDP`
-  * `ESP`
-  * `AH`
-  * `SCTP`
-  * `ICMP`
+  Possible values are `TCP`, `UDP`, `ESP`, `AH`, `SCTP`, and `ICMP`.
 
 * `backend_service` -
   (Optional)
@@ -429,13 +422,8 @@ The following arguments are supported:
   INTERNAL is used for protocol forwarding to VMs from an internal IP address,
   and internal TCP/UDP load balancers.
   INTERNAL_MANAGED is used for internal HTTP(S) load balancers.
-
-  Default value: `EXTERNAL`
-
-  Possible values are:
-  * `EXTERNAL`
-  * `INTERNAL`
-  * `INTERNAL_MANAGED`
+  Default value is `EXTERNAL`.
+  Possible values are `EXTERNAL`, `INTERNAL`, and `INTERNAL_MANAGED`.
 
 * `network` -
   (Optional)
@@ -509,10 +497,7 @@ The following arguments are supported:
   (Optional)
   The networking tier used for configuring this address. If this field is not
   specified, it is assumed to be PREMIUM.
-
-  Possible values are:
-  * `PREMIUM`
-  * `STANDARD`
+  Possible values are `PREMIUM` and `STANDARD`.
 
 * `service_label` -
   (Optional)

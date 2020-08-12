@@ -161,7 +161,7 @@ actually change the deployment, just how it is updated. Default value: "DELETE" 
 that are not actually instantiated. This allows you to preview a
 deployment. It can be updated to false to actually deploy
 with real resources.
- ~>**NOTE**: Deployment Manager does not allow update
+ ~>**NOTE:** Deployment Manager does not allow update
 of a deployment in preview (unless updating to preview=false). Thus,
 Terraform will force-recreate deployments if either preview is updated
 to true or if other fields are updated while preview is true.`,
@@ -351,6 +351,8 @@ func resourceDeploymentManagerDeploymentUpdate(d *schema.ResourceData, meta inte
 		res, err := sendRequestWithTimeout(config, "PATCH", project, url, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating Deployment %q: %s", d.Id(), err)
+		} else {
+			log.Printf("[DEBUG] Finished updating Deployment %q: %#v", d.Id(), res)
 		}
 
 		err = deploymentManagerOperationWaitTime(
@@ -402,6 +404,8 @@ func resourceDeploymentManagerDeploymentUpdate(d *schema.ResourceData, meta inte
 		res, err := sendRequestWithTimeout(config, "PATCH", project, url, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating Deployment %q: %s", d.Id(), err)
+		} else {
+			log.Printf("[DEBUG] Finished updating Deployment %q: %#v", d.Id(), res)
 		}
 
 		err = deploymentManagerOperationWaitTime(

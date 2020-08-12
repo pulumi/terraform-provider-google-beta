@@ -1,7 +1,7 @@
 module github.com/terraform-providers/terraform-provider-google-beta
 
 require (
-	cloud.google.com/go/bigtable v1.1.0
+	cloud.google.com/go/bigtable v1.5.0
 	github.com/apparentlymart/go-cidr v1.0.1
 	github.com/client9/misspell v0.3.4
 	github.com/davecgh/go-spew v1.1.1
@@ -22,7 +22,6 @@ require (
 	github.com/terraform-providers/terraform-provider-random v0.0.0-20190925211435-95c131714b03
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/tools v0.0.0-20200717024301-6ddee64345a6 // indirect
 	google.golang.org/api v0.29.0
 )
 

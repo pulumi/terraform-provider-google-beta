@@ -96,7 +96,8 @@ The following arguments are supported:
 
 * `notification_config` -
   (Optional)
-  A nested object resource  Structure is documented below.
+  A nested object resource
+  Structure is documented below.
 
 
 The `notification_config` block supports:
