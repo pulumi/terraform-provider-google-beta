@@ -90,18 +90,20 @@ allowed.`,
 													Type:     schema.TypeList,
 													Optional: true,
 													Description: `A list of allowed device management levels.
-An empty list allows all management levels.`,
+An empty list allows all management levels. Possible values: ["MANAGEMENT_UNSPECIFIED", "NONE", "BASIC", "COMPLETE"]`,
 													Elem: &schema.Schema{
-														Type: schema.TypeString,
+														Type:         schema.TypeString,
+														ValidateFunc: validation.StringInSlice([]string{"MANAGEMENT_UNSPECIFIED", "NONE", "BASIC", "COMPLETE"}, false),
 													},
 												},
 												"allowed_encryption_statuses": {
 													Type:     schema.TypeList,
 													Optional: true,
 													Description: `A list of allowed encryptions statuses.
-An empty list allows all statuses.`,
+An empty list allows all statuses. Possible values: ["ENCRYPTION_UNSPECIFIED", "ENCRYPTION_UNSUPPORTED", "UNENCRYPTED", "ENCRYPTED"]`,
 													Elem: &schema.Schema{
-														Type: schema.TypeString,
+														Type:         schema.TypeString,
+														ValidateFunc: validation.StringInSlice([]string{"ENCRYPTION_UNSPECIFIED", "ENCRYPTION_UNSUPPORTED", "UNENCRYPTED", "ENCRYPTED"}, false),
 													},
 												},
 												"os_constraints": {

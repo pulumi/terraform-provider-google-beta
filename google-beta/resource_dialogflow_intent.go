@@ -60,9 +60,10 @@ Note: The action name must not contain whitespaces.`,
 				Type:     schema.TypeList,
 				Optional: true,
 				Description: `The list of platforms for which the first responses will be copied from the messages in PLATFORM_UNSPECIFIED
-(i.e. default platform).`,
+(i.e. default platform). Possible values: ["FACEBOOK", "SLACK", "TELEGRAM", "KIK", "SKYPE", "LINE", "VIBER", "ACTIONS_ON_GOOGLE", "GOOGLE_HANGOUTS"]`,
 				Elem: &schema.Schema{
-					Type: schema.TypeString,
+					Type:         schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{"FACEBOOK", "SLACK", "TELEGRAM", "KIK", "SKYPE", "LINE", "VIBER", "ACTIONS_ON_GOOGLE", "GOOGLE_HANGOUTS"}, false),
 				},
 			},
 			"events": {

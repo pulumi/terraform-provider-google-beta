@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceComputePacketMirroring() *schema.Resource {
@@ -161,9 +162,10 @@ destination (egress) IP in the IP header. Only IPv4 is supported.`,
 						"ip_protocols": {
 							Type:        schema.TypeList,
 							Optional:    true,
-							Description: `Protocols that apply as a filter on mirrored traffic.`,
+							Description: `Protocols that apply as a filter on mirrored traffic. Possible values: ["tcp", "udp", "icmp"]`,
 							Elem: &schema.Schema{
-								Type: schema.TypeString,
+								Type:         schema.TypeString,
+								ValidateFunc: validation.StringInSlice([]string{"tcp", "udp", "icmp"}, false),
 							},
 						},
 					},

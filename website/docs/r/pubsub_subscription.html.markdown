@@ -210,6 +210,13 @@ The following arguments are supported:
   is 1 day.
   Structure is documented below.
 
+* `filter` -
+  (Optional)
+  The subscription only delivers the messages that match the filter. 
+  Pub/Sub automatically acknowledges the messages that don't match the filter. You can filter messages
+  by their attributes. The maximum length of a filter is 256 bytes. After creating the subscription, 
+  you can't modify the filter.
+
 * `dead_letter_policy` -
   (Optional)
   A policy that specifies the conditions for dead lettering messages in
@@ -295,7 +302,7 @@ The `dead_letter_policy` block supports:
   (Optional)
   The name of the topic to which dead letter messages should be published.
   Format is `projects/{project}/topics/{topic}`.
-  The Cloud Pub/Sub service\naccount associated with the enclosing subscription's
+  The Cloud Pub/Sub service account associated with the enclosing subscription's
   parent project (i.e., 
   service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) must have
   permission to Publish() to this topic.

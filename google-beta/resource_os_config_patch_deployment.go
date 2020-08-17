@@ -527,12 +527,15 @@ be executed directly, which will likely only succeed for scripts with shebang li
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"classifications": {
-										Type:         schema.TypeString,
-										Optional:     true,
-										ForceNew:     true,
-										ValidateFunc: validation.StringInSlice([]string{"CRITICAL", "SECURITY", "DEFINITION", "DRIVER", "FEATURE_PACK", "SERVICE_PACK", "TOOL", "UPDATE_ROLLUP", "UPDATE", ""}, false),
-										Description:  `Only apply updates of these windows update classifications. If empty, all updates are applied. Possible values: ["CRITICAL", "SECURITY", "DEFINITION", "DRIVER", "FEATURE_PACK", "SERVICE_PACK", "TOOL", "UPDATE_ROLLUP", "UPDATE"]`,
-										AtLeastOneOf: []string{},
+										Type:        schema.TypeList,
+										Optional:    true,
+										ForceNew:    true,
+										Description: `Only apply updates of these windows update classifications. If empty, all updates are applied. Possible values: ["CRITICAL", "SECURITY", "DEFINITION", "DRIVER", "FEATURE_PACK", "SERVICE_PACK", "TOOL", "UPDATE_ROLLUP", "UPDATE"]`,
+										Elem: &schema.Schema{
+											Type:         schema.TypeString,
+											ValidateFunc: validation.StringInSlice([]string{"CRITICAL", "SECURITY", "DEFINITION", "DRIVER", "FEATURE_PACK", "SERVICE_PACK", "TOOL", "UPDATE_ROLLUP", "UPDATE"}, false),
+										},
+										ExactlyOneOf: []string{},
 									},
 									"excludes": {
 										Type:        schema.TypeList,
@@ -542,7 +545,7 @@ be executed directly, which will likely only succeed for scripts with shebang li
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
 										},
-										AtLeastOneOf: []string{},
+										ExactlyOneOf: []string{},
 									},
 									"exclusive_patches": {
 										Type:     schema.TypeList,
@@ -553,7 +556,7 @@ This field must not be used with other patch configurations.`,
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
 										},
-										AtLeastOneOf: []string{},
+										ExactlyOneOf: []string{},
 									},
 								},
 							},

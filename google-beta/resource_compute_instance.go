@@ -606,7 +606,23 @@ func resourceComputeInstance() *schema.Resource {
 					},
 				},
 			},
-
+			"confidential_instance_config": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				ForceNew:    true,
+				Computed:    true,
+				Description: `The Confidential VM config being used by the instance.  on_host_maintenance has to be set to TERMINATE or this will fail to create.`,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enable_confidential_compute": {
+							Type:        schema.TypeBool,
+							Required:    true,
+							Description: `Defines whether the instance should have confidential compute enabled.`,
+						},
+					},
+				},
+			},
 			"desired_status": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -795,25 +811,26 @@ func expandComputeInstance(project string, d *schema.ResourceData, config *Confi
 
 	// Create the instance information
 	return &computeBeta.Instance{
-		CanIpForward:       d.Get("can_ip_forward").(bool),
-		Description:        d.Get("description").(string),
-		Disks:              disks,
-		MachineType:        machineTypeUrl,
-		Metadata:           metadata,
-		Name:               d.Get("name").(string),
-		NetworkInterfaces:  networkInterfaces,
-		Tags:               resourceInstanceTags(d),
-		Labels:             expandLabels(d),
-		ServiceAccounts:    expandServiceAccounts(d.Get("service_account").([]interface{})),
-		GuestAccelerators:  accels,
-		MinCpuPlatform:     d.Get("min_cpu_platform").(string),
-		Scheduling:         scheduling,
-		DeletionProtection: d.Get("deletion_protection").(bool),
-		Hostname:           d.Get("hostname").(string),
-		ForceSendFields:    []string{"CanIpForward", "DeletionProtection"},
-		ShieldedVmConfig:   expandShieldedVmConfigs(d),
-		DisplayDevice:      expandDisplayDevice(d),
-		ResourcePolicies:   convertStringArr(d.Get("resource_policies").([]interface{})),
+		CanIpForward:               d.Get("can_ip_forward").(bool),
+		Description:                d.Get("description").(string),
+		Disks:                      disks,
+		MachineType:                machineTypeUrl,
+		Metadata:                   metadata,
+		Name:                       d.Get("name").(string),
+		NetworkInterfaces:          networkInterfaces,
+		Tags:                       resourceInstanceTags(d),
+		Labels:                     expandLabels(d),
+		ServiceAccounts:            expandServiceAccounts(d.Get("service_account").([]interface{})),
+		GuestAccelerators:          accels,
+		MinCpuPlatform:             d.Get("min_cpu_platform").(string),
+		Scheduling:                 scheduling,
+		DeletionProtection:         d.Get("deletion_protection").(bool),
+		Hostname:                   d.Get("hostname").(string),
+		ForceSendFields:            []string{"CanIpForward", "DeletionProtection"},
+		ConfidentialInstanceConfig: expandConfidentialInstanceConfig(d),
+		ShieldedInstanceConfig:     expandShieldedVmConfigs(d),
+		DisplayDevice:              expandDisplayDevice(d),
+		ResourcePolicies:           convertStringArr(d.Get("resource_policies").([]interface{})),
 	}, nil
 }
 
@@ -1093,7 +1110,7 @@ func resourceComputeInstanceRead(d *schema.ResourceData, meta interface{}) error
 	d.Set("scratch_disk", scratchDisks)
 	d.Set("scheduling", flattenScheduling(instance.Scheduling))
 	d.Set("guest_accelerator", flattenGuestAccelerators(instance.GuestAccelerators))
-	d.Set("shielded_instance_config", flattenShieldedVmConfig(instance.ShieldedVmConfig))
+	d.Set("shielded_instance_config", flattenShieldedVmConfig(instance.ShieldedInstanceConfig))
 	d.Set("enable_display", flattenEnableDisplay(instance.DisplayDevice))
 	d.Set("cpu_platform", instance.CpuPlatform)
 	d.Set("min_cpu_platform", instance.MinCpuPlatform)
@@ -1106,7 +1123,7 @@ func resourceComputeInstanceRead(d *schema.ResourceData, meta interface{}) error
 	d.Set("description", instance.Description)
 	d.Set("hostname", instance.Hostname)
 	d.Set("current_status", instance.Status)
-
+	d.Set("confidential_instance_config", flattenConfidentialInstanceConfig(instance.ConfidentialInstanceConfig))
 	if d.Get("desired_status") != "" {
 		d.Set("desired_status", instance.Status)
 	}
@@ -1623,7 +1640,7 @@ func resourceComputeInstanceUpdate(d *schema.ResourceData, meta interface{}) err
 	if d.HasChange("shielded_instance_config") {
 		shieldedVmConfig := expandShieldedVmConfigs(d)
 
-		op, err := config.clientComputeBeta.Instances.UpdateShieldedVmConfig(project, zone, instance.Name, shieldedVmConfig).Do()
+		op, err := config.clientComputeBeta.Instances.UpdateShieldedInstanceConfig(project, zone, instance.Name, shieldedVmConfig).Do()
 		if err != nil {
 			return fmt.Errorf("Error updating shielded vm config: %s", err)
 		}

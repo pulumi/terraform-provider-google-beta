@@ -1152,7 +1152,7 @@ func resourceContainerCluster() *schema.Resource {
 // previous syntax requires that schema.SchemaConfigModeAttr is set on the field it is advisable that
 // we have a work around for removing guest accelerators. Also Terraform 0.11 cannot use dynamic blocks
 // so this isn't a solution for module authors who want to dynamically omit guest accelerators
-// See https://github.com/terraform-providers/terraform-provider-google/issues/3786
+// See https://github.com/hashicorp/terraform-provider-google/issues/3786
 func resourceNodeConfigEmptyGuestAccelerator(diff *schema.ResourceDiff, meta interface{}) error {
 	old, new := diff.GetChange("node_config.0.guest_accelerator")
 	oList := old.([]interface{})
@@ -1507,12 +1507,11 @@ func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) erro
 	if cluster.ShieldedNodes != nil {
 		d.Set("enable_shielded_nodes", cluster.ShieldedNodes.Enabled)
 	}
-	d.Set("enable_tpu", cluster.EnableTpu)
-	d.Set("tpu_ipv4_cidr_block", cluster.TpuIpv4CidrBlock)
-
 	if err := d.Set("release_channel", flattenReleaseChannel(cluster.ReleaseChannel)); err != nil {
 		return err
 	}
+	d.Set("enable_tpu", cluster.EnableTpu)
+	d.Set("tpu_ipv4_cidr_block", cluster.TpuIpv4CidrBlock)
 
 	if err := d.Set("default_snat_status", flattenDefaultSnatStatus(cluster.NetworkConfig.DefaultSnatStatus)); err != nil {
 		return err
@@ -1722,6 +1721,36 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		d.SetPartial("enable_shielded_nodes")
 	}
 
+	if d.HasChange("release_channel") {
+		req := &containerBeta.UpdateClusterRequest{
+			Update: &containerBeta.ClusterUpdate{
+				DesiredReleaseChannel: expandReleaseChannel(d.Get("release_channel")),
+			},
+		}
+		updateF := func() error {
+			log.Println("[DEBUG] updating release_channel")
+			name := containerClusterFullName(project, location, clusterName)
+			op, err := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req).Do()
+			if err != nil {
+				return err
+			}
+
+			// Wait until it's updated
+			err = containerOperationWait(config, op, project, location, "updating Release Channel", d.Timeout(schema.TimeoutUpdate))
+			log.Println("[DEBUG] done updating release_channel")
+			return err
+		}
+
+		// Call update serially.
+		if err := lockedCall(lockKey, updateF); err != nil {
+			return err
+		}
+
+		log.Printf("[INFO] GKE cluster %s Release Channel has been updated to %#v", d.Id(), req.Update.DesiredReleaseChannel)
+
+		d.SetPartial("release_channel")
+	}
+
 	if d.HasChange("enable_intranode_visibility") {
 		enabled := d.Get("enable_intranode_visibility").(bool)
 		req := &containerBeta.UpdateClusterRequest{
@@ -1786,35 +1815,6 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		d.SetPartial("default_snat_status")
 	}
 
-	if d.HasChange("release_channel") {
-		req := &containerBeta.UpdateClusterRequest{
-			Update: &containerBeta.ClusterUpdate{
-				DesiredReleaseChannel: expandReleaseChannel(d.Get("release_channel")),
-			},
-		}
-		updateF := func() error {
-			log.Println("[DEBUG] updating release_channel")
-			name := containerClusterFullName(project, location, clusterName)
-			op, err := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req).Do()
-			if err != nil {
-				return err
-			}
-
-			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating Release Channel", d.Timeout(schema.TimeoutUpdate))
-			log.Println("[DEBUG] done updating release_channel")
-			return err
-		}
-
-		// Call update serially.
-		if err := lockedCall(lockKey, updateF); err != nil {
-			return err
-		}
-
-		log.Printf("[INFO] GKE cluster %s Release Channel has been updated to %#v", d.Id(), req.Update.DesiredReleaseChannel)
-
-		d.SetPartial("release_channel")
-	}
 	if d.HasChange("maintenance_policy") {
 		req := &containerBeta.SetMaintenancePolicyRequest{
 			MaintenancePolicy: expandMaintenancePolicy(d, meta),
@@ -3469,7 +3469,7 @@ func containerClusterPrivateClusterConfigCustomDiff(d *schema.ResourceDiff, meta
 
 		// We can only apply this validation if we know the final value of the field, and we may
 		// not know the final value if users feed the value into their config in unintuitive ways.
-		// https://github.com/terraform-providers/terraform-provider-google/issues/4186
+		// https://github.com/hashicorp/terraform-provider-google/issues/4186
 		blockValueKnown := d.NewValueKnown("private_cluster_config.0.master_ipv4_cidr_block")
 
 		if blockValueKnown && (block == nil || block == "") {

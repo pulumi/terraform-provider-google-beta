@@ -40,8 +40,6 @@ To get more information about Realm, see:
 
 ```hcl
 resource "google_game_services_realm" "default" {
-  provider = google-beta
-
   realm_id  = "tf-test-realm"
   time_zone = "EST"
   location  = "global"
@@ -114,9 +112,9 @@ This resource provides the following
 Realm can be imported using any of these accepted formats:
 
 ```
-$ terraform import -provider=google-beta google_game_services_realm.default projects/{{project}}/locations/{{location}}/realms//{{name}}
-$ terraform import -provider=google-beta google_game_services_realm.default {{project}}/{{location}}/{{name}}
-$ terraform import -provider=google-beta google_game_services_realm.default {{location}}/{{name}}
+$ terraform import google_game_services_realm.default projects/{{project}}/locations/{{location}}/realms/{{realm_id}}
+$ terraform import google_game_services_realm.default {{project}}/{{location}}/{{realm_id}}
+$ terraform import google_game_services_realm.default {{location}}/{{realm_id}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`

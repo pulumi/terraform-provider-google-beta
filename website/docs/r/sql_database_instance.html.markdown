@@ -213,7 +213,7 @@ includes an up-to-date reference of supported versions.
 
 * `replica_configuration` - (Optional) The configuration for replication. The
     configuration is detailed below.
-    
+
 * `root_password` - (Optional) Initial root password. Required for MS SQL Server, ignored by MySQL and PostgreSQL.
 
 * `encryption_key_name` - (Optional)
@@ -282,6 +282,7 @@ The optional `settings.backup_configuration` subblock supports:
 
 * `start_time` - (Optional) `HH:MM` format time indicating when backup
     configuration starts.
+* `point_in_time_recovery_enabled` - (Optional) True if Point-in-time recovery is enabled. Will restart database if enabled after instance creation.
 
 The optional `settings.ip_configuration` subblock supports:
 
@@ -391,9 +392,9 @@ instance.
 
 * `first_ip_address` - The first IPv4 address of any type assigned.
 
-* `public_ip_address` - The first public (`PRIMARY`) IPv4 address assigned. 
+* `public_ip_address` - The first public (`PRIMARY`) IPv4 address assigned.
 
-* `private_ip_address` - The first private (`PRIVATE`) IPv4 address assigned. 
+* `private_ip_address` - The first private (`PRIVATE`) IPv4 address assigned.
 
 * `settings.version` - Used to make sure changes to the `settings` block are
     atomic.

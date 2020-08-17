@@ -40,15 +40,11 @@ To get more information about GameServerConfig, see:
 
 ```hcl
 resource "google_game_services_game_server_deployment" "default" {
-  provider = google-beta
-
   deployment_id  = "tf-test-deployment"
   description = "a deployment description"
 }
 
 resource "google_game_services_game_server_config" "default" {
-  provider = google-beta
-
   config_id     = "tf-test-config"
   deployment_id = google_game_services_game_server_deployment.default.deployment_id
   description   = "a config description"
@@ -215,9 +211,9 @@ This resource provides the following
 GameServerConfig can be imported using any of these accepted formats:
 
 ```
-$ terraform import -provider=google-beta google_game_services_game_server_config.default projects/{{project}}/locations/{{location}}/gameServerDeployments/{{deployment_id}}/configs/{{name}}
-$ terraform import -provider=google-beta google_game_services_game_server_config.default {{project}}/{{location}}/{{deployment_id}}/{{name}}
-$ terraform import -provider=google-beta google_game_services_game_server_config.default {{location}}/{{deployment_id}}/{{name}}
+$ terraform import google_game_services_game_server_config.default projects/{{project}}/locations/{{location}}/gameServerDeployments/{{deployment_id}}/configs/{{config_id}}
+$ terraform import google_game_services_game_server_config.default {{project}}/{{location}}/{{deployment_id}}/{{config_id}}
+$ terraform import google_game_services_game_server_config.default {{location}}/{{deployment_id}}/{{config_id}}
 ```
 
 -> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
