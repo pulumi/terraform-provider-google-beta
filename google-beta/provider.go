@@ -109,6 +109,14 @@ func Provider() terraform.ResourceProvider {
 			},
 
 			// Generated Products
+			"access_approval_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_ACCESS_APPROVAL_CUSTOM_ENDPOINT",
+				}, AccessApprovalDefaultBasePath),
+			},
 			"access_context_manager_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -700,9 +708,9 @@ func Provider() terraform.ResourceProvider {
 	return provider
 }
 
-// Generated resources: 180
-// Generated IAM resources: 66
-// Total generated resources: 246
+// Generated resources: 186
+// Generated IAM resources: 69
+// Total generated resources: 255
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -711,11 +719,17 @@ func ResourceMap() map[string]*schema.Resource {
 func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 	return mergeResourceMaps(
 		map[string]*schema.Resource{
+			"google_folder_access_approval_settings":                       resourceAccessApprovalFolderSettings(),
+			"google_project_access_approval_settings":                      resourceAccessApprovalProjectSettings(),
+			"google_organization_access_approval_settings":                 resourceAccessApprovalOrganizationSettings(),
 			"google_access_context_manager_access_policy":                  resourceAccessContextManagerAccessPolicy(),
 			"google_access_context_manager_access_level":                   resourceAccessContextManagerAccessLevel(),
+			"google_access_context_manager_access_levels":                  resourceAccessContextManagerAccessLevels(),
 			"google_access_context_manager_service_perimeter":              resourceAccessContextManagerServicePerimeter(),
+			"google_access_context_manager_service_perimeters":             resourceAccessContextManagerServicePerimeters(),
 			"google_access_context_manager_service_perimeter_resource":     resourceAccessContextManagerServicePerimeterResource(),
 			"google_active_directory_domain":                               resourceActiveDirectoryDomain(),
+			"google_active_directory_domain_trust":                         resourceActiveDirectoryDomainTrust(),
 			"google_app_engine_domain_mapping":                             resourceAppEngineDomainMapping(),
 			"google_app_engine_firewall_rule":                              resourceAppEngineFirewallRule(),
 			"google_app_engine_standard_app_version":                       resourceAppEngineStandardAppVersion(),
@@ -729,6 +743,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_bigquery_dataset":                                      resourceBigQueryDataset(),
 			"google_bigquery_dataset_access":                               resourceBigQueryDatasetAccess(),
 			"google_bigquery_job":                                          resourceBigQueryJob(),
+			"google_bigquery_table_iam_binding":                            ResourceIamBinding(BigQueryTableIamSchema, BigQueryTableIamUpdaterProducer, BigQueryTableIdParseFunc),
+			"google_bigquery_table_iam_member":                             ResourceIamMember(BigQueryTableIamSchema, BigQueryTableIamUpdaterProducer, BigQueryTableIdParseFunc),
+			"google_bigquery_table_iam_policy":                             ResourceIamPolicy(BigQueryTableIamSchema, BigQueryTableIamUpdaterProducer, BigQueryTableIdParseFunc),
 			"google_bigquery_connection":                                   resourceBigqueryConnectionConnection(),
 			"google_bigquery_data_transfer_config":                         resourceBigqueryDataTransferConfig(),
 			"google_bigquery_reservation":                                  resourceBigqueryReservationReservation(),
@@ -1127,6 +1144,7 @@ func providerConfigure(d *schema.ResourceData, p *schema.Provider, terraformVers
 	config.BatchingConfig = batchCfg
 
 	// Generated products
+	config.AccessApprovalBasePath = d.Get("access_approval_custom_endpoint").(string)
 	config.AccessContextManagerBasePath = d.Get("access_context_manager_custom_endpoint").(string)
 	config.ActiveDirectoryBasePath = d.Get("active_directory_custom_endpoint").(string)
 	config.AppEngineBasePath = d.Get("app_engine_custom_endpoint").(string)

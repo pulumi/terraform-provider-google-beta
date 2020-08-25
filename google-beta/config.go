@@ -80,6 +80,7 @@ type Config struct {
 
 	tokenSource oauth2.TokenSource
 
+	AccessApprovalBasePath       string
 	AccessContextManagerBasePath string
 	ActiveDirectoryBasePath      string
 	AppEngineBasePath            string
@@ -239,11 +240,12 @@ type Config struct {
 }
 
 // Generated product base paths
+var AccessApprovalDefaultBasePath = "https://accessapproval.googleapis.com/v1/"
 var AccessContextManagerDefaultBasePath = "https://accesscontextmanager.googleapis.com/v1/"
 var ActiveDirectoryDefaultBasePath = "https://managedidentities.googleapis.com/v1/"
 var AppEngineDefaultBasePath = "https://appengine.googleapis.com/v1/"
 var ArtifactRegistryDefaultBasePath = "https://artifactregistry.googleapis.com/v1beta1/"
-var BigQueryDefaultBasePath = "https://www.googleapis.com/bigquery/v2/"
+var BigQueryDefaultBasePath = "https://bigquery.googleapis.com/bigquery/v2/"
 var BigqueryConnectionDefaultBasePath = "https://bigqueryconnection.googleapis.com/v1beta1/"
 var BigqueryDataTransferDefaultBasePath = "https://bigquerydatatransfer.googleapis.com/v1/"
 var BigqueryReservationDefaultBasePath = "https://bigqueryreservation.googleapis.com/v1beta1/"
@@ -258,7 +260,7 @@ var CloudIotDefaultBasePath = "https://cloudiot.googleapis.com/v1/"
 var CloudRunDefaultBasePath = "https://{{location}}-run.googleapis.com/"
 var CloudSchedulerDefaultBasePath = "https://cloudscheduler.googleapis.com/v1/"
 var CloudTasksDefaultBasePath = "https://cloudtasks.googleapis.com/v2/"
-var ComputeDefaultBasePath = "https://www.googleapis.com/compute/beta/"
+var ComputeDefaultBasePath = "https://compute.googleapis.com/compute/beta/"
 var ContainerAnalysisDefaultBasePath = "https://containeranalysis.googleapis.com/v1beta1/"
 var DataCatalogDefaultBasePath = "https://datacatalog.googleapis.com/v1/"
 var DataFusionDefaultBasePath = "https://datafusion.googleapis.com/v1beta1/"
@@ -266,7 +268,7 @@ var DataprocDefaultBasePath = "https://dataproc.googleapis.com/v1beta2/"
 var DatastoreDefaultBasePath = "https://datastore.googleapis.com/v1/"
 var DeploymentManagerDefaultBasePath = "https://www.googleapis.com/deploymentmanager/v2/"
 var DialogflowDefaultBasePath = "https://dialogflow.googleapis.com/v2/"
-var DNSDefaultBasePath = "https://www.googleapis.com/dns/v1beta2/"
+var DNSDefaultBasePath = "https://dns.googleapis.com/dns/v1beta2/"
 var FilestoreDefaultBasePath = "https://file.googleapis.com/v1beta1/"
 var FirebaseDefaultBasePath = "https://firebase.googleapis.com/v1beta1/"
 var FirestoreDefaultBasePath = "https://firestore.googleapis.com/v1/"
@@ -296,7 +298,7 @@ var ServiceUsageDefaultBasePath = "https://serviceusage.googleapis.com/v1beta1/"
 var SourceRepoDefaultBasePath = "https://sourcerepo.googleapis.com/v1/"
 var SpannerDefaultBasePath = "https://spanner.googleapis.com/v1/"
 var SQLDefaultBasePath = "https://sqladmin.googleapis.com/sql/v1beta4/"
-var StorageDefaultBasePath = "https://www.googleapis.com/storage/v1/"
+var StorageDefaultBasePath = "https://storage.googleapis.com/storage/v1/"
 var TPUDefaultBasePath = "https://tpu.googleapis.com/v1/"
 var VPCAccessDefaultBasePath = "https://vpcaccess.googleapis.com/v1/"
 
@@ -806,6 +808,7 @@ func removeBasePathVersion(url string) string {
 // values to a default. After using this, you should call config.LoadAndValidate.
 func ConfigureBasePaths(c *Config) {
 	// Generated Products
+	c.AccessApprovalBasePath = AccessApprovalDefaultBasePath
 	c.AccessContextManagerBasePath = AccessContextManagerDefaultBasePath
 	c.ActiveDirectoryBasePath = ActiveDirectoryDefaultBasePath
 	c.AppEngineBasePath = AppEngineDefaultBasePath

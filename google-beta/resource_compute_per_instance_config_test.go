@@ -9,6 +9,8 @@ import (
 )
 
 func TestAccComputePerInstanceConfig_statefulBasic(t *testing.T) {
+	// Multiple fine-grained resources
+	skipIfVcr(t)
 	t.Parallel()
 
 	context := map[string]interface{}{
@@ -279,7 +281,7 @@ resource "google_compute_instance_template" "igm-basic" {
 
 resource "google_compute_instance_group_manager" "igm" {
   description = "Terraform test instance group manager"
-  name        = "igm-%{random_suffix}"
+  name        = "tf-test-igm-%{random_suffix}"
 
   version {
     name              = "prod"
