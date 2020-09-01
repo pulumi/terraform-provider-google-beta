@@ -1,4 +1,67 @@
+## 3.37.0 (August 31, 2020)
+NOTES:
+* Drop recommendation to use -provider= on import in documentation ([#2417](https://github.com/hashicorp/terraform-provider-google-beta/pull/2417))
+
+FEATURES:
+* **New Resource:** `google_compute_image_iam_binding` ([#2410](https://github.com/hashicorp/terraform-provider-google-beta/pull/2410))
+* **New Resource:** `google_compute_image_iam_member` ([#2410](https://github.com/hashicorp/terraform-provider-google-beta/pull/2410))
+* **New Resource:** `google_compute_image_iam_policy` ([#2410](https://github.com/hashicorp/terraform-provider-google-beta/pull/2410))
+* **New Resource:** `google_compute_disk_iam_binding` ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** `google_compute_disk_iam_member` ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** `google_compute_disk_iam_policy` ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** `google_compute_region_disk_iam_binding` ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** `google_compute_region_disk_iam_member` ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** `google_compute_region_disk_iam_policy` ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+
+IMPROVEMENTS:
+* appengine: added `vpc_access_connector` field to `google_app_engine_standard_app_version` resource ([#2405](https://github.com/hashicorp/terraform-provider-google-beta/pull/2405))
+* bigquery: added `notification_pubsub_topic` field to `google_bigquery_data_transfer_config` resource ([#2411](https://github.com/hashicorp/terraform-provider-google-beta/pull/2411))
+* composer: added `database_config` and `web_server_config` to `google_composer_environment` resource ([#2419](https://github.com/hashicorp/terraform-provider-google-beta/pull/2419))
+* compute: Added custom metadata fields and filter expressions to `google_compute_subnetwork` flow log configuration ([#2416](https://github.com/hashicorp/terraform-provider-google-beta/pull/2416))
+* compute: Added support to `google_compute_backend_service` for setting a serverless regional network endpoint group as `backend.group` ([#2408](https://github.com/hashicorp/terraform-provider-google-beta/pull/2408))
+* compute: added support for pd-balanced disk type for `google_compute_instance` ([#2421](https://github.com/hashicorp/terraform-provider-google-beta/pull/2421))
+* container: added support for `kubelet_config` and `linux_node_config` to GKE node pools ([#2279](https://github.com/hashicorp/terraform-provider-google-beta/pull/2279), [#2403](https://github.com/hashicorp/terraform-provider-google-beta/pull/2403))
+* container: added support for pd-balanced disk type for `google_container_node_pool` ([#2421](https://github.com/hashicorp/terraform-provider-google-beta/pull/2421))
+* memcached: added discovery_endpoint to `resource_memcached_instance` ([#2414](https://github.com/hashicorp/terraform-provider-google-beta/pull/2414))
+* pubsub: added `retry_policy` to `google_pubsub_subscription` resource ([#2412](https://github.com/hashicorp/terraform-provider-google-beta/pull/2412))
+
+BUG FIXES:
+* compute: fixed an issue where `google_compute_url_map` `path_matcher.default_route_action` would conflict with `default_url_redirect` ([#2406](https://github.com/hashicorp/terraform-provider-google-beta/pull/2406))
+* kms: updated `data_source_secret_manager_secret_version` to have consistent id value ([#2415](https://github.com/hashicorp/terraform-provider-google-beta/pull/2415))
+
 ## 3.36.0 (August 24, 2020)
+
+FEATURES:
+* **New Resource:** `google_active_directory_domain_trust` ([#2401](https://github.com/hashicorp/terraform-provider-google-beta/pull/2401))
+* **New Resource:** `google_access_context_manager_service_perimeters` ([#2382](https://github.com/hashicorp/terraform-provider-google-beta/pull/2382))
+* **New Resource:** `google_access_context_manager_access_levels` ([#2382](https://github.com/hashicorp/terraform-provider-google-beta/pull/2382))
+* **New Resource:** `google_folder_access_approval_settings` ([#2373](https://github.com/hashicorp/terraform-provider-google-beta/pull/2373))
+* **New Resource:** `google_organization_access_approval_settings` ([#2373](https://github.com/hashicorp/terraform-provider-google-beta/pull/2373))
+* **New Resource:** `google_project_access_approval_settings` ([#2373](https://github.com/hashicorp/terraform-provider-google-beta/pull/2373))
+* **New Resource:** `google_bigquery_table_iam_policy` ([#2392](https://github.com/hashicorp/terraform-provider-google-beta/pull/2392))
+* **New Resource:** `google_bigquery_table_iam_binding` ([#2392](https://github.com/hashicorp/terraform-provider-google-beta/pull/2392))
+* **New Resource:** `google_bigquery_table_iam_member` ([#2392](https://github.com/hashicorp/terraform-provider-google-beta/pull/2392))
+
+IMPROVEMENTS:
+* billing: added `last_period_amount` field to `google_billing_budget` to allow setting budget amount automatically to the last billing period's spend. ([#2378](https://github.com/hashicorp/terraform-provider-google-beta/pull/2378))
+* compute: added confidential_instance_config block to google_compute_instance ([#2369](https://github.com/hashicorp/terraform-provider-google-beta/pull/2369))
+* compute: added confidential_instance_config block to google_compute_instance_template ([#2369](https://github.com/hashicorp/terraform-provider-google-beta/pull/2369))
+* compute: added grpc_health_check block to compute_health_check ([#2389](https://github.com/hashicorp/terraform-provider-google-beta/pull/2389))
+* compute: added grpc_health_check block to compute_region_health_check ([#2389](https://github.com/hashicorp/terraform-provider-google-beta/pull/2389))
+* pubsub: added `enable_message_ordering` support to `google_pubsub_subscription` ([#2390](https://github.com/hashicorp/terraform-provider-google-beta/pull/2390))
+* sql: added project field to `google_sql_database_instance` datasource. ([#2370](https://github.com/hashicorp/terraform-provider-google-beta/pull/2370))
+* storage: added `ARCHIVE` as an accepted class for `google_storage_bucket` and `google_storage_bucket_object` ([#2385](https://github.com/hashicorp/terraform-provider-google-beta/pull/2385))
+
+BUG FIXES:
+* all: updated base urls for compute, dns, storage, and bigquery APIs to their recommended endpoints ([#2396](https://github.com/hashicorp/terraform-provider-google-beta/pull/2396))
+* bigquery: fixed a bug where `dataset_access.iam_member` would produce inconsistent results after apply. ([#2397](https://github.com/hashicorp/terraform-provider-google-beta/pull/2397))
+* bigquery: fixed an issue with `use_legacy_sql` not being set to `false`. ([#2375](https://github.com/hashicorp/terraform-provider-google-beta/pull/2375))
+* cloudidentity: fixed a bug with importing `google_cloud_identity_group` and `google_cloud_identity_group_membership` ([#2379](https://github.com/hashicorp/terraform-provider-google-beta/pull/2379))
+* cloudidentity: fixed cloud identity datasources to handle pagination ([#2387](https://github.com/hashicorp/terraform-provider-google-beta/pull/2387))
+* compute: set the default value for log_config.enable on `google_compute_health_check` to avoid permanent diff on plan/apply. ([#2399](https://github.com/hashicorp/terraform-provider-google-beta/pull/2399))
+* dns: fixed an issue where `google_dns_managed_zone` would not remove `private_visibility_config` on updates ([#2380](https://github.com/hashicorp/terraform-provider-google-beta/pull/2380))
+* sql: fixed an issue where `google_sql_database_instance` would throw an error when removing `private_network`. Removing `private_network` now recreates the resource. ([#2400](https://github.com/hashicorp/terraform-provider-google-beta/pull/2400))
+
 ## 3.35.0 (August 17, 2020)
 NOTES:
 * all: Updated lists of enums to display the enum options in the documentation pages. ([#2340](https://github.com/hashicorp/terraform-provider-google-beta/pull/2340))

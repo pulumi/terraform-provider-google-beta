@@ -314,7 +314,7 @@ resource "google_compute_region_health_check" "http2-region-health-check" {
 
 
 ```hcl
-resource "google_compute_region_health_check" "grpc-health-check" {
+resource "google_compute_region_health_check" "grpc-region-health-check" {
   name = "grpc-region-health-check"
 
   timeout_sec        = 1
@@ -334,7 +334,7 @@ resource "google_compute_region_health_check" "grpc-health-check" {
 
 
 ```hcl
-resource "google_compute_region_health_check" "grpc-health-check" {
+resource "google_compute_region_health_check" "grpc-region-health-check" {
   name = "grpc-region-health-check"
 
   timeout_sec        = 1
@@ -753,9 +753,6 @@ $ terraform import google_compute_region_health_check.default {{project}}/{{regi
 $ terraform import google_compute_region_health_check.default {{region}}/{{name}}
 $ terraform import google_compute_region_health_check.default {{name}}
 ```
-
--> If you're importing a resource with beta features, make sure to include `-provider=google-beta`
-as an argument so that Terraform uses the correct provider to import your resource.
 
 ## User Project Overrides
 
