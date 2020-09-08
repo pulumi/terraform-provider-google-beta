@@ -853,6 +853,55 @@ A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "201
 				},
 				ExactlyOneOf: []string{"one_time_schedule", "recurring_schedule"},
 			},
+			"rollout": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				ForceNew:    true,
+				Description: `Rollout strategy of the patch job.`,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"disruption_budget": {
+							Type:     schema.TypeList,
+							Required: true,
+							ForceNew: true,
+							Description: `The maximum number (or percentage) of VMs per zone to disrupt at any given moment. The number of VMs calculated from multiplying the percentage by the total number of VMs in a zone is rounded up.
+During patching, a VM is considered disrupted from the time the agent is notified to begin until patching has completed. This disruption time includes the time to complete reboot and any post-patch steps.
+A VM contributes to the disruption budget if its patching operation fails either when applying the patches, running pre or post patch steps, or if it fails to respond with a success notification before timing out. VMs that are not running or do not have an active agent do not count toward this disruption budget.
+For zone-by-zone rollouts, if the disruption budget in a zone is exceeded, the patch job stops, because continuing to the next zone requires completion of the patch process in the previous zone.
+For example, if the disruption budget has a fixed value of 10, and 8 VMs fail to patch in the current zone, the patch job continues to patch 2 VMs at a time until the zone is completed. When that zone is completed successfully, patching begins with 10 VMs at a time in the next zone. If 10 VMs in the next zone fail to patch, the patch job stops.`,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"fixed": {
+										Type:         schema.TypeInt,
+										Optional:     true,
+										ForceNew:     true,
+										ValidateFunc: validation.IntAtLeast(1),
+										Description:  `Specifies a fixed value.`,
+										ExactlyOneOf: []string{"rollout.0.disruption_budget.0.fixed", "rollout.0.disruption_budget.0.percentage"},
+									},
+									"percentage": {
+										Type:         schema.TypeInt,
+										Optional:     true,
+										ForceNew:     true,
+										ValidateFunc: validation.IntBetween(0, 100),
+										Description:  `Specifies the relative value defined as a percentage, which will be multiplied by a reference value.`,
+										ExactlyOneOf: []string{"rollout.0.disruption_budget.0.fixed", "rollout.0.disruption_budget.0.percentage"},
+									},
+								},
+							},
+						},
+						"mode": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ForceNew:     true,
+							ValidateFunc: validation.StringInSlice([]string{"ZONE_BY_ZONE", "CONCURRENT_ZONES"}, false),
+							Description:  `Mode of the patch rollout. Possible values: ["ZONE_BY_ZONE", "CONCURRENT_ZONES"]`,
+						},
+					},
+				},
+			},
 			"create_time": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -927,6 +976,12 @@ func resourceOSConfigPatchDeploymentCreate(d *schema.ResourceData, meta interfac
 	} else if v, ok := d.GetOkExists("recurring_schedule"); !isEmptyValue(reflect.ValueOf(recurringScheduleProp)) && (ok || !reflect.DeepEqual(v, recurringScheduleProp)) {
 		obj["recurringSchedule"] = recurringScheduleProp
 	}
+	rolloutProp, err := expandOSConfigPatchDeploymentRollout(d.Get("rollout"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("rollout"); !isEmptyValue(reflect.ValueOf(rolloutProp)) && (ok || !reflect.DeepEqual(v, rolloutProp)) {
+		obj["rollout"] = rolloutProp
+	}
 
 	obj, err = resourceOSConfigPatchDeploymentEncoder(d, meta, obj)
 	if err != nil {
@@ -939,11 +994,20 @@ func resourceOSConfigPatchDeploymentCreate(d *schema.ResourceData, meta interfac
 	}
 
 	log.Printf("[DEBUG] Creating new PatchDeployment: %#v", obj)
+	billingProject := ""
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
 	}
-	res, err := sendRequestWithTimeout(config, "POST", project, url, obj, d.Timeout(schema.TimeoutCreate))
+	billingProject = project
+
+	// err == nil indicates that the billing_project value was found
+	if bp, err := getBillingProject(d, config); err == nil {
+		billingProject = bp
+	}
+
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating PatchDeployment: %s", err)
 	}
@@ -987,11 +1051,20 @@ func resourceOSConfigPatchDeploymentRead(d *schema.ResourceData, meta interface{
 		return err
 	}
 
+	billingProject := ""
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
 	}
-	res, err := sendRequest(config, "GET", project, url, nil)
+	billingProject = project
+
+	// err == nil indicates that the billing_project value was found
+	if bp, err := getBillingProject(d, config); err == nil {
+		billingProject = bp
+	}
+
+	res, err := sendRequest(config, "GET", billingProject, url, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("OSConfigPatchDeployment %q", d.Id()))
 	}
@@ -1042,6 +1115,9 @@ func resourceOSConfigPatchDeploymentRead(d *schema.ResourceData, meta interface{
 	if err := d.Set("recurring_schedule", flattenOSConfigPatchDeploymentRecurringSchedule(res["recurringSchedule"], d, config)); err != nil {
 		return fmt.Errorf("Error reading PatchDeployment: %s", err)
 	}
+	if err := d.Set("rollout", flattenOSConfigPatchDeploymentRollout(res["rollout"], d, config)); err != nil {
+		return fmt.Errorf("Error reading PatchDeployment: %s", err)
+	}
 
 	return nil
 }
@@ -1049,10 +1125,13 @@ func resourceOSConfigPatchDeploymentRead(d *schema.ResourceData, meta interface{
 func resourceOSConfigPatchDeploymentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	billingProject := ""
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
 	}
+	billingProject = project
 
 	url, err := replaceVars(d, config, "{{OSConfigBasePath}}{{name}}")
 	if err != nil {
@@ -1062,7 +1141,12 @@ func resourceOSConfigPatchDeploymentDelete(d *schema.ResourceData, meta interfac
 	var obj map[string]interface{}
 	log.Printf("[DEBUG] Deleting PatchDeployment %q", d.Id())
 
-	res, err := sendRequestWithTimeout(config, "DELETE", project, url, obj, d.Timeout(schema.TimeoutDelete))
+	// err == nil indicates that the billing_project value was found
+	if bp, err := getBillingProject(d, config); err == nil {
+		billingProject = bp
+	}
+
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "PatchDeployment")
 	}
@@ -1863,6 +1947,74 @@ func flattenOSConfigPatchDeploymentRecurringScheduleMonthlyWeekDayOfMonthDayOfWe
 }
 
 func flattenOSConfigPatchDeploymentRecurringScheduleMonthlyMonthDay(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	// Handles the string fixed64 format
+	if strVal, ok := v.(string); ok {
+		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+			return intVal
+		}
+	}
+
+	// number values are represented as float64
+	if floatVal, ok := v.(float64); ok {
+		intVal := int(floatVal)
+		return intVal
+	}
+
+	return v // let terraform core handle it otherwise
+}
+
+func flattenOSConfigPatchDeploymentRollout(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	if v == nil {
+		return nil
+	}
+	original := v.(map[string]interface{})
+	if len(original) == 0 {
+		return nil
+	}
+	transformed := make(map[string]interface{})
+	transformed["mode"] =
+		flattenOSConfigPatchDeploymentRolloutMode(original["mode"], d, config)
+	transformed["disruption_budget"] =
+		flattenOSConfigPatchDeploymentRolloutDisruptionBudget(original["disruptionBudget"], d, config)
+	return []interface{}{transformed}
+}
+func flattenOSConfigPatchDeploymentRolloutMode(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
+func flattenOSConfigPatchDeploymentRolloutDisruptionBudget(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	if v == nil {
+		return nil
+	}
+	original := v.(map[string]interface{})
+	if len(original) == 0 {
+		return nil
+	}
+	transformed := make(map[string]interface{})
+	transformed["fixed"] =
+		flattenOSConfigPatchDeploymentRolloutDisruptionBudgetFixed(original["fixed"], d, config)
+	transformed["percentage"] =
+		flattenOSConfigPatchDeploymentRolloutDisruptionBudgetPercentage(original["percentage"], d, config)
+	return []interface{}{transformed}
+}
+func flattenOSConfigPatchDeploymentRolloutDisruptionBudgetFixed(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	// Handles the string fixed64 format
+	if strVal, ok := v.(string); ok {
+		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+			return intVal
+		}
+	}
+
+	// number values are represented as float64
+	if floatVal, ok := v.(float64); ok {
+		intVal := int(floatVal)
+		return intVal
+	}
+
+	return v // let terraform core handle it otherwise
+}
+
+func flattenOSConfigPatchDeploymentRolloutDisruptionBudgetPercentage(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
 		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
@@ -3023,6 +3175,70 @@ func expandOSConfigPatchDeploymentRecurringScheduleMonthlyWeekDayOfMonthDayOfWee
 }
 
 func expandOSConfigPatchDeploymentRecurringScheduleMonthlyMonthDay(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandOSConfigPatchDeploymentRollout(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+	raw := l[0]
+	original := raw.(map[string]interface{})
+	transformed := make(map[string]interface{})
+
+	transformedMode, err := expandOSConfigPatchDeploymentRolloutMode(original["mode"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedMode); val.IsValid() && !isEmptyValue(val) {
+		transformed["mode"] = transformedMode
+	}
+
+	transformedDisruptionBudget, err := expandOSConfigPatchDeploymentRolloutDisruptionBudget(original["disruption_budget"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedDisruptionBudget); val.IsValid() && !isEmptyValue(val) {
+		transformed["disruptionBudget"] = transformedDisruptionBudget
+	}
+
+	return transformed, nil
+}
+
+func expandOSConfigPatchDeploymentRolloutMode(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandOSConfigPatchDeploymentRolloutDisruptionBudget(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	l := v.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil, nil
+	}
+	raw := l[0]
+	original := raw.(map[string]interface{})
+	transformed := make(map[string]interface{})
+
+	transformedFixed, err := expandOSConfigPatchDeploymentRolloutDisruptionBudgetFixed(original["fixed"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedFixed); val.IsValid() && !isEmptyValue(val) {
+		transformed["fixed"] = transformedFixed
+	}
+
+	transformedPercentage, err := expandOSConfigPatchDeploymentRolloutDisruptionBudgetPercentage(original["percentage"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedPercentage); val.IsValid() && !isEmptyValue(val) {
+		transformed["percentage"] = transformedPercentage
+	}
+
+	return transformed, nil
+}
+
+func expandOSConfigPatchDeploymentRolloutDisruptionBudgetFixed(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandOSConfigPatchDeploymentRolloutDisruptionBudgetPercentage(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 

@@ -40,7 +40,7 @@ To get more information about Instance, see:
 
 ```hcl
 resource "google_data_fusion_instance" "basic_instance" {
-  provider = "google-beta"
+  provider = google-beta
   name = "my-instance"
   region = "us-central1"
   type = "BASIC"
@@ -56,7 +56,7 @@ resource "google_data_fusion_instance" "basic_instance" {
 
 ```hcl
 resource "google_data_fusion_instance" "extended_instance" {
-  provider = "google-beta"
+  provider = google-beta
   name = "my-instance"
   description = "My Data Fusion instance"
   region = "us-central1"

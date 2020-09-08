@@ -101,8 +101,8 @@ If not specified, this defaults to 100.`,
 				Type:         schema.TypeString,
 				Optional:     true,
 				ForceNew:     true,
-				ValidateFunc: validation.StringInSlice([]string{"DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD", ""}, false),
-				Description:  `Possible disk types for notebook instances. Possible values: ["DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD"]`,
+				ValidateFunc: validation.StringInSlice([]string{"DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD", "PD_BALANCED", ""}, false),
+				Description:  `Possible disk types for notebook instances. Possible values: ["DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD", "PD_BALANCED"]`,
 			},
 			"container_image": {
 				Type:        schema.TypeList,
@@ -149,9 +149,9 @@ If not specified, this defaults to 100.`,
 				Type:             schema.TypeString,
 				Optional:         true,
 				ForceNew:         true,
-				ValidateFunc:     validation.StringInSlice([]string{"DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD", ""}, false),
+				ValidateFunc:     validation.StringInSlice([]string{"DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD", "PD_BALANCED", ""}, false),
 				DiffSuppressFunc: emptyOrDefaultStringSuppress("DISK_TYPE_UNSPECIFIED"),
-				Description:      `Possible disk types for notebook instances. Possible values: ["DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD"]`,
+				Description:      `Possible disk types for notebook instances. Possible values: ["DISK_TYPE_UNSPECIFIED", "PD_STANDARD", "PD_SSD", "PD_BALANCED"]`,
 			},
 			"disk_encryption": {
 				Type:             schema.TypeString,
@@ -169,14 +169,17 @@ If not specified, this defaults to 100.`,
 use the first partition of the disk for its root filesystem.`,
 			},
 			"instance_owners": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				ForceNew: true,
-				Description: `The owner of this instance after creation. 
+				Description: `The list of owners of this instance after creation. 
 Format: alias@example.com.
 Currently supports one owner only. 
 If not specified, all of the service account users of 
 your VM instance's service account can use the instance.`,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 			"kms_key": {
 				Type:     schema.TypeString,
@@ -461,11 +464,20 @@ func resourceNotebooksInstanceCreate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	log.Printf("[DEBUG] Creating new Instance: %#v", obj)
+	billingProject := ""
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
 	}
-	res, err := sendRequestWithTimeout(config, "POST", project, url, obj, d.Timeout(schema.TimeoutCreate))
+	billingProject = project
+
+	// err == nil indicates that the billing_project value was found
+	if bp, err := getBillingProject(d, config); err == nil {
+		billingProject = bp
+	}
+
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Instance: %s", err)
 	}
@@ -509,11 +521,20 @@ func resourceNotebooksInstanceRead(d *schema.ResourceData, meta interface{}) err
 		return err
 	}
 
+	billingProject := ""
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
 	}
-	res, err := sendRequest(config, "GET", project, url, nil)
+	billingProject = project
+
+	// err == nil indicates that the billing_project value was found
+	if bp, err := getBillingProject(d, config); err == nil {
+		billingProject = bp
+	}
+
+	res, err := sendRequest(config, "GET", billingProject, url, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("NotebooksInstance %q", d.Id()))
 	}
@@ -586,10 +607,13 @@ func resourceNotebooksInstanceRead(d *schema.ResourceData, meta interface{}) err
 func resourceNotebooksInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	billingProject := ""
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
 	}
+	billingProject = project
 
 	d.Partial(true)
 
@@ -607,7 +631,13 @@ func resourceNotebooksInstanceUpdate(d *schema.ResourceData, meta interface{}) e
 		if err != nil {
 			return err
 		}
-		res, err := sendRequestWithTimeout(config, "PATCH", project, url, obj, d.Timeout(schema.TimeoutUpdate))
+
+		// err == nil indicates that the billing_project value was found
+		if bp, err := getBillingProject(d, config); err == nil {
+			billingProject = bp
+		}
+
+		res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating Instance %q: %s", d.Id(), err)
 		} else {
@@ -632,10 +662,13 @@ func resourceNotebooksInstanceUpdate(d *schema.ResourceData, meta interface{}) e
 func resourceNotebooksInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	billingProject := ""
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
 	}
+	billingProject = project
 
 	url, err := replaceVars(d, config, "{{NotebooksBasePath}}projects/{{project}}/locations/{{location}}/instances/{{name}}")
 	if err != nil {
@@ -645,7 +678,12 @@ func resourceNotebooksInstanceDelete(d *schema.ResourceData, meta interface{}) e
 	var obj map[string]interface{}
 	log.Printf("[DEBUG] Deleting Instance %q", d.Id())
 
-	res, err := sendRequestWithTimeout(config, "DELETE", project, url, obj, d.Timeout(schema.TimeoutDelete))
+	// err == nil indicates that the billing_project value was found
+	if bp, err := getBillingProject(d, config); err == nil {
+		billingProject = bp
+	}
+
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Instance")
 	}

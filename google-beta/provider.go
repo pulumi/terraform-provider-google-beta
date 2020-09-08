@@ -51,6 +51,14 @@ func Provider() terraform.ResourceProvider {
 				}, nil),
 			},
 
+			"billing_project": {
+				Type:     schema.TypeString,
+				Optional: true,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_BILLING_PROJECT",
+				}, nil),
+			},
+
 			"region": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -101,6 +109,9 @@ func Provider() terraform.ResourceProvider {
 			"user_project_override": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"USER_PROJECT_OVERRIDE",
+				}, nil),
 			},
 
 			"request_timeout": {
@@ -300,6 +311,14 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DATA_FUSION_CUSTOM_ENDPOINT",
 				}, DataFusionDefaultBasePath),
+			},
+			"data_loss_prevention_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_DATA_LOSS_PREVENTION_CUSTOM_ENDPOINT",
+				}, DataLossPreventionDefaultBasePath),
 			},
 			"dataproc_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -708,9 +727,9 @@ func Provider() terraform.ResourceProvider {
 	return provider
 }
 
-// Generated resources: 186
+// Generated resources: 189
 // Generated IAM resources: 78
-// Total generated resources: 264
+// Total generated resources: 267
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -863,6 +882,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_data_catalog_tag_template":                             resourceDataCatalogTagTemplate(),
 			"google_data_catalog_tag":                                      resourceDataCatalogTag(),
 			"google_data_fusion_instance":                                  resourceDataFusionInstance(),
+			"google_data_loss_prevention_job_trigger":                      resourceDataLossPreventionJobTrigger(),
+			"google_data_loss_prevention_inspect_template":                 resourceDataLossPreventionInspectTemplate(),
+			"google_data_loss_prevention_stored_info_type":                 resourceDataLossPreventionStoredInfoType(),
 			"google_dataproc_autoscaling_policy":                           resourceDataprocAutoscalingPolicy(),
 			"google_datastore_index":                                       resourceDatastoreIndex(),
 			"google_deployment_manager_deployment":                         resourceDeploymentManagerDeployment(),
@@ -1069,6 +1091,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_kms_crypto_key_iam_member":             ResourceIamMember(IamKmsCryptoKeySchema, NewKmsCryptoKeyIamUpdater, CryptoIdParseFunc),
 			"google_kms_crypto_key_iam_policy":             ResourceIamPolicy(IamKmsCryptoKeySchema, NewKmsCryptoKeyIamUpdater, CryptoIdParseFunc),
 			"google_monitoring_dashboard":                  resourceMonitoringDashboard(),
+			"google_project_service_identity":              resourceProjectServiceIdentity(),
 			"google_service_networking_connection":         resourceServiceNetworkingConnection(),
 			"google_spanner_instance_iam_binding":          ResourceIamBinding(IamSpannerInstanceSchema, NewSpannerInstanceIamUpdater, SpannerInstanceIdParseFunc),
 			"google_spanner_instance_iam_member":           ResourceIamMember(IamSpannerInstanceSchema, NewSpannerInstanceIamUpdater, SpannerInstanceIdParseFunc),
@@ -1121,6 +1144,7 @@ func providerConfigure(d *schema.ResourceData, p *schema.Provider, terraformVers
 		Region:              d.Get("region").(string),
 		Zone:                d.Get("zone").(string),
 		UserProjectOverride: d.Get("user_project_override").(bool),
+		BillingProject:      d.Get("billing_project").(string),
 		terraformVersion:    terraformVersion,
 	}
 
@@ -1177,6 +1201,7 @@ func providerConfigure(d *schema.ResourceData, p *schema.Provider, terraformVers
 	config.ContainerAnalysisBasePath = d.Get("container_analysis_custom_endpoint").(string)
 	config.DataCatalogBasePath = d.Get("data_catalog_custom_endpoint").(string)
 	config.DataFusionBasePath = d.Get("data_fusion_custom_endpoint").(string)
+	config.DataLossPreventionBasePath = d.Get("data_loss_prevention_custom_endpoint").(string)
 	config.DataprocBasePath = d.Get("dataproc_custom_endpoint").(string)
 	config.DatastoreBasePath = d.Get("datastore_custom_endpoint").(string)
 	config.DeploymentManagerBasePath = d.Get("deployment_manager_custom_endpoint").(string)
