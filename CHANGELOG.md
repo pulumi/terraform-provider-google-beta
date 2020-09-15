@@ -1,4 +1,50 @@
+## 3.39.0 (September 15, 2020)
+
+IMPROVEMENTS:
+* compute: added network field to `compute_target_instance` ([#2456](https://github.com/hashicorp/terraform-provider-google-beta/pull/2456))
+* compute: added storage_locations field to `google_compute_snapshot` ([#2461](https://github.com/hashicorp/terraform-provider-google-beta/pull/2461))
+* compute: added `kms_key_service_account`, `kms_key_self_link ` fields to `snapshot_encryption_key` field in `google_compute_snapshot` ([#2461](https://github.com/hashicorp/terraform-provider-google-beta/pull/2461))
+* compute: added `source_disk_encryption_key.kms_key_service_account` field to `google_compute_snapshot` ([#2461](https://github.com/hashicorp/terraform-provider-google-beta/pull/2461))
+* container: Added `self_link` to google_container_cluster ([#2457](https://github.com/hashicorp/terraform-provider-google-beta/pull/2457))
+
+BUG FIXES:
+* bigquery: fixed a bug when a BigQuery table schema didn't have `name` in the schema. Previously it would panic; now it logs an error. ([#2462](https://github.com/hashicorp/terraform-provider-google-beta/pull/2462))
+* bigquery: fixed bug where updating `clustering` would force a new resource rather than update. ([#2459](https://github.com/hashicorp/terraform-provider-google-beta/pull/2459))
+* bigquerydatatransfer: fixed `params.secret_access_key` perma-diff for AWS S3 data transfer config types by adding a `sensitive_params` block with the `secret_access_key` attribute. ([#2451](https://github.com/hashicorp/terraform-provider-google-beta/pull/2451))
+* compute: fixed bug where `delete_default_routes_on_create=true` was not actually deleting the default routes on create. ([#2460](https://github.com/hashicorp/terraform-provider-google-beta/pull/2460)
+
 ## 3.38.0 (September 08, 2020)
+
+DEPRECATIONS:
+* storage: deprecated `bucket_policy_only` field in `google_storage_bucket` in favour of `uniform_bucket_level_access` ([#2442](https://github.com/hashicorp/terraform-provider-google-beta/pull/2442))
+
+FEATURES:
+* **New Resource:** google_compute_disk_iam_binding ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** google_compute_disk_iam_member ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** google_compute_disk_iam_policy ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** google_compute_region_disk_iam_binding ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** google_compute_region_disk_iam_member ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** google_compute_region_disk_iam_policy ([#2424](https://github.com/hashicorp/terraform-provider-google-beta/pull/2424))
+* **New Resource:** google_data_loss_prevention_inspect_template ([#2433](https://github.com/hashicorp/terraform-provider-google-beta/pull/2433))
+* **New Resource:** google_data_loss_prevention_job_trigger ([#2433](https://github.com/hashicorp/terraform-provider-google-beta/pull/2433))
+* **New Resource:** google_data_loss_prevention_stored_info_type ([#2444](https://github.com/hashicorp/terraform-provider-google-beta/pull/2444))
+* **New Resource:** google_project_service_identity ([#2430](https://github.com/hashicorp/terraform-provider-google-beta/pull/2430))
+
+IMPROVEMENTS:
+* compute: Added graceful termination to `google_compute_instance_group_manager` create calls so that partially created instance group managers will resume the original operation if the Terraform process is killed mid create. ([#2446](https://github.com/hashicorp/terraform-provider-google-beta/pull/2446))
+* container: added project override support to `google_container_cluster` and `google_container_nodepool` ([#2428](https://github.com/hashicorp/terraform-provider-google-beta/pull/2428))
+* notebooks: added `PD_BALANCED` as a possible disk type for `google_notebooks_instance` ([#2438](https://github.com/hashicorp/terraform-provider-google-beta/pull/2438))
+* osconfig: added rollout field to `google_os_config_patch_deployment` ([#2449](https://github.com/hashicorp/terraform-provider-google-beta/pull/2449))
+* provider: added a new field `billing_project` to the provider that's associated as a billing/quota project with most requests when `user_project_override` is true ([#2427](https://github.com/hashicorp/terraform-provider-google-beta/pull/2427))
+* resourcemanager: added additional fields to `google_projects` datasource ([#2440](https://github.com/hashicorp/terraform-provider-google-beta/pull/2440))
+* serviceusage: added project override support to `google_project_service` ([#2428](https://github.com/hashicorp/terraform-provider-google-beta/pull/2428))
+
+BUG FIXES:
+* bigquerydatatransfer: fixed `params.secret_access_key` perma-diff for AWS S3 data transfer config types by adding a `sensitive_params` block with the `secret_access_key` attribute. ([#2451](https://github.com/hashicorp/terraform-provider-google-beta/pull/2451))
+* compute: Fixed bug with `google_netblock_ip_ranges` data source failing to read from the correct URL ([#2448](https://github.com/hashicorp/terraform-provider-google-beta/pull/2448))
+* compute: fixed updating `google_compute_instance.shielded_instance_config` by adding it to the `allow_stopping_for_update` list ([#2436](https://github.com/hashicorp/terraform-provider-google-beta/pull/2436))
+* notebooks: fixed broken `google_notebooks_instance.instance_owners` field by making it a list instead of a string ([#2438](https://github.com/hashicorp/terraform-provider-google-beta/pull/2438))
+
 ## 3.37.0 (August 31, 2020)
 NOTES:
 * Drop recommendation to use -provider= on import in documentation ([#2417](https://github.com/hashicorp/terraform-provider-google-beta/pull/2417))

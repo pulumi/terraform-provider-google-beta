@@ -627,7 +627,7 @@ recommended. Structure is documented below.
 
 * `workload_metadata_config` - (Optional) Metadata configuration to expose to workloads on the node pool.
     Structure is documented below.
-    
+
 * `kubelet_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
 Kubelet configuration, currently supported attributes can be found [here](https://cloud.google.com/sdk/gcloud/reference/beta/container/node-pools/create#--system-config-from-file).
 Structure is documented below.
@@ -808,7 +808,7 @@ The `linux_node_config` block supports:
 
 * `sysctls` - (Required)  The Linux kernel parameters to be applied to the nodes
 and all pods running on the nodes. Specified as a map from the key, such as
-`net.core.wmem_max`, to a string value. 
+`net.core.wmem_max`, to a string value.
 
 The `vertical_pod_autoscaling` block supports:
 
@@ -820,6 +820,8 @@ In addition to the arguments listed above, the following computed attributes are
 exported:
 
 * `id` - an identifier for the resource with format `projects/{{project}}/locations/{{zone}}/clusters/{{name}}`
+
+* `self_link` - The server-defined URL for the resource.
 
 * `endpoint` - The IP address of this cluster's Kubernetes master.
 

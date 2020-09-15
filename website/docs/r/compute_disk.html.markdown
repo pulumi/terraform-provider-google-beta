@@ -206,6 +206,11 @@ The `source_image_encryption_key` block supports:
   `roles/cloudkms.cryptoKeyEncrypterDecrypter` to use this feature.
   See https://cloud.google.com/compute/docs/disks/customer-managed-encryption#encrypt_a_new_persistent_disk_with_your_own_keys
 
+* `kms_key_service_account` -
+  (Optional)
+  The service account used for the encryption request for the given KMS key.
+  If absent, the Compute Engine Service Agent service account is used.
+
 The `disk_encryption_key` block supports:
 
 * `raw_key` -
