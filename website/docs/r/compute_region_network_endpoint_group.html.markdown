@@ -24,9 +24,6 @@ description: |-
 
 A regional NEG that can support Serverless Products.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about RegionNetworkEndpointGroup, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/beta/regionNetworkEndpointGroups)

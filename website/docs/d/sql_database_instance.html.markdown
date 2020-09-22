@@ -45,8 +45,7 @@ In addition to the arguments listed above, the following attributes are exported
     
 * `root_password` - Initial root password. Required for MS SQL Server, ignored by MySQL and PostgreSQL.
 
-* `encryption_key_name` - [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
-    The full path to the encryption key used for the CMEK disk encryption.
+* `encryption_key_name` - The full path to the encryption key used for the CMEK disk encryption.
     
 The `settings` block contains:
 

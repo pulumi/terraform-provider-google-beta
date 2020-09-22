@@ -139,7 +139,7 @@ The following arguments are supported:
   ~>**NOTE** This value does not support updating the
   resource policy, as resource policies can not be updated more than
   one at a time. Use
-  [`google_compute_disk_resource_policy_attachment`](https://www.terraform.io/docs/providers/google/r/compute_disk_resource_policy_attachment.html)
+  `google_compute_disk_resource_policy_attachment`
   to allow for updating the resource policy attached to the disk.
 
 * `zone` -

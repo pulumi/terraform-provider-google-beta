@@ -126,7 +126,7 @@ The following arguments are supported:
   Structure is documented below.
 
 * `cpu_overcommit_type` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   CPU overcommit.
   Default value is `NONE`.
   Possible values are `ENABLED` and `NONE`.

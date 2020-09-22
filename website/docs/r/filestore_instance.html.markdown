@@ -142,7 +142,7 @@ The `file_shares` block supports:
   for the standard tier, or 2560 GiB for the premium tier.
 
 * `nfs_export_options` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Nfs Export Options. There is a limit of 10 export options per file share.
   Structure is documented below.
 

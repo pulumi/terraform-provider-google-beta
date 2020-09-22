@@ -257,7 +257,7 @@ The `autoscaling_policy` block supports:
   Possible values are `OFF`, `ONLY_UP`, and `ON`.
 
 * `scale_down_control` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Defines scale down controls to reduce the risk of response latency
   and outages due to abrupt scale-in events
   Structure is documented below.

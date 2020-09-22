@@ -269,7 +269,7 @@ region are guaranteed to support the same version.
 * `private_cluster_config` - (Optional) Configuration for [private clusters](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters),
 clusters with private nodes. Structure is documented below.
 
-* `cluster_telemetry` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Configuration for
+* `cluster_telemetry` - (Optional) Configuration for
    [ClusterTelemetry](https://cloud.google.com/monitoring/kubernetes-engine/installing#controlling_the_collection_of_application_logs) feature,
    Structure is documented below.
 
@@ -312,7 +312,7 @@ subnetwork in which the cluster's instances are launched.
 * `enable_intranode_visibility` - (Optional)
     Whether Intra-node visibility is enabled for this cluster. This makes same node pod to pod traffic visible for VPC network.
 
-* `default_snat_status` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `default_snat_status` - (Optional)
   [GKE SNAT](https://cloud.google.com/kubernetes-engine/docs/how-to/ip-masquerade-agent#how_ipmasq_works) DefaultSnatStatus contains the desired state of whether default sNAT should be disabled on the cluster, [API doc](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters#networkconfig).
 
 The `default_snat_status` block supports
@@ -633,7 +633,7 @@ recommended. Structure is documented below.
 * `workload_metadata_config` - (Optional) Metadata configuration to expose to workloads on the node pool.
     Structure is documented below.
 
-* `kubelet_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `kubelet_config` - (Optional)
 Kubelet configuration, currently supported attributes can be found [here](https://cloud.google.com/sdk/gcloud/reference/beta/container/node-pools/create#--system-config-from-file).
 Structure is documented below.
 
@@ -645,7 +645,7 @@ kubelet_config {
 }
 ```
 
-* `linux_node_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `linux_node_config` - (Optional)
 Linux node configuration, currently supported attributes can be found [here](https://cloud.google.com/sdk/gcloud/reference/beta/container/node-pools/create#--system-config-from-file).
 Note that validations happen all server side. All attributes are optional.
 Structure is documented below.
@@ -700,8 +700,8 @@ subnet. See [Private Cluster Limitations](https://cloud.google.com/kubernetes-en
 for more details. This field only applies to private clusters, when
 `enable_private_nodes` is `true`.
 
-* `master_global_access_config` (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) - Controls cluster master global
-access settings. If unset, Terraform will no longer manage this field and will
+* `master_global_access_config` (Optional) - Controls cluster master global
+access settings. If unset, the provider will no longer manage this field and will
 not modify the previously-set value. Structure is documented below.
 
 In addition, the `private_cluster_config` allows access to the following read-only fields:

@@ -9,9 +9,6 @@ description: |-
 
 # google\_project\_service\_identity
 
-~> **Warning:** These resources are in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 Generate service identity for a service.
 
 ~> **Note**: Once created, this resource cannot be updated or destroyed. These

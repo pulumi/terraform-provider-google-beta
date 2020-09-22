@@ -174,11 +174,11 @@ The `config` block supports:
   The network-level access control policy for the Airflow web server. If unspecified, no network-level access restrictions will be applied.
 
 * `database_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The configuration settings for Cloud SQL instance used internally by Apache Airflow software.
 
 * `web_server_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The configuration settings for the Airflow web server App Engine instance.
 
 The `node_config` block supports:

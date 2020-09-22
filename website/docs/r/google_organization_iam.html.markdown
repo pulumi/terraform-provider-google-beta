@@ -28,7 +28,7 @@ Four different resources help you manage your IAM policy for a organization. Eac
    from anyone without organization-level access to the organization. Proceed with caution.
    It's not recommended to use `google_organization_iam_policy` with your provider organization
    to avoid locking yourself out, and it should generally only be used with organizations
-   fully managed by Terraform. If you do use this resource, it is recommended to **import** the policy before
+   fully managed by this provider. If you do use this resource, it is recommended to **import** the policy before
    applying the change.
 
 ```hcl
@@ -202,8 +202,8 @@ The `condition` block supports:
 
 * `description` - (Optional) An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.
 
-~> **Warning:** Terraform considers the `role` and condition contents (`title`+`description`+`expression`) as the
-  identifier for the binding. This means that if any part of the condition is changed out-of-band, Terraform will
+~> **Warning:** This provider considers the `role` and condition contents (`title`+`description`+`expression`) as the
+  identifier for the binding. This means that if any part of the condition is changed out-of-band, the provider will
   consider it to be an entirely different resource and will treat it as such.
 
 ## Attributes Reference

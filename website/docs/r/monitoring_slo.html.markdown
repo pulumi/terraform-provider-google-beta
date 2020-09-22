@@ -85,7 +85,7 @@ resource "google_monitoring_custom_service" "customsrv" {
 resource "google_monitoring_slo" "request_based_slo" {
   service = google_monitoring_custom_service.customsrv.service_id
   slo_id = "consumed-api-slo"
-  display_name = "Terraform Test SLO with request based SLI (good total ratio)"
+  display_name = "Test SLO with request based SLI (good total ratio)"
 
   goal = 0.9
   rolling_period_days = 30
@@ -121,7 +121,7 @@ resource "google_monitoring_custom_service" "customsrv" {
 
 resource "google_monitoring_slo" "windows_based" {
   service = google_monitoring_custom_service.customsrv.service_id
-  display_name = "Terraform Test SLO with window based SLI"
+  display_name = "Test SLO with window based SLI"
 
   goal = 0.95
   calendar_period = "FORTNIGHT"
@@ -151,7 +151,7 @@ resource "google_monitoring_custom_service" "customsrv" {
 
 resource "google_monitoring_slo" "windows_based" {
   service = google_monitoring_custom_service.customsrv.service_id
-  display_name = "Terraform Test SLO with window based SLI"
+  display_name = "Test SLO with window based SLI"
 
   goal = 0.9
   rolling_period_days = 20
@@ -187,7 +187,7 @@ resource "google_monitoring_custom_service" "customsrv" {
 
 resource "google_monitoring_slo" "windows_based" {
   service = google_monitoring_custom_service.customsrv.service_id
-  display_name = "Terraform Test SLO with window based SLI"
+  display_name = "Test SLO with window based SLI"
 
   goal = 0.9
   rolling_period_days = 20
@@ -223,7 +223,7 @@ resource "google_monitoring_custom_service" "customsrv" {
 
 resource "google_monitoring_slo" "windows_based" {
   service = google_monitoring_custom_service.customsrv.service_id
-  display_name = "Terraform Test SLO with window based SLI"
+  display_name = "Test SLO with window based SLI"
 
   goal = 0.9
   rolling_period_days = 20
