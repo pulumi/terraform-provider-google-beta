@@ -21,8 +21,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAccessContextManagerAccessLevel() *schema.Resource {
@@ -554,7 +554,9 @@ func resourceAccessContextManagerAccessLevelImport(d *schema.ResourceData, meta 
 	if len(stringParts) < 2 {
 		return nil, fmt.Errorf("Error parsing parent name. Should be in form accessPolicies/{{policy_id}}/accessLevels/{{short_name}}")
 	}
-	d.Set("parent", fmt.Sprintf("%s/%s", stringParts[0], stringParts[1]))
+	if err := d.Set("parent", fmt.Sprintf("%s/%s", stringParts[0], stringParts[1])); err != nil {
+		return nil, fmt.Errorf("Error setting parent, %s", err)
+	}
 	return []*schema.ResourceData{d}, nil
 }
 

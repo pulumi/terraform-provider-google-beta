@@ -22,8 +22,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceRedisInstance() *schema.Resource {
@@ -760,6 +760,8 @@ func resourceRedisInstanceEncoder(d *schema.ResourceData, meta interface{}, obj 
 	if err != nil {
 		return nil, err
 	}
-	d.Set("region", region)
+	if err := d.Set("region", region); err != nil {
+		return nil, fmt.Errorf("Error setting region: %s", err)
+	}
 	return obj, nil
 }

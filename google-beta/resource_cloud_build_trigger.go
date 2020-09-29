@@ -15,17 +15,18 @@
 package google
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
 	"strconv"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-func stepTimeoutCustomizeDiff(diff *schema.ResourceDiff, v interface{}) error {
+func stepTimeoutCustomizeDiff(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
 	buildList := diff.Get("build").([]interface{})
 	if len(buildList) == 0 || buildList[0] == nil {
 		return nil
@@ -296,7 +297,6 @@ this location as a prefix.`,
 													Type:        schema.TypeList,
 													Computed:    true,
 													Description: `Output only. Stores timing information for pushing all artifact objects.`,
-													MaxItems:    1,
 													Elem: &schema.Resource{
 														Schema: map[string]*schema.Schema{
 															"end_time": {
@@ -968,7 +968,9 @@ func resourceCloudBuildTriggerCreate(d *schema.ResourceData, meta interface{}) e
 	if !ok {
 		return fmt.Errorf("Create response didn't contain id. Create may not have succeeded.")
 	}
-	d.Set("trigger_id", triggerId.(string))
+	if err := d.Set("trigger_id", triggerId.(string)); err != nil {
+		return fmt.Errorf("Error setting trigger_id: %s", err)
+	}
 
 	// Store the ID now. We tried to set it before and it failed because
 	// trigger_id didn't exist yet.

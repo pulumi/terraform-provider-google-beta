@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceComputeGlobalNetworkEndpoint() *schema.Resource {
@@ -351,7 +351,9 @@ func expandNestedComputeGlobalNetworkEndpointFqdn(v interface{}, d TerraformReso
 
 func resourceComputeGlobalNetworkEndpointEncoder(d *schema.ResourceData, meta interface{}, obj map[string]interface{}) (map[string]interface{}, error) {
 	// Network Endpoint Group is a URL parameter only, so replace self-link/path with resource name only.
-	d.Set("global_network_endpoint_group", GetResourceNameFromSelfLink(d.Get("global_network_endpoint_group").(string)))
+	if err := d.Set("global_network_endpoint_group", GetResourceNameFromSelfLink(d.Get("global_network_endpoint_group").(string))); err != nil {
+		return nil, fmt.Errorf("Error setting global_network_endpoint_group: %s", err)
+	}
 
 	wrappedReq := map[string]interface{}{
 		"networkEndpoints": []interface{}{obj},

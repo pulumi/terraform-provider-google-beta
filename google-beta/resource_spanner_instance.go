@@ -23,8 +23,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceSpannerInstance() *schema.Resource {
@@ -489,7 +489,9 @@ func resourceSpannerInstanceEncoder(d *schema.ResourceData, meta interface{}, ob
 	newObj := make(map[string]interface{})
 	newObj["instance"] = obj
 	if obj["name"] == nil {
-		d.Set("name", resource.PrefixedUniqueId("tfgen-spanid-")[:30])
+		if err := d.Set("name", resource.PrefixedUniqueId("tfgen-spanid-")[:30]); err != nil {
+			return nil, fmt.Errorf("Error setting name: %s", err)
+		}
 		newObj["instanceId"] = d.Get("name").(string)
 	} else {
 		newObj["instanceId"] = obj["name"]

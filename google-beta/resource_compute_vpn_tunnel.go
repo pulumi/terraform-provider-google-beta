@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // validatePeerAddr returns false if a tunnel's peer_ip property
@@ -667,9 +667,6 @@ func resourceComputeVpnTunnelUpdate(d *schema.ResourceData, meta interface{}) er
 		if err != nil {
 			return err
 		}
-
-		d.SetPartial("labels")
-		d.SetPartial("label_fingerprint")
 	}
 
 	d.Partial(false)
@@ -999,10 +996,14 @@ func resourceComputeVpnTunnelEncoder(d *schema.ResourceData, meta interface{}, o
 		return nil, err
 	}
 	if _, ok := d.GetOk("project"); !ok {
-		d.Set("project", f.Project)
+		if err := d.Set("project", f.Project); err != nil {
+			return nil, fmt.Errorf("Error setting project: %s", err)
+		}
 	}
 	if _, ok := d.GetOk("region"); !ok {
-		d.Set("region", f.Region)
+		if err := d.Set("region", f.Region); err != nil {
+			return nil, fmt.Errorf("Error setting region: %s", err)
+		}
 	}
 	return obj, nil
 }

@@ -20,8 +20,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAccessContextManagerServicePerimeters() *schema.Resource {
@@ -463,7 +463,9 @@ func resourceAccessContextManagerServicePerimetersImport(d *schema.ResourceData,
 		return nil, err
 	}
 
-	d.Set("parent", fmt.Sprintf("accessPolicies/%s", parts["accessPolicy"]))
+	if err := d.Set("parent", fmt.Sprintf("accessPolicies/%s", parts["accessPolicy"])); err != nil {
+		return nil, fmt.Errorf("Error setting parent: %s", err)
+	}
 	return []*schema.ResourceData{d}, nil
 }
 

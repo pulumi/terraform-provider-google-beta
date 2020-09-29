@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-version"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	composer "google.golang.org/api/composer/v1beta1"
 )
 
@@ -400,7 +400,6 @@ func resourceComposerEnvironment() *schema.Resource {
 									"machine_type": {
 										Type:        schema.TypeString,
 										Required:    true,
-										ForceNew:    true,
 										Description: `Optional. Cloud SQL machine type used by Airflow database. It has to be one of: db-n1-standard-2, db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. If not specified, db-n1-standard-2 will be used.`,
 									},
 								},
@@ -418,7 +417,6 @@ func resourceComposerEnvironment() *schema.Resource {
 									"machine_type": {
 										Type:        schema.TypeString,
 										Required:    true,
-										ForceNew:    true,
 										Description: `Optional. Machine type on which Airflow web server is running. It has to be one of: composer-n1-webserver-2, composer-n1-webserver-4 or composer-n1-webserver-8. If not specified, composer-n1-webserver-2 will be used. Value custom is returned only in response, if Airflow web server parameters were manually changed to a non-standard values.`,
 									},
 								},
@@ -529,20 +527,20 @@ func resourceComposerEnvironmentRead(d *schema.ResourceData, meta interface{}) e
 
 	// Set from getProject(d)
 	if err := d.Set("project", envName.Project); err != nil {
-		return fmt.Errorf("Error reading Environment: %s", err)
+		return fmt.Errorf("Error setting Environment: %s", err)
 	}
 	// Set from getRegion(d)
 	if err := d.Set("region", envName.Region); err != nil {
-		return fmt.Errorf("Error reading Environment: %s", err)
+		return fmt.Errorf("Error setting Environment: %s", err)
 	}
 	if err := d.Set("name", GetResourceNameFromSelfLink(res.Name)); err != nil {
-		return fmt.Errorf("Error reading Environment: %s", err)
+		return fmt.Errorf("Error setting Environment: %s", err)
 	}
 	if err := d.Set("config", flattenComposerEnvironmentConfig(res.Config)); err != nil {
-		return fmt.Errorf("Error reading Environment: %s", err)
+		return fmt.Errorf("Error setting Environment: %s", err)
 	}
 	if err := d.Set("labels", res.Labels); err != nil {
-		return fmt.Errorf("Error reading Environment: %s", err)
+		return fmt.Errorf("Error setting Environment: %s", err)
 	}
 	return nil
 }
@@ -575,7 +573,6 @@ func resourceComposerEnvironmentUpdate(d *schema.ResourceData, meta interface{})
 			if err != nil {
 				return err
 			}
-			d.SetPartial("config")
 		}
 
 		if d.HasChange("config.0.software_config.0.airflow_config_overrides") {
@@ -595,7 +592,6 @@ func resourceComposerEnvironmentUpdate(d *schema.ResourceData, meta interface{})
 			if err != nil {
 				return err
 			}
-			d.SetPartial("config")
 		}
 
 		if d.HasChange("config.0.software_config.0.env_variables") {
@@ -614,7 +610,6 @@ func resourceComposerEnvironmentUpdate(d *schema.ResourceData, meta interface{})
 			if err != nil {
 				return err
 			}
-			d.SetPartial("config")
 		}
 
 		if d.HasChange("config.0.software_config.0.pypi_packages") {
@@ -633,7 +628,6 @@ func resourceComposerEnvironmentUpdate(d *schema.ResourceData, meta interface{})
 			if err != nil {
 				return err
 			}
-			d.SetPartial("config")
 		}
 
 		if d.HasChange("config.0.node_count") {
@@ -645,7 +639,6 @@ func resourceComposerEnvironmentUpdate(d *schema.ResourceData, meta interface{})
 			if err != nil {
 				return err
 			}
-			d.SetPartial("config")
 		}
 
 		// If web_server_network_access_control has more fields added it may require changes here.
@@ -659,31 +652,28 @@ func resourceComposerEnvironmentUpdate(d *schema.ResourceData, meta interface{})
 			if err != nil {
 				return err
 			}
-			d.SetPartial("config")
 		}
 
-		if d.HasChange("config.0.database_config") {
+		if d.HasChange("config.0.database_config.0.machine_type") {
 			patchObj := &composer.Environment{Config: &composer.EnvironmentConfig{}}
 			if config != nil {
 				patchObj.Config.DatabaseConfig = config.DatabaseConfig
 			}
-			err = resourceComposerEnvironmentPatchField("config.databaseConfig", patchObj, d, tfConfig)
+			err = resourceComposerEnvironmentPatchField("config.databaseConfig.machineType", patchObj, d, tfConfig)
 			if err != nil {
 				return err
 			}
-			d.SetPartial("config")
 		}
 
-		if d.HasChange("config.0.web_server_config") {
+		if d.HasChange("config.0.web_server_config.0.machine_type") {
 			patchObj := &composer.Environment{Config: &composer.EnvironmentConfig{}}
 			if config != nil {
 				patchObj.Config.WebServerConfig = config.WebServerConfig
 			}
-			err = resourceComposerEnvironmentPatchField("config.webServerConfig", patchObj, d, tfConfig)
+			err = resourceComposerEnvironmentPatchField("config.webServerConfig.machineType", patchObj, d, tfConfig)
 			if err != nil {
 				return err
 			}
-			d.SetPartial("config")
 		}
 	}
 
@@ -693,7 +683,6 @@ func resourceComposerEnvironmentUpdate(d *schema.ResourceData, meta interface{})
 		if err != nil {
 			return err
 		}
-		d.SetPartial("labels")
 	}
 
 	d.Partial(false)
@@ -715,7 +704,6 @@ func resourceComposerEnvironmentPostCreateUpdate(updateEnv *composer.Environment
 		}
 
 		log.Printf("[DEBUG] Finish update to Environment %q post create for update only fields", d.Id())
-		d.SetPartial("config")
 	}
 	d.Partial(false)
 	return resourceComposerEnvironmentRead(d, cfg)

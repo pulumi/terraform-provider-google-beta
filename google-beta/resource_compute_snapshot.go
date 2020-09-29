@@ -22,7 +22,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceComputeSnapshot() *schema.Resource {
@@ -459,9 +459,6 @@ func resourceComputeSnapshotUpdate(d *schema.ResourceData, meta interface{}) err
 		if err != nil {
 			return err
 		}
-
-		d.SetPartial("labels")
-		d.SetPartial("label_fingerprint")
 	}
 
 	d.Partial(false)
@@ -828,6 +825,8 @@ func resourceComputeSnapshotDecoder(d *schema.ResourceData, meta interface{}, re
 		res["sourceDiskEncryptionKey"] = transformed
 	}
 
-	d.Set("source_disk_link", ConvertSelfLinkToV1(res["sourceDisk"].(string)))
+	if err := d.Set("source_disk_link", ConvertSelfLinkToV1(res["sourceDisk"].(string))); err != nil {
+		return nil, fmt.Errorf("Error setting source_disk_link: %s", err)
+	}
 	return res, nil
 }

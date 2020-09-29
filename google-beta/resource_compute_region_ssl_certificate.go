@@ -21,8 +21,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceComputeRegionSslCertificate() *schema.Resource {
@@ -388,7 +388,9 @@ func expandComputeRegionSslCertificateName(v interface{}, d TerraformResourceDat
 	}
 
 	// We need to get the {{name}} into schema to set the ID using ReplaceVars
-	d.Set("name", certName)
+	if err := d.Set("name", certName); err != nil {
+		return nil, fmt.Errorf("Error setting name: %s", err)
+	}
 
 	return certName, nil
 }

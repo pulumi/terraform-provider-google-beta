@@ -21,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceOSLoginSSHPublicKey() *schema.Resource {
@@ -121,7 +121,9 @@ func resourceOSLoginSSHPublicKeyCreate(d *schema.ResourceData, meta interface{})
 	sshPublicKeys := loginProfile.(map[string]interface{})["sshPublicKeys"]
 	for _, sshPublicKey := range sshPublicKeys.(map[string]interface{}) {
 		if sshPublicKey.(map[string]interface{})["key"].(string) == d.Get("key") {
-			d.Set("fingerprint", sshPublicKey.(map[string]interface{})["fingerprint"].(string))
+			if err := d.Set("fingerprint", sshPublicKey.(map[string]interface{})["fingerprint"].(string)); err != nil {
+				return fmt.Errorf("Error setting fingerprint: %s", err)
+			}
 			break
 		}
 	}

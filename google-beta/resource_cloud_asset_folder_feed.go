@@ -22,8 +22,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceCloudAssetFolderFeed() *schema.Resource {
@@ -487,7 +487,9 @@ func expandCloudAssetFolderFeedFeedOutputConfigPubsubDestinationTopic(v interfac
 func resourceCloudAssetFolderFeedEncoder(d *schema.ResourceData, meta interface{}, obj map[string]interface{}) (map[string]interface{}, error) {
 	// Remove the "folders/" prefix from the folder ID
 	if folder, ok := d.GetOkExists("folder"); ok {
-		d.Set("folder_id", strings.TrimPrefix(folder.(string), "folders/"))
+		if err := d.Set("folder_id", strings.TrimPrefix(folder.(string), "folders/")); err != nil {
+			return nil, fmt.Errorf("Error setting folder_id: %s", err)
+		}
 	}
 	// The feed object must be under the "feed" attribute on the request.
 	newObj := make(map[string]interface{})

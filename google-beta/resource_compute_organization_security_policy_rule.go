@@ -22,8 +22,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceComputeOrganizationSecurityPolicyRule() *schema.Resource {
@@ -537,14 +537,18 @@ func resourceComputeOrganizationSecurityPolicyRuleImport(d *schema.ResourceData,
 			"locations/global/securityPolicies/{{policy_id}}/priority/{{priority}}",
 		)
 	}
-	d.Set("policy_id", fmt.Sprintf("locations/global/securityPolicies/%s", nameParts[3]))
+	if err := d.Set("policy_id", fmt.Sprintf("locations/global/securityPolicies/%s", nameParts[3])); err != nil {
+		return nil, fmt.Errorf("Error setting policy_id: %s", err)
+	}
 
 	if prio, err := strconv.ParseInt(nameParts[5], 10, 64); err != nil {
 		return nil, fmt.Errorf(
 			"Priority %s cannot be converted to integer", nameParts[5],
 		)
 	} else {
-		d.Set("priority", prio)
+		if err := d.Set("priority", prio); err != nil {
+			return nil, fmt.Errorf("Error setting priority: %s", err)
+		}
 	}
 
 	return []*schema.ResourceData{d}, nil

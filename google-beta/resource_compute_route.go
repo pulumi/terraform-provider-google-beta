@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceComputeRoute() *schema.Resource {
@@ -606,7 +606,9 @@ func resourceComputeRouteDecoder(d *schema.ResourceData, meta interface{}, res m
 		if err != nil {
 			return nil, err
 		}
-		d.Set("next_hop_instance_zone", val.Zone)
+		if err := d.Set("next_hop_instance_zone", val.Zone); err != nil {
+			return nil, fmt.Errorf("Error setting next_hop_instance_zone: %s", err)
+		}
 		res["nextHopInstance"] = val.RelativeLink()
 	}
 

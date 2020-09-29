@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"google.golang.org/api/googleapi"
 )
 
@@ -248,8 +248,12 @@ func resourceAccessContextManagerServicePerimeterResourceImport(d *schema.Resour
 		return nil, err
 	}
 
-	d.Set("perimeter_name", fmt.Sprintf("accessPolicies/%s/servicePerimeters/%s", parts["accessPolicy"], parts["perimeter"]))
-	d.Set("resource", parts["resource"])
+	if err := d.Set("perimeter_name", fmt.Sprintf("accessPolicies/%s/servicePerimeters/%s", parts["accessPolicy"], parts["perimeter"])); err != nil {
+		return nil, fmt.Errorf("Error setting perimeter_name: %s", err)
+	}
+	if err := d.Set("resource", parts["resource"]); err != nil {
+		return nil, fmt.Errorf("Error setting resource: %s", err)
+	}
 	return []*schema.ResourceData{d}, nil
 }
 

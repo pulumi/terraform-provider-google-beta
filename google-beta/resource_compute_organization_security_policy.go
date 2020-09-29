@@ -20,8 +20,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceComputeOrganizationSecurityPolicy() *schema.Resource {
@@ -163,7 +163,9 @@ func resourceComputeOrganizationSecurityPolicyCreate(d *schema.ResourceData, met
 	if !ok {
 		return fmt.Errorf("Create response didn't contain targetId. Create may not have succeeded.")
 	}
-	d.Set("policy_id", policyId.(string))
+	if err := d.Set("policy_id", policyId.(string)); err != nil {
+		return fmt.Errorf("Error setting policy_id: %s", err)
+	}
 
 	// Store the ID now.
 	id, err = replaceVars(d, config, "locations/global/securityPolicies/{{policy_id}}")

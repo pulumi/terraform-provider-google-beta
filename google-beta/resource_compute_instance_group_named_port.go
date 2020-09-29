@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"google.golang.org/api/googleapi"
 )
 
@@ -321,9 +321,15 @@ func resourceComputeInstanceGroupNamedPortEncoder(d *schema.ResourceData, meta i
 		return nil, err
 	}
 
-	d.Set("group", ig.Name)
-	d.Set("zone", ig.Zone)
-	d.Set("project", ig.Project)
+	if err := d.Set("group", ig.Name); err != nil {
+		return nil, fmt.Errorf("Error setting group: %s", err)
+	}
+	if err := d.Set("zone", ig.Zone); err != nil {
+		return nil, fmt.Errorf("Error setting zone: %s", err)
+	}
+	if err := d.Set("project", ig.Project); err != nil {
+		return nil, fmt.Errorf("Error setting project: %s", err)
+	}
 
 	return obj, nil
 }

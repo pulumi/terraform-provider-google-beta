@@ -15,6 +15,7 @@
 package google
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -22,12 +23,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 var sensitiveParams = []string{"secret_access_key"}
 
-func sensitiveParamCustomizeDiff(diff *schema.ResourceDiff, v interface{}) error {
+func sensitiveParamCustomizeDiff(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
 	for _, sp := range sensitiveParams {
 		mapLabel := diff.Get("params." + sp).(string)
 		authLabel := diff.Get("sensitive_params.0." + sp).(string)
@@ -277,7 +278,9 @@ func resourceBigqueryDataTransferConfigCreate(d *schema.ResourceData, meta inter
 			return fmt.Errorf("Create response didn't contain critical fields. Create may not have succeeded.")
 		}
 	}
-	d.Set("name", name.(string))
+	if err := d.Set("name", name.(string)); err != nil {
+		return fmt.Errorf("Error setting name: %s", err)
+	}
 	d.SetId(name.(string))
 
 	return resourceBigqueryDataTransferConfigRead(d, meta)
