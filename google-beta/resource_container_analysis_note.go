@@ -165,6 +165,11 @@ func containeranalysisNoteRelatedUrlSchema() *schema.Resource {
 func resourceContainerAnalysisNoteCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandContainerAnalysisNoteName(d.Get("name"), d, config)
 	if err != nil {
@@ -240,7 +245,7 @@ func resourceContainerAnalysisNoteCreate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Note: %s", err)
 	}
@@ -260,6 +265,11 @@ func resourceContainerAnalysisNoteCreate(d *schema.ResourceData, meta interface{
 func resourceContainerAnalysisNoteRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{ContainerAnalysisBasePath}}projects/{{project}}/notes/{{name}}")
 	if err != nil {
 		return err
@@ -278,7 +288,7 @@ func resourceContainerAnalysisNoteRead(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ContainerAnalysisNote %q", d.Id()))
 	}
@@ -335,6 +345,12 @@ func resourceContainerAnalysisNoteRead(d *schema.ResourceData, meta interface{})
 
 func resourceContainerAnalysisNoteUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -437,7 +453,7 @@ func resourceContainerAnalysisNoteUpdate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Note %q: %s", d.Id(), err)
@@ -450,6 +466,12 @@ func resourceContainerAnalysisNoteUpdate(d *schema.ResourceData, meta interface{
 
 func resourceContainerAnalysisNoteDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -479,7 +501,7 @@ func resourceContainerAnalysisNoteDelete(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Note")
 	}

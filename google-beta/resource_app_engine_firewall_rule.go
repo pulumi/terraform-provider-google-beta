@@ -83,6 +83,11 @@ this rule can be modified by the user.`,
 func resourceAppEngineFirewallRuleCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandAppEngineFirewallRuleDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -135,7 +140,7 @@ func resourceAppEngineFirewallRuleCreate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating FirewallRule: %s", err)
 	}
@@ -179,7 +184,12 @@ func resourceAppEngineFirewallRulePollRead(d *schema.ResourceData, meta interfac
 			billingProject = bp
 		}
 
-		res, err := sendRequest(config, "GET", billingProject, url, nil)
+		userAgent, err := generateUserAgentString(d, config.userAgent)
+		if err != nil {
+			return nil, err
+		}
+
+		res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 		if err != nil {
 			return res, err
 		}
@@ -189,6 +199,11 @@ func resourceAppEngineFirewallRulePollRead(d *schema.ResourceData, meta interfac
 
 func resourceAppEngineFirewallRuleRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{AppEngineBasePath}}apps/{{project}}/firewall/ingressRules/{{priority}}")
 	if err != nil {
@@ -208,7 +223,7 @@ func resourceAppEngineFirewallRuleRead(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("AppEngineFirewallRule %q", d.Id()))
 	}
@@ -235,6 +250,12 @@ func resourceAppEngineFirewallRuleRead(d *schema.ResourceData, meta interface{})
 
 func resourceAppEngineFirewallRuleUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -312,7 +333,7 @@ func resourceAppEngineFirewallRuleUpdate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating FirewallRule %q: %s", d.Id(), err)
@@ -325,6 +346,12 @@ func resourceAppEngineFirewallRuleUpdate(d *schema.ResourceData, meta interface{
 
 func resourceAppEngineFirewallRuleDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -354,7 +381,7 @@ func resourceAppEngineFirewallRuleDelete(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "FirewallRule")
 	}

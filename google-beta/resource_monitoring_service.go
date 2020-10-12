@@ -92,6 +92,11 @@ projects/[PROJECT_ID]/services/[SERVICE_ID].`,
 func resourceMonitoringServiceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	displayNameProp, err := expandMonitoringServiceDisplayName(d.Get("display_name"), d, config)
 	if err != nil {
@@ -136,7 +141,7 @@ func resourceMonitoringServiceCreate(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate), isMonitoringConcurrentEditError)
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate), isMonitoringConcurrentEditError)
 	if err != nil {
 		return fmt.Errorf("Error creating Service: %s", err)
 	}
@@ -159,6 +164,11 @@ func resourceMonitoringServiceCreate(d *schema.ResourceData, meta interface{}) e
 func resourceMonitoringServiceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{MonitoringBasePath}}v3/{{name}}")
 	if err != nil {
 		return err
@@ -177,7 +187,7 @@ func resourceMonitoringServiceRead(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil, isMonitoringConcurrentEditError)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil, isMonitoringConcurrentEditError)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("MonitoringService %q", d.Id()))
 	}
@@ -204,6 +214,12 @@ func resourceMonitoringServiceRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceMonitoringServiceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -259,7 +275,7 @@ func resourceMonitoringServiceUpdate(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate), isMonitoringConcurrentEditError)
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate), isMonitoringConcurrentEditError)
 
 	if err != nil {
 		return fmt.Errorf("Error updating Service %q: %s", d.Id(), err)
@@ -272,6 +288,12 @@ func resourceMonitoringServiceUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceMonitoringServiceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -294,7 +316,7 @@ func resourceMonitoringServiceDelete(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete), isMonitoringConcurrentEditError)
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete), isMonitoringConcurrentEditError)
 	if err != nil {
 		return handleNotFoundError(err, d, "Service")
 	}

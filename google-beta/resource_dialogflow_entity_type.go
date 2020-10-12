@@ -112,6 +112,11 @@ Format: projects/<Project ID>/agent/entityTypes/<Entity type ID>.`,
 func resourceDialogflowEntityTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	displayNameProp, err := expandDialogflowEntityTypeDisplayName(d.Get("display_name"), d, config)
 	if err != nil {
@@ -157,7 +162,7 @@ func resourceDialogflowEntityTypeCreate(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating EntityType: %s", err)
 	}
@@ -198,6 +203,11 @@ func resourceDialogflowEntityTypeCreate(d *schema.ResourceData, meta interface{}
 func resourceDialogflowEntityTypeRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{DialogflowBasePath}}{{name}}")
 	if err != nil {
 		return err
@@ -216,7 +226,7 @@ func resourceDialogflowEntityTypeRead(d *schema.ResourceData, meta interface{}) 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("DialogflowEntityType %q", d.Id()))
 	}
@@ -246,6 +256,12 @@ func resourceDialogflowEntityTypeRead(d *schema.ResourceData, meta interface{}) 
 
 func resourceDialogflowEntityTypeUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -293,7 +309,7 @@ func resourceDialogflowEntityTypeUpdate(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating EntityType %q: %s", d.Id(), err)
@@ -306,6 +322,12 @@ func resourceDialogflowEntityTypeUpdate(d *schema.ResourceData, meta interface{}
 
 func resourceDialogflowEntityTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -328,7 +350,7 @@ func resourceDialogflowEntityTypeDelete(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "EntityType")
 	}

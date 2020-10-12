@@ -72,6 +72,11 @@ is attached to. The format is
 func resourceIapClientCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	displayNameProp, err := expandIapClientDisplayName(d.Get("display_name"), d, config)
 	if err != nil {
@@ -93,7 +98,7 @@ func resourceIapClientCreate(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Client: %s", err)
 	}
@@ -121,6 +126,11 @@ func resourceIapClientCreate(d *schema.ResourceData, meta interface{}) error {
 func resourceIapClientRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{IapBasePath}}{{brand}}/identityAwareProxyClients/{{client_id}}")
 	if err != nil {
 		return err
@@ -133,7 +143,7 @@ func resourceIapClientRead(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("IapClient %q", d.Id()))
 	}
@@ -154,6 +164,12 @@ func resourceIapClientRead(d *schema.ResourceData, meta interface{}) error {
 func resourceIapClientDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	url, err := replaceVars(d, config, "{{IapBasePath}}{{brand}}/identityAwareProxyClients/{{client_id}}")
@@ -169,7 +185,7 @@ func resourceIapClientDelete(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Client")
 	}

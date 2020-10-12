@@ -148,6 +148,11 @@ the [avatarUri] field can be used.`,
 func resourceDialogflowAgentCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	displayNameProp, err := expandDialogflowAgentDisplayName(d.Get("display_name"), d, config)
 	if err != nil {
@@ -235,7 +240,7 @@ func resourceDialogflowAgentCreate(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Agent: %s", err)
 	}
@@ -255,6 +260,11 @@ func resourceDialogflowAgentCreate(d *schema.ResourceData, meta interface{}) err
 func resourceDialogflowAgentRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{DialogflowBasePath}}projects/{{project}}/agent")
 	if err != nil {
 		return err
@@ -273,7 +283,7 @@ func resourceDialogflowAgentRead(d *schema.ResourceData, meta interface{}) error
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("DialogflowAgent %q", d.Id()))
 	}
@@ -318,6 +328,12 @@ func resourceDialogflowAgentRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceDialogflowAgentUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -407,7 +423,7 @@ func resourceDialogflowAgentUpdate(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Agent %q: %s", d.Id(), err)
@@ -420,6 +436,12 @@ func resourceDialogflowAgentUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceDialogflowAgentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -442,7 +464,7 @@ func resourceDialogflowAgentDelete(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Agent")
 	}

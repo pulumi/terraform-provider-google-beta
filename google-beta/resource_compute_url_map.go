@@ -2757,6 +2757,11 @@ the resource.`,
 func resourceComputeUrlMapCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	defaultServiceProp, err := expandComputeUrlMapDefaultService(d.Get("default_service"), d, config)
 	if err != nil {
@@ -2838,7 +2843,7 @@ func resourceComputeUrlMapCreate(d *schema.ResourceData, meta interface{}) error
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating UrlMap: %s", err)
 	}
@@ -2851,7 +2856,7 @@ func resourceComputeUrlMapCreate(d *schema.ResourceData, meta interface{}) error
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating UrlMap",
+		config, res, project, "Creating UrlMap", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -2867,6 +2872,11 @@ func resourceComputeUrlMapCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceComputeUrlMapRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/urlMaps/{{name}}")
 	if err != nil {
@@ -2886,7 +2896,7 @@ func resourceComputeUrlMapRead(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeUrlMap %q", d.Id()))
 	}
@@ -2940,6 +2950,12 @@ func resourceComputeUrlMapRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceComputeUrlMapUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -3023,7 +3039,7 @@ func resourceComputeUrlMapUpdate(d *schema.ResourceData, meta interface{}) error
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating UrlMap %q: %s", d.Id(), err)
@@ -3032,7 +3048,7 @@ func resourceComputeUrlMapUpdate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Updating UrlMap",
+		config, res, project, "Updating UrlMap", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -3044,6 +3060,12 @@ func resourceComputeUrlMapUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceComputeUrlMapDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -3066,13 +3088,13 @@ func resourceComputeUrlMapDelete(d *schema.ResourceData, meta interface{}) error
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "UrlMap")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting UrlMap",
+		config, res, project, "Deleting UrlMap", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

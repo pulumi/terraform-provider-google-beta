@@ -149,6 +149,11 @@ deleted from the instance group. Default value: "NEVER" Possible values: ["NEVER
 func resourceComputeRegionPerInstanceConfigCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandNestedComputeRegionPerInstanceConfigName(d.Get("name"), d, config)
 	if err != nil {
@@ -194,7 +199,7 @@ func resourceComputeRegionPerInstanceConfigCreate(d *schema.ResourceData, meta i
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating RegionPerInstanceConfig: %s", err)
 	}
@@ -207,7 +212,7 @@ func resourceComputeRegionPerInstanceConfigCreate(d *schema.ResourceData, meta i
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating RegionPerInstanceConfig",
+		config, res, project, "Creating RegionPerInstanceConfig", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -223,6 +228,11 @@ func resourceComputeRegionPerInstanceConfigCreate(d *schema.ResourceData, meta i
 
 func resourceComputeRegionPerInstanceConfigRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/regions/{{region}}/instanceGroupManagers/{{region_instance_group_manager}}/listPerInstanceConfigs")
 	if err != nil {
@@ -242,7 +252,7 @@ func resourceComputeRegionPerInstanceConfigRead(d *schema.ResourceData, meta int
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "POST", billingProject, url, nil)
+	res, err := sendRequest(config, "POST", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeRegionPerInstanceConfig %q", d.Id()))
 	}
@@ -292,6 +302,12 @@ func resourceComputeRegionPerInstanceConfigRead(d *schema.ResourceData, meta int
 func resourceComputeRegionPerInstanceConfigUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -338,7 +354,7 @@ func resourceComputeRegionPerInstanceConfigUpdate(d *schema.ResourceData, meta i
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating RegionPerInstanceConfig %q: %s", d.Id(), err)
@@ -347,7 +363,7 @@ func resourceComputeRegionPerInstanceConfigUpdate(d *schema.ResourceData, meta i
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Updating RegionPerInstanceConfig",
+		config, res, project, "Updating RegionPerInstanceConfig", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -381,14 +397,14 @@ func resourceComputeRegionPerInstanceConfigUpdate(d *schema.ResourceData, meta i
 	}
 
 	log.Printf("[DEBUG] Applying updates to PerInstanceConfig %q: %#v", d.Id(), obj)
-	res, err = sendRequestWithTimeout(config, "POST", project, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err = sendRequestWithTimeout(config, "POST", project, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating PerInstanceConfig %q: %s", d.Id(), err)
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Applying update to PerInstanceConfig",
+		config, res, project, "Applying update to PerInstanceConfig", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -399,6 +415,12 @@ func resourceComputeRegionPerInstanceConfigUpdate(d *schema.ResourceData, meta i
 
 func resourceComputeRegionPerInstanceConfigDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -423,13 +445,13 @@ func resourceComputeRegionPerInstanceConfigDelete(d *schema.ResourceData, meta i
 	}
 	log.Printf("[DEBUG] Deleting RegionPerInstanceConfig %q", d.Id())
 
-	res, err := sendRequestWithTimeout(config, "POST", project, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "POST", project, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "RegionPerInstanceConfig")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting RegionPerInstanceConfig",
+		config, res, project, "Deleting RegionPerInstanceConfig", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {
@@ -454,14 +476,14 @@ func resourceComputeRegionPerInstanceConfigDelete(d *schema.ResourceData, meta i
 		}
 
 		log.Printf("[DEBUG] Applying updates to PerInstanceConfig %q: %#v", d.Id(), obj)
-		res, err = sendRequestWithTimeout(config, "POST", project, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err = sendRequestWithTimeout(config, "POST", project, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 		if err != nil {
 			return fmt.Errorf("Error updating PerInstanceConfig %q: %s", d.Id(), err)
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Applying update to PerInstanceConfig",
+			config, res, project, "Applying update to PerInstanceConfig", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 
 		if err != nil {

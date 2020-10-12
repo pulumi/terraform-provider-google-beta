@@ -76,6 +76,25 @@ func authHeaderDiffSuppress(k, old, new string, d *schema.ResourceData) bool {
 	return false
 }
 
+func validateHttpHeaders() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		headers := i.(map[string]interface{})
+		if _, ok := headers["Content-Length"]; ok {
+			es = append(es, fmt.Errorf("Cannot set the Content-Length header on %s", k))
+			return
+		}
+		r := regexp.MustCompile(`(X-Google-|X-AppEngine-).*`)
+		for key := range headers {
+			if r.MatchString(key) {
+				es = append(es, fmt.Errorf("Cannot set the %s header on %s", key, k))
+				return
+			}
+		}
+
+		return
+	}
+}
+
 func resourceCloudSchedulerJob() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceCloudSchedulerJobCreate,
@@ -194,6 +213,7 @@ execution logs. Cloud Scheduler will retry the job according to the RetryConfig.
 The allowed duration for this deadline is:
 * For HTTP targets, between 15 seconds and 30 minutes.
 * For App Engine HTTP targets, between 15 seconds and 24 hours.
+* **Note**: For PubSub targets, this field is ignored - setting it will introduce an unresolvable diff.
 A duration in seconds with up to nine fractional digits, terminated by 's'. Example: "3.5s"`,
 				Default: "180s",
 			},
@@ -435,6 +455,11 @@ The value of this field must be a time zone name from the tz database.`,
 func resourceCloudSchedulerJobCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandCloudSchedulerJobName(d.Get("name"), d, config)
 	if err != nil {
@@ -510,7 +535,7 @@ func resourceCloudSchedulerJobCreate(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Job: %s", err)
 	}
@@ -530,6 +555,11 @@ func resourceCloudSchedulerJobCreate(d *schema.ResourceData, meta interface{}) e
 func resourceCloudSchedulerJobRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{CloudSchedulerBasePath}}projects/{{project}}/locations/{{region}}/jobs/{{name}}")
 	if err != nil {
 		return err
@@ -548,7 +578,7 @@ func resourceCloudSchedulerJobRead(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("CloudSchedulerJob %q", d.Id()))
 	}
@@ -599,6 +629,12 @@ func resourceCloudSchedulerJobRead(d *schema.ResourceData, meta interface{}) err
 func resourceCloudSchedulerJobDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -620,7 +656,7 @@ func resourceCloudSchedulerJobDelete(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Job")
 	}

@@ -858,6 +858,11 @@ Reserved names,"default", "latest", and any name with the prefix "ah-".`,
 func resourceAppEngineFlexibleAppVersionCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	idProp, err := expandAppEngineFlexibleAppVersionVersionId(d.Get("version_id"), d, config)
 	if err != nil {
@@ -1035,7 +1040,7 @@ func resourceAppEngineFlexibleAppVersionCreate(d *schema.ResourceData, meta inte
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate), isAppEngineRetryableError)
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate), isAppEngineRetryableError)
 	if err != nil {
 		return fmt.Errorf("Error creating FlexibleAppVersion: %s", err)
 	}
@@ -1048,7 +1053,7 @@ func resourceAppEngineFlexibleAppVersionCreate(d *schema.ResourceData, meta inte
 	d.SetId(id)
 
 	err = appEngineOperationWaitTime(
-		config, res, project, "Creating FlexibleAppVersion",
+		config, res, project, "Creating FlexibleAppVersion", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -1064,6 +1069,11 @@ func resourceAppEngineFlexibleAppVersionCreate(d *schema.ResourceData, meta inte
 
 func resourceAppEngineFlexibleAppVersionRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{AppEngineBasePath}}apps/{{project}}/services/{{service}}/versions/{{version_id}}?view=FULL")
 	if err != nil {
@@ -1083,7 +1093,7 @@ func resourceAppEngineFlexibleAppVersionRead(d *schema.ResourceData, meta interf
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil, isAppEngineRetryableError)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil, isAppEngineRetryableError)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("AppEngineFlexibleAppVersion %q", d.Id()))
 	}
@@ -1172,6 +1182,12 @@ func resourceAppEngineFlexibleAppVersionRead(d *schema.ResourceData, meta interf
 
 func resourceAppEngineFlexibleAppVersionUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -1351,7 +1367,7 @@ func resourceAppEngineFlexibleAppVersionUpdate(d *schema.ResourceData, meta inte
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate), isAppEngineRetryableError)
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate), isAppEngineRetryableError)
 
 	if err != nil {
 		return fmt.Errorf("Error updating FlexibleAppVersion %q: %s", d.Id(), err)
@@ -1360,7 +1376,7 @@ func resourceAppEngineFlexibleAppVersionUpdate(d *schema.ResourceData, meta inte
 	}
 
 	err = appEngineOperationWaitTime(
-		config, res, project, "Updating FlexibleAppVersion",
+		config, res, project, "Updating FlexibleAppVersion", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -1372,11 +1388,17 @@ func resourceAppEngineFlexibleAppVersionUpdate(d *schema.ResourceData, meta inte
 
 func resourceAppEngineFlexibleAppVersionDelete(d *schema.ResourceData, meta interface{}) error {
 
+	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	if d.Get("noop_on_destroy") == true {
 		log.Printf("[DEBUG] Keeping the AppVersion %q", d.Id())
 		return nil
 	}
-	config := meta.(*Config)
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -1397,12 +1419,12 @@ func resourceAppEngineFlexibleAppVersionDelete(d *schema.ResourceData, meta inte
 		}
 		var obj map[string]interface{}
 		log.Printf("[DEBUG] Deleting Service %q", d.Id())
-		res, err := sendRequestWithTimeout(config, "DELETE", project, url, obj, d.Timeout(schema.TimeoutDelete), isAppEngineRetryableError)
+		res, err := sendRequestWithTimeout(config, "DELETE", project, url, userAgent, obj, d.Timeout(schema.TimeoutDelete), isAppEngineRetryableError)
 		if err != nil {
 			return handleNotFoundError(err, d, "Service")
 		}
 		err = appEngineOperationWaitTime(
-			config, res, project, "Deleting Service",
+			config, res, project, "Deleting Service", userAgent,
 			d.Timeout(schema.TimeoutDelete))
 
 		if err != nil {
@@ -1417,12 +1439,12 @@ func resourceAppEngineFlexibleAppVersionDelete(d *schema.ResourceData, meta inte
 		}
 		var obj map[string]interface{}
 		log.Printf("[DEBUG] Deleting AppVersion %q", d.Id())
-		res, err := sendRequestWithTimeout(config, "DELETE", project, url, obj, d.Timeout(schema.TimeoutDelete), isAppEngineRetryableError)
+		res, err := sendRequestWithTimeout(config, "DELETE", project, url, userAgent, obj, d.Timeout(schema.TimeoutDelete), isAppEngineRetryableError)
 		if err != nil {
 			return handleNotFoundError(err, d, "AppVersion")
 		}
 		err = appEngineOperationWaitTime(
-			config, res, project, "Deleting AppVersion",
+			config, res, project, "Deleting AppVersion", userAgent,
 			d.Timeout(schema.TimeoutDelete))
 
 		if err != nil {

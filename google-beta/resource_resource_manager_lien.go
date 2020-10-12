@@ -95,6 +95,11 @@ e.g. ['resourcemanager.projects.delete']`,
 func resourceResourceManagerLienCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	reasonProp, err := expandNestedResourceManagerLienReason(d.Get("reason"), d, config)
 	if err != nil {
@@ -134,7 +139,7 @@ func resourceResourceManagerLienCreate(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Lien: %s", err)
 	}
@@ -169,6 +174,11 @@ func resourceResourceManagerLienCreate(d *schema.ResourceData, meta interface{})
 func resourceResourceManagerLienRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{ResourceManagerBasePath}}liens?parent={{parent}}")
 	if err != nil {
 		return err
@@ -181,7 +191,7 @@ func resourceResourceManagerLienRead(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ResourceManagerLien %q", d.Id()))
 	}
@@ -235,6 +245,12 @@ func resourceResourceManagerLienRead(d *schema.ResourceData, meta interface{}) e
 func resourceResourceManagerLienDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	url, err := replaceVars(d, config, "{{ResourceManagerBasePath}}liens?parent={{parent}}")
@@ -258,7 +274,7 @@ func resourceResourceManagerLienDelete(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Lien")
 	}
@@ -404,6 +420,12 @@ func resourceResourceManagerLienDecoder(d *schema.ResourceData, meta interface{}
 	// 2) if either is non-numeric, a project with that ID exists.
 	// 3) the project IDs represented by both the new and old values are the same.
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return nil, err
+	}
+
 	new := res["parent"].(string)
 	old := d.Get("parent").(string)
 	if strings.HasPrefix(new, "projects/") {
@@ -425,7 +447,7 @@ func resourceResourceManagerLienDecoder(d *schema.ResourceData, meta interface{}
 		log.Printf("[DEBUG] The old value was a real number: %d", oldVal)
 		oldProjId = oldVal
 	} else {
-		pOld, err := config.clientResourceManager.Projects.Get(old).Do()
+		pOld, err := config.NewResourceManagerClient(userAgent).Projects.Get(old).Do()
 		if err != nil {
 			return res, nil
 		}
@@ -435,7 +457,7 @@ func resourceResourceManagerLienDecoder(d *schema.ResourceData, meta interface{}
 		log.Printf("[DEBUG] The new value was a real number: %d", newVal)
 		newProjId = newVal
 	} else {
-		pNew, err := config.clientResourceManager.Projects.Get(new).Do()
+		pNew, err := config.NewResourceManagerClient(userAgent).Projects.Get(new).Do()
 		if err != nil {
 			return res, nil
 		}

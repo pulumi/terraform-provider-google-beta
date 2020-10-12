@@ -307,6 +307,11 @@ This field is only used for INTERNAL load balancing.`,
 func resourceComputeForwardingRuleCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	isMirroringCollectorProp, err := expandComputeForwardingRuleIsMirroringCollector(d.Get("is_mirroring_collector"), d, config)
 	if err != nil {
@@ -442,7 +447,7 @@ func resourceComputeForwardingRuleCreate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating ForwardingRule: %s", err)
 	}
@@ -455,7 +460,7 @@ func resourceComputeForwardingRuleCreate(d *schema.ResourceData, meta interface{
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating ForwardingRule",
+		config, res, project, "Creating ForwardingRule", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -487,13 +492,13 @@ func resourceComputeForwardingRuleCreate(d *schema.ResourceData, meta interface{
 		if err != nil {
 			return err
 		}
-		res, err = sendRequest(config, "POST", project, url, obj)
+		res, err = sendRequest(config, "POST", project, url, userAgent, obj)
 		if err != nil {
 			return fmt.Errorf("Error adding labels to ComputeForwardingRule %q: %s", d.Id(), err)
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating ComputeForwardingRule Labels",
+			config, res, project, "Updating ComputeForwardingRule Labels", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 
 		if err != nil {
@@ -507,6 +512,11 @@ func resourceComputeForwardingRuleCreate(d *schema.ResourceData, meta interface{
 
 func resourceComputeForwardingRuleRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/regions/{{region}}/forwardingRules/{{name}}")
 	if err != nil {
@@ -526,7 +536,7 @@ func resourceComputeForwardingRuleRead(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeForwardingRule %q", d.Id()))
 	}
@@ -608,6 +618,12 @@ func resourceComputeForwardingRuleRead(d *schema.ResourceData, meta interface{})
 func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -638,7 +654,7 @@ func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating ForwardingRule %q: %s", d.Id(), err)
 		} else {
@@ -646,7 +662,7 @@ func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating ForwardingRule",
+			config, res, project, "Updating ForwardingRule", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -672,7 +688,7 @@ func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating ForwardingRule %q: %s", d.Id(), err)
 		} else {
@@ -680,7 +696,7 @@ func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating ForwardingRule",
+			config, res, project, "Updating ForwardingRule", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -712,7 +728,7 @@ func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating ForwardingRule %q: %s", d.Id(), err)
 		} else {
@@ -720,7 +736,7 @@ func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating ForwardingRule",
+			config, res, project, "Updating ForwardingRule", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -734,6 +750,12 @@ func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{
 
 func resourceComputeForwardingRuleDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -756,13 +778,13 @@ func resourceComputeForwardingRuleDelete(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "ForwardingRule")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting ForwardingRule",
+		config, res, project, "Deleting ForwardingRule", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

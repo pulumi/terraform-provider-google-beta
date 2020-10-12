@@ -272,6 +272,11 @@ project/zones/zone/instances/instance`,
 func resourceComputeRegionDiskCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	labelFingerprintProp, err := expandComputeRegionDiskLabelFingerprint(d.Get("label_fingerprint"), d, config)
 	if err != nil {
@@ -370,7 +375,7 @@ func resourceComputeRegionDiskCreate(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating RegionDisk: %s", err)
 	}
@@ -383,7 +388,7 @@ func resourceComputeRegionDiskCreate(d *schema.ResourceData, meta interface{}) e
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating RegionDisk",
+		config, res, project, "Creating RegionDisk", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -399,6 +404,11 @@ func resourceComputeRegionDiskCreate(d *schema.ResourceData, meta interface{}) e
 
 func resourceComputeRegionDiskRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/regions/{{region}}/disks/{{name}}")
 	if err != nil {
@@ -418,7 +428,7 @@ func resourceComputeRegionDiskRead(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeRegionDisk %q", d.Id()))
 	}
@@ -500,6 +510,12 @@ func resourceComputeRegionDiskRead(d *schema.ResourceData, meta interface{}) err
 func resourceComputeRegionDiskUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -536,7 +552,7 @@ func resourceComputeRegionDiskUpdate(d *schema.ResourceData, meta interface{}) e
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating RegionDisk %q: %s", d.Id(), err)
 		} else {
@@ -544,7 +560,7 @@ func resourceComputeRegionDiskUpdate(d *schema.ResourceData, meta interface{}) e
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating RegionDisk",
+			config, res, project, "Updating RegionDisk", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -570,7 +586,7 @@ func resourceComputeRegionDiskUpdate(d *schema.ResourceData, meta interface{}) e
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating RegionDisk %q: %s", d.Id(), err)
 		} else {
@@ -578,7 +594,7 @@ func resourceComputeRegionDiskUpdate(d *schema.ResourceData, meta interface{}) e
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating RegionDisk",
+			config, res, project, "Updating RegionDisk", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -592,6 +608,12 @@ func resourceComputeRegionDiskUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceComputeRegionDiskDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -607,7 +629,7 @@ func resourceComputeRegionDiskDelete(d *schema.ResourceData, meta interface{}) e
 	}
 
 	var obj map[string]interface{}
-	readRes, err := sendRequest(config, "GET", project, url, nil)
+	readRes, err := sendRequest(config, "GET", project, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeDisk %q", d.Id()))
 	}
@@ -624,7 +646,7 @@ func resourceComputeRegionDiskDelete(d *schema.ResourceData, meta interface{}) e
 				return err
 			}
 
-			i, err := config.clientCompute.Instances.Get(instanceProject, instanceZone, instanceName).Do()
+			i, err := config.NewComputeClient(userAgent).Instances.Get(instanceProject, instanceZone, instanceName).Do()
 			if err != nil {
 				if gerr, ok := err.(*googleapi.Error); ok && gerr.Code == 404 {
 					log.Printf("[WARN] instance %q not found, not bothering to detach disks", instance)
@@ -645,13 +667,13 @@ func resourceComputeRegionDiskDelete(d *schema.ResourceData, meta interface{}) e
 		}
 
 		for _, call := range detachCalls {
-			op, err := config.clientCompute.Instances.DetachDisk(call.project, call.zone, call.instance, call.deviceName).Do()
+			op, err := config.NewComputeClient(userAgent).Instances.DetachDisk(call.project, call.zone, call.instance, call.deviceName).Do()
 			if err != nil {
 				return fmt.Errorf("Error detaching disk %s from instance %s/%s/%s: %s", call.deviceName, call.project,
 					call.zone, call.instance, err.Error())
 			}
 			err = computeOperationWaitTime(config, op, call.project,
-				fmt.Sprintf("Detaching disk from %s/%s/%s", call.project, call.zone, call.instance), d.Timeout(schema.TimeoutDelete))
+				fmt.Sprintf("Detaching disk from %s/%s/%s", call.project, call.zone, call.instance), userAgent, d.Timeout(schema.TimeoutDelete))
 			if err != nil {
 				if opErr, ok := err.(ComputeOperationError); ok && len(opErr.Errors) == 1 && opErr.Errors[0].Code == "RESOURCE_NOT_FOUND" {
 					log.Printf("[WARN] instance %q was deleted while awaiting detach", call.instance)
@@ -668,13 +690,13 @@ func resourceComputeRegionDiskDelete(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "RegionDisk")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting RegionDisk",
+		config, res, project, "Deleting RegionDisk", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {
@@ -1033,6 +1055,12 @@ func resourceComputeRegionDiskEncoder(d *schema.ResourceData, meta interface{}, 
 	if err != nil {
 		return nil, err
 	}
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return nil, err
+	}
+
 	if v, ok := d.GetOk("type"); ok {
 		log.Printf("[DEBUG] Loading disk type: %s", v.(string))
 		diskType, err := readRegionDiskType(config, d, v.(string))
@@ -1047,7 +1075,7 @@ func resourceComputeRegionDiskEncoder(d *schema.ResourceData, meta interface{}, 
 
 	if v, ok := d.GetOk("image"); ok {
 		log.Printf("[DEBUG] Resolving image name: %s", v.(string))
-		imageUrl, err := resolveImage(config, project, v.(string))
+		imageUrl, err := resolveImage(config, project, v.(string), userAgent)
 		if err != nil {
 			return nil, fmt.Errorf(
 				"Error resolving image name '%s': %s",

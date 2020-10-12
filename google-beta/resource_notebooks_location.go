@@ -63,6 +63,11 @@ func resourceNotebooksLocation() *schema.Resource {
 func resourceNotebooksLocationCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandNotebooksLocationName(d.Get("name"), d, config)
 	if err != nil {
@@ -90,7 +95,7 @@ func resourceNotebooksLocationCreate(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Location: %s", err)
 	}
@@ -106,7 +111,7 @@ func resourceNotebooksLocationCreate(d *schema.ResourceData, meta interface{}) e
 	// identity fields and d.Id() before read
 	var opRes map[string]interface{}
 	err = notebooksOperationWaitTimeWithResponse(
-		config, res, &opRes, project, "Creating Location",
+		config, res, &opRes, project, "Creating Location", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		// The resource didn't actually create
@@ -133,6 +138,11 @@ func resourceNotebooksLocationCreate(d *schema.ResourceData, meta interface{}) e
 func resourceNotebooksLocationRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{NotebooksBasePath}}projects/{{project}}/locations/{{name}}")
 	if err != nil {
 		return err
@@ -151,7 +161,7 @@ func resourceNotebooksLocationRead(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("NotebooksLocation %q", d.Id()))
 	}
@@ -172,6 +182,12 @@ func resourceNotebooksLocationRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceNotebooksLocationUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -201,7 +217,7 @@ func resourceNotebooksLocationUpdate(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Location %q: %s", d.Id(), err)
@@ -210,7 +226,7 @@ func resourceNotebooksLocationUpdate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	err = notebooksOperationWaitTime(
-		config, res, project, "Updating Location",
+		config, res, project, "Updating Location", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -222,6 +238,12 @@ func resourceNotebooksLocationUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceNotebooksLocationDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -244,13 +266,13 @@ func resourceNotebooksLocationDelete(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Location")
 	}
 
 	err = notebooksOperationWaitTime(
-		config, res, project, "Deleting Location",
+		config, res, project, "Deleting Location", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

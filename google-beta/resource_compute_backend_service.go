@@ -930,6 +930,11 @@ range is [0.0, 1.0].`,
 func resourceComputeBackendServiceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	affinityCookieTtlSecProp, err := expandComputeBackendServiceAffinityCookieTtlSec(d.Get("affinity_cookie_ttl_sec"), d, config)
 	if err != nil {
@@ -1088,7 +1093,7 @@ func resourceComputeBackendServiceCreate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating BackendService: %s", err)
 	}
@@ -1101,7 +1106,7 @@ func resourceComputeBackendServiceCreate(d *schema.ResourceData, meta interface{
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating BackendService",
+		config, res, project, "Creating BackendService", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -1118,7 +1123,7 @@ func resourceComputeBackendServiceCreate(d *schema.ResourceData, meta interface{
 		if err != nil {
 			return errwrap.Wrapf("Error parsing Backend Service security policy: {{err}}", err)
 		}
-		op, err := config.clientCompute.BackendServices.SetSecurityPolicy(
+		op, err := config.NewComputeClient(userAgent).BackendServices.SetSecurityPolicy(
 			project, obj["name"].(string), &compute.SecurityPolicyReference{
 				SecurityPolicy: pol.RelativeLink(),
 			}).Do()
@@ -1126,7 +1131,7 @@ func resourceComputeBackendServiceCreate(d *schema.ResourceData, meta interface{
 			return errwrap.Wrapf("Error setting Backend Service security policy: {{err}}", err)
 		}
 		// This uses the create timeout for simplicity, though technically this code appears in both create and update
-		waitErr := computeOperationWaitTime(config, op, project, "Setting Backend Service Security Policy", d.Timeout(schema.TimeoutCreate))
+		waitErr := computeOperationWaitTime(config, op, project, "Setting Backend Service Security Policy", userAgent, d.Timeout(schema.TimeoutCreate))
 		if waitErr != nil {
 			return waitErr
 		}
@@ -1137,6 +1142,11 @@ func resourceComputeBackendServiceCreate(d *schema.ResourceData, meta interface{
 
 func resourceComputeBackendServiceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/backendServices/{{name}}")
 	if err != nil {
@@ -1156,7 +1166,7 @@ func resourceComputeBackendServiceRead(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeBackendService %q", d.Id()))
 	}
@@ -1267,6 +1277,12 @@ func resourceComputeBackendServiceRead(d *schema.ResourceData, meta interface{})
 
 func resourceComputeBackendServiceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -1427,7 +1443,7 @@ func resourceComputeBackendServiceUpdate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating BackendService %q: %s", d.Id(), err)
@@ -1436,7 +1452,7 @@ func resourceComputeBackendServiceUpdate(d *schema.ResourceData, meta interface{
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Updating BackendService",
+		config, res, project, "Updating BackendService", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -1449,7 +1465,7 @@ func resourceComputeBackendServiceUpdate(d *schema.ResourceData, meta interface{
 		if err != nil {
 			return errwrap.Wrapf("Error parsing Backend Service security policy: {{err}}", err)
 		}
-		op, err := config.clientCompute.BackendServices.SetSecurityPolicy(
+		op, err := config.NewComputeClient(userAgent).BackendServices.SetSecurityPolicy(
 			project, obj["name"].(string), &compute.SecurityPolicyReference{
 				SecurityPolicy: pol.RelativeLink(),
 			}).Do()
@@ -1457,7 +1473,7 @@ func resourceComputeBackendServiceUpdate(d *schema.ResourceData, meta interface{
 			return errwrap.Wrapf("Error setting Backend Service security policy: {{err}}", err)
 		}
 		// This uses the create timeout for simplicity, though technically this code appears in both create and update
-		waitErr := computeOperationWaitTime(config, op, project, "Setting Backend Service Security Policy", d.Timeout(schema.TimeoutCreate))
+		waitErr := computeOperationWaitTime(config, op, project, "Setting Backend Service Security Policy", userAgent, d.Timeout(schema.TimeoutCreate))
 		if waitErr != nil {
 			return waitErr
 		}
@@ -1467,6 +1483,12 @@ func resourceComputeBackendServiceUpdate(d *schema.ResourceData, meta interface{
 
 func resourceComputeBackendServiceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -1489,13 +1511,13 @@ func resourceComputeBackendServiceDelete(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "BackendService")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting BackendService",
+		config, res, project, "Deleting BackendService", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

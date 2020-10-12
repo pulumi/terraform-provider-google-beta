@@ -92,6 +92,11 @@ Examples:
 func resourceStorageBucketAccessControlCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	bucketProp, err := expandStorageBucketAccessControlBucket(d.Get("bucket"), d, config)
 	if err != nil {
@@ -132,7 +137,7 @@ func resourceStorageBucketAccessControlCreate(d *schema.ResourceData, meta inter
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating BucketAccessControl: %s", err)
 	}
@@ -152,6 +157,11 @@ func resourceStorageBucketAccessControlCreate(d *schema.ResourceData, meta inter
 func resourceStorageBucketAccessControlRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{StorageBasePath}}b/{{bucket}}/acl/{{entity}}")
 	if err != nil {
 		return err
@@ -164,7 +174,7 @@ func resourceStorageBucketAccessControlRead(d *schema.ResourceData, meta interfa
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("StorageBucketAccessControl %q", d.Id()))
 	}
@@ -190,6 +200,12 @@ func resourceStorageBucketAccessControlRead(d *schema.ResourceData, meta interfa
 
 func resourceStorageBucketAccessControlUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -232,7 +248,7 @@ func resourceStorageBucketAccessControlUpdate(d *schema.ResourceData, meta inter
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating BucketAccessControl %q: %s", d.Id(), err)
@@ -245,6 +261,12 @@ func resourceStorageBucketAccessControlUpdate(d *schema.ResourceData, meta inter
 
 func resourceStorageBucketAccessControlDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -268,7 +290,7 @@ func resourceStorageBucketAccessControlDelete(d *schema.ResourceData, meta inter
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "BucketAccessControl")
 	}

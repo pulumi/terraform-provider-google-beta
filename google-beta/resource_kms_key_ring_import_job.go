@@ -130,6 +130,11 @@ for General Considerations and Textual Encoding of Subject Public Key Info.`,
 func resourceKMSKeyRingImportJobCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	importMethodProp, err := expandKMSKeyRingImportJobImportMethod(d.Get("import_method"), d, config)
 	if err != nil {
@@ -157,7 +162,7 @@ func resourceKMSKeyRingImportJobCreate(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating KeyRingImportJob: %s", err)
 	}
@@ -180,6 +185,11 @@ func resourceKMSKeyRingImportJobCreate(d *schema.ResourceData, meta interface{})
 func resourceKMSKeyRingImportJobRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{KMSBasePath}}{{name}}")
 	if err != nil {
 		return err
@@ -192,7 +202,7 @@ func resourceKMSKeyRingImportJobRead(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("KMSKeyRingImportJob %q", d.Id()))
 	}
@@ -225,6 +235,12 @@ func resourceKMSKeyRingImportJobRead(d *schema.ResourceData, meta interface{}) e
 func resourceKMSKeyRingImportJobDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	url, err := replaceVars(d, config, "{{KMSBasePath}}{{name}}")
@@ -240,7 +256,7 @@ func resourceKMSKeyRingImportJobDelete(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "KeyRingImportJob")
 	}

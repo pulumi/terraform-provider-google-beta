@@ -114,6 +114,11 @@ Similar to what would be chosen for an Active Directory set up on an internal ne
 func resourceActiveDirectoryDomainCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	labelsProp, err := expandActiveDirectoryDomainLabels(d.Get("labels"), d, config)
 	if err != nil {
@@ -165,7 +170,7 @@ func resourceActiveDirectoryDomainCreate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Domain: %s", err)
 	}
@@ -181,7 +186,7 @@ func resourceActiveDirectoryDomainCreate(d *schema.ResourceData, meta interface{
 	// identity fields and d.Id() before read
 	var opRes map[string]interface{}
 	err = activeDirectoryOperationWaitTimeWithResponse(
-		config, res, &opRes, project, "Creating Domain",
+		config, res, &opRes, project, "Creating Domain", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		// The resource didn't actually create
@@ -208,6 +213,11 @@ func resourceActiveDirectoryDomainCreate(d *schema.ResourceData, meta interface{
 func resourceActiveDirectoryDomainRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{ActiveDirectoryBasePath}}{{name}}")
 	if err != nil {
 		return err
@@ -226,7 +236,7 @@ func resourceActiveDirectoryDomainRead(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ActiveDirectoryDomain %q", d.Id()))
 	}
@@ -262,6 +272,12 @@ func resourceActiveDirectoryDomainRead(d *schema.ResourceData, meta interface{})
 
 func resourceActiveDirectoryDomainUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -322,7 +338,7 @@ func resourceActiveDirectoryDomainUpdate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Domain %q: %s", d.Id(), err)
@@ -331,7 +347,7 @@ func resourceActiveDirectoryDomainUpdate(d *schema.ResourceData, meta interface{
 	}
 
 	err = activeDirectoryOperationWaitTime(
-		config, res, project, "Updating Domain",
+		config, res, project, "Updating Domain", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -343,6 +359,12 @@ func resourceActiveDirectoryDomainUpdate(d *schema.ResourceData, meta interface{
 
 func resourceActiveDirectoryDomainDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -365,13 +387,13 @@ func resourceActiveDirectoryDomainDelete(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Domain")
 	}
 
 	err = activeDirectoryOperationWaitTime(
-		config, res, project, "Deleting Domain",
+		config, res, project, "Deleting Domain", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

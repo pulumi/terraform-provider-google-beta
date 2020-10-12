@@ -120,6 +120,11 @@ request to retrieve the TargetGrpcProxy. A base64-encoded string.`,
 func resourceComputeTargetGrpcProxyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandComputeTargetGrpcProxyName(d.Get("name"), d, config)
 	if err != nil {
@@ -171,7 +176,7 @@ func resourceComputeTargetGrpcProxyCreate(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating TargetGrpcProxy: %s", err)
 	}
@@ -184,7 +189,7 @@ func resourceComputeTargetGrpcProxyCreate(d *schema.ResourceData, meta interface
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating TargetGrpcProxy",
+		config, res, project, "Creating TargetGrpcProxy", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -200,6 +205,11 @@ func resourceComputeTargetGrpcProxyCreate(d *schema.ResourceData, meta interface
 
 func resourceComputeTargetGrpcProxyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/targetGrpcProxies/{{name}}")
 	if err != nil {
@@ -219,7 +229,7 @@ func resourceComputeTargetGrpcProxyRead(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeTargetGrpcProxy %q", d.Id()))
 	}
@@ -259,6 +269,12 @@ func resourceComputeTargetGrpcProxyRead(d *schema.ResourceData, meta interface{}
 func resourceComputeTargetGrpcProxyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -293,7 +309,7 @@ func resourceComputeTargetGrpcProxyUpdate(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating TargetGrpcProxy %q: %s", d.Id(), err)
@@ -302,7 +318,7 @@ func resourceComputeTargetGrpcProxyUpdate(d *schema.ResourceData, meta interface
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Updating TargetGrpcProxy",
+		config, res, project, "Updating TargetGrpcProxy", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -314,6 +330,12 @@ func resourceComputeTargetGrpcProxyUpdate(d *schema.ResourceData, meta interface
 
 func resourceComputeTargetGrpcProxyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -336,13 +358,13 @@ func resourceComputeTargetGrpcProxyDelete(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "TargetGrpcProxy")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting TargetGrpcProxy",
+		config, res, project, "Deleting TargetGrpcProxy", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

@@ -313,6 +313,11 @@ func resourceComputeRegionInstanceGroupManager() *schema.Resource {
 func resourceComputeRegionInstanceGroupManagerCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
@@ -339,7 +344,7 @@ func resourceComputeRegionInstanceGroupManagerCreate(d *schema.ResourceData, met
 		ForceSendFields: []string{"TargetSize"},
 	}
 
-	op, err := config.clientComputeBeta.RegionInstanceGroupManagers.Insert(project, region, manager).Do()
+	op, err := config.NewComputeBetaClient(userAgent).RegionInstanceGroupManagers.Insert(project, region, manager).Do()
 
 	if err != nil {
 		return fmt.Errorf("Error creating RegionInstanceGroupManager: %s", err)
@@ -352,7 +357,7 @@ func resourceComputeRegionInstanceGroupManagerCreate(d *schema.ResourceData, met
 	d.SetId(id)
 
 	// Wait for the operation to complete
-	err = computeOperationWaitTime(config, op, project, "Creating InstanceGroupManager", d.Timeout(schema.TimeoutCreate))
+	err = computeOperationWaitTime(config, op, project, "Creating InstanceGroupManager", userAgent, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return err
 	}
@@ -374,8 +379,13 @@ func getRegionalManager(d *schema.ResourceData, meta interface{}) (*computeBeta.
 		return nil, err
 	}
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return nil, err
+	}
+
 	name := d.Get("name").(string)
-	manager, err := config.clientComputeBeta.RegionInstanceGroupManagers.Get(project, region, name).Do()
+	manager, err := config.NewComputeBetaClient(userAgent).RegionInstanceGroupManagers.Get(project, region, name).Do()
 	if err != nil {
 		return nil, handleNotFoundError(err, d, fmt.Sprintf("Region Instance Manager %q", name))
 	}
@@ -400,6 +410,7 @@ func waitForInstancesRefreshFunc(f getInstanceManagerFunc, d *schema.ResourceDat
 
 func resourceComputeRegionInstanceGroupManagerRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	manager, err := getRegionalManager(d, meta)
 	if err != nil {
 		return err
@@ -483,6 +494,10 @@ func resourceComputeRegionInstanceGroupManagerRead(d *schema.ResourceData, meta 
 
 func resourceComputeRegionInstanceGroupManagerUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -527,12 +542,12 @@ func resourceComputeRegionInstanceGroupManagerUpdate(d *schema.ResourceData, met
 	}
 
 	if change {
-		op, err := config.clientComputeBeta.RegionInstanceGroupManagers.Patch(project, region, d.Get("name").(string), updatedManager).Do()
+		op, err := config.NewComputeBetaClient(userAgent).RegionInstanceGroupManagers.Patch(project, region, d.Get("name").(string), updatedManager).Do()
 		if err != nil {
 			return fmt.Errorf("Error updating region managed group instances: %s", err)
 		}
 
-		err = computeOperationWaitTime(config, op, project, "Updating region managed group instances", d.Timeout(schema.TimeoutUpdate))
+		err = computeOperationWaitTime(config, op, project, "Updating region managed group instances", userAgent, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
 		}
@@ -547,14 +562,14 @@ func resourceComputeRegionInstanceGroupManagerUpdate(d *schema.ResourceData, met
 			NamedPorts: namedPorts,
 		}
 
-		op, err := config.clientComputeBeta.RegionInstanceGroups.SetNamedPorts(
+		op, err := config.NewComputeBetaClient(userAgent).RegionInstanceGroups.SetNamedPorts(
 			project, region, d.Get("name").(string), setNamedPorts).Do()
 
 		if err != nil {
 			return fmt.Errorf("Error updating RegionInstanceGroupManager: %s", err)
 		}
 
-		err = computeOperationWaitTime(config, op, project, "Updating RegionInstanceGroupManager", d.Timeout(schema.TimeoutUpdate))
+		err = computeOperationWaitTime(config, op, project, "Updating RegionInstanceGroupManager", userAgent, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
 		}
@@ -564,14 +579,14 @@ func resourceComputeRegionInstanceGroupManagerUpdate(d *schema.ResourceData, met
 	if d.HasChange("target_size") {
 		d.Partial(true)
 		targetSize := int64(d.Get("target_size").(int))
-		op, err := config.clientComputeBeta.RegionInstanceGroupManagers.Resize(
+		op, err := config.NewComputeBetaClient(userAgent).RegionInstanceGroupManagers.Resize(
 			project, region, d.Get("name").(string), targetSize).Do()
 
 		if err != nil {
 			return fmt.Errorf("Error resizing RegionInstanceGroupManager: %s", err)
 		}
 
-		err = computeOperationWaitTime(config, op, project, "Resizing RegionInstanceGroupManager", d.Timeout(schema.TimeoutUpdate))
+		err = computeOperationWaitTime(config, op, project, "Resizing RegionInstanceGroupManager", userAgent, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
 		}
@@ -584,6 +599,10 @@ func resourceComputeRegionInstanceGroupManagerUpdate(d *schema.ResourceData, met
 
 func resourceComputeRegionInstanceGroupManagerDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -597,14 +616,14 @@ func resourceComputeRegionInstanceGroupManagerDelete(d *schema.ResourceData, met
 
 	name := d.Get("name").(string)
 
-	op, err := config.clientComputeBeta.RegionInstanceGroupManagers.Delete(project, region, name).Do()
+	op, err := config.NewComputeBetaClient(userAgent).RegionInstanceGroupManagers.Delete(project, region, name).Do()
 
 	if err != nil {
 		return fmt.Errorf("Error deleting region instance group manager: %s", err)
 	}
 
 	// Wait for the operation to complete
-	err = computeOperationWaitTime(config, op, project, "Deleting RegionInstanceGroupManager", d.Timeout(schema.TimeoutDelete))
+	err = computeOperationWaitTime(config, op, project, "Deleting RegionInstanceGroupManager", userAgent, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return fmt.Errorf("Error waiting for delete to complete: %s", err)
 	}

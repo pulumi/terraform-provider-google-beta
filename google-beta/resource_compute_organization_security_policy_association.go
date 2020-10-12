@@ -69,6 +69,11 @@ func resourceComputeOrganizationSecurityPolicyAssociation() *schema.Resource {
 func resourceComputeOrganizationSecurityPolicyAssociationCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandComputeOrganizationSecurityPolicyAssociationName(d.Get("name"), d, config)
 	if err != nil {
@@ -96,7 +101,7 @@ func resourceComputeOrganizationSecurityPolicyAssociationCreate(d *schema.Resour
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating OrganizationSecurityPolicyAssociation: %s", err)
 	}
@@ -118,7 +123,7 @@ func resourceComputeOrganizationSecurityPolicyAssociationCreate(d *schema.Resour
 		return err
 	}
 
-	policyRes, err := sendRequest(config, "GET", "", url, nil)
+	policyRes, err := sendRequest(config, "GET", "", url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeOrganizationSecurityPolicy %q", d.Get("policy_id")))
 	}
@@ -126,7 +131,7 @@ func resourceComputeOrganizationSecurityPolicyAssociationCreate(d *schema.Resour
 	parent := flattenComputeOrganizationSecurityPolicyParent(policyRes["parent"], d, config)
 	var opRes map[string]interface{}
 	err = computeOrgOperationWaitTimeWithResponse(
-		config, res, &opRes, parent.(string), "Creating OrganizationSecurityPolicyAssociation",
+		config, res, &opRes, parent.(string), "Creating OrganizationSecurityPolicyAssociation", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -141,6 +146,11 @@ func resourceComputeOrganizationSecurityPolicyAssociationCreate(d *schema.Resour
 func resourceComputeOrganizationSecurityPolicyAssociationRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}{{policy_id}}/getAssociation?name={{name}}")
 	if err != nil {
 		return err
@@ -153,7 +163,7 @@ func resourceComputeOrganizationSecurityPolicyAssociationRead(d *schema.Resource
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeOrganizationSecurityPolicyAssociation %q", d.Id()))
 	}
@@ -174,6 +184,12 @@ func resourceComputeOrganizationSecurityPolicyAssociationRead(d *schema.Resource
 func resourceComputeOrganizationSecurityPolicyAssociationDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}{{policy_id}}/removeAssociation?name={{name}}")
@@ -189,7 +205,7 @@ func resourceComputeOrganizationSecurityPolicyAssociationDelete(d *schema.Resour
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "OrganizationSecurityPolicyAssociation")
 	}
@@ -202,7 +218,7 @@ func resourceComputeOrganizationSecurityPolicyAssociationDelete(d *schema.Resour
 		return err
 	}
 
-	policyRes, err := sendRequest(config, "GET", "", url, nil)
+	policyRes, err := sendRequest(config, "GET", "", url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeOrganizationSecurityPolicy %q", d.Get("policy_id")))
 	}
@@ -210,7 +226,7 @@ func resourceComputeOrganizationSecurityPolicyAssociationDelete(d *schema.Resour
 	parent := flattenComputeOrganizationSecurityPolicyParent(policyRes["parent"], d, config)
 	var opRes map[string]interface{}
 	err = computeOrgOperationWaitTimeWithResponse(
-		config, res, &opRes, parent.(string), "Creating OrganizationSecurityPolicyAssociation",
+		config, res, &opRes, parent.(string), "Creating OrganizationSecurityPolicyAssociation", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {

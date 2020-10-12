@@ -53,7 +53,7 @@ func tpuNodeCustomizeDiff(_ context.Context, diff *schema.ResourceDiff, meta int
 		pid = parts[1]
 	}
 
-	project, err := config.clientResourceManager.Projects.Get(pid).Do()
+	project, err := config.NewResourceManagerClient(config.userAgent).Projects.Get(pid).Do()
 	if err != nil {
 		return fmt.Errorf("Failed to retrieve project, pid: %s, err: %s", pid, err)
 	}
@@ -71,24 +71,6 @@ func tpuNodeCustomizeDiff(_ context.Context, diff *schema.ResourceDiff, meta int
 		}
 	}
 	return nil
-}
-func validateHttpHeaders() schema.SchemaValidateFunc {
-	return func(i interface{}, k string) (s []string, es []error) {
-		headers := i.(map[string]interface{})
-		if _, ok := headers["Content-Length"]; ok {
-			es = append(es, fmt.Errorf("Cannot set the Content-Length header on %s", k))
-			return
-		}
-		r := regexp.MustCompile(`(X-Google-|X-AppEngine-).*`)
-		for key := range headers {
-			if r.MatchString(key) {
-				es = append(es, fmt.Errorf("Cannot set the %s header on %s", key, k))
-				return
-			}
-		}
-
-		return
-	}
 }
 
 func resourceTPUNode() *schema.Resource {
@@ -246,6 +228,11 @@ permissions to that data.`,
 func resourceTPUNodeCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandTPUNodeName(d.Get("name"), d, config)
 	if err != nil {
@@ -321,7 +308,7 @@ func resourceTPUNodeCreate(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Node: %s", err)
 	}
@@ -337,7 +324,7 @@ func resourceTPUNodeCreate(d *schema.ResourceData, meta interface{}) error {
 	// identity fields and d.Id() before read
 	var opRes map[string]interface{}
 	err = tpuOperationWaitTimeWithResponse(
-		config, res, &opRes, project, "Creating Node",
+		config, res, &opRes, project, "Creating Node", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		// The resource didn't actually create
@@ -364,6 +351,11 @@ func resourceTPUNodeCreate(d *schema.ResourceData, meta interface{}) error {
 func resourceTPUNodeRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{TPUBasePath}}projects/{{project}}/locations/{{zone}}/nodes/{{name}}")
 	if err != nil {
 		return err
@@ -382,7 +374,7 @@ func resourceTPUNodeRead(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("TPUNode %q", d.Id()))
 	}
@@ -431,6 +423,12 @@ func resourceTPUNodeRead(d *schema.ResourceData, meta interface{}) error {
 func resourceTPUNodeUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -461,7 +459,7 @@ func resourceTPUNodeUpdate(d *schema.ResourceData, meta interface{}) error {
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating Node %q: %s", d.Id(), err)
 		} else {
@@ -469,7 +467,7 @@ func resourceTPUNodeUpdate(d *schema.ResourceData, meta interface{}) error {
 		}
 
 		err = tpuOperationWaitTime(
-			config, res, project, "Updating Node",
+			config, res, project, "Updating Node", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -483,6 +481,12 @@ func resourceTPUNodeUpdate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceTPUNodeDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -505,13 +509,13 @@ func resourceTPUNodeDelete(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Node")
 	}
 
 	err = tpuOperationWaitTime(
-		config, res, project, "Deleting Node",
+		config, res, project, "Deleting Node", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

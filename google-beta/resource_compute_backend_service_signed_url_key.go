@@ -70,6 +70,11 @@ valid RFC 4648 Section 5 base64url encoded string.`,
 func resourceComputeBackendServiceSignedUrlKeyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	keyNameProp, err := expandNestedComputeBackendServiceSignedUrlKeyName(d.Get("name"), d, config)
 	if err != nil {
@@ -116,7 +121,7 @@ func resourceComputeBackendServiceSignedUrlKeyCreate(d *schema.ResourceData, met
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating BackendServiceSignedUrlKey: %s", err)
 	}
@@ -129,7 +134,7 @@ func resourceComputeBackendServiceSignedUrlKeyCreate(d *schema.ResourceData, met
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating BackendServiceSignedUrlKey",
+		config, res, project, "Creating BackendServiceSignedUrlKey", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -145,6 +150,11 @@ func resourceComputeBackendServiceSignedUrlKeyCreate(d *schema.ResourceData, met
 
 func resourceComputeBackendServiceSignedUrlKeyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/backendServices/{{backend_service}}")
 	if err != nil {
@@ -164,7 +174,7 @@ func resourceComputeBackendServiceSignedUrlKeyRead(d *schema.ResourceData, meta 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeBackendServiceSignedUrlKey %q", d.Id()))
 	}
@@ -195,6 +205,12 @@ func resourceComputeBackendServiceSignedUrlKeyRead(d *schema.ResourceData, meta 
 func resourceComputeBackendServiceSignedUrlKeyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -223,13 +239,13 @@ func resourceComputeBackendServiceSignedUrlKeyDelete(d *schema.ResourceData, met
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "BackendServiceSignedUrlKey")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting BackendServiceSignedUrlKey",
+		config, res, project, "Deleting BackendServiceSignedUrlKey", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

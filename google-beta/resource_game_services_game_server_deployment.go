@@ -89,6 +89,11 @@ For example,
 func resourceGameServicesGameServerDeploymentCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandGameServicesGameServerDeploymentDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -122,7 +127,7 @@ func resourceGameServicesGameServerDeploymentCreate(d *schema.ResourceData, meta
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating GameServerDeployment: %s", err)
 	}
@@ -138,7 +143,7 @@ func resourceGameServicesGameServerDeploymentCreate(d *schema.ResourceData, meta
 	// identity fields and d.Id() before read
 	var opRes map[string]interface{}
 	err = gameServicesOperationWaitTimeWithResponse(
-		config, res, &opRes, project, "Creating GameServerDeployment",
+		config, res, &opRes, project, "Creating GameServerDeployment", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		// The resource didn't actually create
@@ -165,6 +170,11 @@ func resourceGameServicesGameServerDeploymentCreate(d *schema.ResourceData, meta
 func resourceGameServicesGameServerDeploymentRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{GameServicesBasePath}}projects/{{project}}/locations/{{location}}/gameServerDeployments/{{deployment_id}}")
 	if err != nil {
 		return err
@@ -183,7 +193,7 @@ func resourceGameServicesGameServerDeploymentRead(d *schema.ResourceData, meta i
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("GameServicesGameServerDeployment %q", d.Id()))
 	}
@@ -207,6 +217,12 @@ func resourceGameServicesGameServerDeploymentRead(d *schema.ResourceData, meta i
 
 func resourceGameServicesGameServerDeploymentUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -257,7 +273,7 @@ func resourceGameServicesGameServerDeploymentUpdate(d *schema.ResourceData, meta
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating GameServerDeployment %q: %s", d.Id(), err)
@@ -266,7 +282,7 @@ func resourceGameServicesGameServerDeploymentUpdate(d *schema.ResourceData, meta
 	}
 
 	err = gameServicesOperationWaitTime(
-		config, res, project, "Updating GameServerDeployment",
+		config, res, project, "Updating GameServerDeployment", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -278,6 +294,12 @@ func resourceGameServicesGameServerDeploymentUpdate(d *schema.ResourceData, meta
 
 func resourceGameServicesGameServerDeploymentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -300,13 +322,13 @@ func resourceGameServicesGameServerDeploymentDelete(d *schema.ResourceData, meta
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "GameServerDeployment")
 	}
 
 	err = gameServicesOperationWaitTime(
-		config, res, project, "Deleting GameServerDeployment",
+		config, res, project, "Deleting GameServerDeployment", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

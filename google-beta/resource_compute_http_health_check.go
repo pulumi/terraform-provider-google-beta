@@ -132,6 +132,11 @@ consecutive failures. The default value is 2.`,
 func resourceComputeHttpHealthCheckCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	checkIntervalSecProp, err := expandComputeHttpHealthCheckCheckIntervalSec(d.Get("check_interval_sec"), d, config)
 	if err != nil {
@@ -207,7 +212,7 @@ func resourceComputeHttpHealthCheckCreate(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating HttpHealthCheck: %s", err)
 	}
@@ -220,7 +225,7 @@ func resourceComputeHttpHealthCheckCreate(d *schema.ResourceData, meta interface
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating HttpHealthCheck",
+		config, res, project, "Creating HttpHealthCheck", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -236,6 +241,11 @@ func resourceComputeHttpHealthCheckCreate(d *schema.ResourceData, meta interface
 
 func resourceComputeHttpHealthCheckRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/httpHealthChecks/{{name}}")
 	if err != nil {
@@ -255,7 +265,7 @@ func resourceComputeHttpHealthCheckRead(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeHttpHealthCheck %q", d.Id()))
 	}
@@ -303,6 +313,12 @@ func resourceComputeHttpHealthCheckRead(d *schema.ResourceData, meta interface{}
 
 func resourceComputeHttpHealthCheckUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -380,7 +396,7 @@ func resourceComputeHttpHealthCheckUpdate(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating HttpHealthCheck %q: %s", d.Id(), err)
@@ -389,7 +405,7 @@ func resourceComputeHttpHealthCheckUpdate(d *schema.ResourceData, meta interface
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Updating HttpHealthCheck",
+		config, res, project, "Updating HttpHealthCheck", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -401,6 +417,12 @@ func resourceComputeHttpHealthCheckUpdate(d *schema.ResourceData, meta interface
 
 func resourceComputeHttpHealthCheckDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -423,13 +445,13 @@ func resourceComputeHttpHealthCheckDelete(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "HttpHealthCheck")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting HttpHealthCheck",
+		config, res, project, "Deleting HttpHealthCheck", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

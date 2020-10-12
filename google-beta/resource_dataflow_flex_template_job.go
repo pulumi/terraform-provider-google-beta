@@ -39,6 +39,14 @@ func resourceDataflowFlexTemplateJob() *schema.Resource {
 				ForceNew: true,
 			},
 
+			"region": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				ForceNew:    true,
+				Computed:    true,
+				Description: `The region in which the created job should run.`,
+			},
+
 			"on_delete": {
 				Type:         schema.TypeString,
 				ValidateFunc: validation.StringInSlice([]string{"cancel", "drain"}, false),
@@ -83,6 +91,11 @@ func resourceDataflowFlexTemplateJob() *schema.Resource {
 func resourceDataflowFlexTemplateJobCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
@@ -101,7 +114,7 @@ func resourceDataflowFlexTemplateJobCreate(d *schema.ResourceData, meta interfac
 		},
 	}
 
-	response, err := config.clientDataflow.Projects.Locations.FlexTemplates.Launch(project, region, &request).Do()
+	response, err := config.NewDataflowClient(userAgent).Projects.Locations.FlexTemplates.Launch(project, region, &request).Do()
 	if err != nil {
 		return err
 	}
@@ -118,6 +131,10 @@ func resourceDataflowFlexTemplateJobCreate(d *schema.ResourceData, meta interfac
 // resourceDataflowFlexTemplateJobRead reads a Flex Template Job resource.
 func resourceDataflowFlexTemplateJobRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -131,7 +148,7 @@ func resourceDataflowFlexTemplateJobRead(d *schema.ResourceData, meta interface{
 
 	jobId := d.Id()
 
-	job, err := resourceDataflowJobGetJob(config, project, region, jobId)
+	job, err := resourceDataflowJobGetJob(config, project, region, userAgent, jobId)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("Dataflow job %s", jobId))
 	}
@@ -166,6 +183,10 @@ func resourceDataflowFlexTemplateJobUpdate(d *schema.ResourceData, meta interfac
 
 func resourceDataflowFlexTemplateJobDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -192,7 +213,7 @@ func resourceDataflowFlexTemplateJobDelete(d *schema.ResourceData, meta interfac
 			RequestedState: requestedState,
 		}
 
-		_, updateErr := resourceDataflowJobUpdateJob(config, project, region, id, job)
+		_, updateErr := resourceDataflowJobUpdateJob(config, project, region, userAgent, id, job)
 		if updateErr != nil {
 			gerr, isGoogleErr := updateErr.(*googleapi.Error)
 			if !isGoogleErr {

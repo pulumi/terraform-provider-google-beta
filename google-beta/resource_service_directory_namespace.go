@@ -84,6 +84,11 @@ in the format 'projects/*/locations/*/namespaces/*'.`,
 func resourceServiceDirectoryNamespaceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	labelsProp, err := expandServiceDirectoryNamespaceLabels(d.Get("labels"), d, config)
 	if err != nil {
@@ -111,7 +116,7 @@ func resourceServiceDirectoryNamespaceCreate(d *schema.ResourceData, meta interf
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Namespace: %s", err)
 	}
@@ -134,6 +139,11 @@ func resourceServiceDirectoryNamespaceCreate(d *schema.ResourceData, meta interf
 func resourceServiceDirectoryNamespaceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{ServiceDirectoryBasePath}}{{name}}")
 	if err != nil {
 		return err
@@ -152,7 +162,7 @@ func resourceServiceDirectoryNamespaceRead(d *schema.ResourceData, meta interfac
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ServiceDirectoryNamespace %q", d.Id()))
 	}
@@ -173,6 +183,12 @@ func resourceServiceDirectoryNamespaceRead(d *schema.ResourceData, meta interfac
 
 func resourceServiceDirectoryNamespaceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -213,7 +229,7 @@ func resourceServiceDirectoryNamespaceUpdate(d *schema.ResourceData, meta interf
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Namespace %q: %s", d.Id(), err)
@@ -226,6 +242,12 @@ func resourceServiceDirectoryNamespaceUpdate(d *schema.ResourceData, meta interf
 
 func resourceServiceDirectoryNamespaceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -248,7 +270,7 @@ func resourceServiceDirectoryNamespaceDelete(d *schema.ResourceData, meta interf
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Namespace")
 	}

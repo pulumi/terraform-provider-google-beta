@@ -86,6 +86,11 @@ func resourceIdentityPlatformOauthIdpConfig() *schema.Resource {
 func resourceIdentityPlatformOauthIdpConfigCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandIdentityPlatformOauthIdpConfigName(d.Get("name"), d, config)
 	if err != nil {
@@ -143,7 +148,7 @@ func resourceIdentityPlatformOauthIdpConfigCreate(d *schema.ResourceData, meta i
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating OauthIdpConfig: %s", err)
 	}
@@ -163,6 +168,11 @@ func resourceIdentityPlatformOauthIdpConfigCreate(d *schema.ResourceData, meta i
 func resourceIdentityPlatformOauthIdpConfigRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{IdentityPlatformBasePath}}projects/{{project}}/oauthIdpConfigs/{{name}}")
 	if err != nil {
 		return err
@@ -181,7 +191,7 @@ func resourceIdentityPlatformOauthIdpConfigRead(d *schema.ResourceData, meta int
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("IdentityPlatformOauthIdpConfig %q", d.Id()))
 	}
@@ -214,6 +224,12 @@ func resourceIdentityPlatformOauthIdpConfigRead(d *schema.ResourceData, meta int
 
 func resourceIdentityPlatformOauthIdpConfigUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -294,7 +310,7 @@ func resourceIdentityPlatformOauthIdpConfigUpdate(d *schema.ResourceData, meta i
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating OauthIdpConfig %q: %s", d.Id(), err)
@@ -307,6 +323,12 @@ func resourceIdentityPlatformOauthIdpConfigUpdate(d *schema.ResourceData, meta i
 
 func resourceIdentityPlatformOauthIdpConfigDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -329,7 +351,7 @@ func resourceIdentityPlatformOauthIdpConfigDelete(d *schema.ResourceData, meta i
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "OauthIdpConfig")
 	}

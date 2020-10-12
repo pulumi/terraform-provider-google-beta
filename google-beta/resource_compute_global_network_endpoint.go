@@ -79,6 +79,11 @@ This can only be specified when network_endpoint_type of the NEG is INTERNET_FQD
 func resourceComputeGlobalNetworkEndpointCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	portProp, err := expandNestedComputeGlobalNetworkEndpointPort(d.Get("port"), d, config)
 	if err != nil {
@@ -130,7 +135,7 @@ func resourceComputeGlobalNetworkEndpointCreate(d *schema.ResourceData, meta int
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating GlobalNetworkEndpoint: %s", err)
 	}
@@ -143,7 +148,7 @@ func resourceComputeGlobalNetworkEndpointCreate(d *schema.ResourceData, meta int
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating GlobalNetworkEndpoint",
+		config, res, project, "Creating GlobalNetworkEndpoint", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -159,6 +164,11 @@ func resourceComputeGlobalNetworkEndpointCreate(d *schema.ResourceData, meta int
 
 func resourceComputeGlobalNetworkEndpointRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/networkEndpointGroups/{{global_network_endpoint_group}}/listNetworkEndpoints")
 	if err != nil {
@@ -178,7 +188,7 @@ func resourceComputeGlobalNetworkEndpointRead(d *schema.ResourceData, meta inter
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "POST", billingProject, url, nil)
+	res, err := sendRequest(config, "POST", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeGlobalNetworkEndpoint %q", d.Id()))
 	}
@@ -226,6 +236,12 @@ func resourceComputeGlobalNetworkEndpointRead(d *schema.ResourceData, meta inter
 
 func resourceComputeGlobalNetworkEndpointDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -283,13 +299,13 @@ func resourceComputeGlobalNetworkEndpointDelete(d *schema.ResourceData, meta int
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "GlobalNetworkEndpoint")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting GlobalNetworkEndpoint",
+		config, res, project, "Deleting GlobalNetworkEndpoint", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

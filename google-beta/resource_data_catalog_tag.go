@@ -139,6 +139,11 @@ where tag_id is a system-generated identifier. Note that this Tag may not actual
 func resourceDataCatalogTagCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	templateProp, err := expandNestedDataCatalogTagTemplate(d.Get("template"), d, config)
 	if err != nil {
@@ -172,7 +177,7 @@ func resourceDataCatalogTagCreate(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Tag: %s", err)
 	}
@@ -195,6 +200,11 @@ func resourceDataCatalogTagCreate(d *schema.ResourceData, meta interface{}) erro
 func resourceDataCatalogTagRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{DataCatalogBasePath}}{{parent}}/tags")
 	if err != nil {
 		return err
@@ -207,7 +217,7 @@ func resourceDataCatalogTagRead(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("DataCatalogTag %q", d.Id()))
 	}
@@ -245,6 +255,12 @@ func resourceDataCatalogTagRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceDataCatalogTagUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -289,7 +305,7 @@ func resourceDataCatalogTagUpdate(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Tag %q: %s", d.Id(), err)
@@ -302,6 +318,12 @@ func resourceDataCatalogTagUpdate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceDataCatalogTagDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -318,7 +340,7 @@ func resourceDataCatalogTagDelete(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Tag")
 	}

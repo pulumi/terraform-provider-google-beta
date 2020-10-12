@@ -228,6 +228,11 @@ boundaries.`,
 func resourceNetworkManagementConnectivityTestCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandNetworkManagementConnectivityTestName(d.Get("name"), d, config)
 	if err != nil {
@@ -291,7 +296,7 @@ func resourceNetworkManagementConnectivityTestCreate(d *schema.ResourceData, met
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating ConnectivityTest: %s", err)
 	}
@@ -307,7 +312,7 @@ func resourceNetworkManagementConnectivityTestCreate(d *schema.ResourceData, met
 	// identity fields and d.Id() before read
 	var opRes map[string]interface{}
 	err = networkManagementOperationWaitTimeWithResponse(
-		config, res, &opRes, project, "Creating ConnectivityTest",
+		config, res, &opRes, project, "Creating ConnectivityTest", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		// The resource didn't actually create
@@ -334,6 +339,11 @@ func resourceNetworkManagementConnectivityTestCreate(d *schema.ResourceData, met
 func resourceNetworkManagementConnectivityTestRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{NetworkManagementBasePath}}projects/{{project}}/locations/global/connectivityTests/{{name}}")
 	if err != nil {
 		return err
@@ -352,7 +362,7 @@ func resourceNetworkManagementConnectivityTestRead(d *schema.ResourceData, meta 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("NetworkManagementConnectivityTest %q", d.Id()))
 	}
@@ -388,6 +398,12 @@ func resourceNetworkManagementConnectivityTestRead(d *schema.ResourceData, meta 
 
 func resourceNetworkManagementConnectivityTestUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -487,7 +503,7 @@ func resourceNetworkManagementConnectivityTestUpdate(d *schema.ResourceData, met
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating ConnectivityTest %q: %s", d.Id(), err)
@@ -496,7 +512,7 @@ func resourceNetworkManagementConnectivityTestUpdate(d *schema.ResourceData, met
 	}
 
 	err = networkManagementOperationWaitTime(
-		config, res, project, "Updating ConnectivityTest",
+		config, res, project, "Updating ConnectivityTest", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -508,6 +524,12 @@ func resourceNetworkManagementConnectivityTestUpdate(d *schema.ResourceData, met
 
 func resourceNetworkManagementConnectivityTestDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -530,13 +552,13 @@ func resourceNetworkManagementConnectivityTestDelete(d *schema.ResourceData, met
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "ConnectivityTest")
 	}
 
 	err = networkManagementOperationWaitTime(
-		config, res, project, "Deleting ConnectivityTest",
+		config, res, project, "Deleting ConnectivityTest", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

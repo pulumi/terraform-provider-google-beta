@@ -347,6 +347,11 @@ to the Internet. When set to 'private', Cloud DNS will always send queries throu
 func resourceDNSManagedZoneCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandDNSManagedZoneDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -434,7 +439,7 @@ func resourceDNSManagedZoneCreate(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating ManagedZone: %s", err)
 	}
@@ -454,6 +459,11 @@ func resourceDNSManagedZoneCreate(d *schema.ResourceData, meta interface{}) erro
 func resourceDNSManagedZoneRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{DNSBasePath}}projects/{{project}}/managedZones/{{name}}")
 	if err != nil {
 		return err
@@ -472,7 +482,7 @@ func resourceDNSManagedZoneRead(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("DNSManagedZone %q", d.Id()))
 	}
@@ -529,6 +539,12 @@ func resourceDNSManagedZoneRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceDNSManagedZoneUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -588,7 +604,7 @@ func resourceDNSManagedZoneUpdate(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating ManagedZone %q: %s", d.Id(), err)
@@ -601,6 +617,12 @@ func resourceDNSManagedZoneUpdate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceDNSManagedZoneDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -622,12 +644,12 @@ func resourceDNSManagedZoneDelete(d *schema.ResourceData, meta interface{}) erro
 		for paginate := true; paginate; {
 			var resp *dns.ResourceRecordSetsListResponse
 			if token == "" {
-				resp, err = config.clientDns.ResourceRecordSets.List(project, zone).Do()
+				resp, err = config.NewDnsClient(userAgent).ResourceRecordSets.List(project, zone).Do()
 				if err != nil {
 					return fmt.Errorf("Error reading ResourceRecordSets: %s", err)
 				}
 			} else {
-				resp, err = config.clientDns.ResourceRecordSets.List(project, zone).PageToken(token).Do()
+				resp, err = config.NewDnsClient(userAgent).ResourceRecordSets.List(project, zone).PageToken(token).Do()
 				if err != nil {
 					return fmt.Errorf("Error reading ResourceRecordSets: %s", err)
 				}
@@ -647,7 +669,7 @@ func resourceDNSManagedZoneDelete(d *schema.ResourceData, meta interface{}) erro
 				}
 
 				if rr.Type == "NS" {
-					mz, err := config.clientDns.ManagedZones.Get(project, zone).Do()
+					mz, err := config.NewDnsClient(userAgent).ManagedZones.Get(project, zone).Do()
 					if err != nil {
 						return fmt.Errorf("Error retrieving managed zone %q from %q: %s", zone, project, err)
 					}
@@ -665,13 +687,13 @@ func resourceDNSManagedZoneDelete(d *schema.ResourceData, meta interface{}) erro
 				}
 
 				log.Printf("[DEBUG] DNS Record delete request via MZ: %#v", chg)
-				chg, err = config.clientDns.Changes.Create(project, zone, chg).Do()
+				chg, err = config.NewDnsClient(userAgent).Changes.Create(project, zone, chg).Do()
 				if err != nil {
 					return fmt.Errorf("Unable to delete ResourceRecordSets: %s", err)
 				}
 
 				w := &DnsChangeWaiter{
-					Service:     config.clientDns,
+					Service:     config.NewDnsClient(userAgent),
 					Change:      chg,
 					Project:     project,
 					ManagedZone: zone,
@@ -693,7 +715,7 @@ func resourceDNSManagedZoneDelete(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "ManagedZone")
 	}

@@ -155,6 +155,11 @@ internally during updates.`,
 func resourceComputeGlobalAddressCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	addressProp, err := expandComputeGlobalAddressAddress(d.Get("address"), d, config)
 	if err != nil {
@@ -236,7 +241,7 @@ func resourceComputeGlobalAddressCreate(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating GlobalAddress: %s", err)
 	}
@@ -249,7 +254,7 @@ func resourceComputeGlobalAddressCreate(d *schema.ResourceData, meta interface{}
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating GlobalAddress",
+		config, res, project, "Creating GlobalAddress", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -281,13 +286,13 @@ func resourceComputeGlobalAddressCreate(d *schema.ResourceData, meta interface{}
 		if err != nil {
 			return err
 		}
-		res, err = sendRequest(config, "POST", project, url, obj)
+		res, err = sendRequest(config, "POST", project, url, userAgent, obj)
 		if err != nil {
 			return fmt.Errorf("Error adding labels to ComputeGlobalAddress %q: %s", d.Id(), err)
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating ComputeGlobalAddress Labels",
+			config, res, project, "Updating ComputeGlobalAddress Labels", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 
 		if err != nil {
@@ -301,6 +306,11 @@ func resourceComputeGlobalAddressCreate(d *schema.ResourceData, meta interface{}
 
 func resourceComputeGlobalAddressRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/addresses/{{name}}")
 	if err != nil {
@@ -320,7 +330,7 @@ func resourceComputeGlobalAddressRead(d *schema.ResourceData, meta interface{}) 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeGlobalAddress %q", d.Id()))
 	}
@@ -372,6 +382,12 @@ func resourceComputeGlobalAddressRead(d *schema.ResourceData, meta interface{}) 
 func resourceComputeGlobalAddressUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -408,7 +424,7 @@ func resourceComputeGlobalAddressUpdate(d *schema.ResourceData, meta interface{}
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating GlobalAddress %q: %s", d.Id(), err)
 		} else {
@@ -416,7 +432,7 @@ func resourceComputeGlobalAddressUpdate(d *schema.ResourceData, meta interface{}
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating GlobalAddress",
+			config, res, project, "Updating GlobalAddress", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -430,6 +446,12 @@ func resourceComputeGlobalAddressUpdate(d *schema.ResourceData, meta interface{}
 
 func resourceComputeGlobalAddressDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -452,13 +474,13 @@ func resourceComputeGlobalAddressDelete(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "GlobalAddress")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting GlobalAddress",
+		config, res, project, "Deleting GlobalAddress", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

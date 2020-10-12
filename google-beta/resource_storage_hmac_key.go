@@ -89,6 +89,11 @@ func resourceStorageHmacKey() *schema.Resource {
 func resourceStorageHmacKeyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	serviceAccountEmailProp, err := expandStorageHmacKeyServiceAccountEmail(d.Get("service_account_email"), d, config)
 	if err != nil {
@@ -122,7 +127,7 @@ func resourceStorageHmacKeyCreate(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating HmacKey: %s", err)
 	}
@@ -170,6 +175,11 @@ func resourceStorageHmacKeyCreate(d *schema.ResourceData, meta interface{}) erro
 func resourceStorageHmacKeyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{StorageBasePath}}projects/{{project}}/hmacKeys/{{access_id}}")
 	if err != nil {
 		return err
@@ -188,7 +198,7 @@ func resourceStorageHmacKeyRead(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("StorageHmacKey %q", d.Id()))
 	}
@@ -231,6 +241,12 @@ func resourceStorageHmacKeyRead(d *schema.ResourceData, meta interface{}) error 
 func resourceStorageHmacKeyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -254,7 +270,7 @@ func resourceStorageHmacKeyUpdate(d *schema.ResourceData, meta interface{}) erro
 			billingProject = bp
 		}
 
-		getRes, err := sendRequest(config, "GET", billingProject, getUrl, nil)
+		getRes, err := sendRequest(config, "GET", billingProject, getUrl, userAgent, nil)
 		if err != nil {
 			return handleNotFoundError(err, d, fmt.Sprintf("StorageHmacKey %q", d.Id()))
 		}
@@ -278,7 +294,7 @@ func resourceStorageHmacKeyUpdate(d *schema.ResourceData, meta interface{}) erro
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating HmacKey %q: %s", d.Id(), err)
 		} else {
@@ -294,6 +310,12 @@ func resourceStorageHmacKeyUpdate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceStorageHmacKeyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -314,7 +336,7 @@ func resourceStorageHmacKeyDelete(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	getRes, err := sendRequest(config, "GET", project, getUrl, nil)
+	getRes, err := sendRequest(config, "GET", project, getUrl, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("StorageHmacKey %q", d.Id()))
 	}
@@ -329,7 +351,7 @@ func resourceStorageHmacKeyDelete(d *schema.ResourceData, meta interface{}) erro
 		}
 
 		log.Printf("[DEBUG] Deactivating HmacKey %q: %#v", d.Id(), getRes)
-		_, err = sendRequestWithTimeout(config, "PUT", project, updateUrl, getRes, d.Timeout(schema.TimeoutUpdate))
+		_, err = sendRequestWithTimeout(config, "PUT", project, updateUrl, userAgent, getRes, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error deactivating HmacKey %q: %s", d.Id(), err)
 		}
@@ -341,7 +363,7 @@ func resourceStorageHmacKeyDelete(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "HmacKey")
 	}

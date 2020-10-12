@@ -263,6 +263,11 @@ This is a more compact way to identify devices, and it is globally unique.`,
 func resourceCloudIotDeviceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	idProp, err := expandCloudIotDeviceName(d.Get("name"), d, config)
 	if err != nil {
@@ -314,7 +319,7 @@ func resourceCloudIotDeviceCreate(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Device: %s", err)
 	}
@@ -334,6 +339,11 @@ func resourceCloudIotDeviceCreate(d *schema.ResourceData, meta interface{}) erro
 func resourceCloudIotDeviceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{CloudIotBasePath}}{{registry}}/devices/{{name}}")
 	if err != nil {
 		return err
@@ -346,7 +356,7 @@ func resourceCloudIotDeviceRead(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("CloudIotDevice %q", d.Id()))
 	}
@@ -405,6 +415,12 @@ func resourceCloudIotDeviceRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceCloudIotDeviceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -479,7 +495,7 @@ func resourceCloudIotDeviceUpdate(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Device %q: %s", d.Id(), err)
@@ -492,6 +508,12 @@ func resourceCloudIotDeviceUpdate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceCloudIotDeviceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -508,7 +530,7 @@ func resourceCloudIotDeviceDelete(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Device")
 	}

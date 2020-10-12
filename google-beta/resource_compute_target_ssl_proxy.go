@@ -122,6 +122,11 @@ resource will not have any SSL policy configured.`,
 func resourceComputeTargetSslProxyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandComputeTargetSslProxyDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -179,7 +184,7 @@ func resourceComputeTargetSslProxyCreate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating TargetSslProxy: %s", err)
 	}
@@ -192,7 +197,7 @@ func resourceComputeTargetSslProxyCreate(d *schema.ResourceData, meta interface{
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating TargetSslProxy",
+		config, res, project, "Creating TargetSslProxy", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -208,6 +213,11 @@ func resourceComputeTargetSslProxyCreate(d *schema.ResourceData, meta interface{
 
 func resourceComputeTargetSslProxyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/targetSslProxies/{{name}}")
 	if err != nil {
@@ -227,7 +237,7 @@ func resourceComputeTargetSslProxyRead(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeTargetSslProxy %q", d.Id()))
 	}
@@ -270,6 +280,12 @@ func resourceComputeTargetSslProxyRead(d *schema.ResourceData, meta interface{})
 func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -300,7 +316,7 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating TargetSslProxy %q: %s", d.Id(), err)
 		} else {
@@ -308,7 +324,7 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating TargetSslProxy",
+			config, res, project, "Updating TargetSslProxy", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -334,7 +350,7 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating TargetSslProxy %q: %s", d.Id(), err)
 		} else {
@@ -342,7 +358,7 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating TargetSslProxy",
+			config, res, project, "Updating TargetSslProxy", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -368,7 +384,7 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating TargetSslProxy %q: %s", d.Id(), err)
 		} else {
@@ -376,7 +392,7 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating TargetSslProxy",
+			config, res, project, "Updating TargetSslProxy", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -402,7 +418,7 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating TargetSslProxy %q: %s", d.Id(), err)
 		} else {
@@ -410,7 +426,7 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating TargetSslProxy",
+			config, res, project, "Updating TargetSslProxy", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -424,6 +440,12 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 
 func resourceComputeTargetSslProxyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -446,13 +468,13 @@ func resourceComputeTargetSslProxyDelete(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "TargetSslProxy")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting TargetSslProxy",
+		config, res, project, "Deleting TargetSslProxy", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

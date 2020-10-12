@@ -97,6 +97,11 @@ example, 'projects/my-project/locations/{location}/realms/my-realm'.`,
 func resourceGameServicesRealmCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	labelsProp, err := expandGameServicesRealmLabels(d.Get("labels"), d, config)
 	if err != nil {
@@ -136,7 +141,7 @@ func resourceGameServicesRealmCreate(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Realm: %s", err)
 	}
@@ -152,7 +157,7 @@ func resourceGameServicesRealmCreate(d *schema.ResourceData, meta interface{}) e
 	// identity fields and d.Id() before read
 	var opRes map[string]interface{}
 	err = gameServicesOperationWaitTimeWithResponse(
-		config, res, &opRes, project, "Creating Realm",
+		config, res, &opRes, project, "Creating Realm", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		// The resource didn't actually create
@@ -179,6 +184,11 @@ func resourceGameServicesRealmCreate(d *schema.ResourceData, meta interface{}) e
 func resourceGameServicesRealmRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{GameServicesBasePath}}projects/{{project}}/locations/{{location}}/realms/{{realm_id}}")
 	if err != nil {
 		return err
@@ -197,7 +207,7 @@ func resourceGameServicesRealmRead(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("GameServicesRealm %q", d.Id()))
 	}
@@ -227,6 +237,12 @@ func resourceGameServicesRealmRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceGameServicesRealmUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -287,7 +303,7 @@ func resourceGameServicesRealmUpdate(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Realm %q: %s", d.Id(), err)
@@ -296,7 +312,7 @@ func resourceGameServicesRealmUpdate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	err = gameServicesOperationWaitTime(
-		config, res, project, "Updating Realm",
+		config, res, project, "Updating Realm", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -308,6 +324,12 @@ func resourceGameServicesRealmUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceGameServicesRealmDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -330,13 +352,13 @@ func resourceGameServicesRealmDelete(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Realm")
 	}
 
 	err = gameServicesOperationWaitTime(
-		config, res, project, "Deleting Realm",
+		config, res, project, "Deleting Realm", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

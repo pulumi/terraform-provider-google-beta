@@ -139,6 +139,11 @@ than or equal to max-nodes. The default value is 0.`,
 func resourceComputeNodeGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandComputeNodeGroupDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -196,7 +201,7 @@ func resourceComputeNodeGroupCreate(d *schema.ResourceData, meta interface{}) er
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating NodeGroup: %s", err)
 	}
@@ -209,7 +214,7 @@ func resourceComputeNodeGroupCreate(d *schema.ResourceData, meta interface{}) er
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating NodeGroup",
+		config, res, project, "Creating NodeGroup", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -225,6 +230,11 @@ func resourceComputeNodeGroupCreate(d *schema.ResourceData, meta interface{}) er
 
 func resourceComputeNodeGroupRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/zones/{{zone}}/nodeGroups/{{name}}")
 	if err != nil {
@@ -244,7 +254,7 @@ func resourceComputeNodeGroupRead(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeNodeGroup %q", d.Id()))
 	}
@@ -284,6 +294,12 @@ func resourceComputeNodeGroupRead(d *schema.ResourceData, meta interface{}) erro
 func resourceComputeNodeGroupUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -314,7 +330,7 @@ func resourceComputeNodeGroupUpdate(d *schema.ResourceData, meta interface{}) er
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating NodeGroup %q: %s", d.Id(), err)
 		} else {
@@ -322,7 +338,7 @@ func resourceComputeNodeGroupUpdate(d *schema.ResourceData, meta interface{}) er
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating NodeGroup",
+			config, res, project, "Updating NodeGroup", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -336,6 +352,12 @@ func resourceComputeNodeGroupUpdate(d *schema.ResourceData, meta interface{}) er
 
 func resourceComputeNodeGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -358,13 +380,13 @@ func resourceComputeNodeGroupDelete(d *schema.ResourceData, meta interface{}) er
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "NodeGroup")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting NodeGroup",
+		config, res, project, "Deleting NodeGroup", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

@@ -202,6 +202,11 @@ which means the scan will be scheduled to start immediately.`,
 func resourceSecurityScannerScanConfigCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	displayNameProp, err := expandSecurityScannerScanConfigDisplayName(d.Get("display_name"), d, config)
 	if err != nil {
@@ -277,7 +282,7 @@ func resourceSecurityScannerScanConfigCreate(d *schema.ResourceData, meta interf
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating ScanConfig: %s", err)
 	}
@@ -318,6 +323,11 @@ func resourceSecurityScannerScanConfigCreate(d *schema.ResourceData, meta interf
 func resourceSecurityScannerScanConfigRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{SecurityScannerBasePath}}{{name}}")
 	if err != nil {
 		return err
@@ -336,7 +346,7 @@ func resourceSecurityScannerScanConfigRead(d *schema.ResourceData, meta interfac
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("SecurityScannerScanConfig %q", d.Id()))
 	}
@@ -381,6 +391,12 @@ func resourceSecurityScannerScanConfigRead(d *schema.ResourceData, meta interfac
 
 func resourceSecurityScannerScanConfigUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -501,7 +517,7 @@ func resourceSecurityScannerScanConfigUpdate(d *schema.ResourceData, meta interf
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating ScanConfig %q: %s", d.Id(), err)
@@ -514,6 +530,12 @@ func resourceSecurityScannerScanConfigUpdate(d *schema.ResourceData, meta interf
 
 func resourceSecurityScannerScanConfigDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -536,7 +558,7 @@ func resourceSecurityScannerScanConfigDelete(d *schema.ResourceData, meta interf
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "ScanConfig")
 	}

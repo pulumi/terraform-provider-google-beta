@@ -33,6 +33,8 @@ var (
 	}
 )
 
+var REQUIRED_SCRATCH_DISK_SIZE_GB = 375
+
 func resourceComputeInstanceTemplate() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceComputeInstanceTemplateCreate,
@@ -128,6 +130,7 @@ func resourceComputeInstanceTemplate() *schema.Resource {
 							Type:        schema.TypeInt,
 							Optional:    true,
 							ForceNew:    true,
+							Computed:    true,
 							Description: `The size of the image in gigabytes. If not specified, it will inherit the size of its base image. For SCRATCH disks, the size must be exactly 375GB.`,
 						},
 
@@ -616,7 +619,7 @@ func resourceComputeInstanceTemplateSourceImageCustomizeDiff(_ context.Context, 
 			if err != nil {
 				return err
 			}
-			oldResolved, err := resolveImage(config, project, old.(string))
+			oldResolved, err := resolveImage(config, project, old.(string), config.userAgent)
 			if err != nil {
 				return err
 			}
@@ -624,7 +627,7 @@ func resourceComputeInstanceTemplateSourceImageCustomizeDiff(_ context.Context, 
 			if err != nil {
 				return err
 			}
-			newResolved, err := resolveImage(config, project, new.(string))
+			newResolved, err := resolveImage(config, project, new.(string), config.userAgent)
 			if err != nil {
 				return err
 			}
@@ -664,8 +667,8 @@ func resourceComputeInstanceTemplateScratchDiskCustomizeDiffFunc(diff TerraformR
 		}
 
 		diskSize := diff.Get(fmt.Sprintf("disk.%d.disk_size_gb", i)).(int)
-		if typee == "SCRATCH" && diskSize != 375 {
-			return fmt.Errorf("SCRATCH disks must be exactly 375GB, disk %d is %d", i, diskSize)
+		if typee == "SCRATCH" && diskSize != REQUIRED_SCRATCH_DISK_SIZE_GB {
+			return fmt.Errorf("SCRATCH disks must be exactly %dGB, disk %d is %d", REQUIRED_SCRATCH_DISK_SIZE_GB, i, diskSize)
 		}
 	}
 
@@ -688,6 +691,11 @@ func resourceComputeInstanceTemplateBootDiskCustomizeDiff(_ context.Context, dif
 
 func buildDisks(d *schema.ResourceData, config *Config) ([]*computeBeta.AttachedDisk, error) {
 	project, err := getProject(d, config)
+	if err != nil {
+		return nil, err
+	}
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -745,7 +753,7 @@ func buildDisks(d *schema.ResourceData, config *Config) ([]*computeBeta.Attached
 
 			if v, ok := d.GetOk(prefix + ".source_image"); ok {
 				imageName := v.(string)
-				imageUrl, err := resolveImage(config, project, imageName)
+				imageUrl, err := resolveImage(config, project, imageName, userAgent)
 				if err != nil {
 					return nil, fmt.Errorf(
 						"Error resolving image name '%s': %s",
@@ -810,6 +818,11 @@ func expandInstanceTemplateGuestAccelerators(d TerraformResourceData, config *Co
 func resourceComputeInstanceTemplateCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
@@ -870,7 +883,7 @@ func resourceComputeInstanceTemplateCreate(d *schema.ResourceData, meta interfac
 		Name:        itName,
 	}
 
-	op, err := config.clientComputeBeta.InstanceTemplates.Insert(project, instanceTemplate).Do()
+	op, err := config.NewComputeBetaClient(userAgent).InstanceTemplates.Insert(project, instanceTemplate).Do()
 	if err != nil {
 		return fmt.Errorf("Error creating instance template: %s", err)
 	}
@@ -878,7 +891,7 @@ func resourceComputeInstanceTemplateCreate(d *schema.ResourceData, meta interfac
 	// Store the ID now
 	d.SetId(fmt.Sprintf("projects/%s/global/instanceTemplates/%s", project, instanceTemplate.Name))
 
-	err = computeOperationWaitTime(config, op, project, "Creating Instance Template", d.Timeout(schema.TimeoutCreate))
+	err = computeOperationWaitTime(config, op, project, "Creating Instance Template", userAgent, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return err
 	}
@@ -937,8 +950,14 @@ func flattenDisk(disk *computeBeta.AttachedDisk, defaultProject string) (map[str
 		}
 		diskMap["disk_type"] = disk.InitializeParams.DiskType
 		diskMap["disk_name"] = disk.InitializeParams.DiskName
-		diskMap["disk_size_gb"] = disk.InitializeParams.DiskSizeGb
 		diskMap["labels"] = disk.InitializeParams.Labels
+		// The API does not return a disk size value for scratch disks. They can only be one size,
+		// so we can assume that size here.
+		if disk.InitializeParams.DiskSizeGb == 0 && disk.Type == "SCRATCH" {
+			diskMap["disk_size_gb"] = REQUIRED_SCRATCH_DISK_SIZE_GB
+		} else {
+			diskMap["disk_size_gb"] = disk.InitializeParams.DiskSizeGb
+		}
 	}
 
 	if disk.DiskEncryptionKey != nil {
@@ -1093,13 +1112,18 @@ func flattenDisks(disks []*computeBeta.AttachedDisk, d *schema.ResourceData, def
 
 func resourceComputeInstanceTemplateRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
 	}
 
 	splits := strings.Split(d.Id(), "/")
-	instanceTemplate, err := config.clientComputeBeta.InstanceTemplates.Get(project, splits[len(splits)-1]).Do()
+	instanceTemplate, err := config.NewComputeBetaClient(userAgent).InstanceTemplates.Get(project, splits[len(splits)-1]).Do()
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("Instance Template %q", d.Get("name").(string)))
 	}
@@ -1236,6 +1260,10 @@ func resourceComputeInstanceTemplateRead(d *schema.ResourceData, meta interface{
 
 func resourceComputeInstanceTemplateDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -1243,13 +1271,13 @@ func resourceComputeInstanceTemplateDelete(d *schema.ResourceData, meta interfac
 	}
 
 	splits := strings.Split(d.Id(), "/")
-	op, err := config.clientCompute.InstanceTemplates.Delete(
+	op, err := config.NewComputeClient(userAgent).InstanceTemplates.Delete(
 		project, splits[len(splits)-1]).Do()
 	if err != nil {
 		return fmt.Errorf("Error deleting instance template: %s", err)
 	}
 
-	err = computeOperationWaitTime(config, op, project, "Deleting Instance Template", d.Timeout(schema.TimeoutDelete))
+	err = computeOperationWaitTime(config, op, project, "Deleting Instance Template", userAgent, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return err
 	}

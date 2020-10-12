@@ -220,6 +220,11 @@ creation/deletion.`,
 func resourceComputeSnapshotCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	nameProp, err := expandComputeSnapshotName(d.Get("name"), d, config)
 	if err != nil {
@@ -295,7 +300,7 @@ func resourceComputeSnapshotCreate(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Snapshot: %s", err)
 	}
@@ -308,7 +313,7 @@ func resourceComputeSnapshotCreate(d *schema.ResourceData, meta interface{}) err
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating Snapshot",
+		config, res, project, "Creating Snapshot", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -324,6 +329,11 @@ func resourceComputeSnapshotCreate(d *schema.ResourceData, meta interface{}) err
 
 func resourceComputeSnapshotRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/snapshots/{{name}}")
 	if err != nil {
@@ -343,7 +353,7 @@ func resourceComputeSnapshotRead(d *schema.ResourceData, meta interface{}) error
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeSnapshot %q", d.Id()))
 	}
@@ -410,6 +420,12 @@ func resourceComputeSnapshotRead(d *schema.ResourceData, meta interface{}) error
 func resourceComputeSnapshotUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -446,7 +462,7 @@ func resourceComputeSnapshotUpdate(d *schema.ResourceData, meta interface{}) err
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating Snapshot %q: %s", d.Id(), err)
 		} else {
@@ -454,7 +470,7 @@ func resourceComputeSnapshotUpdate(d *schema.ResourceData, meta interface{}) err
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating Snapshot",
+			config, res, project, "Updating Snapshot", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -468,6 +484,12 @@ func resourceComputeSnapshotUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceComputeSnapshotDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -490,13 +512,13 @@ func resourceComputeSnapshotDelete(d *schema.ResourceData, meta interface{}) err
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Snapshot")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting Snapshot",
+		config, res, project, "Deleting Snapshot", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

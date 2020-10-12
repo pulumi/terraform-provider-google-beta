@@ -82,6 +82,11 @@ brand per project can be created.`,
 func resourceIapBrandCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	supportEmailProp, err := expandIapBrandSupportEmail(d.Get("support_email"), d, config)
 	if err != nil {
@@ -115,7 +120,7 @@ func resourceIapBrandCreate(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Brand: %s", err)
 	}
@@ -180,7 +185,12 @@ func resourceIapBrandPollRead(d *schema.ResourceData, meta interface{}) PollRead
 			billingProject = bp
 		}
 
-		res, err := sendRequest(config, "GET", billingProject, url, nil)
+		userAgent, err := generateUserAgentString(d, config.userAgent)
+		if err != nil {
+			return nil, err
+		}
+
+		res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 		if err != nil {
 			return res, err
 		}
@@ -190,6 +200,11 @@ func resourceIapBrandPollRead(d *schema.ResourceData, meta interface{}) PollRead
 
 func resourceIapBrandRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{IapBasePath}}{{name}}")
 	if err != nil {
@@ -209,7 +224,7 @@ func resourceIapBrandRead(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("IapBrand %q", d.Id()))
 	}
@@ -235,6 +250,14 @@ func resourceIapBrandRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceIapBrandDelete(d *schema.ResourceData, meta interface{}) error {
+
+	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	log.Printf("[WARNING] Iap Brand resources"+
 		" cannot be deleted from GCP. The resource %s will be removed from Terraform"+
 		" state, but will still be present on the server.", d.Id())

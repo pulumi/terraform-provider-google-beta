@@ -125,6 +125,11 @@ func accessapprovalProjectSettingsEnrolledServicesSchema() *schema.Resource {
 func resourceAccessApprovalProjectSettingsCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	notificationEmailsProp, err := expandAccessApprovalProjectSettingsNotificationEmails(d.Get("notification_emails"), d, config)
 	if err != nil {
@@ -173,7 +178,7 @@ func resourceAccessApprovalProjectSettingsCreate(d *schema.ResourceData, meta in
 	if err != nil {
 		return err
 	}
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating ProjectSettings: %s", err)
 	}
@@ -196,6 +201,11 @@ func resourceAccessApprovalProjectSettingsCreate(d *schema.ResourceData, meta in
 func resourceAccessApprovalProjectSettingsRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{AccessApprovalBasePath}}projects/{{project}}/accessApprovalSettings")
 	if err != nil {
 		return err
@@ -214,7 +224,7 @@ func resourceAccessApprovalProjectSettingsRead(d *schema.ResourceData, meta inte
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("AccessApprovalProjectSettings %q", d.Id()))
 	}
@@ -241,6 +251,12 @@ func resourceAccessApprovalProjectSettingsRead(d *schema.ResourceData, meta inte
 
 func resourceAccessApprovalProjectSettingsUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -291,7 +307,7 @@ func resourceAccessApprovalProjectSettingsUpdate(d *schema.ResourceData, meta in
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating ProjectSettings %q: %s", d.Id(), err)
@@ -304,6 +320,12 @@ func resourceAccessApprovalProjectSettingsUpdate(d *schema.ResourceData, meta in
 
 func resourceAccessApprovalProjectSettingsDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	obj := make(map[string]interface{})
 	obj["notificationEmails"] = []string{}
@@ -327,7 +349,7 @@ func resourceAccessApprovalProjectSettingsDelete(d *schema.ResourceData, meta in
 		return err
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", "", url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", "", url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error emptying ProjectSettings %q: %s", d.Id(), err)

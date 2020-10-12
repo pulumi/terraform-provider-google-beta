@@ -94,6 +94,11 @@ to the BackendService.`,
 func resourceComputeTargetHttpProxyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandComputeTargetHttpProxyDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -133,7 +138,7 @@ func resourceComputeTargetHttpProxyCreate(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating TargetHttpProxy: %s", err)
 	}
@@ -146,7 +151,7 @@ func resourceComputeTargetHttpProxyCreate(d *schema.ResourceData, meta interface
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating TargetHttpProxy",
+		config, res, project, "Creating TargetHttpProxy", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -162,6 +167,11 @@ func resourceComputeTargetHttpProxyCreate(d *schema.ResourceData, meta interface
 
 func resourceComputeTargetHttpProxyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/targetHttpProxies/{{name}}")
 	if err != nil {
@@ -181,7 +191,7 @@ func resourceComputeTargetHttpProxyRead(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeTargetHttpProxy %q", d.Id()))
 	}
@@ -215,6 +225,12 @@ func resourceComputeTargetHttpProxyRead(d *schema.ResourceData, meta interface{}
 func resourceComputeTargetHttpProxyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -245,7 +261,7 @@ func resourceComputeTargetHttpProxyUpdate(d *schema.ResourceData, meta interface
 			billingProject = bp
 		}
 
-		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+		res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return fmt.Errorf("Error updating TargetHttpProxy %q: %s", d.Id(), err)
 		} else {
@@ -253,7 +269,7 @@ func resourceComputeTargetHttpProxyUpdate(d *schema.ResourceData, meta interface
 		}
 
 		err = computeOperationWaitTime(
-			config, res, project, "Updating TargetHttpProxy",
+			config, res, project, "Updating TargetHttpProxy", userAgent,
 			d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
@@ -267,6 +283,12 @@ func resourceComputeTargetHttpProxyUpdate(d *schema.ResourceData, meta interface
 
 func resourceComputeTargetHttpProxyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -289,13 +311,13 @@ func resourceComputeTargetHttpProxyDelete(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "TargetHttpProxy")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting TargetHttpProxy",
+		config, res, project, "Deleting TargetHttpProxy", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

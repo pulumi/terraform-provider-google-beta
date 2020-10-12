@@ -576,6 +576,38 @@ func resourceContainerCluster() *schema.Resource {
 				},
 			},
 
+			"notification_config": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Computed:    true,
+				MaxItems:    1,
+				Description: `The notification config for sending cluster upgrade notifications`,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"pubsub": {
+							Type:        schema.TypeList,
+							Required:    true,
+							MaxItems:    1,
+							Description: `Notification config for pubsub`,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"enabled": {
+										Type:        schema.TypeBool,
+										Required:    true,
+										Description: `Whether or not the notification config is enabled`,
+									},
+									"topic": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: `The pubsub topic to send the notification to, must be in the format: projects/{project}/topics/{topic}`,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+
 			"master_auth": {
 				Type:        schema.TypeList,
 				Optional:    true,
@@ -1166,6 +1198,11 @@ func resourceNodeConfigEmptyGuestAccelerator(_ context.Context, diff *schema.Res
 func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
@@ -1219,8 +1256,9 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 			DefaultSnatStatus:         expandDefaultSnatStatus(d.Get("default_snat_status")),
 			DatapathProvider:          d.Get("datapath_provider").(string),
 		},
-		MasterAuth:     expandMasterAuth(d.Get("master_auth")),
-		ResourceLabels: expandStringMap(d, "resource_labels"),
+		MasterAuth:         expandMasterAuth(d.Get("master_auth")),
+		NotificationConfig: expandNotificationConfig(d.Get("notification_config")),
+		ResourceLabels:     expandStringMap(d, "resource_labels"),
 	}
 
 	if v, ok := d.GetOk("default_max_pods_per_node"); ok {
@@ -1325,7 +1363,7 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 	parent := fmt.Sprintf("projects/%s/locations/%s", project, location)
 	var op *containerBeta.Operation
 	err = retry(func() error {
-		clusterCreateCall := config.clientContainerBeta.Projects.Locations.Clusters.Create(parent, req)
+		clusterCreateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Create(parent, req)
 		if config.UserProjectOverride {
 			clusterCreateCall.Header().Add("X-Goog-User-Project", project)
 		}
@@ -1339,7 +1377,7 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 	d.SetId(containerClusterFullName(project, location, clusterName))
 
 	// Wait until it's created
-	waitErr := containerOperationWait(config, op, project, location, "creating GKE cluster", d.Timeout(schema.TimeoutCreate))
+	waitErr := containerOperationWait(config, op, project, location, "creating GKE cluster", userAgent, d.Timeout(schema.TimeoutCreate))
 	if waitErr != nil {
 		// Check if the create operation failed because Terraform was prematurely terminated. If it was we can persist the
 		// operation id to state so that a subsequent refresh of this resource will wait until the operation has terminated
@@ -1356,7 +1394,7 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 			// leaving default case to ensure this is non blocking
 		}
 		// Try a GET on the cluster so we can see the state in debug logs. This will help classify error states.
-		clusterGetCall := config.clientContainerBeta.Projects.Locations.Clusters.Get(containerClusterFullName(project, location, clusterName))
+		clusterGetCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Get(containerClusterFullName(project, location, clusterName))
 		if config.UserProjectOverride {
 			clusterGetCall.Header().Add("X-Goog-User-Project", project)
 		}
@@ -1382,7 +1420,7 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 	if d.Get("remove_default_node_pool").(bool) {
 		parent := fmt.Sprintf("%s/nodePools/%s", containerClusterFullName(project, location, clusterName), "default-pool")
 		err = retry(func() error {
-			clusterNodePoolDeleteCall := config.clientContainerBeta.Projects.Locations.Clusters.NodePools.Delete(parent)
+			clusterNodePoolDeleteCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Delete(parent)
 			if config.UserProjectOverride {
 				clusterNodePoolDeleteCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -1392,7 +1430,7 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 		if err != nil {
 			return errwrap.Wrapf("Error deleting default node pool: {{err}}", err)
 		}
-		err = containerOperationWait(config, op, project, location, "removing default node pool", d.Timeout(schema.TimeoutCreate))
+		err = containerOperationWait(config, op, project, location, "removing default node pool", userAgent, d.Timeout(schema.TimeoutCreate))
 		if err != nil {
 			return errwrap.Wrapf("Error while waiting to delete default node pool: {{err}}", err)
 		}
@@ -1402,7 +1440,7 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 		return err
 	}
 
-	state, err := containerClusterAwaitRestingState(config, project, location, clusterName, d.Timeout(schema.TimeoutCreate))
+	state, err := containerClusterAwaitRestingState(config, project, location, clusterName, userAgent, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return err
 	}
@@ -1416,6 +1454,10 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 
 func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -1436,7 +1478,7 @@ func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) erro
 		if err := d.Set("operation", ""); err != nil {
 			return fmt.Errorf("Error setting operation: %s", err)
 		}
-		waitErr := containerOperationWait(config, op, project, location, "resuming GKE cluster", d.Timeout(schema.TimeoutRead))
+		waitErr := containerOperationWait(config, op, project, location, "resuming GKE cluster", userAgent, d.Timeout(schema.TimeoutRead))
 		if waitErr != nil {
 			return waitErr
 		}
@@ -1444,7 +1486,7 @@ func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) erro
 
 	clusterName := d.Get("name").(string)
 	name := containerClusterFullName(project, location, clusterName)
-	clusterGetCall := config.clientContainerBeta.Projects.Locations.Clusters.Get(name)
+	clusterGetCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Get(name)
 	if config.UserProjectOverride {
 		clusterGetCall.Header().Add("X-Goog-User-Project", project)
 	}
@@ -1536,6 +1578,9 @@ func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) erro
 	if err := d.Set("release_channel", flattenReleaseChannel(cluster.ReleaseChannel)); err != nil {
 		return err
 	}
+	if err := d.Set("notification_config", flattenNotificationConfig(cluster.NotificationConfig)); err != nil {
+		return err
+	}
 	if err := d.Set("enable_tpu", cluster.EnableTpu); err != nil {
 		return fmt.Errorf("Error setting enable_tpu: %s", err)
 	}
@@ -1589,7 +1634,7 @@ func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	igUrls, err := getInstanceGroupUrlsFromManagerUrls(config, cluster.InstanceGroupUrls)
+	igUrls, err := getInstanceGroupUrlsFromManagerUrls(config, userAgent, cluster.InstanceGroupUrls)
 	if err != nil {
 		return err
 	}
@@ -1633,6 +1678,10 @@ func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) erro
 
 func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -1646,7 +1695,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 	clusterName := d.Get("name").(string)
 
-	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, d.Timeout(schema.TimeoutUpdate)); err != nil {
+	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, userAgent, d.Timeout(schema.TimeoutUpdate)); err != nil {
 		return err
 	}
 
@@ -1657,7 +1706,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 	updateFunc := func(req *containerBeta.UpdateClusterRequest, updateDescription string) func() error {
 		return func() error {
 			name := containerClusterFullName(project, location, clusterName)
-			clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -1666,7 +1715,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				return err
 			}
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, updateDescription, d.Timeout(schema.TimeoutUpdate))
+			return containerOperationWait(config, op, project, location, updateDescription, userAgent, d.Timeout(schema.TimeoutUpdate))
 		}
 	}
 
@@ -1770,7 +1819,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		updateF := func() error {
 			log.Println("[DEBUG] updating release_channel")
 			name := containerClusterFullName(project, location, clusterName)
-			clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -1780,7 +1829,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating Release Channel", d.Timeout(schema.TimeoutUpdate))
+			err = containerOperationWait(config, op, project, location, "updating Release Channel", userAgent, d.Timeout(schema.TimeoutUpdate))
 			log.Println("[DEBUG] done updating release_channel")
 			return err
 		}
@@ -1806,7 +1855,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		updateF := func() error {
 			log.Println("[DEBUG] updating enable_intranode_visibility")
 			name := containerClusterFullName(project, location, clusterName)
-			clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -1816,7 +1865,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating GKE Intra Node Visibility", d.Timeout(schema.TimeoutUpdate))
+			err = containerOperationWait(config, op, project, location, "updating GKE Intra Node Visibility", userAgent, d.Timeout(schema.TimeoutUpdate))
 			log.Println("[DEBUG] done updating enable_intranode_visibility")
 			return err
 		}
@@ -1838,7 +1887,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		updateF := func() error {
 			log.Println("[DEBUG] updating default_snat_status")
 			name := containerClusterFullName(project, location, clusterName)
-			clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -1848,7 +1897,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating GKE Default SNAT status", d.Timeout(schema.TimeoutUpdate))
+			err = containerOperationWait(config, op, project, location, "updating GKE Default SNAT status", userAgent, d.Timeout(schema.TimeoutUpdate))
 			log.Println("[DEBUG] done updating default_snat_status")
 			return err
 		}
@@ -1868,7 +1917,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 		updateF := func() error {
 			name := containerClusterFullName(project, location, clusterName)
-			clusterSetMaintenancePolicyCall := config.clientContainerBeta.Projects.Locations.Clusters.SetMaintenancePolicy(name, req)
+			clusterSetMaintenancePolicyCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.SetMaintenancePolicy(name, req)
 			if config.UserProjectOverride {
 				clusterSetMaintenancePolicyCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -1879,7 +1928,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE cluster maintenance policy", d.Timeout(schema.TimeoutUpdate))
+			return containerOperationWait(config, op, project, location, "updating GKE cluster maintenance policy", userAgent, d.Timeout(schema.TimeoutUpdate))
 		}
 
 		// Call update serially.
@@ -1947,7 +1996,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		updateF := func() error {
 			log.Println("[DEBUG] updating enable_legacy_abac")
 			name := containerClusterFullName(project, location, clusterName)
-			clusterSetLegacyAbacCall := config.clientContainerBeta.Projects.Locations.Clusters.SetLegacyAbac(name, req)
+			clusterSetLegacyAbacCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.SetLegacyAbac(name, req)
 			if config.UserProjectOverride {
 				clusterSetLegacyAbacCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -1957,7 +2006,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating GKE legacy ABAC", d.Timeout(schema.TimeoutUpdate))
+			err = containerOperationWait(config, op, project, location, "updating GKE legacy ABAC", userAgent, d.Timeout(schema.TimeoutUpdate))
 			log.Println("[DEBUG] done updating enable_legacy_abac")
 			return err
 		}
@@ -1982,7 +2031,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 					DesiredLoggingService:    logging,
 				},
 			}
-			clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -1992,7 +2041,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE logging+monitoring service", d.Timeout(schema.TimeoutUpdate))
+			return containerOperationWait(config, op, project, location, "updating GKE logging+monitoring service", userAgent, d.Timeout(schema.TimeoutUpdate))
 		}
 
 		// Call update serially.
@@ -2012,7 +2061,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		updateF := func() error {
 			log.Println("[DEBUG] updating network_policy")
 			name := containerClusterFullName(project, location, clusterName)
-			clusterSetNetworkPolicyCall := config.clientContainerBeta.Projects.Locations.Clusters.SetNetworkPolicy(name, req)
+			clusterSetNetworkPolicyCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.SetNetworkPolicy(name, req)
 			if config.UserProjectOverride {
 				clusterSetNetworkPolicyCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -2022,7 +2071,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating GKE cluster network policy", d.Timeout(schema.TimeoutUpdate))
+			err = containerOperationWait(config, op, project, location, "updating GKE cluster network policy", userAgent, d.Timeout(schema.TimeoutUpdate))
 			log.Println("[DEBUG] done updating network_policy")
 			return err
 		}
@@ -2123,7 +2172,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 			updateF := func() error {
 				name := containerClusterFullName(project, location, clusterName)
-				clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+				clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 				if config.UserProjectOverride {
 					clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 				}
@@ -2133,7 +2182,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				}
 
 				// Wait until it's updated
-				return containerOperationWait(config, op, project, location, "updating GKE image type", d.Timeout(schema.TimeoutUpdate))
+				return containerOperationWait(config, op, project, location, "updating GKE image type", userAgent, d.Timeout(schema.TimeoutUpdate))
 			}
 
 			// Call update serially.
@@ -2143,6 +2192,38 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 			log.Printf("[INFO] GKE cluster %s: image type has been updated to %s", d.Id(), it)
 		}
+	}
+
+	if d.HasChange("notification_config") {
+		req := &containerBeta.UpdateClusterRequest{
+			Update: &containerBeta.ClusterUpdate{
+				DesiredNotificationConfig: expandNotificationConfig(d.Get("notification_config")),
+			},
+		}
+		updateF := func() error {
+			log.Println("[DEBUG] updating notification_config")
+			name := containerClusterFullName(project, location, clusterName)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
+			if config.UserProjectOverride {
+				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
+			}
+			op, err := clusterUpdateCall.Do()
+			if err != nil {
+				return err
+			}
+
+			// Wait until it's updated
+			err = containerOperationWait(config, op, project, location, "updating Notification Config", userAgent, d.Timeout(schema.TimeoutUpdate))
+			log.Println("[DEBUG] done updating notification_config")
+			return err
+		}
+
+		// Call update serially.
+		if err := lockedCall(lockKey, updateF); err != nil {
+			return err
+		}
+
+		log.Printf("[INFO] GKE cluster %s Notification Config has been updated to %#v", d.Id(), req.Update.DesiredNotificationConfig)
 	}
 
 	if d.HasChange("master_auth") {
@@ -2163,7 +2244,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 		updateF := func() error {
 			name := containerClusterFullName(project, location, clusterName)
-			clusterSetMasterAuthCall := config.clientContainerBeta.Projects.Locations.Clusters.SetMasterAuth(name, req)
+			clusterSetMasterAuthCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.SetMasterAuth(name, req)
 			if config.UserProjectOverride {
 				clusterSetMasterAuthCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -2173,7 +2254,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating master auth", d.Timeout(schema.TimeoutUpdate))
+			return containerOperationWait(config, op, project, location, "updating master auth", userAgent, d.Timeout(schema.TimeoutUpdate))
 		}
 
 		// Call update serially.
@@ -2212,7 +2293,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 		updateF := func() error {
 			name := containerClusterFullName(project, location, clusterName)
-			clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -2221,7 +2302,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				return err
 			}
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE cluster database encryption config", d.Timeout(schema.TimeoutUpdate))
+			return containerOperationWait(config, op, project, location, "updating GKE cluster database encryption config", userAgent, d.Timeout(schema.TimeoutUpdate))
 		}
 		if err := lockedCall(lockKey, updateF); err != nil {
 			return err
@@ -2239,7 +2320,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 		updateF := func() error {
 			name := containerClusterFullName(project, location, clusterName)
-			clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -2248,7 +2329,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				return err
 			}
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE cluster pod security policy config", d.Timeout(schema.TimeoutUpdate))
+			return containerOperationWait(config, op, project, location, "updating GKE cluster pod security policy config", userAgent, d.Timeout(schema.TimeoutUpdate))
 		}
 		if err := lockedCall(lockKey, updateF); err != nil {
 			return err
@@ -2292,7 +2373,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		}
 		updateF := func() error {
 			name := containerClusterFullName(project, location, clusterName)
-			clusterSetResourceLabelsCall := config.clientContainerBeta.Projects.Locations.Clusters.SetResourceLabels(name, req)
+			clusterSetResourceLabelsCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.SetResourceLabels(name, req)
 			if config.UserProjectOverride {
 				clusterSetResourceLabelsCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -2302,7 +2383,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE resource labels", d.Timeout(schema.TimeoutUpdate))
+			return containerOperationWait(config, op, project, location, "updating GKE resource labels", userAgent, d.Timeout(schema.TimeoutUpdate))
 		}
 
 		// Call update serially.
@@ -2313,7 +2394,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 	if d.HasChange("remove_default_node_pool") && d.Get("remove_default_node_pool").(bool) {
 		name := fmt.Sprintf("%s/nodePools/%s", containerClusterFullName(project, location, clusterName), "default-pool")
-		clusterNodePoolDeleteCall := config.clientContainerBeta.Projects.Locations.Clusters.NodePools.Delete(name)
+		clusterNodePoolDeleteCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Delete(name)
 		if config.UserProjectOverride {
 			clusterNodePoolDeleteCall.Header().Add("X-Goog-User-Project", project)
 		}
@@ -2324,7 +2405,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 			log.Printf("[WARN] Container cluster %q default node pool already removed, no change", d.Id())
 		} else {
-			err = containerOperationWait(config, op, project, location, "removing default node pool", d.Timeout(schema.TimeoutUpdate))
+			err = containerOperationWait(config, op, project, location, "removing default node pool", userAgent, d.Timeout(schema.TimeoutUpdate))
 			if err != nil {
 				return errwrap.Wrapf("Error deleting default node pool: {{err}}", err)
 			}
@@ -2341,7 +2422,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 		updateF := func() error {
 			name := containerClusterFullName(project, location, clusterName)
-			clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -2350,7 +2431,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 				return err
 			}
 			// Wait until it's updated
-			return containerOperationWait(config, op, project, location, "updating GKE cluster resource usage export config", d.Timeout(schema.TimeoutUpdate))
+			return containerOperationWait(config, op, project, location, "updating GKE cluster resource usage export config", userAgent, d.Timeout(schema.TimeoutUpdate))
 		}
 		if err := lockedCall(lockKey, updateF); err != nil {
 			return err
@@ -2369,7 +2450,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		updateF := func() error {
 			log.Println("[DEBUG] updating cluster_telemetry")
 			name := containerClusterFullName(project, location, clusterName)
-			clusterUpdateCall := config.clientContainerBeta.Projects.Locations.Clusters.Update(name, req)
+			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(name, req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", project)
 			}
@@ -2379,7 +2460,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 			}
 
 			// Wait until it's updated
-			err = containerOperationWait(config, op, project, location, "updating Cluster Telemetry", d.Timeout(schema.TimeoutUpdate))
+			err = containerOperationWait(config, op, project, location, "updating Cluster Telemetry", userAgent, d.Timeout(schema.TimeoutUpdate))
 			log.Println("[DEBUG] done updating cluster_telemetry")
 			return err
 		}
@@ -2392,7 +2473,7 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		log.Printf("[INFO] GKE cluster %s Cluster Telemetry has been updated to %#v", d.Id(), req.Update.DesiredClusterTelemetry)
 	}
 
-	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, d.Timeout(schema.TimeoutUpdate)); err != nil {
+	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, userAgent, d.Timeout(schema.TimeoutUpdate)); err != nil {
 		return err
 	}
 
@@ -2401,6 +2482,10 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 
 func resourceContainerClusterDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -2414,7 +2499,7 @@ func resourceContainerClusterDelete(d *schema.ResourceData, meta interface{}) er
 
 	clusterName := d.Get("name").(string)
 
-	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, d.Timeout(schema.TimeoutDelete)); err != nil {
+	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, userAgent, d.Timeout(schema.TimeoutDelete)); err != nil {
 		return err
 	}
 
@@ -2428,7 +2513,7 @@ func resourceContainerClusterDelete(d *schema.ResourceData, meta interface{}) er
 		count++
 
 		name := containerClusterFullName(project, location, clusterName)
-		clusterDeleteCall := config.clientContainerBeta.Projects.Locations.Clusters.Delete(name)
+		clusterDeleteCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Delete(name)
 		if config.UserProjectOverride {
 			clusterDeleteCall.Header().Add("X-Goog-User-Project", project)
 		}
@@ -2450,7 +2535,7 @@ func resourceContainerClusterDelete(d *schema.ResourceData, meta interface{}) er
 	}
 
 	// Wait until it's deleted
-	waitErr := containerOperationWait(config, op, project, location, "deleting GKE cluster", d.Timeout(schema.TimeoutDelete))
+	waitErr := containerOperationWait(config, op, project, location, "deleting GKE cluster", userAgent, d.Timeout(schema.TimeoutDelete))
 	if waitErr != nil {
 		return waitErr
 	}
@@ -2479,11 +2564,16 @@ func cleanFailedContainerCluster(d *schema.ResourceData, meta interface{}) error
 		return err
 	}
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	clusterName := d.Get("name").(string)
 	fullName := containerClusterFullName(project, location, clusterName)
 
 	log.Printf("[DEBUG] Cleaning up failed GKE cluster %s", d.Get("name").(string))
-	clusterDeleteCall := config.clientContainerBeta.Projects.Locations.Clusters.Delete(fullName)
+	clusterDeleteCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Delete(fullName)
 	if config.UserProjectOverride {
 		clusterDeleteCall.Header().Add("X-Goog-User-Project", project)
 	}
@@ -2493,7 +2583,7 @@ func cleanFailedContainerCluster(d *schema.ResourceData, meta interface{}) error
 	}
 
 	// Wait until it's deleted
-	waitErr := containerOperationWait(config, op, project, location, "deleting GKE cluster", d.Timeout(schema.TimeoutDelete))
+	waitErr := containerOperationWait(config, op, project, location, "deleting GKE cluster", userAgent, d.Timeout(schema.TimeoutDelete))
 	if waitErr != nil {
 		return waitErr
 	}
@@ -2510,10 +2600,10 @@ var containerClusterRestingStates = RestingStates{
 }
 
 // returns a state with no error if the state is a resting state, and the last state with an error otherwise
-func containerClusterAwaitRestingState(config *Config, project, location, clusterName string, timeout time.Duration) (state string, err error) {
+func containerClusterAwaitRestingState(config *Config, project, location, clusterName, userAgent string, timeout time.Duration) (state string, err error) {
 	err = resource.Retry(timeout, func() *resource.RetryError {
 		name := containerClusterFullName(project, location, clusterName)
-		clusterGetCall := config.clientContainerBeta.Projects.Locations.Clusters.Get(name)
+		clusterGetCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Get(name)
 		if config.UserProjectOverride {
 			clusterGetCall.Header().Add("X-Goog-User-Project", project)
 		}
@@ -2542,7 +2632,7 @@ func containerClusterAwaitRestingState(config *Config, project, location, cluste
 // container engine's API returns the instance group manager's URL instead of the instance
 // group's URL in its responses, while the field is named as if it should have been the group
 // and not the manager. This shim should be supported for backwards compatibility reasons.
-func getInstanceGroupUrlsFromManagerUrls(config *Config, igmUrls []string) ([]string, error) {
+func getInstanceGroupUrlsFromManagerUrls(config *Config, userAgent string, igmUrls []string) ([]string, error) {
 	instanceGroupURLs := make([]string, 0, len(igmUrls))
 	for _, u := range igmUrls {
 		if !instanceGroupManagerURL.MatchString(u) {
@@ -2550,7 +2640,7 @@ func getInstanceGroupUrlsFromManagerUrls(config *Config, igmUrls []string) ([]st
 			continue
 		}
 		matches := instanceGroupManagerURL.FindStringSubmatch(u)
-		instanceGroupManager, err := config.clientCompute.InstanceGroupManagers.Get(matches[1], matches[2], matches[3]).Do()
+		instanceGroupManager, err := config.NewComputeClient(userAgent).InstanceGroupManagers.Get(matches[1], matches[2], matches[3]).Do()
 		if isGoogleApiErrorWithCode(err, 404) {
 			// The IGM URL is stale; don't include it
 			continue
@@ -2684,7 +2774,11 @@ func expandMaintenancePolicy(d *schema.ResourceData, meta interface{}) *containe
 	location, _ := getLocation(d, config)
 	clusterName := d.Get("name").(string)
 	name := containerClusterFullName(project, location, clusterName)
-	clusterGetCall := config.clientContainerBeta.Projects.Locations.Clusters.Get(name)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return nil
+	}
+	clusterGetCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Get(name)
 	if config.UserProjectOverride {
 		clusterGetCall.Header().Add("X-Goog-User-Project", project)
 	}
@@ -2820,6 +2914,37 @@ func expandAuthenticatorGroupsConfig(configured interface{}) *containerBeta.Auth
 		result.SecurityGroup = securityGroup.(string)
 	}
 	return result
+}
+
+func expandNotificationConfig(configured interface{}) *containerBeta.NotificationConfig {
+	l := configured.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return &containerBeta.NotificationConfig{
+			Pubsub: &containerBeta.PubSub{
+				Enabled: false,
+			},
+		}
+	}
+
+	notificationConfig := l[0].(map[string]interface{})
+	if v, ok := notificationConfig["pubsub"]; ok {
+		if len(v.([]interface{})) > 0 {
+			pubsub := notificationConfig["pubsub"].([]interface{})[0].(map[string]interface{})
+
+			return &containerBeta.NotificationConfig{
+				Pubsub: &containerBeta.PubSub{
+					Enabled: pubsub["enabled"].(bool),
+					Topic:   pubsub["topic"].(string),
+				},
+			}
+		}
+	}
+
+	return &containerBeta.NotificationConfig{
+		Pubsub: &containerBeta.PubSub{
+			Enabled: false,
+		},
+	}
 }
 
 func expandMasterAuth(configured interface{}) *containerBeta.MasterAuth {
@@ -3035,6 +3160,23 @@ func expandResourceUsageExportConfig(configured interface{}) *containerBeta.Reso
 		}
 	}
 	return result
+}
+
+func flattenNotificationConfig(c *containerBeta.NotificationConfig) []map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+
+	return []map[string]interface{}{
+		{
+			"pubsub": []map[string]interface{}{
+				{
+					"enabled": c.Pubsub.Enabled,
+					"topic":   c.Pubsub.Topic,
+				},
+			},
+		},
+	}
 }
 
 func flattenNetworkPolicy(c *containerBeta.NetworkPolicy) []map[string]interface{} {
@@ -3432,6 +3574,11 @@ func flattenDatabaseEncryption(c *containerBeta.DatabaseEncryption) []map[string
 func resourceContainerClusterStateImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return nil, err
+	}
+
 	if err := parseImportId([]string{"projects/(?P<project>[^/]+)/locations/(?P<location>[^/]+)/clusters/(?P<name>[^/]+)", "(?P<project>[^/]+)/(?P<location>[^/]+)/(?P<name>[^/]+)", "(?P<location>[^/]+)/(?P<name>[^/]+)"}, d, config); err != nil {
 		return nil, err
 	}
@@ -3450,7 +3597,7 @@ func resourceContainerClusterStateImporter(d *schema.ResourceData, meta interfac
 	if err := d.Set("location", location); err != nil {
 		return nil, fmt.Errorf("Error setting location: %s", err)
 	}
-	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, d.Timeout(schema.TimeoutCreate)); err != nil {
+	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, userAgent, d.Timeout(schema.TimeoutCreate)); err != nil {
 		return nil, err
 	}
 

@@ -877,6 +877,11 @@ Example: "2014-10-02T15:01:23.045123456Z".`,
 func resourceOSConfigGuestPoliciesCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandOSConfigGuestPoliciesDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -934,7 +939,7 @@ func resourceOSConfigGuestPoliciesCreate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating GuestPolicies: %s", err)
 	}
@@ -975,6 +980,11 @@ func resourceOSConfigGuestPoliciesCreate(d *schema.ResourceData, meta interface{
 func resourceOSConfigGuestPoliciesRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{OSConfigBasePath}}projects/{{project}}/guestPolicies/{{guest_policy_id}}")
 	if err != nil {
 		return err
@@ -993,7 +1003,7 @@ func resourceOSConfigGuestPoliciesRead(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("OSConfigGuestPolicies %q", d.Id()))
 	}
@@ -1035,6 +1045,12 @@ func resourceOSConfigGuestPoliciesRead(d *schema.ResourceData, meta interface{})
 
 func resourceOSConfigGuestPoliciesUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -1094,7 +1110,7 @@ func resourceOSConfigGuestPoliciesUpdate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating GuestPolicies %q: %s", d.Id(), err)
@@ -1107,6 +1123,12 @@ func resourceOSConfigGuestPoliciesUpdate(d *schema.ResourceData, meta interface{
 
 func resourceOSConfigGuestPoliciesDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -1129,7 +1151,7 @@ func resourceOSConfigGuestPoliciesDelete(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "GuestPolicies")
 	}

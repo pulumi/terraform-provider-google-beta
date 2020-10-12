@@ -90,6 +90,11 @@ range).`,
 func resourceComputeNetworkEndpointCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	instanceProp, err := expandNestedComputeNetworkEndpointInstance(d.Get("instance"), d, config)
 	if err != nil {
@@ -141,7 +146,7 @@ func resourceComputeNetworkEndpointCreate(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating NetworkEndpoint: %s", err)
 	}
@@ -154,7 +159,7 @@ func resourceComputeNetworkEndpointCreate(d *schema.ResourceData, meta interface
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating NetworkEndpoint",
+		config, res, project, "Creating NetworkEndpoint", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -170,6 +175,11 @@ func resourceComputeNetworkEndpointCreate(d *schema.ResourceData, meta interface
 
 func resourceComputeNetworkEndpointRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/zones/{{zone}}/networkEndpointGroups/{{network_endpoint_group}}/listNetworkEndpoints")
 	if err != nil {
@@ -189,7 +199,7 @@ func resourceComputeNetworkEndpointRead(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "POST", billingProject, url, nil)
+	res, err := sendRequest(config, "POST", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeNetworkEndpoint %q", d.Id()))
 	}
@@ -237,6 +247,12 @@ func resourceComputeNetworkEndpointRead(d *schema.ResourceData, meta interface{}
 
 func resourceComputeNetworkEndpointDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -288,13 +304,13 @@ func resourceComputeNetworkEndpointDelete(d *schema.ResourceData, meta interface
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "NetworkEndpoint")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting NetworkEndpoint",
+		config, res, project, "Deleting NetworkEndpoint", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

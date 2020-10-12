@@ -70,6 +70,11 @@ Format: ''projects/{{project}}/locations/{{location}}/keyRings/{{keyRing}}/crypt
 func resourceKMSSecretCiphertextCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	plaintextProp, err := expandKMSSecretCiphertextPlaintext(d.Get("plaintext"), d, config)
 	if err != nil {
@@ -101,7 +106,7 @@ func resourceKMSSecretCiphertextCreate(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating SecretCiphertext: %s", err)
 	}
@@ -136,6 +141,11 @@ func resourceKMSSecretCiphertextCreate(d *schema.ResourceData, meta interface{})
 func resourceKMSSecretCiphertextRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{KMSBasePath}}{{crypto_key}}")
 	if err != nil {
 		return err
@@ -152,7 +162,7 @@ func resourceKMSSecretCiphertextRead(d *schema.ResourceData, meta interface{}) e
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("KMSSecretCiphertext %q", d.Id()))
 	}
@@ -173,6 +183,14 @@ func resourceKMSSecretCiphertextRead(d *schema.ResourceData, meta interface{}) e
 }
 
 func resourceKMSSecretCiphertextDelete(d *schema.ResourceData, meta interface{}) error {
+
+	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	log.Printf("[WARNING] KMS SecretCiphertext resources"+
 		" cannot be deleted from GCP. The resource %s will be removed from Terraform"+
 		" state, but will still be present on the server.", d.Id())

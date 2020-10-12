@@ -76,6 +76,10 @@ call projects.addGoogleAnalytics.`,
 
 func dataSourceGoogleFirebaseWebappConfigRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	id := d.Get("web_app_id").(string)
 
@@ -89,7 +93,7 @@ func dataSourceGoogleFirebaseWebappConfigRead(d *schema.ResourceData, meta inter
 		return err
 	}
 
-	res, err := sendRequest(config, "GET", project, url, nil)
+	res, err := sendRequest(config, "GET", project, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("FirebaseWebApp config %q", d.Id()))
 	}

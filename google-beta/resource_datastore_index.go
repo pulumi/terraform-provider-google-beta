@@ -96,6 +96,11 @@ func resourceDatastoreIndex() *schema.Resource {
 func resourceDatastoreIndexCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	kindProp, err := expandDatastoreIndexKind(d.Get("kind"), d, config)
 	if err != nil {
@@ -135,7 +140,7 @@ func resourceDatastoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate), datastoreIndex409Contention)
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate), datastoreIndex409Contention)
 	if err != nil {
 		return fmt.Errorf("Error creating Index: %s", err)
 	}
@@ -151,7 +156,7 @@ func resourceDatastoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 	// identity fields and d.Id() before read
 	var opRes map[string]interface{}
 	err = datastoreOperationWaitTimeWithResponse(
-		config, res, &opRes, project, "Creating Index",
+		config, res, &opRes, project, "Creating Index", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		// The resource didn't actually create
@@ -178,6 +183,11 @@ func resourceDatastoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 func resourceDatastoreIndexRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{DatastoreBasePath}}projects/{{project}}/indexes/{{index_id}}")
 	if err != nil {
 		return err
@@ -196,7 +206,7 @@ func resourceDatastoreIndexRead(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil, datastoreIndex409Contention)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil, datastoreIndex409Contention)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("DatastoreIndex %q", d.Id()))
 	}
@@ -224,6 +234,12 @@ func resourceDatastoreIndexRead(d *schema.ResourceData, meta interface{}) error 
 func resourceDatastoreIndexDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -245,13 +261,13 @@ func resourceDatastoreIndexDelete(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete), datastoreIndex409Contention)
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete), datastoreIndex409Contention)
 	if err != nil {
 		return handleNotFoundError(err, d, "Index")
 	}
 
 	err = datastoreOperationWaitTime(
-		config, res, project, "Deleting Index",
+		config, res, project, "Deleting Index", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

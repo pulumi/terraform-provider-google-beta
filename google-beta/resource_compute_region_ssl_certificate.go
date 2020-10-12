@@ -134,6 +134,11 @@ If it is not provided, the provider region is used.`,
 func resourceComputeRegionSslCertificateCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	certificateProp, err := expandComputeRegionSslCertificateCertificate(d.Get("certificate"), d, config)
 	if err != nil {
@@ -185,7 +190,7 @@ func resourceComputeRegionSslCertificateCreate(d *schema.ResourceData, meta inte
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating RegionSslCertificate: %s", err)
 	}
@@ -198,7 +203,7 @@ func resourceComputeRegionSslCertificateCreate(d *schema.ResourceData, meta inte
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating RegionSslCertificate",
+		config, res, project, "Creating RegionSslCertificate", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -214,6 +219,11 @@ func resourceComputeRegionSslCertificateCreate(d *schema.ResourceData, meta inte
 
 func resourceComputeRegionSslCertificateRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/regions/{{region}}/sslCertificates/{{name}}")
 	if err != nil {
@@ -233,7 +243,7 @@ func resourceComputeRegionSslCertificateRead(d *schema.ResourceData, meta interf
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeRegionSslCertificate %q", d.Id()))
 	}
@@ -270,6 +280,12 @@ func resourceComputeRegionSslCertificateRead(d *schema.ResourceData, meta interf
 func resourceComputeRegionSslCertificateDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -291,13 +307,13 @@ func resourceComputeRegionSslCertificateDelete(d *schema.ResourceData, meta inte
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "RegionSslCertificate")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting RegionSslCertificate",
+		config, res, project, "Deleting RegionSslCertificate", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

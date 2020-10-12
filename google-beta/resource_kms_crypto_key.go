@@ -129,6 +129,11 @@ See the [algorithm reference](https://cloud.google.com/kms/docs/reference/rest/v
 func resourceKMSCryptoKeyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	labelsProp, err := expandKMSCryptoKeyLabels(d.Get("labels"), d, config)
 	if err != nil {
@@ -177,7 +182,7 @@ func resourceKMSCryptoKeyCreate(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating CryptoKey: %s", err)
 	}
@@ -197,6 +202,11 @@ func resourceKMSCryptoKeyCreate(d *schema.ResourceData, meta interface{}) error 
 func resourceKMSCryptoKeyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{KMSBasePath}}{{key_ring}}/cryptoKeys/{{name}}")
 	if err != nil {
 		return err
@@ -213,7 +223,7 @@ func resourceKMSCryptoKeyRead(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("KMSCryptoKey %q", d.Id()))
 	}
@@ -248,6 +258,12 @@ func resourceKMSCryptoKeyRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceKMSCryptoKeyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -311,7 +327,7 @@ func resourceKMSCryptoKeyUpdate(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating CryptoKey %q: %s", d.Id(), err)
@@ -325,6 +341,12 @@ func resourceKMSCryptoKeyUpdate(d *schema.ResourceData, meta interface{}) error 
 func resourceKMSCryptoKeyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	cryptoKeyId, err := parseKmsCryptoKeyId(d.Id(), config)
 	if err != nil {
 		return err
@@ -335,13 +357,13 @@ func resourceKMSCryptoKeyDelete(d *schema.ResourceData, meta interface{}) error 
 and all its CryptoKeyVersions will be destroyed, but it will still be present on the server.`, cryptoKeyId.cryptoKeyId())
 
 	// Delete all versions of the key
-	if err := clearCryptoKeyVersions(cryptoKeyId, config); err != nil {
+	if err := clearCryptoKeyVersions(cryptoKeyId, userAgent, config); err != nil {
 		return err
 	}
 
 	// Make sure automatic key rotation is disabled if set
 	if d.Get("rotation_period") != "" {
-		if err := disableCryptoKeyRotation(cryptoKeyId, config); err != nil {
+		if err := disableCryptoKeyRotation(cryptoKeyId, userAgent, config); err != nil {
 			return fmt.Errorf(
 				"While cryptoKeyVersions were cleared, Terraform was unable to disable automatic rotation of key due to an error: %s."+
 					"Please retry or manually disable automatic rotation to prevent creation of a new version of this key.", err)

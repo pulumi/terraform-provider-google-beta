@@ -939,6 +939,11 @@ A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "201
 func resourceOSConfigPatchDeploymentCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandOSConfigPatchDeploymentDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -1007,7 +1012,7 @@ func resourceOSConfigPatchDeploymentCreate(d *schema.ResourceData, meta interfac
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating PatchDeployment: %s", err)
 	}
@@ -1048,6 +1053,11 @@ func resourceOSConfigPatchDeploymentCreate(d *schema.ResourceData, meta interfac
 func resourceOSConfigPatchDeploymentRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{OSConfigBasePath}}{{name}}")
 	if err != nil {
 		return err
@@ -1066,7 +1076,7 @@ func resourceOSConfigPatchDeploymentRead(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("OSConfigPatchDeployment %q", d.Id()))
 	}
@@ -1127,6 +1137,12 @@ func resourceOSConfigPatchDeploymentRead(d *schema.ResourceData, meta interface{
 func resourceOSConfigPatchDeploymentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -1148,7 +1164,7 @@ func resourceOSConfigPatchDeploymentDelete(d *schema.ResourceData, meta interfac
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "PatchDeployment")
 	}

@@ -79,6 +79,11 @@ lives in.`,
 func resourceSecurityCenterSourceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandSecurityCenterSourceDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -106,7 +111,7 @@ func resourceSecurityCenterSourceCreate(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Source: %s", err)
 	}
@@ -147,6 +152,11 @@ func resourceSecurityCenterSourceCreate(d *schema.ResourceData, meta interface{}
 func resourceSecurityCenterSourceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{SecurityCenterBasePath}}{{name}}")
 	if err != nil {
 		return err
@@ -159,7 +169,7 @@ func resourceSecurityCenterSourceRead(d *schema.ResourceData, meta interface{}) 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("SecurityCenterSource %q", d.Id()))
 	}
@@ -179,6 +189,12 @@ func resourceSecurityCenterSourceRead(d *schema.ResourceData, meta interface{}) 
 
 func resourceSecurityCenterSourceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -223,7 +239,7 @@ func resourceSecurityCenterSourceUpdate(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Source %q: %s", d.Id(), err)
@@ -235,6 +251,14 @@ func resourceSecurityCenterSourceUpdate(d *schema.ResourceData, meta interface{}
 }
 
 func resourceSecurityCenterSourceDelete(d *schema.ResourceData, meta interface{}) error {
+
+	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	log.Printf("[WARNING] SecurityCenter Source resources"+
 		" cannot be deleted from GCP. The resource %s will be removed from Terraform"+
 		" state, but will still be present on the server.", d.Id())

@@ -119,6 +119,11 @@ Only one of 'order' and 'arrayConfig' can be specified. Possible values: ["ASCEN
 func resourceFirestoreIndexCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	databaseProp, err := expandFirestoreIndexDatabase(d.Get("database"), d, config)
 	if err != nil {
@@ -169,7 +174,7 @@ func resourceFirestoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Index: %s", err)
 	}
@@ -185,7 +190,7 @@ func resourceFirestoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 	// identity fields and d.Id() before read
 	var opRes map[string]interface{}
 	err = firestoreOperationWaitTimeWithResponse(
-		config, res, &opRes, project, "Creating Index",
+		config, res, &opRes, project, "Creating Index", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		// The resource didn't actually create
@@ -222,6 +227,11 @@ func resourceFirestoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 func resourceFirestoreIndexRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{FirestoreBasePath}}{{name}}")
 	if err != nil {
 		return err
@@ -240,7 +250,7 @@ func resourceFirestoreIndexRead(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("FirestoreIndex %q", d.Id()))
 	}
@@ -265,6 +275,12 @@ func resourceFirestoreIndexRead(d *schema.ResourceData, meta interface{}) error 
 func resourceFirestoreIndexDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -286,13 +302,13 @@ func resourceFirestoreIndexDelete(d *schema.ResourceData, meta interface{}) erro
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Index")
 	}
 
 	err = firestoreOperationWaitTime(
-		config, res, project, "Deleting Index",
+		config, res, project, "Deleting Index", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

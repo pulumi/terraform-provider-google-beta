@@ -32,7 +32,7 @@ func testSweepContainerClusters(region string) error {
 	}
 
 	// List clusters for all zones by using "-" as the zone name
-	found, err := config.clientContainer.Projects.Zones.Clusters.List(config.Project, "-").Do()
+	found, err := config.NewContainerClient(config.userAgent).Projects.Zones.Clusters.List(config.Project, "-").Do()
 	if err != nil {
 		log.Printf("error listing container clusters: %s", err)
 		return nil
@@ -47,7 +47,7 @@ func testSweepContainerClusters(region string) error {
 		if isSweepableTestResource(cluster.Name) {
 			log.Printf("Sweeping Container Cluster: %s", cluster.Name)
 			clusterURL := fmt.Sprintf("projects/%s/locations/%s/clusters/%s", config.Project, cluster.Location, cluster.Name)
-			_, err := config.clientContainer.Projects.Locations.Clusters.Delete(clusterURL).Do()
+			_, err := config.NewContainerClient(config.userAgent).Projects.Locations.Clusters.Delete(clusterURL).Do()
 
 			if err != nil {
 				log.Printf("Error, failed to delete cluster %s: %s", cluster.Name, err)
@@ -168,6 +168,54 @@ func TestAccContainerCluster_withAddons(t *testing.T) {
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"min_master_version"},
+			},
+		},
+	})
+}
+
+func TestAccContainerCluster_withNotificationConfig(t *testing.T) {
+	t.Parallel()
+
+	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
+	topic := "test-topic"
+	newTopic := "test-topic-2"
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckContainerClusterDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccContainerCluster_withNotificationConfig(clusterName, topic),
+			},
+			{
+				ResourceName:      "google_container_cluster.notification_config",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				Config: testAccContainerCluster_withNotificationConfig(clusterName, newTopic),
+			},
+			{
+				ResourceName:      "google_container_cluster.notification_config",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				Config: testAccContainerCluster_disableNotificationConfig(clusterName),
+			},
+			{
+				ResourceName:      "google_container_cluster.notification_config",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				Config: testAccContainerCluster_withNotificationConfig(clusterName, newTopic),
+			},
+			{
+				ResourceName:      "google_container_cluster.notification_config",
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
@@ -1919,7 +1967,7 @@ func testAccContainerCluster_masterAuthorizedNetworksDisabled(t *testing.T, reso
 		config := googleProviderConfig(t)
 		attributes := rs.Primary.Attributes
 
-		cluster, err := config.clientContainer.Projects.Zones.Clusters.Get(
+		cluster, err := config.NewContainerClient(config.userAgent).Projects.Zones.Clusters.Get(
 			config.Project, attributes["location"], attributes["name"]).Do()
 		if err != nil {
 			return err
@@ -1943,7 +1991,7 @@ func testAccCheckContainerClusterDestroyProducer(t *testing.T) func(s *terraform
 			}
 
 			attributes := rs.Primary.Attributes
-			_, err := config.clientContainer.Projects.Zones.Clusters.Get(
+			_, err := config.NewContainerClient(config.userAgent).Projects.Zones.Clusters.Get(
 				config.Project, attributes["location"], attributes["name"]).Do()
 			if err == nil {
 				return fmt.Errorf("Cluster still exists")
@@ -2266,6 +2314,42 @@ resource "google_container_cluster" "primary" {
   }
 }
 `, projectID, clusterName)
+}
+
+func testAccContainerCluster_withNotificationConfig(clusterName string, topic string) string {
+	return fmt.Sprintf(`
+
+resource "google_pubsub_topic" "%s" {
+  name = "%s"
+}
+
+resource "google_container_cluster" "notification_config" {
+  name               = "%s"
+  location           = "us-central1-a"
+  initial_node_count = 3
+  notification_config {
+	pubsub {
+	  enabled = true
+	  topic = google_pubsub_topic.%s.id 
+	}
+  }
+}
+`, topic, topic, clusterName, topic)
+}
+
+func testAccContainerCluster_disableNotificationConfig(clusterName string) string {
+	return fmt.Sprintf(`
+resource "google_container_cluster" "notification_config" {
+  name               = "%s"
+  location           = "us-central1-a"
+  initial_node_count = 3
+  notification_config {
+	pubsub {
+	  enabled = false
+	}
+  }
+}
+`, clusterName)
 }
 
 func testAccContainerCluster_withMasterAuth(clusterName string) string {

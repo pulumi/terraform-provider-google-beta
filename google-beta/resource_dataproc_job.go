@@ -182,6 +182,12 @@ func resourceDataprocJobUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceDataprocJobCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.clientDataproc.UserAgent = userAgent
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
@@ -258,6 +264,11 @@ func resourceDataprocJobCreate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceDataprocJobRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.clientDataproc.UserAgent = userAgent
 	region := d.Get("region").(string)
 
 	project, err := getProject(d, config)
@@ -334,6 +345,11 @@ func resourceDataprocJobRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceDataprocJobDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.clientDataproc.UserAgent = userAgent
 
 	project, err := getProject(d, config)
 	if err != nil {

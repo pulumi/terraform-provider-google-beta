@@ -137,6 +137,11 @@ Format: projects/{project_id}`,
 func resourceNotebooksEnvironmentCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	displayNameProp, err := expandNotebooksEnvironmentDisplayName(d.Get("display_name"), d, config)
 	if err != nil {
@@ -188,7 +193,7 @@ func resourceNotebooksEnvironmentCreate(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating Environment: %s", err)
 	}
@@ -204,7 +209,7 @@ func resourceNotebooksEnvironmentCreate(d *schema.ResourceData, meta interface{}
 	// identity fields and d.Id() before read
 	var opRes map[string]interface{}
 	err = notebooksOperationWaitTimeWithResponse(
-		config, res, &opRes, project, "Creating Environment",
+		config, res, &opRes, project, "Creating Environment", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		// The resource didn't actually create
@@ -227,6 +232,11 @@ func resourceNotebooksEnvironmentCreate(d *schema.ResourceData, meta interface{}
 func resourceNotebooksEnvironmentRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{NotebooksBasePath}}projects/{{project}}/locations/{{location}}/environments/{{name}}")
 	if err != nil {
 		return err
@@ -245,7 +255,7 @@ func resourceNotebooksEnvironmentRead(d *schema.ResourceData, meta interface{}) 
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("NotebooksEnvironment %q", d.Id()))
 	}
@@ -278,6 +288,12 @@ func resourceNotebooksEnvironmentRead(d *schema.ResourceData, meta interface{}) 
 
 func resourceNotebooksEnvironmentUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -331,7 +347,7 @@ func resourceNotebooksEnvironmentUpdate(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PUT", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating Environment %q: %s", d.Id(), err)
@@ -340,7 +356,7 @@ func resourceNotebooksEnvironmentUpdate(d *schema.ResourceData, meta interface{}
 	}
 
 	err = notebooksOperationWaitTime(
-		config, res, project, "Updating Environment",
+		config, res, project, "Updating Environment", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -352,6 +368,12 @@ func resourceNotebooksEnvironmentUpdate(d *schema.ResourceData, meta interface{}
 
 func resourceNotebooksEnvironmentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -374,13 +396,13 @@ func resourceNotebooksEnvironmentDelete(d *schema.ResourceData, meta interface{}
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "Environment")
 	}
 
 	err = notebooksOperationWaitTime(
-		config, res, project, "Deleting Environment",
+		config, res, project, "Deleting Environment", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {

@@ -292,6 +292,11 @@ bet set to True if any of the fields in the spec are set to non-default values.`
 func resourceAccessContextManagerServicePerimetersCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	servicePerimetersProp, err := expandAccessContextManagerServicePerimetersServicePerimeters(d.Get("service_perimeters"), d, config)
 	if err != nil {
@@ -319,7 +324,7 @@ func resourceAccessContextManagerServicePerimetersCreate(d *schema.ResourceData,
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating ServicePerimeters: %s", err)
 	}
@@ -332,7 +337,7 @@ func resourceAccessContextManagerServicePerimetersCreate(d *schema.ResourceData,
 	d.SetId(id)
 
 	err = accessContextManagerOperationWaitTime(
-		config, res, "Creating ServicePerimeters",
+		config, res, "Creating ServicePerimeters", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -349,6 +354,11 @@ func resourceAccessContextManagerServicePerimetersCreate(d *schema.ResourceData,
 func resourceAccessContextManagerServicePerimetersRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{AccessContextManagerBasePath}}{{parent}}/servicePerimeters")
 	if err != nil {
 		return err
@@ -361,7 +371,7 @@ func resourceAccessContextManagerServicePerimetersRead(d *schema.ResourceData, m
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("AccessContextManagerServicePerimeters %q", d.Id()))
 	}
@@ -375,6 +385,12 @@ func resourceAccessContextManagerServicePerimetersRead(d *schema.ResourceData, m
 
 func resourceAccessContextManagerServicePerimetersUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -404,7 +420,7 @@ func resourceAccessContextManagerServicePerimetersUpdate(d *schema.ResourceData,
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating ServicePerimeters %q: %s", d.Id(), err)
@@ -413,7 +429,7 @@ func resourceAccessContextManagerServicePerimetersUpdate(d *schema.ResourceData,
 	}
 
 	err = accessContextManagerOperationWaitTime(
-		config, res, "Updating ServicePerimeters",
+		config, res, "Updating ServicePerimeters", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
@@ -426,6 +442,12 @@ func resourceAccessContextManagerServicePerimetersUpdate(d *schema.ResourceData,
 func resourceAccessContextManagerServicePerimetersDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	obj := make(map[string]interface{})
 	obj["servicePerimeters"] = []string{}
 
@@ -435,7 +457,7 @@ func resourceAccessContextManagerServicePerimetersDelete(d *schema.ResourceData,
 	}
 
 	log.Printf("[DEBUG] Deleting servicePerimeters %q: %#v", d.Id(), obj)
-	res, err := sendRequestWithTimeout(config, "POST", "", url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "POST", "", url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error deleting ServicePerimeters %q: %s", d.Id(), err)
@@ -444,7 +466,7 @@ func resourceAccessContextManagerServicePerimetersDelete(d *schema.ResourceData,
 	}
 
 	err = accessContextManagerOperationWaitTime(
-		config, res, "Updating ServicePerimeters",
+		config, res, "Updating ServicePerimeters", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {

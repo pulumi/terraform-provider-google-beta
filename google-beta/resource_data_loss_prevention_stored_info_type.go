@@ -245,6 +245,11 @@ Its syntax (https://github.com/google/re2/wiki/Syntax) can be found under the go
 func resourceDataLossPreventionStoredInfoTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	descriptionProp, err := expandDataLossPreventionStoredInfoTypeDescription(d.Get("description"), d, config)
 	if err != nil {
@@ -295,7 +300,7 @@ func resourceDataLossPreventionStoredInfoTypeCreate(d *schema.ResourceData, meta
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating StoredInfoType: %s", err)
 	}
@@ -336,7 +341,12 @@ func resourceDataLossPreventionStoredInfoTypePollRead(d *schema.ResourceData, me
 			billingProject = bp
 		}
 
-		res, err := sendRequest(config, "GET", billingProject, url, nil)
+		userAgent, err := generateUserAgentString(d, config.userAgent)
+		if err != nil {
+			return nil, err
+		}
+
+		res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 		if err != nil {
 			return res, err
 		}
@@ -359,6 +369,11 @@ func resourceDataLossPreventionStoredInfoTypePollRead(d *schema.ResourceData, me
 func resourceDataLossPreventionStoredInfoTypeRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	url, err := replaceVars(d, config, "{{DataLossPreventionBasePath}}{{parent}}/storedInfoTypes/{{name}}")
 	if err != nil {
 		return err
@@ -371,7 +386,7 @@ func resourceDataLossPreventionStoredInfoTypeRead(d *schema.ResourceData, meta i
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("DataLossPreventionStoredInfoType %q", d.Id()))
 	}
@@ -412,6 +427,12 @@ func resourceDataLossPreventionStoredInfoTypeRead(d *schema.ResourceData, meta i
 
 func resourceDataLossPreventionStoredInfoTypeUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -461,7 +482,7 @@ func resourceDataLossPreventionStoredInfoTypeUpdate(d *schema.ResourceData, meta
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating StoredInfoType %q: %s", d.Id(), err)
@@ -474,6 +495,12 @@ func resourceDataLossPreventionStoredInfoTypeUpdate(d *schema.ResourceData, meta
 
 func resourceDataLossPreventionStoredInfoTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -490,7 +517,7 @@ func resourceDataLossPreventionStoredInfoTypeDelete(d *schema.ResourceData, meta
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "StoredInfoType")
 	}

@@ -179,6 +179,11 @@ Default value is 1000. Valid range is 0 through 65535.`,
 func resourceComputeRouteCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+
 	obj := make(map[string]interface{})
 	destRangeProp, err := expandComputeRouteDestRange(d.Get("dest_range"), d, config)
 	if err != nil {
@@ -273,7 +278,7 @@ func resourceComputeRouteCreate(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, obj, d.Timeout(schema.TimeoutCreate), isPeeringOperationInProgress)
+	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate), isPeeringOperationInProgress)
 	if err != nil {
 		return fmt.Errorf("Error creating Route: %s", err)
 	}
@@ -286,7 +291,7 @@ func resourceComputeRouteCreate(d *schema.ResourceData, meta interface{}) error 
 	d.SetId(id)
 
 	err = computeOperationWaitTime(
-		config, res, project, "Creating Route",
+		config, res, project, "Creating Route", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
 	if err != nil {
@@ -302,6 +307,11 @@ func resourceComputeRouteCreate(d *schema.ResourceData, meta interface{}) error 
 
 func resourceComputeRouteRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
 
 	url, err := replaceVars(d, config, "{{ComputeBasePath}}projects/{{project}}/global/routes/{{name}}")
 	if err != nil {
@@ -321,7 +331,7 @@ func resourceComputeRouteRead(d *schema.ResourceData, meta interface{}) error {
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, nil, isPeeringOperationInProgress)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil, isPeeringOperationInProgress)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeRoute %q", d.Id()))
 	}
@@ -388,6 +398,12 @@ func resourceComputeRouteRead(d *schema.ResourceData, meta interface{}) error {
 func resourceComputeRouteDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
+	userAgent, err := generateUserAgentString(d, config.userAgent)
+	if err != nil {
+		return err
+	}
+	config.userAgent = userAgent
+
 	billingProject := ""
 
 	project, err := getProject(d, config)
@@ -416,13 +432,13 @@ func resourceComputeRouteDelete(d *schema.ResourceData, meta interface{}) error 
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, obj, d.Timeout(schema.TimeoutDelete), isPeeringOperationInProgress)
+	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete), isPeeringOperationInProgress)
 	if err != nil {
 		return handleNotFoundError(err, d, "Route")
 	}
 
 	err = computeOperationWaitTime(
-		config, res, project, "Deleting Route",
+		config, res, project, "Deleting Route", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
 	if err != nil {
@@ -573,7 +589,13 @@ func expandComputeRouteNextHopInstance(v interface{}, d TerraformResourceData, c
 	if err != nil {
 		return nil, err
 	}
-	nextInstance, err := config.clientCompute.Instances.Get(val.Project, val.Zone, val.Name).Do()
+
+	userAgent, err := generateUserAgentString(d.(*schema.ResourceData), config.userAgent)
+	if err != nil {
+		return nil, err
+	}
+
+	nextInstance, err := config.NewComputeClient(userAgent).Instances.Get(val.Project, val.Zone, val.Name).Do()
 	if err != nil {
 		return nil, err
 	}
