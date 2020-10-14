@@ -172,7 +172,7 @@ func resourceArtifactRegistryRepositoryCreate(d *schema.ResourceData, meta inter
 	}
 
 	// Store the ID now
-	id, err := replaceVars(d, config, "projects/{{project}}/locations/{{location}}/repositories/{{repsitory_id}}")
+	id, err := replaceVars(d, config, "projects/{{project}}/locations/{{location}}/repositories/{{repository_id}}")
 	if err != nil {
 		return fmt.Errorf("Error constructing id: %s", err)
 	}
@@ -195,7 +195,7 @@ func resourceArtifactRegistryRepositoryCreate(d *schema.ResourceData, meta inter
 	}
 
 	// This may have caused the ID to update - update it if so.
-	id, err = replaceVars(d, config, "projects/{{project}}/locations/{{location}}/repositories/{{repsitory_id}}")
+	id, err = replaceVars(d, config, "projects/{{project}}/locations/{{location}}/repositories/{{repository_id}}")
 	if err != nil {
 		return fmt.Errorf("Error constructing id: %s", err)
 	}
@@ -214,7 +214,7 @@ func resourceArtifactRegistryRepositoryRead(d *schema.ResourceData, meta interfa
 		return err
 	}
 
-	url, err := replaceVars(d, config, "{{ArtifactRegistryBasePath}}projects/{{project}}/locations/{{location}}/repositories/{{name}}")
+	url, err := replaceVars(d, config, "{{ArtifactRegistryBasePath}}projects/{{project}}/locations/{{location}}/repositories/{{repository_id}}")
 	if err != nil {
 		return err
 	}
@@ -309,7 +309,7 @@ func resourceArtifactRegistryRepositoryUpdate(d *schema.ResourceData, meta inter
 		obj["kmsKeyName"] = kmsKeyNameProp
 	}
 
-	url, err := replaceVars(d, config, "{{ArtifactRegistryBasePath}}projects/{{project}}/locations/{{location}}/repositories/{{name}}")
+	url, err := replaceVars(d, config, "{{ArtifactRegistryBasePath}}projects/{{project}}/locations/{{location}}/repositories/{{repository_id}}")
 	if err != nil {
 		return err
 	}
@@ -357,7 +357,7 @@ func resourceArtifactRegistryRepositoryDelete(d *schema.ResourceData, meta inter
 	}
 	billingProject = project
 
-	url, err := replaceVars(d, config, "{{ArtifactRegistryBasePath}}projects/{{project}}/locations/{{location}}/repositories/{{name}}")
+	url, err := replaceVars(d, config, "{{ArtifactRegistryBasePath}}projects/{{project}}/locations/{{location}}/repositories/{{repository_id}}")
 	if err != nil {
 		return err
 	}
@@ -399,7 +399,7 @@ func resourceArtifactRegistryRepositoryImport(d *schema.ResourceData, meta inter
 	}
 
 	// Replace import id for the resource id
-	id, err := replaceVars(d, config, "projects/{{project}}/locations/{{location}}/repositories/{{repsitory_id}}")
+	id, err := replaceVars(d, config, "projects/{{project}}/locations/{{location}}/repositories/{{repository_id}}")
 	if err != nil {
 		return nil, fmt.Errorf("Error constructing id: %s", err)
 	}

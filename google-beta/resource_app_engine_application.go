@@ -70,6 +70,10 @@ func resourceAppEngineApplication() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{
 					"CLOUD_FIRESTORE",
 					"CLOUD_DATASTORE_COMPATIBILITY",
+					// NOTE: this is provided for compatibility with instances from
+					// before CLOUD_DATASTORE_COMPATIBILITY - it cannot be set
+					// for new instances.
+					"CLOUD_DATASTORE",
 				}, false),
 				Computed: true,
 			},
@@ -200,7 +204,6 @@ func resourceAppEngineApplicationCreate(d *schema.ResourceData, meta interface{}
 	if err != nil {
 		return err
 	}
-	config.clientAppEngine.UserAgent = userAgent
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -219,7 +222,7 @@ func resourceAppEngineApplicationCreate(d *schema.ResourceData, meta interface{}
 	defer mutexKV.Unlock(lockName)
 
 	log.Printf("[DEBUG] Creating App Engine App")
-	op, err := config.clientAppEngine.Apps.Create(app).Do()
+	op, err := config.NewAppEngineClient(userAgent).Apps.Create(app).Do()
 	if err != nil {
 		return fmt.Errorf("Error creating App Engine application: %s", err.Error())
 	}
@@ -243,10 +246,9 @@ func resourceAppEngineApplicationRead(d *schema.ResourceData, meta interface{}) 
 	if err != nil {
 		return err
 	}
-	config.clientAppEngine.UserAgent = userAgent
 	pid := d.Id()
 
-	app, err := config.clientAppEngine.Apps.Get(pid).Do()
+	app, err := config.NewAppEngineClient(userAgent).Apps.Get(pid).Do()
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("App Engine Application %q", pid))
 	}
@@ -316,7 +318,6 @@ func resourceAppEngineApplicationUpdate(d *schema.ResourceData, meta interface{}
 	if err != nil {
 		return err
 	}
-	config.clientAppEngine.UserAgent = userAgent
 	pid := d.Id()
 	app, err := expandAppEngineApplication(d, pid)
 	if err != nil {
@@ -331,7 +332,7 @@ func resourceAppEngineApplicationUpdate(d *schema.ResourceData, meta interface{}
 	defer mutexKV.Unlock(lockName)
 
 	log.Printf("[DEBUG] Updating App Engine App")
-	op, err := config.clientAppEngine.Apps.Patch(pid, app).UpdateMask("authDomain,databaseType,servingStatus,featureSettings.splitHealthChecks,iap").Do()
+	op, err := config.NewAppEngineClient(userAgent).Apps.Patch(pid, app).UpdateMask("authDomain,databaseType,servingStatus,featureSettings.splitHealthChecks,iap").Do()
 	if err != nil {
 		return fmt.Errorf("Error updating App Engine application: %s", err.Error())
 	}

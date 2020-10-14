@@ -186,7 +186,6 @@ func resourceDataprocJobCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	config.clientDataproc.UserAgent = userAgent
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -245,7 +244,7 @@ func resourceDataprocJobCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	// Submit the job
-	job, err := config.clientDataproc.Projects.Regions.Jobs.Submit(
+	job, err := config.NewDataprocClient(userAgent).Projects.Regions.Jobs.Submit(
 		project, region, submitReq).Do()
 	if err != nil {
 		return err
@@ -253,7 +252,7 @@ func resourceDataprocJobCreate(d *schema.ResourceData, meta interface{}) error {
 	d.SetId(fmt.Sprintf("projects/%s/regions/%s/jobs/%s", project, region, job.Reference.JobId))
 
 	waitErr := dataprocJobOperationWait(config, region, project, job.Reference.JobId,
-		"Creating Dataproc job", d.Timeout(schema.TimeoutCreate))
+		"Creating Dataproc job", userAgent, d.Timeout(schema.TimeoutCreate))
 	if waitErr != nil {
 		return waitErr
 	}
@@ -268,7 +267,6 @@ func resourceDataprocJobRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	config.clientDataproc.UserAgent = userAgent
 	region := d.Get("region").(string)
 
 	project, err := getProject(d, config)
@@ -278,7 +276,7 @@ func resourceDataprocJobRead(d *schema.ResourceData, meta interface{}) error {
 
 	parts := strings.Split(d.Id(), "/")
 	jobId := parts[len(parts)-1]
-	job, err := config.clientDataproc.Projects.Regions.Jobs.Get(
+	job, err := config.NewDataprocClient(userAgent).Projects.Regions.Jobs.Get(
 		project, region, jobId).Do()
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("Dataproc Job %q", jobId))
@@ -349,7 +347,6 @@ func resourceDataprocJobDelete(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	config.clientDataproc.UserAgent = userAgent
 
 	project, err := getProject(d, config)
 	if err != nil {
@@ -367,10 +364,10 @@ func resourceDataprocJobDelete(d *schema.ResourceData, meta interface{}) error {
 		// ignore error if we get one - job may be finished already and not need to
 		// be cancelled. We do however wait for the state to be one that is
 		// at least not active
-		_, _ = config.clientDataproc.Projects.Regions.Jobs.Cancel(project, region, jobId, &dataproc.CancelJobRequest{}).Do()
+		_, _ = config.NewDataprocClient(userAgent).Projects.Regions.Jobs.Cancel(project, region, jobId, &dataproc.CancelJobRequest{}).Do()
 
 		waitErr := dataprocJobOperationWait(config, region, project, jobId,
-			"Cancelling Dataproc job", d.Timeout(schema.TimeoutDelete))
+			"Cancelling Dataproc job", userAgent, d.Timeout(schema.TimeoutDelete))
 		if waitErr != nil {
 			return waitErr
 		}
@@ -378,14 +375,14 @@ func resourceDataprocJobDelete(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	log.Printf("[DEBUG] Deleting Dataproc job %s", d.Id())
-	_, err = config.clientDataproc.Projects.Regions.Jobs.Delete(
+	_, err = config.NewDataprocClient(userAgent).Projects.Regions.Jobs.Delete(
 		project, region, jobId).Do()
 	if err != nil {
 		return err
 	}
 
 	waitErr := dataprocDeleteOperationWait(config, region, project, jobId,
-		"Deleting Dataproc job", d.Timeout(schema.TimeoutDelete))
+		"Deleting Dataproc job", userAgent, d.Timeout(schema.TimeoutDelete))
 	if waitErr != nil {
 		return waitErr
 	}

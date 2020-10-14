@@ -27,7 +27,7 @@ across instance group manager operations and can define stateful disks or metada
 
 To get more information about PerInstanceConfig, see:
 
-* [API documentation](https://cloud.google.com/compute/docs/reference/rest/beta/instanceGroupManagers)
+* [API documentation](https://cloud.google.com/compute/docs/reference/rest/v1/instanceGroupManagers)
 * How-to Guides
     * [Official Documentation](https://cloud.google.com/compute/docs/instance-groups/stateful-migs#per-instance_configs)
 

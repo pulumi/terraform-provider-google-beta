@@ -132,7 +132,6 @@ func resourceBigtableInstanceCreate(d *schema.ResourceData, meta interface{}) er
 	if err != nil {
 		return err
 	}
-	config.bigtableClientFactory.UserAgent = userAgent
 
 	ctx := context.Background()
 
@@ -164,7 +163,7 @@ func resourceBigtableInstanceCreate(d *schema.ResourceData, meta interface{}) er
 
 	conf.Clusters = expandBigtableClusters(d.Get("cluster").([]interface{}), conf.InstanceID)
 
-	c, err := config.bigtableClientFactory.NewInstanceAdminClient(project)
+	c, err := config.BigTableClientFactory(userAgent).NewInstanceAdminClient(project)
 	if err != nil {
 		return fmt.Errorf("Error starting instance admin client. %s", err)
 	}
@@ -191,7 +190,6 @@ func resourceBigtableInstanceRead(d *schema.ResourceData, meta interface{}) erro
 	if err != nil {
 		return err
 	}
-	config.bigtableClientFactory.UserAgent = userAgent
 	ctx := context.Background()
 
 	project, err := getProject(d, config)
@@ -199,7 +197,7 @@ func resourceBigtableInstanceRead(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	c, err := config.bigtableClientFactory.NewInstanceAdminClient(project)
+	c, err := config.BigTableClientFactory(userAgent).NewInstanceAdminClient(project)
 	if err != nil {
 		return fmt.Errorf("Error starting instance admin client. %s", err)
 	}
@@ -256,7 +254,6 @@ func resourceBigtableInstanceUpdate(d *schema.ResourceData, meta interface{}) er
 	if err != nil {
 		return err
 	}
-	config.bigtableClientFactory.UserAgent = userAgent
 	ctx := context.Background()
 
 	project, err := getProject(d, config)
@@ -264,7 +261,7 @@ func resourceBigtableInstanceUpdate(d *schema.ResourceData, meta interface{}) er
 		return err
 	}
 
-	c, err := config.bigtableClientFactory.NewInstanceAdminClient(project)
+	c, err := config.BigTableClientFactory(userAgent).NewInstanceAdminClient(project)
 	if err != nil {
 		return fmt.Errorf("Error starting instance admin client. %s", err)
 	}
@@ -310,7 +307,6 @@ func resourceBigtableInstanceDestroy(d *schema.ResourceData, meta interface{}) e
 	if err != nil {
 		return err
 	}
-	config.bigtableClientFactory.UserAgent = userAgent
 
 	ctx := context.Background()
 
@@ -319,7 +315,7 @@ func resourceBigtableInstanceDestroy(d *schema.ResourceData, meta interface{}) e
 		return err
 	}
 
-	c, err := config.bigtableClientFactory.NewInstanceAdminClient(project)
+	c, err := config.BigTableClientFactory(userAgent).NewInstanceAdminClient(project)
 	if err != nil {
 		return fmt.Errorf("Error starting instance admin client. %s", err)
 	}
