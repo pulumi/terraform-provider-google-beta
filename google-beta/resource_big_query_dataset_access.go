@@ -367,7 +367,7 @@ func resourceBigQueryDatasetAccessCreate(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate), isBigqueryIAMQuotaError)
 	if err != nil {
 		return fmt.Errorf("Error creating DatasetAccess: %s", err)
 	}
@@ -438,7 +438,7 @@ func resourceBigQueryDatasetAccessRead(d *schema.ResourceData, meta interface{})
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
+	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil, isBigqueryIAMQuotaError)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("BigQueryDatasetAccess %q", d.Id()))
 	}
@@ -526,7 +526,7 @@ func resourceBigQueryDatasetAccessDelete(d *schema.ResourceData, meta interface{
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete), isBigqueryIAMQuotaError)
 	if err != nil {
 		return handleNotFoundError(err, d, "DatasetAccess")
 	}
@@ -858,7 +858,7 @@ func resourceBigQueryDatasetAccessListForPatch(d *schema.ResourceData, meta inte
 		return nil, err
 	}
 
-	res, err := sendRequest(config, "GET", project, url, userAgent, nil)
+	res, err := sendRequest(config, "GET", project, url, userAgent, nil, isBigqueryIAMQuotaError)
 	if err != nil {
 		return nil, err
 	}

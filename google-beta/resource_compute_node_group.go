@@ -103,6 +103,13 @@ than or equal to max-nodes. The default value is 0.`,
 				ForceNew:    true,
 				Description: `An optional textual description of the resource.`,
 			},
+			"maintenance_policy": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				ForceNew:    true,
+				Description: `Specifies how to handle instances when a node in the group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE, or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT.`,
+				Default:     "DEFAULT",
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -168,6 +175,12 @@ func resourceComputeNodeGroupCreate(d *schema.ResourceData, meta interface{}) er
 		return err
 	} else if v, ok := d.GetOkExists("size"); ok || !reflect.DeepEqual(v, sizeProp) {
 		obj["size"] = sizeProp
+	}
+	maintenancePolicyProp, err := expandComputeNodeGroupMaintenancePolicy(d.Get("maintenance_policy"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("maintenance_policy"); !isEmptyValue(reflect.ValueOf(maintenancePolicyProp)) && (ok || !reflect.DeepEqual(v, maintenancePolicyProp)) {
+		obj["maintenancePolicy"] = maintenancePolicyProp
 	}
 	autoscalingPolicyProp, err := expandComputeNodeGroupAutoscalingPolicy(d.Get("autoscaling_policy"), d, config)
 	if err != nil {
@@ -276,6 +289,9 @@ func resourceComputeNodeGroupRead(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("Error reading NodeGroup: %s", err)
 	}
 	if err := d.Set("size", flattenComputeNodeGroupSize(res["size"], d, config)); err != nil {
+		return fmt.Errorf("Error reading NodeGroup: %s", err)
+	}
+	if err := d.Set("maintenance_policy", flattenComputeNodeGroupMaintenancePolicy(res["maintenancePolicy"], d, config)); err != nil {
 		return fmt.Errorf("Error reading NodeGroup: %s", err)
 	}
 	if err := d.Set("autoscaling_policy", flattenComputeNodeGroupAutoscalingPolicy(res["autoscalingPolicy"], d, config)); err != nil {
@@ -454,6 +470,10 @@ func flattenComputeNodeGroupSize(v interface{}, d *schema.ResourceData, config *
 	return v // let terraform core handle it otherwise
 }
 
+func flattenComputeNodeGroupMaintenancePolicy(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
 func flattenComputeNodeGroupAutoscalingPolicy(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	if v == nil {
 		return nil
@@ -533,6 +553,10 @@ func expandComputeNodeGroupNodeTemplate(v interface{}, d TerraformResourceData, 
 }
 
 func expandComputeNodeGroupSize(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandComputeNodeGroupMaintenancePolicy(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 

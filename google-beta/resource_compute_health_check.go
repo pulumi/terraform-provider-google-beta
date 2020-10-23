@@ -674,7 +674,7 @@ func resourceComputeHealthCheckCreate(d *schema.ResourceData, meta interface{}) 
 	descriptionProp, err := expandComputeHealthCheckDescription(d.Get("description"), d, config)
 	if err != nil {
 		return err
-	} else if v, ok := d.GetOkExists("description"); !isEmptyValue(reflect.ValueOf(descriptionProp)) && (ok || !reflect.DeepEqual(v, descriptionProp)) {
+	} else if v, ok := d.GetOkExists("description"); ok || !reflect.DeepEqual(v, descriptionProp) {
 		obj["description"] = descriptionProp
 	}
 	healthyThresholdProp, err := expandComputeHealthCheckHealthyThreshold(d.Get("healthy_threshold"), d, config)
@@ -909,7 +909,7 @@ func resourceComputeHealthCheckUpdate(d *schema.ResourceData, meta interface{}) 
 	descriptionProp, err := expandComputeHealthCheckDescription(d.Get("description"), d, config)
 	if err != nil {
 		return err
-	} else if v, ok := d.GetOkExists("description"); !isEmptyValue(reflect.ValueOf(v)) && (ok || !reflect.DeepEqual(v, descriptionProp)) {
+	} else if v, ok := d.GetOkExists("description"); ok || !reflect.DeepEqual(v, descriptionProp) {
 		obj["description"] = descriptionProp
 	}
 	healthyThresholdProp, err := expandComputeHealthCheckHealthyThreshold(d.Get("healthy_threshold"), d, config)
