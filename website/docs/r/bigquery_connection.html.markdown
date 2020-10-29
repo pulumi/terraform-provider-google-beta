@@ -50,6 +50,8 @@ resource "google_sql_database_instance" "instance" {
     settings {
 		tier = "db-f1-micro"
 	}
+
+    deletion_protection  = "true"
 }
 
 resource "google_sql_database" "db" {
@@ -102,6 +104,8 @@ resource "google_sql_database_instance" "instance" {
     settings {
 		tier = "db-f1-micro"
 	}
+
+    deletion_protection  = "true"
 }
 
 resource "google_sql_database" "db" {
@@ -233,6 +237,7 @@ This resource provides the following
 - `delete` - Default is 4 minutes.
 
 ## Import
+
 
 Connection can be imported using any of these accepted formats:
 

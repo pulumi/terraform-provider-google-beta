@@ -55,7 +55,7 @@ data "google_compute_image" "my_image" {
 
 resource "google_compute_instance" "endpoint-instance" {
   name         = "endpoint-instance"
-  machine_type = "n1-standard-1"
+  machine_type = "e2-medium"
 
   boot_disk {
     initialize_params {
@@ -144,6 +144,7 @@ This resource provides the following
 - `delete` - Default is 6 minutes.
 
 ## Import
+
 
 NetworkEndpoint can be imported using any of these accepted formats:
 

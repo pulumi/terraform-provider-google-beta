@@ -51,6 +51,7 @@ import (
 	sqladmin "google.golang.org/api/sqladmin/v1beta4"
 	"google.golang.org/api/storage/v1"
 	"google.golang.org/api/storagetransfer/v1"
+	"google.golang.org/api/transport"
 )
 
 type providerMeta struct {
@@ -60,16 +61,18 @@ type providerMeta struct {
 // Config is the configuration structure used to instantiate the Google
 // provider.
 type Config struct {
-	Credentials         string
-	AccessToken         string
-	Project             string
-	BillingProject      string
-	Region              string
-	Zone                string
-	Scopes              []string
-	BatchingConfig      *batchingConfig
-	UserProjectOverride bool
-	RequestTimeout      time.Duration
+	AccessToken                        string
+	Credentials                        string
+	ImpersonateServiceAccount          string
+	ImpersonateServiceAccountDelegates []string
+	Project                            string
+	Region                             string
+	BillingProject                     string
+	Zone                               string
+	Scopes                             []string
+	BatchingConfig                     *batchingConfig
+	UserProjectOverride                bool
+	RequestTimeout                     time.Duration
 	// PollInterval is passed to resource.StateChangeConf in common_operation.go
 	// It controls the interval at which we poll for successful operations
 	PollInterval time.Duration
@@ -115,6 +118,7 @@ type Config struct {
 	FirestoreBasePath            string
 	GameServicesBasePath         string
 	HealthcareBasePath           string
+	IAMBetaBasePath              string
 	IapBasePath                  string
 	IdentityPlatformBasePath     string
 	KMSBasePath                  string
@@ -186,7 +190,7 @@ var CloudSchedulerDefaultBasePath = "https://cloudscheduler.googleapis.com/v1/"
 var CloudTasksDefaultBasePath = "https://cloudtasks.googleapis.com/v2/"
 var ComputeDefaultBasePath = "https://compute.googleapis.com/compute/beta/"
 var ContainerAnalysisDefaultBasePath = "https://containeranalysis.googleapis.com/v1beta1/"
-var DataCatalogDefaultBasePath = "https://datacatalog.googleapis.com/v1/"
+var DataCatalogDefaultBasePath = "https://datacatalog.googleapis.com/v1beta1/"
 var DataFusionDefaultBasePath = "https://datafusion.googleapis.com/v1beta1/"
 var DataLossPreventionDefaultBasePath = "https://dlp.googleapis.com/v2/"
 var DataprocDefaultBasePath = "https://dataproc.googleapis.com/v1beta2/"
@@ -199,6 +203,7 @@ var FirebaseDefaultBasePath = "https://firebase.googleapis.com/v1beta1/"
 var FirestoreDefaultBasePath = "https://firestore.googleapis.com/v1/"
 var GameServicesDefaultBasePath = "https://gameservices.googleapis.com/v1beta/"
 var HealthcareDefaultBasePath = "https://healthcare.googleapis.com/v1beta1/"
+var IAMBetaDefaultBasePath = "https://iam.googleapis.com/v1beta/"
 var IapDefaultBasePath = "https://iap.googleapis.com/v1/"
 var IdentityPlatformDefaultBasePath = "https://identitytoolkit.googleapis.com/v2/"
 var KMSDefaultBasePath = "https://cloudkms.googleapis.com/v1/"
@@ -877,15 +882,25 @@ type staticTokenSource struct {
 }
 
 func (c *Config) GetCredentials(clientScopes []string) (googleoauth.Credentials, error) {
+
 	if c.AccessToken != "" {
 		contents, _, err := pathOrContents(c.AccessToken)
 		if err != nil {
 			return googleoauth.Credentials{}, fmt.Errorf("Error loading access token: %s", err)
 		}
+		token := &oauth2.Token{AccessToken: contents}
+
+		if c.ImpersonateServiceAccount != "" {
+			opts := []option.ClientOption{option.WithTokenSource(oauth2.StaticTokenSource(token)), option.ImpersonateCredentials(c.ImpersonateServiceAccount, c.ImpersonateServiceAccountDelegates...), option.WithScopes(clientScopes...)}
+			creds, err := transport.Creds(context.TODO(), opts...)
+			if err != nil {
+				return googleoauth.Credentials{}, err
+			}
+			return *creds, nil
+		}
 
 		log.Printf("[INFO] Authenticating using configured Google JSON 'access_token'...")
 		log.Printf("[INFO]   -- Scopes: %s", clientScopes)
-		token := &oauth2.Token{AccessToken: contents}
 
 		return googleoauth.Credentials{
 			TokenSource: staticTokenSource{oauth2.StaticTokenSource(token)},
@@ -897,7 +912,14 @@ func (c *Config) GetCredentials(clientScopes []string) (googleoauth.Credentials,
 		if err != nil {
 			return googleoauth.Credentials{}, fmt.Errorf("error loading credentials: %s", err)
 		}
-
+		if c.ImpersonateServiceAccount != "" {
+			opts := []option.ClientOption{option.WithCredentialsJSON([]byte(contents)), option.ImpersonateCredentials(c.ImpersonateServiceAccount, c.ImpersonateServiceAccountDelegates...), option.WithScopes(clientScopes...)}
+			creds, err := transport.Creds(context.TODO(), opts...)
+			if err != nil {
+				return googleoauth.Credentials{}, err
+			}
+			return *creds, nil
+		}
 		creds, err := googleoauth.CredentialsFromJSON(c.context, []byte(contents), clientScopes...)
 		if err != nil {
 			return googleoauth.Credentials{}, fmt.Errorf("unable to parse credentials from '%s': %s", contents, err)
@@ -906,6 +928,16 @@ func (c *Config) GetCredentials(clientScopes []string) (googleoauth.Credentials,
 		log.Printf("[INFO] Authenticating using configured Google JSON 'credentials'...")
 		log.Printf("[INFO]   -- Scopes: %s", clientScopes)
 		return *creds, nil
+	}
+
+	if c.ImpersonateServiceAccount != "" {
+		opts := option.ImpersonateCredentials(c.ImpersonateServiceAccount, c.ImpersonateServiceAccountDelegates...)
+		creds, err := transport.Creds(context.TODO(), opts, option.WithScopes(clientScopes...))
+		if err != nil {
+			return googleoauth.Credentials{}, err
+		}
+		return *creds, nil
+
 	}
 
 	log.Printf("[INFO] Authenticating using DefaultClient...")
@@ -966,6 +998,7 @@ func ConfigureBasePaths(c *Config) {
 	c.FirestoreBasePath = FirestoreDefaultBasePath
 	c.GameServicesBasePath = GameServicesDefaultBasePath
 	c.HealthcareBasePath = HealthcareDefaultBasePath
+	c.IAMBetaBasePath = IAMBetaDefaultBasePath
 	c.IapBasePath = IapDefaultBasePath
 	c.IdentityPlatformBasePath = IdentityPlatformDefaultBasePath
 	c.KMSBasePath = KMSDefaultBasePath

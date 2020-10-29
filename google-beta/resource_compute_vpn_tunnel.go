@@ -207,6 +207,7 @@ Only IPv4 is supported.`,
 				ForceNew:         true,
 				DiffSuppressFunc: compareSelfLinkOrResourceName,
 				Description:      `URL of the peer side external VPN gateway to which this VPN tunnel is connected.`,
+				ConflictsWith:    []string{"peer_gcp_gateway"},
 			},
 			"peer_external_gateway_interface": {
 				Type:        schema.TypeInt,
@@ -223,6 +224,7 @@ Only IPv4 is supported.`,
 If provided, the VPN tunnel will automatically use the same vpn_gateway_interface
 ID in the peer GCP VPN gateway.
 This field must reference a 'google_compute_ha_vpn_gateway' resource.`,
+				ConflictsWith: []string{"peer_external_gateway"},
 			},
 			"peer_ip": {
 				Type:         schema.TypeString,
@@ -632,7 +634,6 @@ func resourceComputeVpnTunnelUpdate(d *schema.ResourceData, meta interface{}) er
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -697,7 +698,6 @@ func resourceComputeVpnTunnelDelete(d *schema.ResourceData, meta interface{}) er
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

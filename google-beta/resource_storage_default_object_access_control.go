@@ -248,7 +248,6 @@ func resourceStorageDefaultObjectAccessControlUpdate(d *schema.ResourceData, met
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -315,7 +314,6 @@ func resourceStorageDefaultObjectAccessControlDelete(d *schema.ResourceData, met
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

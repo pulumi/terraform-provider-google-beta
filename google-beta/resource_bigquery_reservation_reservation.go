@@ -191,7 +191,6 @@ func resourceBigqueryReservationReservationUpdate(d *schema.ResourceData, meta i
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -260,7 +259,6 @@ func resourceBigqueryReservationReservationDelete(d *schema.ResourceData, meta i
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

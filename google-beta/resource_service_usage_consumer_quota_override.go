@@ -251,7 +251,6 @@ func resourceServiceUsageConsumerQuotaOverrideUpdate(d *schema.ResourceData, met
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -307,7 +306,6 @@ func resourceServiceUsageConsumerQuotaOverrideDelete(d *schema.ResourceData, met
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

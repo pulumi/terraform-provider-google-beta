@@ -184,7 +184,6 @@ func resourceGameServicesGameServerDeploymentRolloutUpdate(d *schema.ResourceDat
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -261,7 +260,6 @@ func resourceGameServicesGameServerDeploymentRolloutDelete(d *schema.ResourceDat
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

@@ -484,6 +484,29 @@ func TestAccProviderBasePath_setInvalidBasePath(t *testing.T) {
 	})
 }
 
+func TestAccProviderMeta_setModuleName(t *testing.T) {
+	// not expected to succeed yet. see https://github.com/hashicorp/terraform-provider-google/issues/7370
+	skipIfVcr(t)
+	t.Parallel()
+
+	moduleName := "my-module"
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckComputeAddressDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccProviderMeta_setModuleName(moduleName, randString(t, 10)),
+			},
+			{
+				ResourceName:      "google_compute_address.default",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
 func TestAccProviderUserProjectOverride(t *testing.T) {
 	// Parallel fine-grained resource creation
 	skipIfVcr(t)

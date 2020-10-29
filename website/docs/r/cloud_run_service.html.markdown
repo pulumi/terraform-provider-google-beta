@@ -571,6 +571,7 @@ is also set.
 (For legacy support, if `template.metadata.name` is unset in state while
 this field is set to false, the revision name will still autogenerate.)
 
+
 The `metadata` block supports:
 
 * `labels` -
@@ -674,6 +675,7 @@ This resource provides the following
 - `delete` - Default is 4 minutes.
 
 ## Import
+
 
 Service can be imported using any of these accepted formats:
 

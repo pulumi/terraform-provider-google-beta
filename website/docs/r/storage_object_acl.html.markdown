@@ -64,3 +64,7 @@ Must be set if `predefined_acl` is not.
 ## Attributes Reference
 
 Only the arguments listed above are exposed as attributes.
+
+## Import
+
+This resource does not support import.

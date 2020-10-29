@@ -42,9 +42,9 @@ To get more information about ServicePerimeter, see:
     * [Service Perimeter Quickstart](https://cloud.google.com/vpc-service-controls/docs/quickstart)
 
 ~> **Warning:** If you are using User ADCs (Application Default Credentials) with this resource,
-you must specify a `billing_project` and set `user_project_override` to true 
-in the provider configuration. Otherwise the ACM API will return a 403 error. 
-Your account must have the `serviceusage.services.use` permission on the 
+you must specify a `billing_project` and set `user_project_override` to true
+in the provider configuration. Otherwise the ACM API will return a 403 error.
+Your account must have the `serviceusage.services.use` permission on the
 `billing_project` you defined.
 
 ## Example Usage - Access Context Manager Service Perimeter Basic
@@ -308,6 +308,7 @@ This resource provides the following
 - `delete` - Default is 6 minutes.
 
 ## Import
+
 
 ServicePerimeter can be imported using any of these accepted formats:
 

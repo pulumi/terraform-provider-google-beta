@@ -284,6 +284,7 @@ The following arguments are supported:
     If it is not provided, the provider project is used.
 
 * `force_destroy` - (Optional) Set this true to delete all records in the zone.
+
 The `dnssec_config` block supports:
 
 * `kind` -
@@ -428,6 +429,7 @@ This resource provides the following
 - `delete` - Default is 4 minutes.
 
 ## Import
+
 
 ManagedZone can be imported using any of these accepted formats:
 

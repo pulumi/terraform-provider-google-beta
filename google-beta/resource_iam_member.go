@@ -169,12 +169,6 @@ func resourceIamMemberCreate(newUpdaterFunc newResourceIamUpdaterFunc, enableBat
 	return func(d *schema.ResourceData, meta interface{}) error {
 		config := meta.(*Config)
 
-		userAgent, err := generateUserAgentString(d, config.userAgent)
-		if err != nil {
-			return err
-		}
-		config.userAgent = userAgent
-
 		updater, err := newUpdaterFunc(d, config)
 		if err != nil {
 			return err
@@ -207,11 +201,6 @@ func resourceIamMemberCreate(newUpdaterFunc newResourceIamUpdaterFunc, enableBat
 func resourceIamMemberRead(newUpdaterFunc newResourceIamUpdaterFunc) schema.ReadFunc {
 	return func(d *schema.ResourceData, meta interface{}) error {
 		config := meta.(*Config)
-		userAgent, err := generateUserAgentString(d, config.userAgent)
-		if err != nil {
-			return err
-		}
-		config.userAgent = userAgent
 
 		updater, err := newUpdaterFunc(d, config)
 		if err != nil {
@@ -274,11 +263,6 @@ func resourceIamMemberRead(newUpdaterFunc newResourceIamUpdaterFunc) schema.Read
 func resourceIamMemberDelete(newUpdaterFunc newResourceIamUpdaterFunc, enableBatching bool) schema.DeleteFunc {
 	return func(d *schema.ResourceData, meta interface{}) error {
 		config := meta.(*Config)
-		userAgent, err := generateUserAgentString(d, config.userAgent)
-		if err != nil {
-			return err
-		}
-		config.userAgent = userAgent
 
 		updater, err := newUpdaterFunc(d, config)
 		if err != nil {

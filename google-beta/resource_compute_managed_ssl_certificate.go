@@ -286,7 +286,6 @@ func resourceComputeManagedSslCertificateDelete(d *schema.ResourceData, meta int
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

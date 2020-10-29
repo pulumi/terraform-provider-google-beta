@@ -305,7 +305,6 @@ func resourceCloudIdentityGroupMembershipUpdate(d *schema.ResourceData, meta int
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -359,7 +358,6 @@ func resourceCloudIdentityGroupMembershipDelete(d *schema.ResourceData, meta int
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

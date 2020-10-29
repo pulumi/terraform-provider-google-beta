@@ -366,7 +366,6 @@ func resourceCloudTasksQueueUpdate(d *schema.ResourceData, meta interface{}) err
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -455,7 +454,6 @@ func resourceCloudTasksQueueDelete(d *schema.ResourceData, meta interface{}) err
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

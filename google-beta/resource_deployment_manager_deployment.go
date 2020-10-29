@@ -362,7 +362,6 @@ func resourceDeploymentManagerDeploymentUpdate(d *schema.ResourceData, meta inte
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -494,7 +493,6 @@ func resourceDeploymentManagerDeploymentDelete(d *schema.ResourceData, meta inte
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

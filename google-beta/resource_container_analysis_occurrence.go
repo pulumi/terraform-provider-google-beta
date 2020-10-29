@@ -329,7 +329,6 @@ func resourceContainerAnalysisOccurrenceUpdate(d *schema.ResourceData, meta inte
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -410,7 +409,6 @@ func resourceContainerAnalysisOccurrenceDelete(d *schema.ResourceData, meta inte
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

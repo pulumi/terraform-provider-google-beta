@@ -238,7 +238,6 @@ func resourceDatastoreIndexDelete(d *schema.ResourceData, meta interface{}) erro
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

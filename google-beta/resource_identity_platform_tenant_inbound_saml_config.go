@@ -287,7 +287,6 @@ func resourceIdentityPlatformTenantInboundSamlConfigUpdate(d *schema.ResourceDat
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -376,7 +375,6 @@ func resourceIdentityPlatformTenantInboundSamlConfigDelete(d *schema.ResourceDat
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

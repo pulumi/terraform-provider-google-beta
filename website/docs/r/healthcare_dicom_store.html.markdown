@@ -132,6 +132,7 @@ This resource provides the following
 
 ## Import
 
+
 DicomStore can be imported using any of these accepted formats:
 
 ```

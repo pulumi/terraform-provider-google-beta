@@ -631,12 +631,12 @@ func resourceAppEngineStandardAppVersionRead(d *schema.ResourceData, meta interf
 	}
 
 	// Explicitly set virtual fields to default values if unset
-	if _, ok := d.GetOk("noop_on_destroy"); !ok {
+	if _, ok := d.GetOkExists("noop_on_destroy"); !ok {
 		if err := d.Set("noop_on_destroy", false); err != nil {
 			return fmt.Errorf("Error setting noop_on_destroy: %s", err)
 		}
 	}
-	if _, ok := d.GetOk("delete_service_on_destroy"); !ok {
+	if _, ok := d.GetOkExists("delete_service_on_destroy"); !ok {
 		if err := d.Set("delete_service_on_destroy", false); err != nil {
 			return fmt.Errorf("Error setting delete_service_on_destroy: %s", err)
 		}
@@ -692,7 +692,6 @@ func resourceAppEngineStandardAppVersionUpdate(d *schema.ResourceData, meta inte
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -839,7 +838,6 @@ func resourceAppEngineStandardAppVersionDelete(d *schema.ResourceData, meta inte
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	if d.Get("noop_on_destroy") == true {
 		log.Printf("[DEBUG] Keeping the AppVersion %q", d.Id())

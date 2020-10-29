@@ -44,7 +44,7 @@ To get more information about MachineImage, see:
 resource "google_compute_instance" "vm" {
   provider     = google-beta
   name         = "vm"
-  machine_type = "n1-standard-1"
+  machine_type = "e2-medium"
 
   boot_disk {
     initialize_params {
@@ -107,6 +107,7 @@ This resource provides the following
 - `delete` - Default is 4 minutes.
 
 ## Import
+
 
 MachineImage can be imported using any of these accepted formats:
 

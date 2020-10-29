@@ -523,7 +523,6 @@ func resourceDataLossPreventionInspectTemplateUpdate(d *schema.ResourceData, met
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -601,7 +600,6 @@ func resourceDataLossPreventionInspectTemplateDelete(d *schema.ResourceData, met
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

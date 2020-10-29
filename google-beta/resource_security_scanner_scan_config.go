@@ -396,7 +396,6 @@ func resourceSecurityScannerScanConfigUpdate(d *schema.ResourceData, meta interf
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -535,7 +534,6 @@ func resourceSecurityScannerScanConfigDelete(d *schema.ResourceData, meta interf
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

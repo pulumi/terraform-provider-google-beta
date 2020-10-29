@@ -187,7 +187,6 @@ func resourceNotebooksLocationUpdate(d *schema.ResourceData, meta interface{}) e
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -243,7 +242,6 @@ func resourceNotebooksLocationDelete(d *schema.ResourceData, meta interface{}) e
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

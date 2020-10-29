@@ -230,7 +230,6 @@ func resourceSecretManagerSecretVersionDelete(d *schema.ResourceData, meta inter
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

@@ -41,6 +41,19 @@ func Provider() *schema.Provider {
 				}, nil),
 				ConflictsWith: []string{"credentials"},
 			},
+			"impersonate_service_account": {
+				Type:     schema.TypeString,
+				Optional: true,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_IMPERSONATE_SERVICE_ACCOUNT",
+				}, nil),
+			},
+
+			"impersonate_service_account_delegates": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 
 			"project": {
 				Type:     schema.TypeString,
@@ -402,6 +415,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_HEALTHCARE_CUSTOM_ENDPOINT",
 				}, HealthcareDefaultBasePath),
 			},
+			"iam_beta_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_IAM_BETA_CUSTOM_ENDPOINT",
+				}, IAMBetaDefaultBasePath),
+			},
 			"iap_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -708,6 +729,7 @@ func Provider() *schema.Provider {
 			"google_service_account_access_token":                 dataSourceGoogleServiceAccountAccessToken(),
 			"google_service_account_id_token":                     dataSourceGoogleServiceAccountIdToken(),
 			"google_service_account_key":                          dataSourceGoogleServiceAccountKey(),
+			"google_spanner_instance":                             dataSourceSpannerInstance(),
 			"google_sql_ca_certs":                                 dataSourceGoogleSQLCaCerts(),
 			"google_sql_database_instance":                        dataSourceSqlDatabaseInstance(),
 			"google_storage_bucket_object":                        dataSourceGoogleStorageBucketObject(),
@@ -728,9 +750,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 191
-// Generated IAM resources: 78
-// Total generated resources: 269
+// Generated resources: 196
+// Generated IAM resources: 87
+// Total generated resources: 283
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -745,6 +767,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_access_context_manager_access_policy":                  resourceAccessContextManagerAccessPolicy(),
 			"google_access_context_manager_access_level":                   resourceAccessContextManagerAccessLevel(),
 			"google_access_context_manager_access_levels":                  resourceAccessContextManagerAccessLevels(),
+			"google_access_context_manager_access_level_condition":         resourceAccessContextManagerAccessLevelCondition(),
 			"google_access_context_manager_service_perimeter":              resourceAccessContextManagerServicePerimeter(),
 			"google_access_context_manager_service_perimeters":             resourceAccessContextManagerServicePerimeters(),
 			"google_access_context_manager_service_perimeter_resource":     resourceAccessContextManagerServicePerimeterResource(),
@@ -766,6 +789,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_bigquery_table_iam_binding":                            ResourceIamBinding(BigQueryTableIamSchema, BigQueryTableIamUpdaterProducer, BigQueryTableIdParseFunc),
 			"google_bigquery_table_iam_member":                             ResourceIamMember(BigQueryTableIamSchema, BigQueryTableIamUpdaterProducer, BigQueryTableIdParseFunc),
 			"google_bigquery_table_iam_policy":                             ResourceIamPolicy(BigQueryTableIamSchema, BigQueryTableIamUpdaterProducer, BigQueryTableIdParseFunc),
+			"google_bigquery_routine":                                      resourceBigQueryRoutine(),
 			"google_bigquery_connection":                                   resourceBigqueryConnectionConnection(),
 			"google_bigquery_data_transfer_config":                         resourceBigqueryDataTransferConfig(),
 			"google_bigquery_reservation":                                  resourceBigqueryReservationReservation(),
@@ -883,6 +907,14 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_data_catalog_entry":                                    resourceDataCatalogEntry(),
 			"google_data_catalog_tag_template":                             resourceDataCatalogTagTemplate(),
 			"google_data_catalog_tag":                                      resourceDataCatalogTag(),
+			"google_data_catalog_taxonomy":                                 resourceDataCatalogTaxonomy(),
+			"google_data_catalog_taxonomy_iam_binding":                     ResourceIamBinding(DataCatalogTaxonomyIamSchema, DataCatalogTaxonomyIamUpdaterProducer, DataCatalogTaxonomyIdParseFunc),
+			"google_data_catalog_taxonomy_iam_member":                      ResourceIamMember(DataCatalogTaxonomyIamSchema, DataCatalogTaxonomyIamUpdaterProducer, DataCatalogTaxonomyIdParseFunc),
+			"google_data_catalog_taxonomy_iam_policy":                      ResourceIamPolicy(DataCatalogTaxonomyIamSchema, DataCatalogTaxonomyIamUpdaterProducer, DataCatalogTaxonomyIdParseFunc),
+			"google_data_catalog_policy_tag":                               resourceDataCatalogPolicyTag(),
+			"google_data_catalog_policy_tag_iam_binding":                   ResourceIamBinding(DataCatalogPolicyTagIamSchema, DataCatalogPolicyTagIamUpdaterProducer, DataCatalogPolicyTagIdParseFunc),
+			"google_data_catalog_policy_tag_iam_member":                    ResourceIamMember(DataCatalogPolicyTagIamSchema, DataCatalogPolicyTagIamUpdaterProducer, DataCatalogPolicyTagIdParseFunc),
+			"google_data_catalog_policy_tag_iam_policy":                    ResourceIamPolicy(DataCatalogPolicyTagIamSchema, DataCatalogPolicyTagIamUpdaterProducer, DataCatalogPolicyTagIdParseFunc),
 			"google_data_fusion_instance":                                  resourceDataFusionInstance(),
 			"google_data_loss_prevention_job_trigger":                      resourceDataLossPreventionJobTrigger(),
 			"google_data_loss_prevention_inspect_template":                 resourceDataLossPreventionInspectTemplate(),
@@ -910,6 +942,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_healthcare_dicom_store":                                resourceHealthcareDicomStore(),
 			"google_healthcare_fhir_store":                                 resourceHealthcareFhirStore(),
 			"google_healthcare_hl7_v2_store":                               resourceHealthcareHl7V2Store(),
+			"google_iam_workload_identity_pool":                            resourceIAMBetaWorkloadIdentityPool(),
 			"google_iap_web_iam_binding":                                   ResourceIamBinding(IapWebIamSchema, IapWebIamUpdaterProducer, IapWebIdParseFunc),
 			"google_iap_web_iam_member":                                    ResourceIamMember(IapWebIamSchema, IapWebIamUpdaterProducer, IapWebIdParseFunc),
 			"google_iap_web_iam_policy":                                    ResourceIamPolicy(IapWebIamSchema, IapWebIamUpdaterProducer, IapWebIdParseFunc),
@@ -957,6 +990,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_network_management_connectivity_test":                  resourceNetworkManagementConnectivityTest(),
 			"google_notebooks_environment":                                 resourceNotebooksEnvironment(),
 			"google_notebooks_instance":                                    resourceNotebooksInstance(),
+			"google_notebooks_instance_iam_binding":                        ResourceIamBinding(NotebooksInstanceIamSchema, NotebooksInstanceIamUpdaterProducer, NotebooksInstanceIdParseFunc),
+			"google_notebooks_instance_iam_member":                         ResourceIamMember(NotebooksInstanceIamSchema, NotebooksInstanceIamUpdaterProducer, NotebooksInstanceIdParseFunc),
+			"google_notebooks_instance_iam_policy":                         ResourceIamPolicy(NotebooksInstanceIamSchema, NotebooksInstanceIamUpdaterProducer, NotebooksInstanceIdParseFunc),
 			"google_notebooks_location":                                    resourceNotebooksLocation(),
 			"google_os_config_patch_deployment":                            resourceOSConfigPatchDeployment(),
 			"google_os_config_guest_policies":                              resourceOSConfigGuestPolicies(),
@@ -1167,6 +1203,9 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	} else if v, ok := d.GetOk("credentials"); ok {
 		config.Credentials = v.(string)
 	}
+	if v, ok := d.GetOk("impersonate_service_account"); ok {
+		config.ImpersonateServiceAccount = v.(string)
+	}
 
 	scopes := d.Get("scopes").([]interface{})
 	if len(scopes) > 0 {
@@ -1174,6 +1213,14 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	}
 	for i, scope := range scopes {
 		config.Scopes[i] = scope.(string)
+	}
+
+	delegates := d.Get("impersonate_service_account_delegates").([]interface{})
+	if len(delegates) > 0 {
+		config.ImpersonateServiceAccountDelegates = make([]string, len(delegates))
+	}
+	for i, delegate := range delegates {
+		config.ImpersonateServiceAccountDelegates[i] = delegate.(string)
 	}
 
 	batchCfg, err := expandProviderBatchingConfig(d.Get("batching"))
@@ -1218,6 +1265,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.FirestoreBasePath = d.Get("firestore_custom_endpoint").(string)
 	config.GameServicesBasePath = d.Get("game_services_custom_endpoint").(string)
 	config.HealthcareBasePath = d.Get("healthcare_custom_endpoint").(string)
+	config.IAMBetaBasePath = d.Get("iam_beta_custom_endpoint").(string)
 	config.IapBasePath = d.Get("iap_custom_endpoint").(string)
 	config.IdentityPlatformBasePath = d.Get("identity_platform_custom_endpoint").(string)
 	config.KMSBasePath = d.Get("kms_custom_endpoint").(string)

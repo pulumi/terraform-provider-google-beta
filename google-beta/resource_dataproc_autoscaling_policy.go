@@ -374,7 +374,6 @@ func resourceDataprocAutoscalingPolicyUpdate(d *schema.ResourceData, meta interf
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -440,7 +439,6 @@ func resourceDataprocAutoscalingPolicyDelete(d *schema.ResourceData, meta interf
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

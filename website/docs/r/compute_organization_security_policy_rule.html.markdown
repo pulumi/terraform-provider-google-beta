@@ -205,6 +205,7 @@ This resource provides the following
 
 ## Import
 
+
 OrganizationSecurityPolicyRule can be imported using any of these accepted formats:
 
 ```

@@ -137,12 +137,6 @@ func resourceIamAuditConfigCreateUpdate(newUpdaterFunc newResourceIamUpdaterFunc
 	return func(d *schema.ResourceData, meta interface{}) error {
 		config := meta.(*Config)
 
-		userAgent, err := generateUserAgentString(d, config.userAgent)
-		if err != nil {
-			return err
-		}
-		config.userAgent = userAgent
-
 		updater, err := newUpdaterFunc(d, config)
 		if err != nil {
 			return err
@@ -171,11 +165,7 @@ func resourceIamAuditConfigCreateUpdate(newUpdaterFunc newResourceIamUpdaterFunc
 func resourceIamAuditConfigDelete(newUpdaterFunc newResourceIamUpdaterFunc, enableBatching bool) schema.DeleteFunc {
 	return func(d *schema.ResourceData, meta interface{}) error {
 		config := meta.(*Config)
-		userAgent, err := generateUserAgentString(d, config.userAgent)
-		if err != nil {
-			return err
-		}
-		config.userAgent = userAgent
+
 		updater, err := newUpdaterFunc(d, config)
 		if err != nil {
 			return err

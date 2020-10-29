@@ -521,7 +521,6 @@ func resourceComputeSubnetworkUpdate(d *schema.ResourceData, meta interface{}) e
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -767,7 +766,6 @@ func resourceComputeSubnetworkDelete(d *schema.ResourceData, meta interface{}) e
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

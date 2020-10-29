@@ -130,7 +130,7 @@ func computePerInstanceConfigPreservedStateDiskSchema() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"NEVER", "ON_PERMANENT_INSTANCE_DELETION", ""}, false),
 				Description: `A value that prescribes what should happen to the stateful disk when the VM instance is deleted.
 The available options are 'NEVER' and 'ON_PERMANENT_INSTANCE_DELETION'.
-'NEVER' detatch the disk when the VM is deleted, but not delete the disk.
+'NEVER' - detach the disk when the VM is deleted, but do not delete the disk.
 'ON_PERMANENT_INSTANCE_DELETION' will delete the stateful disk when the VM is permanently
 deleted from the instance group. Default value: "NEVER" Possible values: ["NEVER", "ON_PERMANENT_INSTANCE_DELETION"]`,
 				Default: "NEVER",
@@ -270,17 +270,17 @@ func resourceComputePerInstanceConfigRead(d *schema.ResourceData, meta interface
 	}
 
 	// Explicitly set virtual fields to default values if unset
-	if _, ok := d.GetOk("minimal_action"); !ok {
+	if _, ok := d.GetOkExists("minimal_action"); !ok {
 		if err := d.Set("minimal_action", "NONE"); err != nil {
 			return fmt.Errorf("Error setting minimal_action: %s", err)
 		}
 	}
-	if _, ok := d.GetOk("most_disruptive_allowed_action"); !ok {
+	if _, ok := d.GetOkExists("most_disruptive_allowed_action"); !ok {
 		if err := d.Set("most_disruptive_allowed_action", "REPLACE"); err != nil {
 			return fmt.Errorf("Error setting most_disruptive_allowed_action: %s", err)
 		}
 	}
-	if _, ok := d.GetOk("remove_instance_state_on_destroy"); !ok {
+	if _, ok := d.GetOkExists("remove_instance_state_on_destroy"); !ok {
 		if err := d.Set("remove_instance_state_on_destroy", false); err != nil {
 			return fmt.Errorf("Error setting remove_instance_state_on_destroy: %s", err)
 		}
@@ -306,7 +306,6 @@ func resourceComputePerInstanceConfigUpdate(d *schema.ResourceData, meta interfa
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -420,7 +419,6 @@ func resourceComputePerInstanceConfigDelete(d *schema.ResourceData, meta interfa
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	project, err := getProject(d, config)
 	if err != nil {

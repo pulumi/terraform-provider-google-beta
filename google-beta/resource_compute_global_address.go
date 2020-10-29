@@ -386,7 +386,6 @@ func resourceComputeGlobalAddressUpdate(d *schema.ResourceData, meta interface{}
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -451,7 +450,6 @@ func resourceComputeGlobalAddressDelete(d *schema.ResourceData, meta interface{}
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

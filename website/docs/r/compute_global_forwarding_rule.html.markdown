@@ -183,7 +183,7 @@ resource "google_compute_instance_group_manager" "igm" {
 resource "google_compute_instance_template" "instance_template" {
   provider     = google-beta
   name         = "template-backend"
-  machine_type = "n1-standard-1"
+  machine_type = "e2-medium"
 
   network_interface {
     network = "default"
@@ -392,6 +392,7 @@ This resource provides the following
 - `delete` - Default is 4 minutes.
 
 ## Import
+
 
 GlobalForwardingRule can be imported using any of these accepted formats:
 

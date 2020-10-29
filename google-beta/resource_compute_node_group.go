@@ -314,7 +314,6 @@ func resourceComputeNodeGroupUpdate(d *schema.ResourceData, meta interface{}) er
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -373,7 +372,6 @@ func resourceComputeNodeGroupDelete(d *schema.ResourceData, meta interface{}) er
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

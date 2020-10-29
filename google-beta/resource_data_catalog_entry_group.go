@@ -207,7 +207,6 @@ func resourceDataCatalogEntryGroupUpdate(d *schema.ResourceData, meta interface{
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -276,7 +275,6 @@ func resourceDataCatalogEntryGroupDelete(d *schema.ResourceData, meta interface{
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

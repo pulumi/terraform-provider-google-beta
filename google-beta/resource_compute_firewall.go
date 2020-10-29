@@ -619,7 +619,6 @@ func resourceComputeFirewallUpdate(d *schema.ResourceData, meta interface{}) err
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -747,7 +746,6 @@ func resourceComputeFirewallDelete(d *schema.ResourceData, meta interface{}) err
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

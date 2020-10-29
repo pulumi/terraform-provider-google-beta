@@ -103,6 +103,7 @@ This resource provides the following
 
 ## Import
 
+
 OrganizationSecurityPolicy can be imported using any of these accepted formats:
 
 ```

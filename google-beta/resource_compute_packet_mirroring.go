@@ -370,7 +370,6 @@ func resourceComputePacketMirroringUpdate(d *schema.ResourceData, meta interface
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -462,7 +461,6 @@ func resourceComputePacketMirroringDelete(d *schema.ResourceData, meta interface
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

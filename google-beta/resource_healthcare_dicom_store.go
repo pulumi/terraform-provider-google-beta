@@ -219,7 +219,6 @@ func resourceHealthcareDicomStoreUpdate(d *schema.ResourceData, meta interface{}
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -282,7 +281,6 @@ func resourceHealthcareDicomStoreDelete(d *schema.ResourceData, meta interface{}
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

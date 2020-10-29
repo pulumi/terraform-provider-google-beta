@@ -378,7 +378,6 @@ func resourceComputeOrganizationSecurityPolicyRuleUpdate(d *schema.ResourceData,
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -492,7 +491,6 @@ func resourceComputeOrganizationSecurityPolicyRuleDelete(d *schema.ResourceData,
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

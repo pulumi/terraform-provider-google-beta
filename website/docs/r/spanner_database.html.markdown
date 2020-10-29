@@ -54,6 +54,7 @@ resource "google_spanner_database" "database" {
     "CREATE TABLE t1 (t1 INT64 NOT NULL,) PRIMARY KEY(t1)",
     "CREATE TABLE t2 (t2 INT64 NOT NULL,) PRIMARY KEY(t2)",
   ]
+  deletion_protection = false
 }
 ```
 
@@ -85,6 +86,9 @@ The following arguments are supported:
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.
 
+* `deletion_protection` - (Optional) Whether or not to allow Terraform to destroy the instance. Unless this field is set to false
+in Terraform state, a `terraform destroy` or `terraform apply` that would delete the instance will fail.
+
 
 ## Attributes Reference
 
@@ -106,6 +110,7 @@ This resource provides the following
 - `delete` - Default is 4 minutes.
 
 ## Import
+
 
 Database can be imported using any of these accepted formats:
 

@@ -68,7 +68,7 @@ resource "google_compute_instance_template" "default" {
   provider = google-beta
 
   name           = "my-instance-template"
-  machine_type   = "n1-standard-1"
+  machine_type   = "e2-medium"
   can_ip_forward = false
 
   tags = ["foo", "bar"]
@@ -150,7 +150,7 @@ resource "google_compute_autoscaler" "foobar" {
 
 resource "google_compute_instance_template" "foobar" {
   name           = "my-instance-template"
-  machine_type   = "n1-standard-1"
+  machine_type   = "e2-medium"
   can_ip_forward = false
 
   tags = ["foo", "bar"]
@@ -437,6 +437,7 @@ This resource provides the following
 - `delete` - Default is 4 minutes.
 
 ## Import
+
 
 Autoscaler can be imported using any of these accepted formats:
 

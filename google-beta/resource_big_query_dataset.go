@@ -427,7 +427,7 @@ func resourceBigQueryDatasetRead(d *schema.ResourceData, meta interface{}) error
 	}
 
 	// Explicitly set virtual fields to default values if unset
-	if _, ok := d.GetOk("delete_contents_on_destroy"); !ok {
+	if _, ok := d.GetOkExists("delete_contents_on_destroy"); !ok {
 		if err := d.Set("delete_contents_on_destroy", false); err != nil {
 			return fmt.Errorf("Error setting delete_contents_on_destroy: %s", err)
 		}
@@ -498,7 +498,6 @@ func resourceBigQueryDatasetUpdate(d *schema.ResourceData, meta interface{}) err
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 
@@ -594,7 +593,6 @@ func resourceBigQueryDatasetDelete(d *schema.ResourceData, meta interface{}) err
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

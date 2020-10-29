@@ -258,7 +258,6 @@ func resourceSQLSourceRepresentationInstanceDelete(d *schema.ResourceData, meta 
 	if err != nil {
 		return err
 	}
-	config.userAgent = userAgent
 
 	billingProject := ""
 

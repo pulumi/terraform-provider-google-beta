@@ -185,6 +185,7 @@ The following arguments are supported:
 dataset when destroying the resource; otherwise,
 destroying the resource will fail if tables are present.
 
+
 The `access` block supports:
 
 * `domain` -
@@ -284,6 +285,7 @@ This resource provides the following
 - `delete` - Default is 4 minutes.
 
 ## Import
+
 
 Dataset can be imported using any of these accepted formats:
 
