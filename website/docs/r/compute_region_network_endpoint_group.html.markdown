@@ -41,7 +41,6 @@ To get more information about RegionNetworkEndpointGroup, see:
 ```hcl
 // Cloud Functions Example
 resource "google_compute_region_network_endpoint_group" "function_neg" {
-  provider              = google-beta
   name                  = "function-neg"
   network_endpoint_type = "SERVERLESS"
   region                = "us-central1"
@@ -51,7 +50,6 @@ resource "google_compute_region_network_endpoint_group" "function_neg" {
 }
 
 resource "google_cloudfunctions_function" "function_neg" {
-  provider    = google-beta
   name        = "function-neg"
   description = "My function"
   runtime     = "nodejs10"
@@ -65,12 +63,10 @@ resource "google_cloudfunctions_function" "function_neg" {
 }
 
 resource "google_storage_bucket" "bucket" {
-  provider   = google-beta
   name       = "cloudfunctions-function-example-bucket"
 }
 
 resource "google_storage_bucket_object" "archive" {
-  provider   = google-beta
   name       = "index.zip"
   bucket     = google_storage_bucket.bucket.name
   source     = "path/to/index.zip"
@@ -87,7 +83,6 @@ resource "google_storage_bucket_object" "archive" {
 ```hcl
 // Cloud Run Example
 resource "google_compute_region_network_endpoint_group" "cloudrun_neg" {
-  provider              = google-beta
   name                  = "cloudrun-neg"
   network_endpoint_type = "SERVERLESS"
   region                = "us-central1"
@@ -97,7 +92,6 @@ resource "google_compute_region_network_endpoint_group" "cloudrun_neg" {
 }
 
 resource "google_cloud_run_service" "cloudrun_neg" {
-  provider = google-beta
   name     = "cloudrun-neg"
   location = "us-central1"
 
@@ -126,7 +120,6 @@ resource "google_cloud_run_service" "cloudrun_neg" {
 ```hcl
 // App Engine Example
 resource "google_compute_region_network_endpoint_group" "appengine_neg" {
-  provider              = google-beta
   name                  = "appengine-neg"
   network_endpoint_type = "SERVERLESS"
   region                = "us-central1"
@@ -137,7 +130,6 @@ resource "google_compute_region_network_endpoint_group" "appengine_neg" {
 }
 
 resource "google_app_engine_flexible_app_version" "appengine_neg" {
-  provider   = google-beta
   version_id = "v1"
   service    = "default"
   runtime    = "nodejs"
@@ -187,12 +179,10 @@ resource "google_app_engine_flexible_app_version" "appengine_neg" {
 }
 
 resource "google_storage_bucket" "appengine_neg" {
-  provider   = google-beta
   name       = "appengine-neg"
 }
 
 resource "google_storage_bucket_object" "appengine_neg" {
-  provider  = google-beta
   name      = "hello-world.zip"
   bucket    = google_storage_bucket.appengine_neg.name
   source    = "./test-fixtures/appengine/hello-world.zip"
