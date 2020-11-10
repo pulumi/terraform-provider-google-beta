@@ -1031,7 +1031,7 @@ func resourceAppEngineFlexibleAppVersionCreate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for FlexibleAppVersion: %s", err)
 	}
 	billingProject = project
 
@@ -1084,7 +1084,7 @@ func resourceAppEngineFlexibleAppVersionRead(d *schema.ResourceData, meta interf
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for FlexibleAppVersion: %s", err)
 	}
 	billingProject = project
 
@@ -1192,7 +1192,7 @@ func resourceAppEngineFlexibleAppVersionUpdate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for FlexibleAppVersion: %s", err)
 	}
 	billingProject = project
 

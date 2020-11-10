@@ -175,7 +175,7 @@ func resourceBigqueryConnectionConnectionCreate(d *schema.ResourceData, meta int
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Connection: %s", err)
 	}
 	billingProject = project
 
@@ -221,7 +221,7 @@ func resourceBigqueryConnectionConnectionRead(d *schema.ResourceData, meta inter
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Connection: %s", err)
 	}
 	billingProject = project
 
@@ -270,7 +270,7 @@ func resourceBigqueryConnectionConnectionUpdate(d *schema.ResourceData, meta int
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Connection: %s", err)
 	}
 	billingProject = project
 
@@ -348,7 +348,7 @@ func resourceBigqueryConnectionConnectionDelete(d *schema.ResourceData, meta int
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Connection: %s", err)
 	}
 	billingProject = project
 

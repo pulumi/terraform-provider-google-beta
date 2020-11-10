@@ -239,7 +239,7 @@ func resourceComputeAddressCreate(d *schema.ResourceData, meta interface{}) erro
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Address: %s", err)
 	}
 	billingProject = project
 
@@ -328,7 +328,7 @@ func resourceComputeAddressRead(d *schema.ResourceData, meta interface{}) error 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Address: %s", err)
 	}
 	billingProject = project
 
@@ -401,7 +401,7 @@ func resourceComputeAddressUpdate(d *schema.ResourceData, meta interface{}) erro
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Address: %s", err)
 	}
 	billingProject = project
 
@@ -465,7 +465,7 @@ func resourceComputeAddressDelete(d *schema.ResourceData, meta interface{}) erro
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Address: %s", err)
 	}
 	billingProject = project
 

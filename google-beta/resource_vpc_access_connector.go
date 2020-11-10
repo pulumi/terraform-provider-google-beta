@@ -156,7 +156,7 @@ func resourceVPCAccessConnectorCreate(d *schema.ResourceData, meta interface{}) 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Connector: %s", err)
 	}
 	billingProject = project
 
@@ -235,7 +235,7 @@ func resourceVPCAccessConnectorRead(d *schema.ResourceData, meta interface{}) er
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Connector: %s", err)
 	}
 	billingProject = project
 
@@ -299,7 +299,7 @@ func resourceVPCAccessConnectorDelete(d *schema.ResourceData, meta interface{}) 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Connector: %s", err)
 	}
 	billingProject = project
 

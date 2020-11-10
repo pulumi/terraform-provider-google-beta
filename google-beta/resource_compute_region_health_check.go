@@ -690,7 +690,7 @@ func resourceComputeRegionHealthCheckCreate(d *schema.ResourceData, meta interfa
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionHealthCheck: %s", err)
 	}
 	billingProject = project
 
@@ -743,7 +743,7 @@ func resourceComputeRegionHealthCheckRead(d *schema.ResourceData, meta interface
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionHealthCheck: %s", err)
 	}
 	billingProject = project
 
@@ -828,7 +828,7 @@ func resourceComputeRegionHealthCheckUpdate(d *schema.ResourceData, meta interfa
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionHealthCheck: %s", err)
 	}
 	billingProject = project
 
@@ -966,7 +966,7 @@ func resourceComputeRegionHealthCheckDelete(d *schema.ResourceData, meta interfa
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionHealthCheck: %s", err)
 	}
 	billingProject = project
 

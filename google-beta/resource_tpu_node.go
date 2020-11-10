@@ -299,7 +299,7 @@ func resourceTPUNodeCreate(d *schema.ResourceData, meta interface{}) error {
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Node: %s", err)
 	}
 	billingProject = project
 
@@ -365,7 +365,7 @@ func resourceTPUNodeRead(d *schema.ResourceData, meta interface{}) error {
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Node: %s", err)
 	}
 	billingProject = project
 
@@ -432,7 +432,7 @@ func resourceTPUNodeUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Node: %s", err)
 	}
 	billingProject = project
 
@@ -490,7 +490,7 @@ func resourceTPUNodeDelete(d *schema.ResourceData, meta interface{}) error {
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Node: %s", err)
 	}
 	billingProject = project
 

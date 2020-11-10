@@ -1,3 +1,21 @@
+## 3.47.0 (November 09, 2020)
+
+FEATURES:
+* **New Data Source:** `google_iam_workload_identity_pool` ([#2663](https://github.com/hashicorp/terraform-provider-google-beta/pull/2663))
+* **New Resource:** `google_iam_workload_identity_pool_provider` ([#2670](https://github.com/hashicorp/terraform-provider-google-beta/pull/2670))
+* **New Resource:** `google_project_default_service_accounts` ([#2668](https://github.com/hashicorp/terraform-provider-google-beta/pull/2668))
+
+IMPROVEMENTS:
+* cloudfunctions: fixed a bug with `google_cloudfunction_function` that blocked updates when Organization Policies are enabled. ([#2681](https://github.com/hashicorp/terraform-provider-google-beta/pull/2681))
+* functions: added 4096 as a valid value for available_memory_mb field of `google_cloudfunction_function` ([#2666](https://github.com/hashicorp/terraform-provider-google-beta/pull/2666))
+* cloudrun: patched `google_cloud_run_service` to suppress Google generated annotations ([#2679](https://github.com/hashicorp/terraform-provider-google-beta/pull/2679))
+
+BUG FIXES:
+* dataflow: removed required validation for zone for `google_data_flow_job` when region is given in the config ([#2662](https://github.com/hashicorp/terraform-provider-google-beta/pull/2662))
+* monitoring: Fixed type of `google_monitoring_slo`'s `range` values - some `range` values are doubles, others are integers. ([#2655](https://github.com/hashicorp/terraform-provider-google-beta/pull/2655))
+* pubsub: Fixed permadiff on push_config.attributes. ([#2672](https://github.com/hashicorp/terraform-provider-google-beta/pull/2672))
+* storage: fixed an issue in `google_storage_bucket` where `lifecycle_rules` were always included in update requests ([#2684](https://github.com/hashicorp/terraform-provider-google-beta/pull/2684))
+
 ## 3.46.0 (November 02, 2020)
 
 NOTES:
@@ -23,7 +41,6 @@ FEATURES:
 * **New Resource:** `google_iap_tunnel_iam_binding` ([#2642](https://github.com/hashicorp/terraform-provider-google-beta/pull/2642))
 * **New Resource:** `google_iap_tunnel_iam_member` ([#2642](https://github.com/hashicorp/terraform-provider-google-beta/pull/2642))
 * **New Resource:** `google_iap_tunnel_iam_policy` ([#2642](https://github.com/hashicorp/terraform-provider-google-beta/pull/2642))
-* **New Resource:** compute: promoted `google_compute_region_network_endpoint_group` to GA ([#2631](https://github.com/hashicorp/terraform-provider-google-beta/pull/2631))
 
 IMPROVEMENTS:
 * asset: added conditions to Cloud Asset Feeds ([#2640](https://github.com/hashicorp/terraform-provider-google-beta/pull/2640))
@@ -32,13 +49,13 @@ IMPROVEMENTS:
 * compute: added `private_ipv6_google_access` field to `google_compute_subnetwork` ([#2649](https://github.com/hashicorp/terraform-provider-google-beta/pull/2649))
 * compute: added storage_locations & cmek fields to `google_compute_machine_image` resource ([#2637](https://github.com/hashicorp/terraform-provider-google-beta/pull/2637))
 * compute: added support for non-destructive updates to `export_custom_routes` and `import_custom_routes` for `google_compute_network_peering` ([#2633](https://github.com/hashicorp/terraform-provider-google-beta/pull/2633))
-* compute: relax `load_balancing_scheme` validation of `google_compute_region_backend_service` to support external network load-balancers ([#2628](https://github.com/hashicorp/terraform-provider-google-beta/pull/2628))
+* compute: relaxed `load_balancing_scheme` validation of `google_compute_region_backend_service` to support external network load-balancers ([#2628](https://github.com/hashicorp/terraform-provider-google-beta/pull/2628))
 * container: added `confidential_nodes` field to `google_container_cluster` resource ([#2632](https://github.com/hashicorp/terraform-provider-google-beta/pull/2632))
 * datacatalog: added taxonomy and policy_tag `google_data_catalog` ([#2626](https://github.com/hashicorp/terraform-provider-google-beta/pull/2626))
 * dlp: added `custom_info_types` to `google_dlp_inspect_template` ([#2648](https://github.com/hashicorp/terraform-provider-google-beta/pull/2648))
 * functions: added `build_environment_variables` field to `google_cloudfunction_function` ([#2629](https://github.com/hashicorp/terraform-provider-google-beta/pull/2629))
 * kms: added `skip_initial_version_creation` to `google_kms_crypto_key` ([#2645](https://github.com/hashicorp/terraform-provider-google-beta/pull/2645))
-* monitoring: Added Monitoring Query Language based alerting for `google_monitoring_alert_policy` ([#2651](https://github.com/hashicorp/terraform-provider-google-beta/pull/2651))
+* monitoring: added Monitoring Query Language based alerting for `google_monitoring_alert_policy` ([#2651](https://github.com/hashicorp/terraform-provider-google-beta/pull/2651))
 
 BUG FIXES:
 * compute: fixed an issue where `google_compute_health_check` `port` values caused a diff when `port_specification` was unset or set to `""` ([#2635](https://github.com/hashicorp/terraform-provider-google-beta/pull/2635))
@@ -46,7 +63,50 @@ BUG FIXES:
 * osconfig: fixed an issue where the `rollout.disruption_budget.percentage` field in `google_os_config_patch_deployment` did not correspond to a field in the API ([#2644](https://github.com/hashicorp/terraform-provider-google-beta/pull/2644))
 * sql: fixed a case in `google_sql_database_instance` where we inadvertently required the `projects.get` permission for a service networking precheck introduced in `v3.44.0` ([#2634](https://github.com/hashicorp/terraform-provider-google-beta/pull/2634))
 
-## 3.45.0 (Unreleased)
+## 3.45.0 (October 28, 2020)
+
+BREAKING CHANGES:
+* pubsub: changing the value of `google_pubsub_subscription.enable_message_ordering` will now recreate the resource. Previously, an error was returned. ([#2624](https://github.com/hashicorp/terraform-provider-google-beta/pull/2624))
+* spanner: `google_spanner_database` resources now cannot be destroyed unless `deletion_protection = false` is set in state for the resource. ([#2612](https://github.com/hashicorp/terraform-provider-google-beta/pull/2612))
+
+NOTES:
+* compute: added a warning to `google_compute_vpn_gateway` ([#2607](https://github.com/hashicorp/terraform-provider-google-beta/pull/2607))
+
+FEATURES:
+* **New Data Source:** `google_spanner_instance` ([#2602](https://github.com/hashicorp/terraform-provider-google-beta/pull/2602))
+* **New Resource:** `google_notebooks_instance_iam_binding` ([#2605](https://github.com/hashicorp/terraform-provider-google-beta/pull/2605))
+* **New Resource:** `google_notebooks_instance_iam_member` ([#2605](https://github.com/hashicorp/terraform-provider-google-beta/pull/2605))
+* **New Resource:** `google_notebooks_instance_iam_policy` ([#2605](https://github.com/hashicorp/terraform-provider-google-beta/pull/2605))
+* **New Resource:** `access_context_manager_access_level_condition` ([#2595](https://github.com/hashicorp/terraform-provider-google-beta/pull/2595))
+* **New Resource:** `google_bigquery_routine` ([#2622](https://github.com/hashicorp/terraform-provider-google-beta/pull/2622))
+* **New Resource:** `google_iam_workload_identity_pool` ([#2623](https://github.com/hashicorp/terraform-provider-google-beta/pull/2623))
+* **New Resource:** `google_data_catalog_taxonomy` ([#2626](https://github.com/hashicorp/terraform-provider-google-beta/pull/2626))
+* **New Resource:** `google_data_catalog_policy_tag` ([#2626](https://github.com/hashicorp/terraform-provider-google-beta/pull/2626))
+* **New Resource:** `google_data_catalog_taxonomy_iam_binding` ([#2626](https://github.com/hashicorp/terraform-provider-google-beta/pull/2626))
+* **New Resource:** `google_data_catalog_taxonomy_iam_member` ([#2626](https://github.com/hashicorp/terraform-provider-google-beta/pull/2626))
+* **New Resource:** `google_data_catalog_taxonomy_iam_policy` ([#2626](https://github.com/hashicorp/terraform-provider-google-beta/pull/2626))
+* **New Resource:** `google_data_catalog_policy_tag_iam_binding` ([#2626](https://github.com/hashicorp/terraform-provider-google-beta/pull/2626))
+* **New Resource:** `google_data_catalog_policy_tag_iam_member` ([#2626](https://github.com/hashicorp/terraform-provider-google-beta/pull/2626))
+* **New Resource:** `google_data_catalog_policy_tag_iam_policy` ([#2626](https://github.com/hashicorp/terraform-provider-google-beta/pull/2626))
+
+IMPROVEMENTS:
+* billing_budget: added `disable_default_iam_recipients ` field to `google_billing_budget` to allow disable sending email notifications to default recipients. ([#2606](https://github.com/hashicorp/terraform-provider-google-beta/pull/2606))
+* compute: added `interface` attribute to `google_compute_disk` ([#2609](https://github.com/hashicorp/terraform-provider-google-beta/pull/2609))
+* compute: added `mtu` field to `google_compute_network` resource ([#2617](https://github.com/hashicorp/terraform-provider-google-beta/pull/2617))
+* compute: added support for updating `network_interface.[d].network_ip` on `google_compute_instance` when changing network or subnetwork ([#2590](https://github.com/hashicorp/terraform-provider-google-beta/pull/2590))
+* compute: promoted HA VPN fields in `google_compute_vpn_tunnel` to GA ([#2607](https://github.com/hashicorp/terraform-provider-google-beta/pull/2607))
+* compute: promoted `google_compute_external_vpn_gateway` to GA ([#2607](https://github.com/hashicorp/terraform-provider-google-beta/pull/2607))
+* compute: promoted `google_compute_ha_vpn_gateway` to GA ([#2607](https://github.com/hashicorp/terraform-provider-google-beta/pull/2607))
+* provider: added support for service account impersonation. ([#2604](https://github.com/hashicorp/terraform-provider-google-beta/pull/2604))
+* spanner: added `deletion_protection` field to `google_spanner_database` to make deleting them require an explicit intent. ([#2612](https://github.com/hashicorp/terraform-provider-google-beta/pull/2612))
+
+BUG FIXES:
+* all: fixed misleading "empty non-retryable error" message that was appearing in debug logs ([#2618](https://github.com/hashicorp/terraform-provider-google-beta/pull/2618))
+* compute: fixed incorrect import format for `google_compute_global_network_endpoint` ([#2594](https://github.com/hashicorp/terraform-provider-google-beta/pull/2594))
+* compute: fixed issue where `google_compute_[region_]backend_service.backend.max_utilization` could not be updated ([#2620](https://github.com/hashicorp/terraform-provider-google-beta/pull/2620))
+* iap: fixed an eventual consistency bug causing creates for `google_iap_brand` to fail ([#2592](https://github.com/hashicorp/terraform-provider-google-beta/pull/2592))
+* provider: fixed an issue where the request headers would grow proportionally to the number of resources in a given `terraform apply` ([#2621](https://github.com/hashicorp/terraform-provider-google-beta/pull/2621))
+* serviceusage: fixed bug where concurrent activations/deactivations of project services would fail, now they retry ([#2591](https://github.com/hashicorp/terraform-provider-google-beta/pull/2591))
 
 ## 3.44.0 (October 19, 2020)
 

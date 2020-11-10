@@ -123,7 +123,7 @@ func resourceIdentityPlatformTenantCreate(d *schema.ResourceData, meta interface
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Tenant: %s", err)
 	}
 	billingProject = project
 
@@ -184,7 +184,7 @@ func resourceIdentityPlatformTenantRead(d *schema.ResourceData, meta interface{}
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Tenant: %s", err)
 	}
 	billingProject = project
 
@@ -233,7 +233,7 @@ func resourceIdentityPlatformTenantUpdate(d *schema.ResourceData, meta interface
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Tenant: %s", err)
 	}
 	billingProject = project
 
@@ -321,7 +321,7 @@ func resourceIdentityPlatformTenantDelete(d *schema.ResourceData, meta interface
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Tenant: %s", err)
 	}
 	billingProject = project
 

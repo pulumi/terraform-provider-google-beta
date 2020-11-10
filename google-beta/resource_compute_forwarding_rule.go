@@ -438,7 +438,7 @@ func resourceComputeForwardingRuleCreate(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ForwardingRule: %s", err)
 	}
 	billingProject = project
 
@@ -527,7 +527,7 @@ func resourceComputeForwardingRuleRead(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ForwardingRule: %s", err)
 	}
 	billingProject = project
 
@@ -627,7 +627,7 @@ func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ForwardingRule: %s", err)
 	}
 	billingProject = project
 
@@ -759,7 +759,7 @@ func resourceComputeForwardingRuleDelete(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ForwardingRule: %s", err)
 	}
 	billingProject = project
 

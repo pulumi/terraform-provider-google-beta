@@ -215,7 +215,7 @@ func resourceDNSPolicyCreate(d *schema.ResourceData, meta interface{}) error {
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Policy: %s", err)
 	}
 	billingProject = project
 
@@ -258,7 +258,7 @@ func resourceDNSPolicyRead(d *schema.ResourceData, meta interface{}) error {
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Policy: %s", err)
 	}
 	billingProject = project
 
@@ -310,7 +310,7 @@ func resourceDNSPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Policy: %s", err)
 	}
 	billingProject = project
 
@@ -386,7 +386,7 @@ func resourceDNSPolicyDelete(d *schema.ResourceData, meta interface{}) error {
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Policy: %s", err)
 	}
 	billingProject = project
 

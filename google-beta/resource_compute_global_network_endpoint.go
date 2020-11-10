@@ -126,7 +126,7 @@ func resourceComputeGlobalNetworkEndpointCreate(d *schema.ResourceData, meta int
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalNetworkEndpoint: %s", err)
 	}
 	billingProject = project
 
@@ -179,7 +179,7 @@ func resourceComputeGlobalNetworkEndpointRead(d *schema.ResourceData, meta inter
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalNetworkEndpoint: %s", err)
 	}
 	billingProject = project
 
@@ -246,7 +246,7 @@ func resourceComputeGlobalNetworkEndpointDelete(d *schema.ResourceData, meta int
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalNetworkEndpoint: %s", err)
 	}
 	billingProject = project
 

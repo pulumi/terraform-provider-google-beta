@@ -200,7 +200,7 @@ func resourceIdentityPlatformTenantInboundSamlConfigCreate(d *schema.ResourceDat
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TenantInboundSamlConfig: %s", err)
 	}
 	billingProject = project
 
@@ -243,7 +243,7 @@ func resourceIdentityPlatformTenantInboundSamlConfigRead(d *schema.ResourceData,
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TenantInboundSamlConfig: %s", err)
 	}
 	billingProject = project
 
@@ -292,7 +292,7 @@ func resourceIdentityPlatformTenantInboundSamlConfigUpdate(d *schema.ResourceDat
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TenantInboundSamlConfig: %s", err)
 	}
 	billingProject = project
 
@@ -380,7 +380,7 @@ func resourceIdentityPlatformTenantInboundSamlConfigDelete(d *schema.ResourceDat
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TenantInboundSamlConfig: %s", err)
 	}
 	billingProject = project
 

@@ -128,7 +128,7 @@ func resourceComputeInstanceGroupNamedPortCreate(d *schema.ResourceData, meta in
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for InstanceGroupNamedPort: %s", err)
 	}
 	billingProject = project
 
@@ -181,7 +181,7 @@ func resourceComputeInstanceGroupNamedPortRead(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for InstanceGroupNamedPort: %s", err)
 	}
 	billingProject = project
 
@@ -233,7 +233,7 @@ func resourceComputeInstanceGroupNamedPortDelete(d *schema.ResourceData, meta in
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for InstanceGroupNamedPort: %s", err)
 	}
 	billingProject = project
 

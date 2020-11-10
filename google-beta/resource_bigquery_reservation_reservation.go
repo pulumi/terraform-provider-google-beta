@@ -113,7 +113,7 @@ func resourceBigqueryReservationReservationCreate(d *schema.ResourceData, meta i
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Reservation: %s", err)
 	}
 	billingProject = project
 
@@ -156,7 +156,7 @@ func resourceBigqueryReservationReservationRead(d *schema.ResourceData, meta int
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Reservation: %s", err)
 	}
 	billingProject = project
 
@@ -196,7 +196,7 @@ func resourceBigqueryReservationReservationUpdate(d *schema.ResourceData, meta i
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Reservation: %s", err)
 	}
 	billingProject = project
 
@@ -264,7 +264,7 @@ func resourceBigqueryReservationReservationDelete(d *schema.ResourceData, meta i
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Reservation: %s", err)
 	}
 	billingProject = project
 

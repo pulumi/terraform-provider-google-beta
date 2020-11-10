@@ -356,7 +356,7 @@ func resourceComputeGlobalForwardingRuleCreate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalForwardingRule: %s", err)
 	}
 	billingProject = project
 
@@ -445,7 +445,7 @@ func resourceComputeGlobalForwardingRuleRead(d *schema.ResourceData, meta interf
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalForwardingRule: %s", err)
 	}
 	billingProject = project
 
@@ -518,7 +518,7 @@ func resourceComputeGlobalForwardingRuleUpdate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalForwardingRule: %s", err)
 	}
 	billingProject = project
 
@@ -616,7 +616,7 @@ func resourceComputeGlobalForwardingRuleDelete(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalForwardingRule: %s", err)
 	}
 	billingProject = project
 

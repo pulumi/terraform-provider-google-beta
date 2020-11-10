@@ -845,7 +845,7 @@ func resourceMonitoringAlertPolicyCreate(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for AlertPolicy: %s", err)
 	}
 	billingProject = project
 
@@ -909,7 +909,7 @@ func resourceMonitoringAlertPolicyRead(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for AlertPolicy: %s", err)
 	}
 	billingProject = project
 
@@ -970,7 +970,7 @@ func resourceMonitoringAlertPolicyUpdate(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for AlertPolicy: %s", err)
 	}
 	billingProject = project
 
@@ -1095,7 +1095,7 @@ func resourceMonitoringAlertPolicyDelete(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for AlertPolicy: %s", err)
 	}
 	billingProject = project
 

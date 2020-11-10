@@ -156,7 +156,7 @@ func resourceBigtableAppProfileCreate(d *schema.ResourceData, meta interface{}) 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for AppProfile: %s", err)
 	}
 	billingProject = project
 
@@ -202,7 +202,7 @@ func resourceBigtableAppProfileRead(d *schema.ResourceData, meta interface{}) er
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for AppProfile: %s", err)
 	}
 	billingProject = project
 
@@ -248,7 +248,7 @@ func resourceBigtableAppProfileUpdate(d *schema.ResourceData, meta interface{}) 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for AppProfile: %s", err)
 	}
 	billingProject = project
 
@@ -321,7 +321,7 @@ func resourceBigtableAppProfileDelete(d *schema.ResourceData, meta interface{}) 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for AppProfile: %s", err)
 	}
 	billingProject = project
 

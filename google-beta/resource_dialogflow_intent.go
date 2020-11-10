@@ -263,7 +263,7 @@ func resourceDialogflowIntentCreate(d *schema.ResourceData, meta interface{}) er
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Intent: %s", err)
 	}
 	billingProject = project
 
@@ -327,7 +327,7 @@ func resourceDialogflowIntentRead(d *schema.ResourceData, meta interface{}) erro
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Intent: %s", err)
 	}
 	billingProject = project
 
@@ -403,7 +403,7 @@ func resourceDialogflowIntentUpdate(d *schema.ResourceData, meta interface{}) er
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Intent: %s", err)
 	}
 	billingProject = project
 
@@ -504,7 +504,7 @@ func resourceDialogflowIntentDelete(d *schema.ResourceData, meta interface{}) er
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Intent: %s", err)
 	}
 	billingProject = project
 

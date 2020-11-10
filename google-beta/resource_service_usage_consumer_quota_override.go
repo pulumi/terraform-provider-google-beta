@@ -125,7 +125,7 @@ func resourceServiceUsageConsumerQuotaOverrideCreate(d *schema.ResourceData, met
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ConsumerQuotaOverride: %s", err)
 	}
 	billingProject = project
 
@@ -201,7 +201,7 @@ func resourceServiceUsageConsumerQuotaOverrideRead(d *schema.ResourceData, meta 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ConsumerQuotaOverride: %s", err)
 	}
 	billingProject = project
 
@@ -256,7 +256,7 @@ func resourceServiceUsageConsumerQuotaOverrideUpdate(d *schema.ResourceData, met
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ConsumerQuotaOverride: %s", err)
 	}
 	billingProject = project
 
@@ -311,7 +311,7 @@ func resourceServiceUsageConsumerQuotaOverrideDelete(d *schema.ResourceData, met
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ConsumerQuotaOverride: %s", err)
 	}
 	billingProject = project
 

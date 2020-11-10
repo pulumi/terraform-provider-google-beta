@@ -232,7 +232,7 @@ func resourceComputeGlobalAddressCreate(d *schema.ResourceData, meta interface{}
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalAddress: %s", err)
 	}
 	billingProject = project
 
@@ -321,7 +321,7 @@ func resourceComputeGlobalAddressRead(d *schema.ResourceData, meta interface{}) 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalAddress: %s", err)
 	}
 	billingProject = project
 
@@ -391,7 +391,7 @@ func resourceComputeGlobalAddressUpdate(d *schema.ResourceData, meta interface{}
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalAddress: %s", err)
 	}
 	billingProject = project
 
@@ -455,7 +455,7 @@ func resourceComputeGlobalAddressDelete(d *schema.ResourceData, meta interface{}
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GlobalAddress: %s", err)
 	}
 	billingProject = project
 

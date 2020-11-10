@@ -342,7 +342,7 @@ func resourceComputeResourcePolicyCreate(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ResourcePolicy: %s", err)
 	}
 	billingProject = project
 
@@ -395,7 +395,7 @@ func resourceComputeResourcePolicyRead(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ResourcePolicy: %s", err)
 	}
 	billingProject = project
 
@@ -444,7 +444,7 @@ func resourceComputeResourcePolicyDelete(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ResourcePolicy: %s", err)
 	}
 	billingProject = project
 

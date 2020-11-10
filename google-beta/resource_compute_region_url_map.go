@@ -1819,7 +1819,7 @@ func resourceComputeRegionUrlMapCreate(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionUrlMap: %s", err)
 	}
 	billingProject = project
 
@@ -1872,7 +1872,7 @@ func resourceComputeRegionUrlMapRead(d *schema.ResourceData, meta interface{}) e
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionUrlMap: %s", err)
 	}
 	billingProject = project
 
@@ -1942,7 +1942,7 @@ func resourceComputeRegionUrlMapUpdate(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionUrlMap: %s", err)
 	}
 	billingProject = project
 
@@ -2045,7 +2045,7 @@ func resourceComputeRegionUrlMapDelete(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionUrlMap: %s", err)
 	}
 	billingProject = project
 

@@ -222,8 +222,9 @@ For example, a Webhook endpoint might use
 "https://example.com/push".`,
 						},
 						"attributes": {
-							Type:     schema.TypeMap,
-							Optional: true,
+							Type:             schema.TypeMap,
+							Optional:         true,
+							DiffSuppressFunc: ignoreMissingKeyInMap("x-goog-version"),
 							Description: `Endpoint configuration attributes.
 
 Every endpoint has a set of API supported attributes that can
@@ -427,7 +428,7 @@ func resourcePubsubSubscriptionCreate(d *schema.ResourceData, meta interface{}) 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Subscription: %s", err)
 	}
 	billingProject = project
 
@@ -471,7 +472,7 @@ func resourcePubsubSubscriptionPollRead(d *schema.ResourceData, meta interface{}
 
 		project, err := getProject(d, config)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Error fetching project for Subscription: %s", err)
 		}
 		billingProject = project
 
@@ -522,7 +523,7 @@ func resourcePubsubSubscriptionRead(d *schema.ResourceData, meta interface{}) er
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Subscription: %s", err)
 	}
 	billingProject = project
 
@@ -604,7 +605,7 @@ func resourcePubsubSubscriptionUpdate(d *schema.ResourceData, meta interface{}) 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Subscription: %s", err)
 	}
 	billingProject = project
 
@@ -737,7 +738,7 @@ func resourcePubsubSubscriptionDelete(d *schema.ResourceData, meta interface{}) 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Subscription: %s", err)
 	}
 	billingProject = project
 

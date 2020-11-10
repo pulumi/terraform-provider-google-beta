@@ -165,7 +165,7 @@ func resourceFirestoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Index: %s", err)
 	}
 	billingProject = project
 
@@ -241,7 +241,7 @@ func resourceFirestoreIndexRead(d *schema.ResourceData, meta interface{}) error 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Index: %s", err)
 	}
 	billingProject = project
 
@@ -284,7 +284,7 @@ func resourceFirestoreIndexDelete(d *schema.ResourceData, meta interface{}) erro
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Index: %s", err)
 	}
 	billingProject = project
 

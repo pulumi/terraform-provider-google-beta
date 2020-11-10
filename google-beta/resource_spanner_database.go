@@ -166,7 +166,7 @@ func resourceSpannerDatabaseCreate(d *schema.ResourceData, meta interface{}) err
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Database: %s", err)
 	}
 	billingProject = project
 
@@ -240,7 +240,7 @@ func resourceSpannerDatabaseRead(d *schema.ResourceData, meta interface{}) error
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Database: %s", err)
 	}
 	billingProject = project
 
@@ -301,7 +301,7 @@ func resourceSpannerDatabaseUpdate(d *schema.ResourceData, meta interface{}) err
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Database: %s", err)
 	}
 	billingProject = project
 
@@ -364,7 +364,7 @@ func resourceSpannerDatabaseDelete(d *schema.ResourceData, meta interface{}) err
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Database: %s", err)
 	}
 	billingProject = project
 

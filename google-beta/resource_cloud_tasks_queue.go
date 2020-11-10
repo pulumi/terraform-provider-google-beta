@@ -279,7 +279,7 @@ func resourceCloudTasksQueueCreate(d *schema.ResourceData, meta interface{}) err
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Queue: %s", err)
 	}
 	billingProject = project
 
@@ -322,7 +322,7 @@ func resourceCloudTasksQueueRead(d *schema.ResourceData, meta interface{}) error
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Queue: %s", err)
 	}
 	billingProject = project
 
@@ -371,7 +371,7 @@ func resourceCloudTasksQueueUpdate(d *schema.ResourceData, meta interface{}) err
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Queue: %s", err)
 	}
 	billingProject = project
 
@@ -459,7 +459,7 @@ func resourceCloudTasksQueueDelete(d *schema.ResourceData, meta interface{}) err
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Queue: %s", err)
 	}
 	billingProject = project
 

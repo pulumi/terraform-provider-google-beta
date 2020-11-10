@@ -190,7 +190,7 @@ func resourceComputePerInstanceConfigCreate(d *schema.ResourceData, meta interfa
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for PerInstanceConfig: %s", err)
 	}
 	billingProject = project
 
@@ -243,7 +243,7 @@ func resourceComputePerInstanceConfigRead(d *schema.ResourceData, meta interface
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for PerInstanceConfig: %s", err)
 	}
 	billingProject = project
 
@@ -311,7 +311,7 @@ func resourceComputePerInstanceConfigUpdate(d *schema.ResourceData, meta interfa
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for PerInstanceConfig: %s", err)
 	}
 	billingProject = project
 

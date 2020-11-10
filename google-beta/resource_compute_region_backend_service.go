@@ -983,7 +983,7 @@ func resourceComputeRegionBackendServiceCreate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionBackendService: %s", err)
 	}
 	billingProject = project
 
@@ -1036,7 +1036,7 @@ func resourceComputeRegionBackendServiceRead(d *schema.ResourceData, meta interf
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionBackendService: %s", err)
 	}
 	billingProject = project
 
@@ -1160,7 +1160,7 @@ func resourceComputeRegionBackendServiceUpdate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionBackendService: %s", err)
 	}
 	billingProject = project
 
@@ -1334,7 +1334,7 @@ func resourceComputeRegionBackendServiceDelete(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionBackendService: %s", err)
 	}
 	billingProject = project
 

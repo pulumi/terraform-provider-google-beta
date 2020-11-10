@@ -212,7 +212,7 @@ func resourceBinaryAuthorizationAttestorCreate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Attestor: %s", err)
 	}
 	billingProject = project
 
@@ -255,7 +255,7 @@ func resourceBinaryAuthorizationAttestorRead(d *schema.ResourceData, meta interf
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Attestor: %s", err)
 	}
 	billingProject = project
 
@@ -298,7 +298,7 @@ func resourceBinaryAuthorizationAttestorUpdate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Attestor: %s", err)
 	}
 	billingProject = project
 
@@ -357,7 +357,7 @@ func resourceBinaryAuthorizationAttestorDelete(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Attestor: %s", err)
 	}
 	billingProject = project
 

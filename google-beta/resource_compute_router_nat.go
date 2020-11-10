@@ -404,7 +404,7 @@ func resourceComputeRouterNatCreate(d *schema.ResourceData, meta interface{}) er
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RouterNat: %s", err)
 	}
 	billingProject = project
 
@@ -457,7 +457,7 @@ func resourceComputeRouterNatRead(d *schema.ResourceData, meta interface{}) erro
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RouterNat: %s", err)
 	}
 	billingProject = project
 
@@ -539,7 +539,7 @@ func resourceComputeRouterNatUpdate(d *schema.ResourceData, meta interface{}) er
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RouterNat: %s", err)
 	}
 	billingProject = project
 
@@ -666,7 +666,7 @@ func resourceComputeRouterNatDelete(d *schema.ResourceData, meta interface{}) er
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RouterNat: %s", err)
 	}
 	billingProject = project
 

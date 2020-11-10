@@ -930,7 +930,7 @@ func resourceOSConfigGuestPoliciesCreate(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GuestPolicies: %s", err)
 	}
 	billingProject = project
 
@@ -994,7 +994,7 @@ func resourceOSConfigGuestPoliciesRead(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GuestPolicies: %s", err)
 	}
 	billingProject = project
 
@@ -1055,7 +1055,7 @@ func resourceOSConfigGuestPoliciesUpdate(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GuestPolicies: %s", err)
 	}
 	billingProject = project
 
@@ -1132,7 +1132,7 @@ func resourceOSConfigGuestPoliciesDelete(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GuestPolicies: %s", err)
 	}
 	billingProject = project
 

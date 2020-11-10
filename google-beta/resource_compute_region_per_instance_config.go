@@ -190,7 +190,7 @@ func resourceComputeRegionPerInstanceConfigCreate(d *schema.ResourceData, meta i
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionPerInstanceConfig: %s", err)
 	}
 	billingProject = project
 
@@ -243,7 +243,7 @@ func resourceComputeRegionPerInstanceConfigRead(d *schema.ResourceData, meta int
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionPerInstanceConfig: %s", err)
 	}
 	billingProject = project
 
@@ -311,7 +311,7 @@ func resourceComputeRegionPerInstanceConfigUpdate(d *schema.ResourceData, meta i
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for RegionPerInstanceConfig: %s", err)
 	}
 	billingProject = project
 

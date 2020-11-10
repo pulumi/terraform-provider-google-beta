@@ -287,7 +287,7 @@ func resourceNetworkManagementConnectivityTestCreate(d *schema.ResourceData, met
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ConnectivityTest: %s", err)
 	}
 	billingProject = project
 
@@ -353,7 +353,7 @@ func resourceNetworkManagementConnectivityTestRead(d *schema.ResourceData, meta 
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ConnectivityTest: %s", err)
 	}
 	billingProject = project
 
@@ -408,7 +408,7 @@ func resourceNetworkManagementConnectivityTestUpdate(d *schema.ResourceData, met
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ConnectivityTest: %s", err)
 	}
 	billingProject = project
 
@@ -533,7 +533,7 @@ func resourceNetworkManagementConnectivityTestDelete(d *schema.ResourceData, met
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ConnectivityTest: %s", err)
 	}
 	billingProject = project
 

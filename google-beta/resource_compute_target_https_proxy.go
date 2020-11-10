@@ -178,7 +178,7 @@ func resourceComputeTargetHttpsProxyCreate(d *schema.ResourceData, meta interfac
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TargetHttpsProxy: %s", err)
 	}
 	billingProject = project
 
@@ -231,7 +231,7 @@ func resourceComputeTargetHttpsProxyRead(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TargetHttpsProxy: %s", err)
 	}
 	billingProject = project
 
@@ -292,7 +292,7 @@ func resourceComputeTargetHttpsProxyUpdate(d *schema.ResourceData, meta interfac
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TargetHttpsProxy: %s", err)
 	}
 	billingProject = project
 
@@ -452,7 +452,7 @@ func resourceComputeTargetHttpsProxyDelete(d *schema.ResourceData, meta interfac
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TargetHttpsProxy: %s", err)
 	}
 	billingProject = project
 

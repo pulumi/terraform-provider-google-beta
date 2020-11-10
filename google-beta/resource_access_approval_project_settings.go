@@ -154,7 +154,7 @@ func resourceAccessApprovalProjectSettingsCreate(d *schema.ResourceData, meta in
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ProjectSettings: %s", err)
 	}
 	billingProject = project
 
@@ -215,7 +215,7 @@ func resourceAccessApprovalProjectSettingsRead(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ProjectSettings: %s", err)
 	}
 	billingProject = project
 
@@ -261,7 +261,7 @@ func resourceAccessApprovalProjectSettingsUpdate(d *schema.ResourceData, meta in
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ProjectSettings: %s", err)
 	}
 	billingProject = project
 

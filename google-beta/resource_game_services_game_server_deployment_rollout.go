@@ -146,7 +146,7 @@ func resourceGameServicesGameServerDeploymentRolloutRead(d *schema.ResourceData,
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GameServerDeploymentRollout: %s", err)
 	}
 	billingProject = project
 
@@ -189,7 +189,7 @@ func resourceGameServicesGameServerDeploymentRolloutUpdate(d *schema.ResourceDat
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GameServerDeploymentRollout: %s", err)
 	}
 	billingProject = project
 
@@ -265,7 +265,7 @@ func resourceGameServicesGameServerDeploymentRolloutDelete(d *schema.ResourceDat
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for GameServerDeploymentRollout: %s", err)
 	}
 	billingProject = project
 

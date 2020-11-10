@@ -102,7 +102,7 @@ func resourceComputeDiskResourcePolicyAttachmentCreate(d *schema.ResourceData, m
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for DiskResourcePolicyAttachment: %s", err)
 	}
 	billingProject = project
 
@@ -155,7 +155,7 @@ func resourceComputeDiskResourcePolicyAttachmentRead(d *schema.ResourceData, met
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for DiskResourcePolicyAttachment: %s", err)
 	}
 	billingProject = project
 
@@ -216,7 +216,7 @@ func resourceComputeDiskResourcePolicyAttachmentDelete(d *schema.ResourceData, m
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for DiskResourcePolicyAttachment: %s", err)
 	}
 	billingProject = project
 

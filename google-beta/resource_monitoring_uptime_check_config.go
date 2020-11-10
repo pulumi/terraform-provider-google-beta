@@ -351,7 +351,7 @@ func resourceMonitoringUptimeCheckConfigCreate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for UptimeCheckConfig: %s", err)
 	}
 	billingProject = project
 
@@ -415,7 +415,7 @@ func resourceMonitoringUptimeCheckConfigRead(d *schema.ResourceData, meta interf
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for UptimeCheckConfig: %s", err)
 	}
 	billingProject = project
 
@@ -482,7 +482,7 @@ func resourceMonitoringUptimeCheckConfigUpdate(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for UptimeCheckConfig: %s", err)
 	}
 	billingProject = project
 
@@ -597,7 +597,7 @@ func resourceMonitoringUptimeCheckConfigDelete(d *schema.ResourceData, meta inte
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for UptimeCheckConfig: %s", err)
 	}
 	billingProject = project
 

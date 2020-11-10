@@ -162,7 +162,7 @@ func resourceSecretManagerSecretCreate(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Secret: %s", err)
 	}
 	billingProject = project
 
@@ -208,7 +208,7 @@ func resourceSecretManagerSecretRead(d *schema.ResourceData, meta interface{}) e
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Secret: %s", err)
 	}
 	billingProject = project
 
@@ -254,7 +254,7 @@ func resourceSecretManagerSecretUpdate(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Secret: %s", err)
 	}
 	billingProject = project
 
@@ -312,7 +312,7 @@ func resourceSecretManagerSecretDelete(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for Secret: %s", err)
 	}
 	billingProject = project
 

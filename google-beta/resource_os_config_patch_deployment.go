@@ -1003,7 +1003,7 @@ func resourceOSConfigPatchDeploymentCreate(d *schema.ResourceData, meta interfac
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for PatchDeployment: %s", err)
 	}
 	billingProject = project
 
@@ -1067,7 +1067,7 @@ func resourceOSConfigPatchDeploymentRead(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for PatchDeployment: %s", err)
 	}
 	billingProject = project
 
@@ -1146,7 +1146,7 @@ func resourceOSConfigPatchDeploymentDelete(d *schema.ResourceData, meta interfac
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for PatchDeployment: %s", err)
 	}
 	billingProject = project
 

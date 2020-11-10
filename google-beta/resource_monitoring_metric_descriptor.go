@@ -257,7 +257,7 @@ func resourceMonitoringMetricDescriptorCreate(d *schema.ResourceData, meta inter
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for MetricDescriptor: %s", err)
 	}
 	billingProject = project
 
@@ -304,7 +304,7 @@ func resourceMonitoringMetricDescriptorPollRead(d *schema.ResourceData, meta int
 
 		project, err := getProject(d, config)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Error fetching project for MetricDescriptor: %s", err)
 		}
 		billingProject = project
 
@@ -343,7 +343,7 @@ func resourceMonitoringMetricDescriptorRead(d *schema.ResourceData, meta interfa
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for MetricDescriptor: %s", err)
 	}
 	billingProject = project
 
@@ -404,7 +404,7 @@ func resourceMonitoringMetricDescriptorUpdate(d *schema.ResourceData, meta inter
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for MetricDescriptor: %s", err)
 	}
 	billingProject = project
 
@@ -504,7 +504,7 @@ func resourceMonitoringMetricDescriptorDelete(d *schema.ResourceData, meta inter
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for MetricDescriptor: %s", err)
 	}
 	billingProject = project
 

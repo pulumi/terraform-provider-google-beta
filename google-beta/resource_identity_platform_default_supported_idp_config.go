@@ -136,7 +136,7 @@ func resourceIdentityPlatformDefaultSupportedIdpConfigCreate(d *schema.ResourceD
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for DefaultSupportedIdpConfig: %s", err)
 	}
 	billingProject = project
 
@@ -182,7 +182,7 @@ func resourceIdentityPlatformDefaultSupportedIdpConfigRead(d *schema.ResourceDat
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for DefaultSupportedIdpConfig: %s", err)
 	}
 	billingProject = project
 
@@ -228,7 +228,7 @@ func resourceIdentityPlatformDefaultSupportedIdpConfigUpdate(d *schema.ResourceD
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for DefaultSupportedIdpConfig: %s", err)
 	}
 	billingProject = project
 
@@ -306,7 +306,7 @@ func resourceIdentityPlatformDefaultSupportedIdpConfigDelete(d *schema.ResourceD
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for DefaultSupportedIdpConfig: %s", err)
 	}
 	billingProject = project
 

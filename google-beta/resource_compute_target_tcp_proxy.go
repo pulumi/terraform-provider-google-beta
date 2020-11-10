@@ -143,7 +143,7 @@ func resourceComputeTargetTcpProxyCreate(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TargetTcpProxy: %s", err)
 	}
 	billingProject = project
 
@@ -196,7 +196,7 @@ func resourceComputeTargetTcpProxyRead(d *schema.ResourceData, meta interface{})
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TargetTcpProxy: %s", err)
 	}
 	billingProject = project
 
@@ -251,7 +251,7 @@ func resourceComputeTargetTcpProxyUpdate(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TargetTcpProxy: %s", err)
 	}
 	billingProject = project
 
@@ -343,7 +343,7 @@ func resourceComputeTargetTcpProxyDelete(d *schema.ResourceData, meta interface{
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for TargetTcpProxy: %s", err)
 	}
 	billingProject = project
 

@@ -177,7 +177,7 @@ func resourceComputeManagedSslCertificateCreate(d *schema.ResourceData, meta int
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ManagedSslCertificate: %s", err)
 	}
 	billingProject = project
 
@@ -230,7 +230,7 @@ func resourceComputeManagedSslCertificateRead(d *schema.ResourceData, meta inter
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ManagedSslCertificate: %s", err)
 	}
 	billingProject = project
 
@@ -291,7 +291,7 @@ func resourceComputeManagedSslCertificateDelete(d *schema.ResourceData, meta int
 
 	project, err := getProject(d, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error fetching project for ManagedSslCertificate: %s", err)
 	}
 	billingProject = project
 
