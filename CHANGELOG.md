@@ -1,3 +1,5 @@
+## 3.48.0 (November 16, 2020)
+
 ## 3.47.0 (November 09, 2020)
 
 FEATURES:
