@@ -22,6 +22,7 @@ type TerraformResourceData interface {
 	Set(string, interface{}) error
 	SetId(string)
 	Id() string
+	GetProviderMeta(interface{}) error
 }
 
 type TerraformResourceDiff interface {
@@ -454,7 +455,7 @@ func changeFieldSchemaToForceNew(sch *schema.Schema) {
 	}
 }
 
-func generateUserAgentString(d *schema.ResourceData, currentUserAgent string) (string, error) {
+func generateUserAgentString(d TerraformResourceData, currentUserAgent string) (string, error) {
 	var m providerMeta
 
 	err := d.GetProviderMeta(&m)

@@ -40,7 +40,6 @@ Your account must have the `serviceusage.services.use` permission on the
 
 ```hcl
 resource "google_cloud_identity_group" "cloud_identity_group_basic" {
-  provider = google-beta
   display_name = "my-identity-group"
 
   parent = "customers/A01b123xz"

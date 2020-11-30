@@ -34,7 +34,7 @@ func TestAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipExample(t *
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProvidersOiCS,
+		Providers: testAccProviders,
 		ExternalProviders: map[string]resource.ExternalProvider{
 			"random": {},
 		},
@@ -43,6 +43,12 @@ func TestAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipExample(t *
 			{
 				Config: testAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipExample(context),
 			},
+			{
+				ResourceName:            "google_cloud_identity_group_membership.cloud_identity_group_membership_basic",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"group"},
+			},
 		},
 	})
 }
@@ -50,7 +56,6 @@ func TestAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipExample(t *
 func testAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipExample(context map[string]interface{}) string {
 	return Nprintf(`
 resource "google_cloud_identity_group" "group" {
-  provider = google-beta
   display_name = "tf-test-my-identity-group%{random_suffix}"
 
   parent = "customers/%{cust_id}"
@@ -65,7 +70,6 @@ resource "google_cloud_identity_group" "group" {
 }
 
 resource "google_cloud_identity_group" "child-group" {
-  provider = google-beta
   display_name = "tf-test-my-identity-group%{random_suffix}-child"
 
   parent = "customers/%{cust_id}"
@@ -80,10 +84,9 @@ resource "google_cloud_identity_group" "child-group" {
 }
 
 resource "google_cloud_identity_group_membership" "cloud_identity_group_membership_basic" {
-  provider = google-beta
   group    = google_cloud_identity_group.group.id
 
-  member_key {
+  preferred_member_key {
     id = google_cloud_identity_group.child-group.group_key[0].id
   }
 
@@ -106,7 +109,7 @@ func TestAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipUserExample
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProvidersOiCS,
+		Providers: testAccProviders,
 		ExternalProviders: map[string]resource.ExternalProvider{
 			"random": {},
 		},
@@ -115,6 +118,12 @@ func TestAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipUserExample
 			{
 				Config: testAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipUserExample(context),
 			},
+			{
+				ResourceName:            "google_cloud_identity_group_membership.cloud_identity_group_membership_basic",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"group"},
+			},
 		},
 	})
 }
@@ -122,7 +131,6 @@ func TestAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipUserExample
 func testAccCloudIdentityGroupMembership_cloudIdentityGroupMembershipUserExample(context map[string]interface{}) string {
 	return Nprintf(`
 resource "google_cloud_identity_group" "group" {
-  provider = google-beta
   display_name = "tf-test-my-identity-group%{random_suffix}"
 
   parent = "customers/%{cust_id}"
@@ -137,10 +145,9 @@ resource "google_cloud_identity_group" "group" {
 }
 
 resource "google_cloud_identity_group_membership" "cloud_identity_group_membership_basic" {
-  provider = google-beta
   group    = google_cloud_identity_group.group.id
 
-  member_key {
+  preferred_member_key {
     id = "%{identity_user}@%{org_domain}"
   }
 

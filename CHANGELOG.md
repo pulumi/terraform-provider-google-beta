@@ -1,4 +1,40 @@
+## 3.49.0 (November 24, 2020)
+
+FEATURES:
+* **New Resource:** google_healthcare_consent_store ([#2713](https://github.com/hashicorp/terraform-provider-google-beta/pull/2713))
+* **New Resource:** google_healthcare_consent_store_iam_binding ([#2713](https://github.com/hashicorp/terraform-provider-google-beta/pull/2713))
+* **New Resource:** google_healthcare_consent_store_iam_member ([#2713](https://github.com/hashicorp/terraform-provider-google-beta/pull/2713))
+* **New Resource:** google_healthcare_consent_store_iam_policy ([#2713](https://github.com/hashicorp/terraform-provider-google-beta/pull/2713))
+
+IMPROVEMENTS:
+* bigquery: added `ORC` as a valid option to `source_format` field of  `google_bigquery_table` resource ([#2714](https://github.com/hashicorp/terraform-provider-google-beta/pull/2714))
+* compute: added `custom_response_headers` field to `google_compute_backend_service` resource ([#2722](https://github.com/hashicorp/terraform-provider-google-beta/pull/2722))
+* container: added maintenance_exclusions_window to `google_container_cluster` ([#2724](https://github.com/hashicorp/terraform-provider-google-beta/pull/2724))
+* logging: added description and disabled to logging sinks ([#2718](https://github.com/hashicorp/terraform-provider-google-beta/pull/2718))
+* runtimeconfig: marked value and text fields in `google_runtimeconfig_variable` resource as sensitive ([#2717](https://github.com/hashicorp/terraform-provider-google-beta/pull/2717))
+* sql: added `deletion_policy` field to `google_sql_user` to enable abandoning users rather than deleting them ([#2719](https://github.com/hashicorp/terraform-provider-google-beta/pull/2719))
+
+BUG FIXES:
+* bigtable: added ignore_warnings flag to create call for `google_bigtable_app_profile` ([#2716](https://github.com/hashicorp/terraform-provider-google-beta/pull/2716))
+
 ## 3.48.0 (November 16, 2020)
+
+FEATURES:
+* **New Data Source:** `google_iam_workload_identity_pool_provider` ([#2688](https://github.com/hashicorp/terraform-provider-google-beta/pull/2688))
+
+IMPROVEMENTS:
+* apigateway: added api_config_id_prefix field to `google_api_gateway_api_config` resoure ([#2692](https://github.com/hashicorp/terraform-provider-google-beta/pull/2692))
+* cloudfunctions: fixed a bug with `google_cloudfunction_function` that blocked updates when Organization Policies are enabled. ([#2681](https://github.com/hashicorp/terraform-provider-google-beta/pull/2681))
+* compute: added `autoscaling_policy.0.scale_in_control` fields to `google_compute_autoscaler` ([#2703](https://github.com/hashicorp/terraform-provider-google-beta/pull/2703))
+* compute: added `autoscaling_policy.0.scale_in_control` fields to `google_compute_region_autoscaler` ([#2703](https://github.com/hashicorp/terraform-provider-google-beta/pull/2703))
+* compute: added update support for `google_compute_interconnect_attachment` `bandwidth` field ([#2698](https://github.com/hashicorp/terraform-provider-google-beta/pull/2698))
+* dataproc: added "FLINK", "DOCKER", "HBASE" as valid options for field cluster_config.0.software_config.0.optional_components of `google_dataproc_cluster` resource ([#2683](https://github.com/hashicorp/terraform-provider-google-beta/pull/2683))
+
+BUG FIXES:
+* cloudrun: added diff suppress function for `google_cloud_run_domain_mapping` `metadata.annotations` to ignore API-set fields ([#2700](https://github.com/hashicorp/terraform-provider-google-beta/pull/2700))
+* compute: fixed an issue in `google_compute_packet_mirroring` where updates would fail due to `network` not being updatable ([#2704](https://github.com/hashicorp/terraform-provider-google-beta/pull/2704))
+* datacatalog: fixed an issue in `google_data_catalog_taxonomy` and `google_data_catalog_policy_tag` where importing would fail ([#2694](https://github.com/hashicorp/terraform-provider-google-beta/pull/2694))
+* spanner: marked `google_spanner_instance.config` as ForceNew as is not updatable ([#2699](https://github.com/hashicorp/terraform-provider-google-beta/pull/2699))
 
 ## 3.47.0 (November 09, 2020)
 
