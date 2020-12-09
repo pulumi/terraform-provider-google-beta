@@ -44,7 +44,7 @@ resource "google_compute_url_map" "urlmap" {
   name        = "urlmap"
   description = "a description"
 
-  default_service = google_compute_backend_service.home.id
+  default_service = google_compute_backend_bucket.static.id
 
   host_rule {
     hosts        = ["mysite.com"]
@@ -58,11 +58,11 @@ resource "google_compute_url_map" "urlmap" {
 
   path_matcher {
     name            = "mysite"
-    default_service = google_compute_backend_service.home.id
+    default_service = google_compute_backend_bucket.static.id
 
     path_rule {
       paths   = ["/home"]
-      service = google_compute_backend_service.home.id
+      service = google_compute_backend_bucket.static.id
     }
 
     path_rule {
@@ -78,11 +78,11 @@ resource "google_compute_url_map" "urlmap" {
 
   path_matcher {
     name            = "otherpaths"
-    default_service = google_compute_backend_service.home.id
+    default_service = google_compute_backend_bucket.static.id
   }
 
   test {
-    service = google_compute_backend_service.home.id
+    service = google_compute_backend_bucket.static.id
     host    = "hi.com"
     path    = "/home"
   }
@@ -90,15 +90,6 @@ resource "google_compute_url_map" "urlmap" {
 
 resource "google_compute_backend_service" "login" {
   name        = "login"
-  port_name   = "http"
-  protocol    = "HTTP"
-  timeout_sec = 10
-
-  health_checks = [google_compute_http_health_check.default.id]
-}
-
-resource "google_compute_backend_service" "home" {
-  name        = "home"
   port_name   = "http"
   protocol    = "HTTP"
   timeout_sec = 10
@@ -1013,7 +1004,7 @@ The `cors_policy` block supports:
 
 * `allow_origin_regexes` -
   (Optional)
-  Specifies the regualar expression patterns that match allowed origins. For
+  Specifies the regular expression patterns that match allowed origins. For
   regular expression grammar please see en.cppreference.com/w/cpp/regex/ecmascript
   An origin is allowed if it matches either allow_origins or allow_origin_regex.
 
@@ -1423,7 +1414,7 @@ The `match_rules` block supports:
 
 * `full_path_match` -
   (Optional)
-  For satifying the matchRule condition, the path of the request must exactly
+  For satisfying the matchRule condition, the path of the request must exactly
   match the value specified in fullPathMatch after removing any query parameters
   and anchor that may be part of the original URL. FullPathMatch must be between 1
   and 1024 characters. Only one of prefixMatch, fullPathMatch or regexMatch must
@@ -1457,7 +1448,7 @@ The `match_rules` block supports:
 
 * `prefix_match` -
   (Optional)
-  For satifying the matchRule condition, the request's path must begin with the
+  For satisfying the matchRule condition, the request's path must begin with the
   specified prefixMatch. prefixMatch must begin with a /. The value must be
   between 1 and 1024 characters. Only one of prefixMatch, fullPathMatch or
   regexMatch must be specified.
@@ -1470,7 +1461,7 @@ The `match_rules` block supports:
 
 * `regex_match` -
   (Optional)
-  For satifying the matchRule condition, the path of the request must satisfy the
+  For satisfying the matchRule condition, the path of the request must satisfy the
   regular expression specified in regexMatch after removing any query parameters
   and anchor supplied with the original URL. For regular expression grammar please
   see en.cppreference.com/w/cpp/regex/ecmascript  Only one of prefixMatch,
@@ -1520,7 +1511,7 @@ The `header_matches` block supports:
 
 * `regex_match` -
   (Optional)
-  The value of the header must match the regualar expression specified in
+  The value of the header must match the regular expression specified in
   regexMatch. For regular expression grammar, please see:
   en.cppreference.com/w/cpp/regex/ecmascript  For matching against a port
   specified in the HTTP request, use a headerMatch with headerName set to PORT and
@@ -1680,7 +1671,7 @@ The `cors_policy` block supports:
 
 * `allow_origin_regexes` -
   (Optional)
-  Specifies the regualar expression patterns that match allowed origins. For
+  Specifies the regular expression patterns that match allowed origins. For
   regular expression grammar please see en.cppreference.com/w/cpp/regex/ecmascript
   An origin is allowed if it matches either allow_origins or allow_origin_regex.
 
@@ -2228,7 +2219,7 @@ The `cors_policy` block supports:
 
 * `allow_origin_regexes` -
   (Optional)
-  Specifies the regualar expression patterns that match allowed origins. For regular expression grammar
+  Specifies the regular expression patterns that match allowed origins. For regular expression grammar
   please see en.cppreference.com/w/cpp/regex/ecmascript
   An origin is allowed if it matches either an item in allowOrigins or an item in allowOriginRegexes.
 
@@ -2591,7 +2582,7 @@ The `cors_policy` block supports:
 
 * `allow_origin_regexes` -
   (Optional)
-  Specifies the regualar expression patterns that match allowed origins. For regular expression grammar
+  Specifies the regular expression patterns that match allowed origins. For regular expression grammar
   please see en.cppreference.com/w/cpp/regex/ecmascript
   An origin is allowed if it matches either an item in allowOrigins or an item in allowOriginRegexes.
 

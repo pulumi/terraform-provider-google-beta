@@ -193,7 +193,7 @@ func resourceBigqueryConnectionConnectionCreate(d *schema.ResourceData, meta int
 	}
 
 	// Store the ID now
-	id, err := replaceVars(d, config, "{{name}}")
+	id, err := replaceVars(d, config, "projects/{{project}}/locations/{{location}}/connections/{{connection_id}}")
 	if err != nil {
 		return fmt.Errorf("Error constructing id: %s", err)
 	}
@@ -212,7 +212,7 @@ func resourceBigqueryConnectionConnectionRead(d *schema.ResourceData, meta inter
 		return err
 	}
 
-	url, err := replaceVars(d, config, "{{BigqueryConnectionBasePath}}{{name}}")
+	url, err := replaceVars(d, config, "{{BigqueryConnectionBasePath}}projects/{{project}}/locations/{{location}}/connections/{{connection_id}}")
 	if err != nil {
 		return err
 	}
@@ -294,7 +294,7 @@ func resourceBigqueryConnectionConnectionUpdate(d *schema.ResourceData, meta int
 		obj["cloudSql"] = cloudSqlProp
 	}
 
-	url, err := replaceVars(d, config, "{{BigqueryConnectionBasePath}}{{name}}")
+	url, err := replaceVars(d, config, "{{BigqueryConnectionBasePath}}projects/{{project}}/locations/{{location}}/connections/{{connection_id}}")
 	if err != nil {
 		return err
 	}
@@ -352,7 +352,7 @@ func resourceBigqueryConnectionConnectionDelete(d *schema.ResourceData, meta int
 	}
 	billingProject = project
 
-	url, err := replaceVars(d, config, "{{BigqueryConnectionBasePath}}{{name}}")
+	url, err := replaceVars(d, config, "{{BigqueryConnectionBasePath}}projects/{{project}}/locations/{{location}}/connections/{{connection_id}}")
 	if err != nil {
 		return err
 	}
@@ -377,13 +377,15 @@ func resourceBigqueryConnectionConnectionDelete(d *schema.ResourceData, meta int
 func resourceBigqueryConnectionConnectionImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	config := meta.(*Config)
 	if err := parseImportId([]string{
-		"(?P<name>[^/]+)",
+		"projects/(?P<project>[^/]+)/locations/(?P<location>[^/]+)/connections/(?P<connection_id>[^/]+)",
+		"(?P<project>[^/]+)/(?P<location>[^/]+)/(?P<connection_id>[^/]+)",
+		"(?P<location>[^/]+)/(?P<connection_id>[^/]+)",
 	}, d, config); err != nil {
 		return nil, err
 	}
 
 	// Replace import id for the resource id
-	id, err := replaceVars(d, config, "{{name}}")
+	id, err := replaceVars(d, config, "projects/{{project}}/locations/{{location}}/connections/{{connection_id}}")
 	if err != nil {
 		return nil, fmt.Errorf("Error constructing id: %s", err)
 	}
