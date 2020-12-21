@@ -45,7 +45,7 @@ resource "google_notebooks_environment" "environment" {
   location = "us-west1-a"  
   container_image {
     repository = "gcr.io/deeplearning-platform-release/base-cpu"
-  } 
+  }
 }
 ```
 

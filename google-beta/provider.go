@@ -8,7 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-provider-google-beta/version"
+	"github.com/hashicorp/terraform-provider-google-beta/v3/version"
 
 	googleoauth "golang.org/x/oauth2/google"
 )
@@ -763,9 +763,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 201
+// Generated resources: 202
 // Generated IAM resources: 105
-// Total generated resources: 306
+// Total generated resources: 307
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -961,6 +961,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_firebase_project_location":                             resourceFirebaseProjectLocation(),
 			"google_firebase_web_app":                                      resourceFirebaseWebApp(),
 			"google_firestore_index":                                       resourceFirestoreIndex(),
+			"google_firestore_document":                                    resourceFirestoreDocument(),
 			"google_game_services_realm":                                   resourceGameServicesRealm(),
 			"google_game_services_game_server_cluster":                     resourceGameServicesGameServerCluster(),
 			"google_game_services_game_server_deployment":                  resourceGameServicesGameServerDeployment(),
