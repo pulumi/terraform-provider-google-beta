@@ -1,3 +1,5 @@
+## 3.52.0 (January 11, 2021)
+
 ## 3.51.1 (January 07, 2021)
 
 BUG FIXES:

@@ -99,6 +99,10 @@ type VcrSource struct {
 
 var sources map[string]VcrSource
 
+var masterBillingAccountEnvVars = []string{
+	"GOOGLE_MASTER_BILLING_ACCOUNT",
+}
+
 func init() {
 	configs = make(map[string]*Config)
 	sources = make(map[string]VcrSource)
@@ -294,7 +298,7 @@ func vcrSource(t *testing.T, path, mode string) (*VcrSource, error) {
 	case "REPLAYING":
 		seed, err := readSeedFromFile(vcrSeedFile(path, t.Name()))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("no cassette found on disk for %s, please replay this testcase in recording mode - %w", t.Name(), err)
 		}
 		s := rand.NewSource(seed)
 		vcrSource := VcrSource{seed: seed, source: s}
@@ -897,6 +901,11 @@ func getTestOrgTargetFromEnv(t *testing.T) string {
 func getTestBillingAccountFromEnv(t *testing.T) string {
 	skipIfEnvNotSet(t, billingAccountEnvVars...)
 	return multiEnvSearch(billingAccountEnvVars)
+}
+
+func getTestMasterBillingAccountFromEnv(t *testing.T) string {
+	skipIfEnvNotSet(t, masterBillingAccountEnvVars...)
+	return multiEnvSearch(masterBillingAccountEnvVars)
 }
 
 func getTestServiceAccountFromEnv(t *testing.T) string {

@@ -15,6 +15,7 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.1
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/hashicorp/go-version v1.2.1
+	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.6.0 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.0
 	github.com/mitchellh/go-homedir v1.1.0
@@ -22,8 +23,9 @@ require (
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/sirupsen/logrus v1.2.0 // indirect
+	github.com/spf13/afero v1.2.2 // indirect
+	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/stoewer/go-strcase v1.0.1
-	github.com/terraform-providers/terraform-provider-random v0.0.0-20190925211435-95c131714b03
 	github.com/zclconf/go-cty v1.5.1 // indirect
 	golang.org/x/net v0.0.0-20200822124328-c89045814202
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43

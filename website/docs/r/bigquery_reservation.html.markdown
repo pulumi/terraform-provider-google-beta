@@ -35,7 +35,6 @@ To get more information about Reservation, see:
 
 ```hcl
 resource "google_bigquery_reservation" "reservation" {
-	provider       = google-beta
 	name           = "reservation"
 	location       = "asia-northeast1"
 	// Set to 0 for testing purposes

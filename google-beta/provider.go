@@ -527,6 +527,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_PUBSUB_CUSTOM_ENDPOINT",
 				}, PubsubDefaultBasePath),
 			},
+			"pubsub_lite_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_PUBSUB_LITE_CUSTOM_ENDPOINT",
+				}, PubsubLiteDefaultBasePath),
+			},
 			"redis_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -744,8 +752,10 @@ func Provider() *schema.Provider {
 			"google_service_account_key":                          dataSourceGoogleServiceAccountKey(),
 			"google_spanner_instance":                             dataSourceSpannerInstance(),
 			"google_sql_ca_certs":                                 dataSourceGoogleSQLCaCerts(),
+			"google_sql_backup_run":                               dataSourceSqlBackupRun(),
 			"google_sql_database_instance":                        dataSourceSqlDatabaseInstance(),
 			"google_storage_bucket_object":                        dataSourceGoogleStorageBucketObject(),
+			"google_storage_bucket_object_content":                dataSourceGoogleStorageBucketObjectContent(),
 			"google_storage_object_signed_url":                    dataSourceGoogleSignedUrl(),
 			"google_storage_project_service_account":              dataSourceGoogleStorageProjectServiceAccount(),
 			"google_storage_transfer_project_service_account":     dataSourceGoogleStorageTransferProjectServiceAccount(),
@@ -763,9 +773,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 202
+// Generated resources: 204
 // Generated IAM resources: 105
-// Total generated resources: 307
+// Total generated resources: 309
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1039,6 +1049,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_pubsub_topic_iam_member":                               ResourceIamMember(PubsubTopicIamSchema, PubsubTopicIamUpdaterProducer, PubsubTopicIdParseFunc),
 			"google_pubsub_topic_iam_policy":                               ResourceIamPolicy(PubsubTopicIamSchema, PubsubTopicIamUpdaterProducer, PubsubTopicIdParseFunc),
 			"google_pubsub_subscription":                                   resourcePubsubSubscription(),
+			"google_pubsub_lite_topic":                                     resourcePubsubLiteTopic(),
+			"google_pubsub_lite_subscription":                              resourcePubsubLiteSubscription(),
 			"google_redis_instance":                                        resourceRedisInstance(),
 			"google_resource_manager_lien":                                 resourceResourceManagerLien(),
 			"google_runtimeconfig_config_iam_binding":                      ResourceIamBinding(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc),
@@ -1100,6 +1112,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_billing_account_iam_binding":           ResourceIamBinding(IamBillingAccountSchema, NewBillingAccountIamUpdater, BillingAccountIdParseFunc),
 			"google_billing_account_iam_member":            ResourceIamMember(IamBillingAccountSchema, NewBillingAccountIamUpdater, BillingAccountIdParseFunc),
 			"google_billing_account_iam_policy":            ResourceIamPolicy(IamBillingAccountSchema, NewBillingAccountIamUpdater, BillingAccountIdParseFunc),
+			"google_billing_subaccount":                    resourceBillingSubaccount(),
 			"google_cloudfunctions_function":               resourceCloudFunctionsFunction(),
 			"google_composer_environment":                  resourceComposerEnvironment(),
 			"google_compute_attached_disk":                 resourceComputeAttachedDisk(),
@@ -1318,6 +1331,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.OSConfigBasePath = d.Get("os_config_custom_endpoint").(string)
 	config.OSLoginBasePath = d.Get("os_login_custom_endpoint").(string)
 	config.PubsubBasePath = d.Get("pubsub_custom_endpoint").(string)
+	config.PubsubLiteBasePath = d.Get("pubsub_lite_custom_endpoint").(string)
 	config.RedisBasePath = d.Get("redis_custom_endpoint").(string)
 	config.ResourceManagerBasePath = d.Get("resource_manager_custom_endpoint").(string)
 	config.RuntimeConfigBasePath = d.Get("runtime_config_custom_endpoint").(string)

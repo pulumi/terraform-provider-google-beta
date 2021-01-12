@@ -92,6 +92,7 @@ func resourceBigqueryConnectionConnection() *schema.Resource {
 			},
 			"connection_id": {
 				Type:        schema.TypeString,
+				Computed:    true,
 				Optional:    true,
 				ForceNew:    true,
 				Description: `Optional connection id that should be assigned to the created connection.`,
@@ -147,6 +148,12 @@ func resourceBigqueryConnectionConnectionCreate(d *schema.ResourceData, meta int
 	}
 
 	obj := make(map[string]interface{})
+	connection_idProp, err := expandBigqueryConnectionConnectionConnectionId(d.Get("connection_id"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("connection_id"); !isEmptyValue(reflect.ValueOf(connection_idProp)) && (ok || !reflect.DeepEqual(v, connection_idProp)) {
+		obj["connection_id"] = connection_idProp
+	}
 	friendlyNameProp, err := expandBigqueryConnectionConnectionFriendlyName(d.Get("friendly_name"), d, config)
 	if err != nil {
 		return err
@@ -164,6 +171,11 @@ func resourceBigqueryConnectionConnectionCreate(d *schema.ResourceData, meta int
 		return err
 	} else if v, ok := d.GetOkExists("cloud_sql"); !isEmptyValue(reflect.ValueOf(cloudSqlProp)) && (ok || !reflect.DeepEqual(v, cloudSqlProp)) {
 		obj["cloudSql"] = cloudSqlProp
+	}
+
+	obj, err = resourceBigqueryConnectionConnectionEncoder(d, meta, obj)
+	if err != nil {
+		return err
 	}
 
 	url, err := replaceVars(d, config, "{{BigqueryConnectionBasePath}}projects/{{project}}/locations/{{location}}/connections?connectionId={{connection_id}}")
@@ -201,6 +213,14 @@ func resourceBigqueryConnectionConnectionCreate(d *schema.ResourceData, meta int
 	d.SetId(id)
 
 	log.Printf("[DEBUG] Finished creating Connection %q: %#v", d.Id(), res)
+
+	if isEmptyValue(reflect.ValueOf(d.Get("connection_id"))) {
+		// connection id is set by API when unset and required to GET the connection
+		// it is set by reading the "name" field rather than a field in the response
+		if err := d.Set("connection_id", flattenBigqueryConnectionConnectionConnectionId("", d, config)); err != nil {
+			return fmt.Errorf("Error reading Connection: %s", err)
+		}
+	}
 
 	return resourceBigqueryConnectionConnectionRead(d, meta)
 }
@@ -241,6 +261,9 @@ func resourceBigqueryConnectionConnectionRead(d *schema.ResourceData, meta inter
 	}
 
 	if err := d.Set("name", flattenBigqueryConnectionConnectionName(res["name"], d, config)); err != nil {
+		return fmt.Errorf("Error reading Connection: %s", err)
+	}
+	if err := d.Set("connection_id", flattenBigqueryConnectionConnectionConnectionId(res["connection_id"], d, config)); err != nil {
 		return fmt.Errorf("Error reading Connection: %s", err)
 	}
 	if err := d.Set("friendly_name", flattenBigqueryConnectionConnectionFriendlyName(res["friendlyName"], d, config)); err != nil {
@@ -293,6 +316,11 @@ func resourceBigqueryConnectionConnectionUpdate(d *schema.ResourceData, meta int
 		return err
 	} else if v, ok := d.GetOkExists("cloud_sql"); !isEmptyValue(reflect.ValueOf(v)) && (ok || !reflect.DeepEqual(v, cloudSqlProp)) {
 		obj["cloudSql"] = cloudSqlProp
+	}
+
+	obj, err = resourceBigqueryConnectionConnectionEncoder(d, meta, obj)
+	if err != nil {
+		return err
 	}
 
 	url, err := replaceVars(d, config, "{{BigqueryConnectionBasePath}}projects/{{project}}/locations/{{location}}/connections/{{connection_id}}")
@@ -399,6 +427,11 @@ func flattenBigqueryConnectionConnectionName(v interface{}, d *schema.ResourceDa
 	return v
 }
 
+func flattenBigqueryConnectionConnectionConnectionId(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	parts := strings.Split(d.Get("name").(string), "/")
+	return parts[len(parts)-1]
+}
+
 func flattenBigqueryConnectionConnectionFriendlyName(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	return v
 }
@@ -449,6 +482,10 @@ func flattenBigqueryConnectionConnectionCloudSqlCredential(v interface{}, d *sch
 
 func flattenBigqueryConnectionConnectionCloudSqlType(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	return v
+}
+
+func expandBigqueryConnectionConnectionConnectionId(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
 }
 
 func expandBigqueryConnectionConnectionFriendlyName(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
@@ -543,4 +580,10 @@ func expandBigqueryConnectionConnectionCloudSqlCredentialPassword(v interface{},
 
 func expandBigqueryConnectionConnectionCloudSqlType(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
+}
+
+func resourceBigqueryConnectionConnectionEncoder(d *schema.ResourceData, meta interface{}, obj map[string]interface{}) (map[string]interface{}, error) {
+	// connection_id is needed to qualify the URL but cannot be sent in the body
+	delete(obj, "connection_id")
+	return obj, nil
 }

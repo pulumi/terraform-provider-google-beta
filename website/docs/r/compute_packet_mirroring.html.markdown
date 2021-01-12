@@ -43,7 +43,6 @@ To get more information about PacketMirroring, see:
 ```hcl
 resource "google_compute_instance" "mirror" {
   name = "my-instance"
-  provider = google-beta
   machine_type = "e2-medium"
 
   boot_disk {
@@ -61,7 +60,6 @@ resource "google_compute_instance" "mirror" {
 
 resource "google_compute_packet_mirroring" "foobar" {
   name = "my-mirroring"
-  provider = google-beta
   description = "bar"
   network {
     url = google_compute_network.default.id
@@ -78,16 +76,15 @@ resource "google_compute_packet_mirroring" "foobar" {
   filter {
     ip_protocols = ["tcp"]
     cidr_ranges = ["0.0.0.0/0"]
+    direction = "BOTH"
   }
 }
 resource "google_compute_network" "default" {
   name = "my-network"
-  provider = google-beta
 }
 
 resource "google_compute_subnetwork" "default" {
   name = "my-subnetwork"
-  provider = google-beta
   network       = google_compute_network.default.id
   ip_cidr_range = "10.2.0.0/16"
 
@@ -95,13 +92,11 @@ resource "google_compute_subnetwork" "default" {
 
 resource "google_compute_region_backend_service" "default" {
   name = "my-service"
-  provider = google-beta
   health_checks = [google_compute_health_check.default.id]
 }
 
 resource "google_compute_health_check" "default" {
   name = "my-healthcheck"
-  provider = google-beta
   check_interval_sec = 1
   timeout_sec        = 1
   tcp_health_check {
@@ -111,7 +106,6 @@ resource "google_compute_health_check" "default" {
 
 resource "google_compute_forwarding_rule" "default" {
   depends_on = [google_compute_subnetwork.default]
-  provider = google-beta
   name       = "my-ilb"
 
   is_mirroring_collector = true
@@ -234,6 +228,12 @@ The `filter` block supports:
   (Optional)
   IP CIDR ranges that apply as a filter on the source (ingress) or
   destination (egress) IP in the IP header. Only IPv4 is supported.
+
+* `direction` -
+  (Optional)
+  Direction of traffic to mirror.
+  Default value is `BOTH`.
+  Possible values are `INGRESS`, `EGRESS`, and `BOTH`.
 
 ## Attributes Reference
 

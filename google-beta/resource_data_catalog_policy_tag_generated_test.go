@@ -109,6 +109,8 @@ resource "google_data_catalog_policy_tag" "child_policy2" {
   display_name = "dob"
   description = "The users date of birth"
   parent_policy_tag = google_data_catalog_policy_tag.parent_policy.id
+  // depends_on to avoid concurrent delete issues
+  depends_on = [google_data_catalog_policy_tag.child_policy]
 }
 
 resource "google_data_catalog_taxonomy" "my_taxonomy" {
@@ -138,7 +140,13 @@ func testAccCheckDataCatalogPolicyTagDestroyProducer(t *testing.T) func(s *terra
 				return err
 			}
 
-			_, err = sendRequest(config, "GET", "", url, config.userAgent, nil)
+			billingProject := ""
+
+			if config.BillingProject != "" {
+				billingProject = config.BillingProject
+			}
+
+			_, err = sendRequest(config, "GET", billingProject, url, config.userAgent, nil)
 			if err == nil {
 				return fmt.Errorf("DataCatalogPolicyTag still exists at %s", url)
 			}
