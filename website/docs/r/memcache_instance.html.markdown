@@ -63,7 +63,6 @@ resource "google_service_networking_connection" "private_service_connection" {
 resource "google_memcache_instance" "instance" {
   provider = google-beta
   name = "test-instance"
-  region = "us-central1"
   authorized_network = google_service_networking_connection.private_service_connection.network
 
   node_config {
@@ -92,10 +91,6 @@ The following arguments are supported:
   (Required)
   Configuration for memcache nodes.
   Structure is documented below.
-
-* `region` -
-  (Required)
-  The name of the Memcache region of the instance.
 
 
 The `node_config` block supports:
@@ -141,6 +136,10 @@ The `node_config` block supports:
   (Optional)
   User-specified parameters for this memcache instance.
   Structure is documented below.
+
+* `region` -
+  (Optional)
+  The region of the Memcache instance. If it is not provided, the provider region is used.
 
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.

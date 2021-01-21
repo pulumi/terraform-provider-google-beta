@@ -167,6 +167,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_API_GATEWAY_CUSTOM_ENDPOINT",
 				}, ApiGatewayDefaultBasePath),
 			},
+			"apigee_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_APIGEE_CUSTOM_ENDPOINT",
+				}, ApigeeDefaultBasePath),
+			},
 			"app_engine_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -697,8 +705,9 @@ func Provider() *schema.Provider {
 			"google_compute_global_forwarding_rule":               dataSourceGoogleComputeGlobalForwardingRule(),
 			"google_compute_image":                                dataSourceGoogleComputeImage(),
 			"google_compute_instance":                             dataSourceGoogleComputeInstance(),
-			"google_compute_instance_serial_port":                 dataSourceGoogleComputeInstanceSerialPort(),
 			"google_compute_instance_group":                       dataSourceGoogleComputeInstanceGroup(),
+			"google_compute_instance_serial_port":                 dataSourceGoogleComputeInstanceSerialPort(),
+			"google_compute_instance_template":                    dataSourceGoogleComputeInstanceTemplate(),
 			"google_compute_lb_ip_ranges":                         dataSourceGoogleComputeLbIpRanges(),
 			"google_compute_network":                              dataSourceGoogleComputeNetwork(),
 			"google_compute_network_endpoint_group":               dataSourceGoogleComputeNetworkEndpointGroup(),
@@ -773,9 +782,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 204
+// Generated resources: 206
 // Generated IAM resources: 105
-// Total generated resources: 309
+// Total generated resources: 311
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -794,6 +803,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_access_context_manager_service_perimeter":              resourceAccessContextManagerServicePerimeter(),
 			"google_access_context_manager_service_perimeters":             resourceAccessContextManagerServicePerimeters(),
 			"google_access_context_manager_service_perimeter_resource":     resourceAccessContextManagerServicePerimeterResource(),
+			"google_access_context_manager_gcp_user_access_binding":        resourceAccessContextManagerGcpUserAccessBinding(),
 			"google_active_directory_domain":                               resourceActiveDirectoryDomain(),
 			"google_active_directory_domain_trust":                         resourceActiveDirectoryDomainTrust(),
 			"google_api_gateway_api":                                       resourceApiGatewayApi(),
@@ -808,6 +818,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_api_gateway_gateway_iam_binding":                       ResourceIamBinding(ApiGatewayGatewayIamSchema, ApiGatewayGatewayIamUpdaterProducer, ApiGatewayGatewayIdParseFunc),
 			"google_api_gateway_gateway_iam_member":                        ResourceIamMember(ApiGatewayGatewayIamSchema, ApiGatewayGatewayIamUpdaterProducer, ApiGatewayGatewayIdParseFunc),
 			"google_api_gateway_gateway_iam_policy":                        ResourceIamPolicy(ApiGatewayGatewayIamSchema, ApiGatewayGatewayIamUpdaterProducer, ApiGatewayGatewayIdParseFunc),
+			"google_apigee_organization":                                   resourceApigeeOrganization(),
 			"google_app_engine_domain_mapping":                             resourceAppEngineDomainMapping(),
 			"google_app_engine_firewall_rule":                              resourceAppEngineFirewallRule(),
 			"google_app_engine_standard_app_version":                       resourceAppEngineStandardAppVersion(),
@@ -1286,6 +1297,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.AccessContextManagerBasePath = d.Get("access_context_manager_custom_endpoint").(string)
 	config.ActiveDirectoryBasePath = d.Get("active_directory_custom_endpoint").(string)
 	config.ApiGatewayBasePath = d.Get("api_gateway_custom_endpoint").(string)
+	config.ApigeeBasePath = d.Get("apigee_custom_endpoint").(string)
 	config.AppEngineBasePath = d.Get("app_engine_custom_endpoint").(string)
 	config.ArtifactRegistryBasePath = d.Get("artifact_registry_custom_endpoint").(string)
 	config.BigQueryBasePath = d.Get("big_query_custom_endpoint").(string)

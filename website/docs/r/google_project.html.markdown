@@ -14,11 +14,18 @@ Allows creation and management of a Google Cloud Platform project.
 Projects created with this resource must be associated with an Organization.
 See the [Organization documentation](https://cloud.google.com/resource-manager/docs/quickstarts) for more details.
 
-The service account used to run this provider when creating a `google_project`
-resource must have `roles/resourcemanager.projectCreator`. See the
+The user or service account that is running Terraform when creating a `google_project`
+resource must have `roles/resourcemanager.projectCreator` on the specified organization. See the
 [Access Control for Organizations Using IAM](https://cloud.google.com/resource-manager/docs/access-control-org)
 doc for more information.
 
+~> This resource reads the specified billing account on every provider apply and plan operation so you must have permissions on the specified billing account.
+
+To get more information about projects, see:
+
+* [API documentation](https://cloud.google.com/resource-manager/reference/rest/v1/projects)
+* How-to Guides
+    * [Creating and managing projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
 
 ## Example Usage
 
@@ -68,8 +75,8 @@ The following arguments are supported:
 
 * `billing_account` - (Optional) The alphanumeric ID of the billing account this project
     belongs to. The user or service account performing this operation with the provider
-    must have Billing Account Administrator privileges (`roles/billing.admin`) in
-    the organization. See [Google Cloud Billing API Access Control](https://cloud.google.com/billing/v1/how-tos/access-control)
+    must have at mininum Billing Account User privileges (`roles/billing.user`) on the billing account.
+    See [Google Cloud Billing API Access Control](https://cloud.google.com/billing/docs/how-to/billing-access)
     for more details.
 
 * `skip_delete` - (Optional) If true, the resource can be deleted
