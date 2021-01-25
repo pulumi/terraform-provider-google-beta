@@ -1,4 +1,49 @@
+## 3.54.0 (January 25, 2021)
+
+FEATURES:
+* **New Data Source:** `google_cloud_run_locations` ([#2864](https://github.com/hashicorp/terraform-provider-google-beta/pull/2864))
+* **New Resource:** `google_privateca_certificate_authority` ([#2877](https://github.com/hashicorp/terraform-provider-google-beta/pull/2877))
+* **New Resource:** `google_privateca_certificate_authority_iam_binding` ([#2883](https://github.com/hashicorp/terraform-provider-google-beta/pull/2883))
+* **New Resource:** `google_privateca_certificate_authority_iam_member` ([#2883](https://github.com/hashicorp/terraform-provider-google-beta/pull/2883))
+* **New Resource:** `google_privateca_certificate_authority_iam_policy` ([#2883](https://github.com/hashicorp/terraform-provider-google-beta/pull/2883))
+
+IMPROVEMENTS:
+* bigquery: made incompatible changes to the `google_bigquery_table.schema` field cause the resource to be recreated ([#2876](https://github.com/hashicorp/terraform-provider-google-beta/pull/2876))
+* bigtable: fixed an issue where the `google_bigtable_instance` resource was not inferring the zone from the provider. ([#2873](https://github.com/hashicorp/terraform-provider-google-beta/pull/2873))
+* cloudscheduler: fixed unnecessary recreate for `google_cloud_scheduler_job` ([#2882](https://github.com/hashicorp/terraform-provider-google-beta/pull/2882))
+* compute: added `scaling_schedules` fields to `google_compute_autoscaler` and `google_compute_region_autoscaler` (beta) ([#2879](https://github.com/hashicorp/terraform-provider-google-beta/pull/2879))
+* compute: fixed an issue where `google_compute_region_per_instance_config`, `google_compute_per_instance_config`, `google_compute_region_instance_group_manager` resources were not inferring the region/zone from the provider. ([#2874](https://github.com/hashicorp/terraform-provider-google-beta/pull/2874))
+* memcache: fixed an issue where `google_memcached_instance` resource was not inferring the region from the provider. ([#2863](https://github.com/hashicorp/terraform-provider-google-beta/pull/2863))
+* tpu: fixed an issue where `google_tpu_node` resource was not inferring the zone from the provider. ([#2863](https://github.com/hashicorp/terraform-provider-google-beta/pull/2863))
+* vpcaccess: fixed an issue where `google_vpc_access_connector` resource was not inferring the region from the provider. ([#2863](https://github.com/hashicorp/terraform-provider-google-beta/pull/2863))
+
+BUG FIXES:
+* bigquery: fixed an issue in `bigquery_dataset_iam_member` where deleted members were not handled correctly ([#2875](https://github.com/hashicorp/terraform-provider-google-beta/pull/2875))
+* compute: fixed a perma-diff on `google_compute_health_check` when `log_config.enable` is set to false ([#2866](https://github.com/hashicorp/terraform-provider-google-beta/pull/2866))
+* notebooks: fixed permadiff on noRemoveDataDisk for `google_notebooks_instance` ([#2880](https://github.com/hashicorp/terraform-provider-google-beta/pull/2880))
+* resourcemanager: fixed an inconsistent result when IAM conditions are specified with `google_folder_iam_*` ([#2878](https://github.com/hashicorp/terraform-provider-google-beta/pull/2878))
+* healthcare: added retry logic on healthcare dataset not initialized error ([#2885](https://github.com/hashicorp/terraform-provider-google-beta/pull/2885))
+
 ## 3.53.0 (January 19, 2021)
+
+FEATURES:
+* **New Data Source:** `google_compute_instance_template` ([#2842](https://github.com/hashicorp/terraform-provider-google-beta/pull/2842))
+* **New Resource:** `google_apigee_organization` ([#2856](https://github.com/hashicorp/terraform-provider-google-beta/pull/2856))
+
+IMPROVEMENTS:
+* accesscontextmanager: added support for `google_access_context_manager_gcp_user_access_binding` ([#2851](https://github.com/hashicorp/terraform-provider-google-beta/pull/2851))
+* memcached: fixed an issue where `google_memcached_instance` resource was not inferring the region from the provider. ([More info](https://github.com/hashicorp/terraform-provider-google/issues/8027))
+* serviceaccount: added a `keepers` field to `google_service_account_key` that recreates the field when it is modified ([#2860](https://github.com/hashicorp/terraform-provider-google-beta/pull/2860))
+* sql: added restore from backup support to `google_sql_database_instance` ([#2843](https://github.com/hashicorp/terraform-provider-google-beta/pull/2843))
+* sql: added support for MYSQL_8_0 on resource `google_sql_source_representation_instance` ([#2841](https://github.com/hashicorp/terraform-provider-google-beta/pull/2841))
+* tpu: fixed an issue where `google_tpu_node` resource was not inferring the zone from the provider. ([More info](https://github.com/hashicorp/terraform-provider-google/issues/8027))
+* vpcaccess: fixed an issue where `google_vpc_access_connector` resource was not inferring the region from the provider. ([More info](https://github.com/hashicorp/terraform-provider-google/issues/8027))
+
+BUG FIXES:
+* bigquery: enhanced diff suppress to ignore certain api divergences on resource `table` ([#2840](https://github.com/hashicorp/terraform-provider-google-beta/pull/2840))
+* container: fixed crash due to nil exclusions object when updating an existent cluster with maintenance_policy but without exclusions ([#2839](https://github.com/hashicorp/terraform-provider-google-beta/pull/2839))
+* project: fixed a bug in `google_project_access_approval_settings` where the default `project` was used rather than `project_id` ([#2852](https://github.com/hashicorp/terraform-provider-google-beta/pull/2852))
+
 ## 3.52.0 (January 11, 2021)
 
 BREAKING CHANGES:

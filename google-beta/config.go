@@ -132,6 +132,7 @@ type Config struct {
 	NotebooksBasePath            string
 	OSConfigBasePath             string
 	OSLoginBasePath              string
+	PrivatecaBasePath            string
 	PubsubBasePath               string
 	PubsubLiteBasePath           string
 	RedisBasePath                string
@@ -220,6 +221,7 @@ var NetworkManagementDefaultBasePath = "https://networkmanagement.googleapis.com
 var NotebooksDefaultBasePath = "https://notebooks.googleapis.com/v1beta1/"
 var OSConfigDefaultBasePath = "https://osconfig.googleapis.com/v1beta/"
 var OSLoginDefaultBasePath = "https://oslogin.googleapis.com/v1/"
+var PrivatecaDefaultBasePath = "https://privateca.googleapis.com/v1beta1/"
 var PubsubDefaultBasePath = "https://pubsub.googleapis.com/v1/"
 var PubsubLiteDefaultBasePath = "https://{{region}}-pubsublite.googleapis.com/v1/admin/"
 var RedisDefaultBasePath = "https://redis.googleapis.com/v1beta1/"
@@ -258,6 +260,7 @@ func (c *Config) LoadAndValidate(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	c.tokenSource = tokenSource
 
 	cleanCtx := context.WithValue(ctx, oauth2.HTTPClient, cleanhttp.DefaultClient())
@@ -274,20 +277,21 @@ func (c *Config) LoadAndValidate(ctx context.Context) error {
 	// See ClientWithAdditionalRetries
 	retryTransport := NewTransportWithDefaultRetries(loggingTransport)
 
+	// 4. Header Transport - outer wrapper to inject additional headers we want to apply
+	// before making requests
+	headerTransport := newTransportWithHeaders(retryTransport)
+
 	// Set final transport value.
-	client.Transport = retryTransport
+	client.Transport = headerTransport
 
 	// This timeout is a timeout per HTTP request, not per logical operation.
 	client.Timeout = c.synchronousTimeout()
 
 	c.client = client
 	c.context = ctx
-
 	c.Region = GetRegionFromRegionSelfLink(c.Region)
-
 	c.requestBatcherServiceUsage = NewRequestBatcher("Service Usage", ctx, c.BatchingConfig)
 	c.requestBatcherIam = NewRequestBatcher("IAM", ctx, c.BatchingConfig)
-
 	c.PollInterval = 10 * time.Second
 
 	return nil
@@ -1018,6 +1022,7 @@ func ConfigureBasePaths(c *Config) {
 	c.NotebooksBasePath = NotebooksDefaultBasePath
 	c.OSConfigBasePath = OSConfigDefaultBasePath
 	c.OSLoginBasePath = OSLoginDefaultBasePath
+	c.PrivatecaBasePath = PrivatecaDefaultBasePath
 	c.PubsubBasePath = PubsubDefaultBasePath
 	c.PubsubLiteBasePath = PubsubLiteDefaultBasePath
 	c.RedisBasePath = RedisDefaultBasePath

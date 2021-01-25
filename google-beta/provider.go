@@ -527,6 +527,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_OS_LOGIN_CUSTOM_ENDPOINT",
 				}, OSLoginDefaultBasePath),
 			},
+			"privateca_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_PRIVATECA_CUSTOM_ENDPOINT",
+				}, PrivatecaDefaultBasePath),
+			},
 			"pubsub_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -693,6 +701,7 @@ func Provider() *schema.Provider {
 			"google_cloudfunctions_function":                      dataSourceGoogleCloudFunctionsFunction(),
 			"google_cloud_identity_groups":                        dataSourceGoogleCloudIdentityGroups(),
 			"google_cloud_identity_group_memberships":             dataSourceGoogleCloudIdentityGroupMemberships(),
+			"google_cloud_run_locations":                          dataSourceGoogleCloudRunLocations(),
 			"google_cloud_run_service":                            dataSourceGoogleCloudRunService(),
 			"google_composer_environment":                         dataSourceGoogleComposerEnvironment(),
 			"google_composer_image_versions":                      dataSourceGoogleComposerImageVersions(),
@@ -782,9 +791,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 206
-// Generated IAM resources: 105
-// Total generated resources: 311
+// Generated resources: 207
+// Generated IAM resources: 108
+// Total generated resources: 315
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1055,6 +1064,10 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_os_config_patch_deployment":                            resourceOSConfigPatchDeployment(),
 			"google_os_config_guest_policies":                              resourceOSConfigGuestPolicies(),
 			"google_os_login_ssh_public_key":                               resourceOSLoginSSHPublicKey(),
+			"google_privateca_certificate_authority":                       resourcePrivatecaCertificateAuthority(),
+			"google_privateca_certificate_authority_iam_binding":           ResourceIamBinding(PrivatecaCertificateAuthorityIamSchema, PrivatecaCertificateAuthorityIamUpdaterProducer, PrivatecaCertificateAuthorityIdParseFunc),
+			"google_privateca_certificate_authority_iam_member":            ResourceIamMember(PrivatecaCertificateAuthorityIamSchema, PrivatecaCertificateAuthorityIamUpdaterProducer, PrivatecaCertificateAuthorityIdParseFunc),
+			"google_privateca_certificate_authority_iam_policy":            ResourceIamPolicy(PrivatecaCertificateAuthorityIamSchema, PrivatecaCertificateAuthorityIamUpdaterProducer, PrivatecaCertificateAuthorityIdParseFunc),
 			"google_pubsub_topic":                                          resourcePubsubTopic(),
 			"google_pubsub_topic_iam_binding":                              ResourceIamBinding(PubsubTopicIamSchema, PubsubTopicIamUpdaterProducer, PubsubTopicIdParseFunc),
 			"google_pubsub_topic_iam_member":                               ResourceIamMember(PubsubTopicIamSchema, PubsubTopicIamUpdaterProducer, PubsubTopicIdParseFunc),
@@ -1342,6 +1355,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.NotebooksBasePath = d.Get("notebooks_custom_endpoint").(string)
 	config.OSConfigBasePath = d.Get("os_config_custom_endpoint").(string)
 	config.OSLoginBasePath = d.Get("os_login_custom_endpoint").(string)
+	config.PrivatecaBasePath = d.Get("privateca_custom_endpoint").(string)
 	config.PubsubBasePath = d.Get("pubsub_custom_endpoint").(string)
 	config.PubsubLiteBasePath = d.Get("pubsub_lite_custom_endpoint").(string)
 	config.RedisBasePath = d.Get("redis_custom_endpoint").(string)
