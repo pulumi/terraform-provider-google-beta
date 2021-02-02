@@ -295,6 +295,9 @@ subnetwork in which the cluster's instances are launched.
 * `enable_intranode_visibility` - (Optional)
     Whether Intra-node visibility is enabled for this cluster. This makes same node pod to pod traffic visible for VPC network.
 
+* `datapath_provider` - (Optional)
+    The desired datapath provider for this cluster. By default, uses the IPTables-based kube-proxy implementation.
+
 * `default_snat_status` - (Optional)
   [GKE SNAT](https://cloud.google.com/kubernetes-engine/docs/how-to/ip-masquerade-agent#how_ipmasq_works) DefaultSnatStatus contains the desired state of whether default sNAT should be disabled on the cluster, [API doc](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters#networkconfig).
 
@@ -704,7 +707,11 @@ for more details. This field only applies to private clusters, when
 `enable_private_nodes` is `true`.
 
 * `master_global_access_config` (Optional) - Controls cluster master global
+<<<<<<< HEAD
 access settings. If unset, the provider will no longer manage this field and will
+=======
+access settings. If unset, Terraform will no longer manage this field and will
+>>>>>>> v3.55.0
 not modify the previously-set value. Structure is documented below.
 
 In addition, the `private_cluster_config` allows access to the following read-only fields:

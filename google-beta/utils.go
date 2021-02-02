@@ -7,6 +7,7 @@ import (
 	"log"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/errwrap"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -23,13 +24,13 @@ type TerraformResourceData interface {
 	SetId(string)
 	Id() string
 	GetProviderMeta(interface{}) error
+	Timeout(key string) time.Duration
 }
 
 type TerraformResourceDiff interface {
 	HasChange(string) bool
 	GetChange(string) (interface{}, interface{})
 	Get(string) interface{}
-	GetOk(string) (interface{}, bool)
 	Clear(string) error
 	ForceNew(string) error
 }
@@ -469,4 +470,12 @@ func generateUserAgentString(d TerraformResourceData, currentUserAgent string) (
 	}
 
 	return currentUserAgent, nil
+}
+
+func SnakeToPascalCase(s string) string {
+	split := strings.Split(s, "_")
+	for i := range split {
+		split[i] = strings.Title(split[i])
+	}
+	return strings.Join(split, "")
 }

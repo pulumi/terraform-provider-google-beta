@@ -1,4 +1,8 @@
+## 3.55.0 (February 01, 2021)
+
 ## 3.54.0 (January 25, 2021)
+
+KNOWN ISSUES: New `google_bigquery_table` behaviour introduced in this version had unintended consequences, and may incorrectly flag tables for recreation. We expect to revert this for `3.55.0`.
 
 FEATURES:
 * **New Data Source:** `google_cloud_run_locations` ([#2864](https://github.com/hashicorp/terraform-provider-google-beta/pull/2864))
