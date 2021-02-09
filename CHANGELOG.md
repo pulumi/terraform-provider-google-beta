@@ -1,4 +1,38 @@
-## 3.55.0 (February 01, 2021)
+## 3.56.0 (February 08, 2021)
+FEATURES:
+* **New Resource:** `google_privateca_certificate` ([#2924](https://github.com/hashicorp/terraform-provider-google-beta/pull/2924))
+
+IMPROVEMENTS:
+* compute: added `disk.resource_policies` field to resource `google_compute_instance_template` ([#2929](https://github.com/hashicorp/terraform-provider-google-beta/pull/2929))
+* all: added plan time validations for fields that expect base64 values. ([#2906](https://github.com/hashicorp/terraform-provider-google-beta/pull/2906))
+* sql: added support for point-in-time-recovery to `google_sql_database_instance` ([#2923](https://github.com/hashicorp/terraform-provider-google-beta/pull/2923))
+* monitoring : added `availability` sli metric support for the resource `google_monitoring_slo` ([#2908](https://github.com/hashicorp/terraform-provider-google-beta/pull/2908))
+
+BUG FIXES:
+* bigquery: fixed bug where you could not reorder columns on `schema` for resource `google_bigquery_table` ([#2913](https://github.com/hashicorp/terraform-provider-google-beta/pull/2913))
+* cloudrun: suppressed `run.googleapis.com/ingress-status` annotation in `google_cloud_run_service` ([#2920](https://github.com/hashicorp/terraform-provider-google-beta/pull/2920))
+* serviceaccount: loosened restrictions on `account_id` for datasource `google_service_account` ([#2917](https://github.com/hashicorp/terraform-provider-google-beta/pull/2917))
+
+## 3.55.0 (February 1, 2021)
+
+BREAKING CHANGES:
+* Reverted `* bigquery: made incompatible changes to the `google_bigquery_table.schema` field to cause the resource to be recreated ([#8232](https://github.com/hashicorp/terraform-provider-google/pull/8232))` due to unintended interactions with a bug introduced in an earlier version of the resource.
+
+FEATURES:
+* **New Data Source:** `google_runtimeconfig_config` ([#8268](https://github.com/hashicorp/terraform-provider-google/pull/8268))
+
+IMPROVEMENTS:
+* compute: added `distribution_policy_target_shape` field to `google_compute_region_instance_group_manager` resource ([#8277](https://github.com/hashicorp/terraform-provider-google/pull/8277))
+* container: promoted `master_global_access_config`, `tpu_ipv4_cidr_block`, `default_snat_status` and `datapath_provider` fields of `google_container_cluster` to GA. ([#8303](https://github.com/hashicorp/terraform-provider-google/pull/8303))
+* dataproc: Added field `temp_bucket` to `google_dataproc_cluster` cluster config. ([#8131](https://github.com/hashicorp/terraform-provider-google/pull/8131))
+* notebooks: added `tags`, `service_account_scopes`,`shielded_instance_config` to `google_notebooks_instance` ([#8289](https://github.com/hashicorp/terraform-provider-google/pull/8289))
+* provider: added plan time validations for fields that expect base64 values. ([#8304](https://github.com/hashicorp/terraform-provider-google/pull/8304))
+
+BUG FIXES:
+* bigquery: fixed permadiff on expiration_ms for `google_bigquery_table` ([#8298](https://github.com/hashicorp/terraform-provider-google/pull/8298))
+* billing: fixed perma-diff on currency_code in `google_billing_budget` ([#8266](https://github.com/hashicorp/terraform-provider-google/pull/8266))
+ * compute: changed private_ipv6_google_access in `google_compute_subnetwork` to correctly send a fingerprint ([#8290](https://github.com/hashicorp/terraform-provider-google/pull/8290))
+* healthcare: add retry logic on healthcare dataset not initialized error ([#8256](https://github.com/hashicorp/terraform-provider-google/pull/8256))
 
 ## 3.54.0 (January 25, 2021)
 

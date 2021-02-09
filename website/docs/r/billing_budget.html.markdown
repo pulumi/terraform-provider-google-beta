@@ -297,12 +297,11 @@ The `budget_filter` block supports:
 
 * `projects` -
   (Optional)
-  A set of projects of the form projects/{project_id},
+  A set of projects of the form projects/{project_number},
   specifying that usage from only this set of projects should be
   included in the budget. If omitted, the report will include
   all usage for the billing account, regardless of which project
-  the usage occurred on. Only zero or one project can be
-  specified currently.
+  the usage occurred on.
 
 * `credit_types_treatment` -
   (Optional)

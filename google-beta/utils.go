@@ -31,6 +31,7 @@ type TerraformResourceDiff interface {
 	HasChange(string) bool
 	GetChange(string) (interface{}, interface{})
 	Get(string) interface{}
+	GetOk(string) (interface{}, bool)
 	Clear(string) error
 	ForceNew(string) error
 }
