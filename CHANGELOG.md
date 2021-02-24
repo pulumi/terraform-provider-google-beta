@@ -1,3 +1,4 @@
+## 3.58.0 (February 23, 2021)
 ## 3.57.0 (February 16, 2021)
 
 DEPRECATIONS:
