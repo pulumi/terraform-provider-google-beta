@@ -13,6 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
 	"google.golang.org/api/option"
 
+	dcl "github.com/GoogleCloudPlatform/declarative-resource-client-library/dcl"
+	eventarcDcl "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/eventarc/beta"
 	"golang.org/x/oauth2"
 	googleoauth "golang.org/x/oauth2/google"
 	appengine "google.golang.org/api/appengine/v1"
@@ -111,6 +113,7 @@ type Config struct {
 	DataFusionBasePath           string
 	DataLossPreventionBasePath   string
 	DataprocBasePath             string
+	DataprocMetastoreBasePath    string
 	DatastoreBasePath            string
 	DeploymentManagerBasePath    string
 	DialogflowBasePath           string
@@ -167,9 +170,14 @@ type Config struct {
 	ServiceNetworkingBasePath      string
 	StorageTransferBasePath        string
 	BigtableAdminBasePath          string
+	EventarcBasePath               string
 
 	requestBatcherServiceUsage *RequestBatcher
 	requestBatcherIam          *RequestBatcher
+
+	// start DCL clients
+	dclConfig         *dcl.Config
+	clientEventarcDCL *eventarcDcl.Client
 }
 
 // Generated product base paths
@@ -201,6 +209,7 @@ var DataCatalogDefaultBasePath = "https://datacatalog.googleapis.com/v1beta1/"
 var DataFusionDefaultBasePath = "https://datafusion.googleapis.com/v1beta1/"
 var DataLossPreventionDefaultBasePath = "https://dlp.googleapis.com/v2/"
 var DataprocDefaultBasePath = "https://dataproc.googleapis.com/v1beta2/"
+var DataprocMetastoreDefaultBasePath = "https://metastore.googleapis.com/v1beta/"
 var DatastoreDefaultBasePath = "https://datastore.googleapis.com/v1/"
 var DeploymentManagerDefaultBasePath = "https://www.googleapis.com/deploymentmanager/v2/"
 var DialogflowDefaultBasePath = "https://dialogflow.googleapis.com/v2/"
@@ -295,6 +304,11 @@ func (c *Config) LoadAndValidate(ctx context.Context) error {
 	c.requestBatcherServiceUsage = NewRequestBatcher("Service Usage", ctx, c.BatchingConfig)
 	c.requestBatcherIam = NewRequestBatcher("IAM", ctx, c.BatchingConfig)
 	c.PollInterval = 10 * time.Second
+
+	// Start DCL client instantiation
+	// TODO(slevenick): handle user agents
+	c.dclConfig = dcl.NewConfig(dcl.WithHTTPClient(client), dcl.WithUserAgent(c.userAgent), dcl.WithLogger(dclLogger{}))
+	c.clientEventarcDCL = eventarcDcl.NewClient(c.dclConfig)
 
 	return nil
 }
@@ -1003,6 +1017,7 @@ func ConfigureBasePaths(c *Config) {
 	c.DataFusionBasePath = DataFusionDefaultBasePath
 	c.DataLossPreventionBasePath = DataLossPreventionDefaultBasePath
 	c.DataprocBasePath = DataprocDefaultBasePath
+	c.DataprocMetastoreBasePath = DataprocMetastoreDefaultBasePath
 	c.DatastoreBasePath = DatastoreDefaultBasePath
 	c.DeploymentManagerBasePath = DeploymentManagerDefaultBasePath
 	c.DialogflowBasePath = DialogflowDefaultBasePath

@@ -359,6 +359,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_DATAPROC_CUSTOM_ENDPOINT",
 				}, DataprocDefaultBasePath),
 			},
+			"dataproc_metastore_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_DATAPROC_METASTORE_CUSTOM_ENDPOINT",
+				}, DataprocMetastoreDefaultBasePath),
+			},
 			"datastore_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -697,6 +705,7 @@ func Provider() *schema.Provider {
 			ServiceUsageCustomEndpointEntryKey:           ServiceUsageCustomEndpointEntry,
 			StorageTransferCustomEndpointEntryKey:        StorageTransferCustomEndpointEntry,
 			BigtableAdminCustomEndpointEntryKey:          BigtableAdminCustomEndpointEntry,
+			EventarcCustomEndpointEntryKey:               EventarcCustomEndpointEntry,
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -802,9 +811,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 209
+// Generated resources: 210
 // Generated IAM resources: 108
-// Total generated resources: 317
+// Total generated resources: 318
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -990,6 +999,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_data_loss_prevention_stored_info_type":                 resourceDataLossPreventionStoredInfoType(),
 			"google_data_loss_prevention_deidentify_template":              resourceDataLossPreventionDeidentifyTemplate(),
 			"google_dataproc_autoscaling_policy":                           resourceDataprocAutoscalingPolicy(),
+			"google_dataproc_metastore_service":                            resourceDataprocMetastoreService(),
 			"google_datastore_index":                                       resourceDatastoreIndex(),
 			"google_deployment_manager_deployment":                         resourceDeploymentManagerDeployment(),
 			"google_dialogflow_agent":                                      resourceDialogflowAgent(),
@@ -1184,6 +1194,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_dataproc_job_iam_policy":               ResourceIamPolicy(IamDataprocJobSchema, NewDataprocJobUpdater, DataprocJobIdParseFunc),
 			"google_dns_record_set":                        resourceDnsRecordSet(),
 			"google_endpoints_service":                     resourceEndpointsService(),
+			"google_eventarc_trigger":                      resourceEventarcTrigger(),
 			"google_folder":                                resourceGoogleFolder(),
 			"google_folder_iam_binding":                    ResourceIamBinding(IamFolderSchema, NewFolderIamUpdater, FolderIdParseFunc),
 			"google_folder_iam_member":                     ResourceIamMember(IamFolderSchema, NewFolderIamUpdater, FolderIdParseFunc),
@@ -1347,6 +1358,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.DataFusionBasePath = d.Get("data_fusion_custom_endpoint").(string)
 	config.DataLossPreventionBasePath = d.Get("data_loss_prevention_custom_endpoint").(string)
 	config.DataprocBasePath = d.Get("dataproc_custom_endpoint").(string)
+	config.DataprocMetastoreBasePath = d.Get("dataproc_metastore_custom_endpoint").(string)
 	config.DatastoreBasePath = d.Get("datastore_custom_endpoint").(string)
 	config.DeploymentManagerBasePath = d.Get("deployment_manager_custom_endpoint").(string)
 	config.DialogflowBasePath = d.Get("dialogflow_custom_endpoint").(string)
@@ -1406,6 +1418,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.ServiceUsageBasePath = d.Get(ServiceUsageCustomEndpointEntryKey).(string)
 	config.StorageTransferBasePath = d.Get(StorageTransferCustomEndpointEntryKey).(string)
 	config.BigtableAdminBasePath = d.Get(BigtableAdminCustomEndpointEntryKey).(string)
+	config.EventarcBasePath = d.Get(EventarcCustomEndpointEntryKey).(string)
 
 	stopCtx, ok := schema.StopContext(ctx)
 	if !ok {

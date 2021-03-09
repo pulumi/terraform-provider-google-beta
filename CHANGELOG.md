@@ -1,4 +1,50 @@
+## 3.59.0 (March 08, 2021)
+
+FEATURES:
+* **New Resource:** `google_dataproc_metastore_service` ([#2977](https://github.com/hashicorp/terraform-provider-google-beta/pull/2977))
+* **New Resource:** `google_workflows_workflow` ([#2989](https://github.com/hashicorp/terraform-provider-google-beta/pull/2989))
+* **New Resource:** `google_apigee_instance` ([#2986](https://github.com/hashicorp/terraform-provider-google-beta/pull/2986))
+* **New Resource:** `google_eventarc_trigger` ([#2972](https://github.com/hashicorp/terraform-provider-google-beta/pull/2972))
+
+IMPROVEMENTS:
+* composer: added `encryption_config`  to `google_composer_environment` resource ([#2967](https://github.com/hashicorp/terraform-provider-google-beta/pull/2967))
+* compute: Added graceful termination to `google_container_node_pool` create calls so that partially created node pools will resume the original operation if the Terraform process is killed mid create. ([#2969](https://github.com/hashicorp/terraform-provider-google-beta/pull/2969))
+* redis : marked `auth_string` on the `resource_redis_instance` resource as sensitive ([#2974](https://github.com/hashicorp/terraform-provider-google-beta/pull/2974))
+
+BUG FIXES:
+* apigee: fixed IDs when importing `google_apigee_organization` resource ([#2966](https://github.com/hashicorp/terraform-provider-google-beta/pull/2966))
+* artifactregistry: fixed issue where updating `google_artifact_registry_repository` always failed ([#2968](https://github.com/hashicorp/terraform-provider-google-beta/pull/2968))
+* compute : fixed a bug where `guest_flush` could not be set to false for the resource `google_compute_resource_policy` ([#2975](https://github.com/hashicorp/terraform-provider-google-beta/pull/2975))
+* compute: fixed a panic on empty `target_size` in `google_compute_region_instance_group_manager` ([#2979](https://github.com/hashicorp/terraform-provider-google-beta/pull/2979))
+* redis: fixed invalid value error on `auth_string` in `google_redis_instance` ([#2970](https://github.com/hashicorp/terraform-provider-google-beta/pull/2970))
+
+
 ## 3.58.0 (February 23, 2021)
+
+NOTES:
+* `google_bigquery_table` resources now cannot be destroyed unless `deletion_protection = false` is set in state for the resource. ([#2954](https://github.com/hashicorp/terraform-provider-google-beta/pull/2954))
+
+FEATURES:
+* **New Data Source:** `google_runtimeconfig_variable` ([#2945](https://github.com/hashicorp/terraform-provider-google-beta/pull/2945))
+* **New Data Source:** `google_iap_client` ([#2951](https://github.com/hashicorp/terraform-provider-google-beta/pull/2951))
+
+IMPROVEMENTS:
+* bigquery: added `deletion_protection` field to `google_bigquery_table` to make deleting them require an explicit intent. ([#2954](https://github.com/hashicorp/terraform-provider-google-beta/pull/2954))
+* cloudrun: updated retry logic to attempt to retry 409 errors from the Cloud Run API, which may be returned intermittently on create. ([#2948](https://github.com/hashicorp/terraform-provider-google-beta/pull/2948))
+* compute: removed max items limit from `google_compute_target_ssl_proxy`. The API currently allows upto 15 Certificates. ([#2964](https://github.com/hashicorp/terraform-provider-google-beta/pull/2964))
+* compute: added support for Private Services Connect for Google APIs in `google_compute_global_address` and `google_compute_global_forwarding_rule` ([#2956](https://github.com/hashicorp/terraform-provider-google-beta/pull/2956))
+* iam: added a retry condition that retries editing `iam_binding` and `iam_member` resources on policies that have frequently deleted service accounts ([#2963](https://github.com/hashicorp/terraform-provider-google-beta/pull/2963))
+* redis: added transit encryption mode support for `google_redis_instance` ([#2955](https://github.com/hashicorp/terraform-provider-google-beta/pull/2955))
+* secretmanager: changed endpoint to use v1 instead of v1beta1 as it is more up-to-date ([#2946](https://github.com/hashicorp/terraform-provider-google-beta/pull/2946))
+* sql: added `insights_config` block to `google_sql_database_instance` resource ([#2944](https://github.com/hashicorp/terraform-provider-google-beta/pull/2944))
+
+BUG FIXES:
+* compute: fixed an issue where the provider could return an error on a successful delete operation ([#2958](https://github.com/hashicorp/terraform-provider-google-beta/pull/2958))
+* datacatalog: fixed import issue for `google_data_catalog_taxonomy` ([#2961](https://github.com/hashicorp/terraform-provider-google-beta/pull/2961))
+* dataproc : fixed `max_failure_per_hour` not sent in API request for the resource `google_dataproc_job` ([#2949](https://github.com/hashicorp/terraform-provider-google-beta/pull/2949))
+* dlp : modified `google_data_loss_prevention_stored_info_type` `regex.group_indexes` field to trigger resource recreation on update ([#2947](https://github.com/hashicorp/terraform-provider-google-beta/pull/2947))
+* sql: fixed diffs based on case for `charset` in `google_sql_database` ([#2957](https://github.com/hashicorp/terraform-provider-google-beta/pull/2957))
+
 ## 3.57.0 (February 16, 2021)
 
 DEPRECATIONS:
