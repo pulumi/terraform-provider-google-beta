@@ -7,9 +7,6 @@ description: |-
   Manages a VM instance resource within GCE.
 ---
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 # google\_compute\_instance\_from\_machine\_image
 
 Manages a VM instance resource within GCE. For more information see
@@ -64,8 +61,6 @@ from `google_compute_instance` are likewise exported here.
 ## Attributes Reference
 
 All exported attributes from `google_compute_instance` are exported here.
-See https://www.terraform.io/docs/providers/google/r/compute_instance.html#attributes-reference
-for details.
 
 ## Timeouts
 

@@ -80,8 +80,6 @@ from `google_compute_instance` are likewise exported here.
 ## Attributes Reference
 
 All exported attributes from `google_compute_instance` are exported here.
-See https://www.terraform.io/docs/providers/google/r/compute_instance.html#attributes-reference
-for details.
 
 ## Import
 

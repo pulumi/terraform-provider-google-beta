@@ -262,7 +262,7 @@ The following arguments are supported:
   The forwarded traffic must be of a type appropriate to the target object.
   For INTERNAL_SELF_MANAGED load balancing, only HTTP and HTTPS targets
   are valid.
-  ([Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html) only) For global address with a purpose of PRIVATE_SERVICE_CONNECT and
+  For global address with a purpose of PRIVATE_SERVICE_CONNECT and
   addressType of INTERNAL, only "all-apis" and "vpc-sc" are valid.
 
 
@@ -321,7 +321,7 @@ The following arguments are supported:
   Internal Global HTTP(S) LB. The value of EXTERNAL means that this
   will be used for External Global Load Balancing (HTTP(S) LB,
   External TCP/UDP LB, SSL Proxy)
-  ([Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html) only) Note: This field must be set "" if the global address is
+  Note: This field must be set "" if the global address is
   configured as a purpose of PRIVATE_SERVICE_CONNECT and addressType of INTERNAL.
   Default value is `EXTERNAL`.
   Possible values are `EXTERNAL` and `INTERNAL_SELF_MANAGED`.

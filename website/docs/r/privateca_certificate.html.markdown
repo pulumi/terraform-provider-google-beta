@@ -28,13 +28,9 @@ A Certificate corresponds to a signed X.509 certificate issued by a CertificateA
 ~> **Note:** The Certificate Authority that is referenced by this resource **must** be 
 `tier = "ENTERPRISE"`
 
-~> **Warning:** Please remember that all resources created during preview (via the terraform-provider-google-beta)
+~> **Warning:** Please remember that all resources created during preview (via this provider)
 will be deleted when CA service transitions to General Availability (GA). Relying on these
 certificate authorities for production traffic is discouraged.
-
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=privateca_certificate_config&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">

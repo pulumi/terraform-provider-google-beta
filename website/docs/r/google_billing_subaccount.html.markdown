@@ -11,7 +11,7 @@ description: |-
 
 Allows creation and management of a Google Cloud Billing Subaccount.
 
-!> **WARNING:** Deleting this Terraform resource will not delete or close the billing subaccount.
+!> **WARNING:** Deleting this resource will not delete or close the billing subaccount.
 
 ```hcl
 resource "google_billing_subaccount" "subaccount" {
@@ -28,7 +28,7 @@ resource "google_billing_subaccount" "subaccount" {
   will be created under in the form `{billing_account_id}` or `billingAccounts/{billing_account_id}`.
 
 * `deletion_policy` (Optional) - If set to "RENAME_ON_DESTROY" the billing account display_name
-  will be changed to "Terraform Destroyed" along with a timestamp.  If set to "" this will not occur.
+  will be changed to "Destroyed" along with a timestamp.  If set to "" this will not occur.
   Default is "".
 
 ## Attributes Reference

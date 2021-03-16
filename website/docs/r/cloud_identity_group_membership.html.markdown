@@ -153,7 +153,7 @@ The `roles` block supports:
 
 
 * `member_key` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   EntityKey of the member.
   Structure is documented below.
 

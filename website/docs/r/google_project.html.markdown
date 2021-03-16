@@ -14,7 +14,7 @@ Allows creation and management of a Google Cloud Platform project.
 Projects created with this resource must be associated with an Organization.
 See the [Organization documentation](https://cloud.google.com/resource-manager/docs/quickstarts) for more details.
 
-The user or service account that is running Terraform when creating a `google_project`
+The user or service account that is running this provider when creating a `google_project`
 resource must have `roles/resourcemanager.projectCreator` on the specified organization. See the
 [Access Control for Organizations Using IAM](https://cloud.google.com/resource-manager/docs/access-control-org)
 doc for more information.

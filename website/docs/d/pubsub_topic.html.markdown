@@ -34,4 +34,4 @@ The following arguments are supported:
 
 ## Attributes Reference
 
-See [google_pubsub_topic](https://www.terraform.io/docs/providers/google/r/pubsub_topic.html#argument-reference) resource for details of the available attributes.
+See google_pubsub_topic resource for details of the available attributes.

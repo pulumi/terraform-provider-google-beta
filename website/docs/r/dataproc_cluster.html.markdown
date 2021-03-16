@@ -139,7 +139,7 @@ resource "google_dataproc_cluster" "accelerated_cluster" {
 * `cluster_config` - (Optional) Allows you to configure various aspects of the cluster.
    Structure defined below.
 
-* `graceful_decommission_timout` - (Optional) Allows graceful decomissioning when you change the number of worker nodes directly through a terraform apply.
+* `graceful_decommission_timout` - (Optional) Allows graceful decomissioning when you change the number of worker nodes directly through an apply.
       Does not affect auto scaling decomissioning from an autoscaling policy.
       Graceful decommissioning allows removing nodes from the cluster without interrupting jobs in progress.
       Timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs).

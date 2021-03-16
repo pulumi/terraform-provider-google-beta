@@ -719,11 +719,7 @@ for more details. This field only applies to private clusters, when
 `enable_private_nodes` is `true`.
 
 * `master_global_access_config` (Optional) - Controls cluster master global
-<<<<<<< HEAD
 access settings. If unset, the provider will no longer manage this field and will
-=======
-access settings. If unset, Terraform will no longer manage this field and will
->>>>>>> v3.55.0
 not modify the previously-set value. Structure is documented below.
 
 In addition, the `private_cluster_config` allows access to the following read-only fields:
@@ -906,7 +902,7 @@ $ terraform import google_container_cluster.mycluster my-gcp-project/us-east1-a/
 $ terraform import google_container_cluster.mycluster us-east1-a/my-cluster
 ```
 
-~> **Note:** This resource has several fields that control Terraform-specific behavior and aren't present in the API. If they are set in config and you import a cluster, Terraform may need to perform an update immediately after import. Most of these updates should be no-ops but some may modify your cluster if the imported state differs.
+~> **Note:** This resource has several fields that control provider-specific behavior and aren't present in the API. If they are set in config and you import a cluster, the provider may need to perform an update immediately after import. Most of these updates should be no-ops but some may modify your cluster if the imported state differs.
 
 For example, the following fields will show diffs if set in config:
 

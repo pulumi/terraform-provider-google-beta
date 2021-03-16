@@ -24,9 +24,6 @@ description: |-
 
 An event trigger sends messages to the event receiver service deployed on Cloud Run.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 * [API documentation](https://cloud.google.com/eventarc/docs/reference/rest/v1/projects.locations.triggers)
 
 ## Example Usage

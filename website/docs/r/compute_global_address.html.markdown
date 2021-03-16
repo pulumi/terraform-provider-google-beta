@@ -127,7 +127,7 @@ The following arguments are supported:
   (Optional)
   The purpose of the resource. For global internal addresses it can be
   * VPC_PEERING - for peer networks
-  * PRIVATE_SERVICE_CONNECT - for ([Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html) only) Private Service Connect networks
+  * PRIVATE_SERVICE_CONNECT - for Private Service Connect networks
   This should only be set when using an Internal address.
   Possible values are `VPC_PEERING` and `PRIVATE_SERVICE_CONNECT`.
 

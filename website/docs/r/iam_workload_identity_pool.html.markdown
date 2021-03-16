@@ -25,9 +25,6 @@ description: |-
 Represents a collection of external workload identities. You can define IAM policies to
 grant these identities access to Google Cloud resources.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about WorkloadIdentityPool, see:
 
 * [API documentation](https://cloud.google.com/iam/docs/reference/rest/v1beta/projects.locations.workloadIdentityPools)

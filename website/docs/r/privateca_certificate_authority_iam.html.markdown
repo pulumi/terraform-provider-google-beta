@@ -30,12 +30,6 @@ Three different resources help you manage your IAM policy for Certificate Author
 ~> **Note:** `google_privateca_certificate_authority_iam_policy` **cannot** be used in conjunction with `google_privateca_certificate_authority_iam_binding` and `google_privateca_certificate_authority_iam_member` or they will fight over what your policy should be.
 
 ~> **Note:** `google_privateca_certificate_authority_iam_binding` resources **can be** used in conjunction with `google_privateca_certificate_authority_iam_member` resources **only if** they do not grant privilege to the same role.
-
-
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
-
 ## google\_privateca\_certificate\_authority\_iam\_policy
 
 ```hcl

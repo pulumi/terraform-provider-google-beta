@@ -57,7 +57,7 @@ The following arguments are supported:
     To create a machine with a [custom type][custom-vm-types] (such as extended memory), format the value like `custom-VCPUS-MEM_IN_MB` like `custom-6-20480` for 6 vCPU and 20GB of RAM.
 
 * `name` - The name of the instance template. If you leave
-  this blank, Terraform will auto-generate a unique name.
+  this blank, the provider will auto-generate a unique name.
 
 * `name_prefix` - Creates a unique name beginning with the specified
   prefix. Conflicts with `name`.
@@ -195,7 +195,7 @@ The `network_interface` block supports:
 * `access_config` - Access configurations, i.e. IPs via which this
     instance can be accessed via the Internet. Omit to ensure that the instance
     is not accessible from the Internet (this means that ssh provisioners will
-    not work unless you are running Terraform can send traffic to the instance's
+    not work unless you are running the prvovider can send traffic to the instance's
     network (e.g. via tunnel or because it is running on another cloud instance
     on that network). This block can be repeated multiple times. Structure documented below.
 

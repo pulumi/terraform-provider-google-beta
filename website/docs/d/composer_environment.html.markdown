@@ -47,7 +47,6 @@ The following attributes are exported:
 * `id` - An identifier for the resource in format `projects/{{project}}/locations/{{region}}/environments/{{name}}`
 
 * `config` - Configuration parameters for the environment.
-    Full structure is provided by [composer environment resource documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/composer_environment#config).
 
     * `config.0.gke_cluster` -
     The Kubernetes Engine cluster used to run the environment.

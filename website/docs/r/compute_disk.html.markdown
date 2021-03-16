@@ -107,7 +107,7 @@ The following arguments are supported:
   If you specify this field along with `image` or `snapshot`,
   the value must not be less than the size of the image
   or the size of the snapshot.
-  ~>**NOTE** If you change the size, Terraform updates the disk size
+  ~>**NOTE** If you change the size, the provider updates the disk size
   if upsizing is detected but recreates the disk if downsizing is requested.
   You can add `lifecycle.prevent_destroy` in the config to prevent destroying
   and recreating.
@@ -121,7 +121,7 @@ The following arguments are supported:
   the supported values for the caller's project.
 
 * `interface` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI.
   Default value is `SCSI`.
   Possible values are `SCSI` and `NVME`.
@@ -153,7 +153,7 @@ The following arguments are supported:
   to allow for updating the resource policy attached to the disk.
 
 * `multi_writer` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Indicates whether or not the disk can be read/write attached to more than one instance.
 
 * `zone` -

@@ -407,7 +407,7 @@ This resource provides the following
 
 ~> **Note:** The fields `boot_disk.0.disk_encryption_raw` and `attached_disk.*.disk_encryption_key_raw` cannot be imported automatically. The API doesn't return this information. If you are setting one of these fields in your config, you will need to update your state manually after importing the resource.
 
--> **Note:** The `desired_status` field will not be set on import. If you have it set, Terraform will update the field on the next `terraform apply`, bringing your instance to the desired status.
+-> **Note:** The `desired_status` field will not be set on import. If you have it set, the provider will update the field on the next `pulumi update`, bringing your instance to the desired status.
 
 
 Instances can be imported using any of these accepted formats:

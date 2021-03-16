@@ -26,12 +26,9 @@ A CertificateAuthority represents an individual Certificate Authority. A
 CertificateAuthority can be used to create Certificates.
 
 
-~> **Warning:** Please remember that all resources created during preview (via the terraform-provider-google-beta)
+~> **Warning:** Please remember that all resources created during preview (via this provider)
 will be deleted when CA service transitions to General Availability (GA). Relying on these
 certificate authorities for production traffic is discouraged.
-
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
 
 To get more information about CertificateAuthority, see:
 

@@ -180,7 +180,7 @@ The `config` block supports:
   The configuration settings for the Airflow web server App Engine instance.
 
 * `encryption_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The encryption options for the Cloud Composer environment and its dependencies.
 
 The `node_config` block supports:

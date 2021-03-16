@@ -40,7 +40,7 @@ instance creation. You should use `google_sql_user` to define a custom user with
 a restricted host and strong password.
 
 -> **Note**: On newer versions of the provider, you must explicitly set `deletion_protection=false`
-(and run `terraform apply` to write the field to state) in order to destroy an instance.
+(and run `pulumi update` to write the field to state) in order to destroy an instance.
 It is recommended to not set this field (or set it to true) until you're ready to destroy the instance and its databases.
 
 ## Example Usage
@@ -231,16 +231,16 @@ includes an up-to-date reference of supported versions.
     That service account needs the `Cloud KMS > Cloud KMS CryptoKey Encrypter/Decrypter` role on your
     key - please see [this step](https://cloud.google.com/sql/docs/mysql/configure-cmek#grantkey).
 
-* `deletion_protection` - (Optional, Default: `true` ) Whether or not to allow Terraform to destroy the instance. Unless this field is set to false
-in Terraform state, a `terraform destroy` or `terraform apply` command that deletes the instance will fail.
+* `deletion_protection` - (Optional, Default: `true` ) Whether or not to allow he provider to destroy the instance. Unless this field is set to false
+in state, a `destroy` or `update` command that deletes the instance will fail.
 
 * `restore_backup_context` - (optional) The context needed to restore the database to a backup run. This field will
-    cause Terraform to trigger the database to restore from the backup run indicated. The configuration is detailed below.
-    **NOTE:** Restoring from a backup is an imperative action and not recommended via Terraform. Adding or modifying this
+    cause the provider to trigger the database to restore from the backup run indicated. The configuration is detailed below.
+    **NOTE:** Restoring from a backup is an imperative action and not recommended via the provider. Adding or modifying this
     block during resource creation/update will trigger the restore action after the resource is created/updated. 
 
 * `clone` - (Optional) The context needed to create this instance as a clone of another instance. When this field is set during 
-    resource creation, Terraform will attempt to clone another instance as indicated in the context. The
+    resource creation, the provider will attempt to clone another instance as indicated in the context. The
     configuration is detailed below.
 
 The `settings` block supports:
@@ -402,7 +402,7 @@ The optional `clone` block supports:
     A timestamp in RFC3339 UTC "Zulu" format, with nanosecond resolution and up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and "2014-10-02T15:01:23.045123456Z".
 
 The optional `restore_backup_context` block supports:
-**NOTE:** Restoring from a backup is an imperative action and not recommended via Terraform. Adding or modifying this
+**NOTE:** Restoring from a backup is an imperative action and not recommended via the provider. Adding or modifying this
 block during resource creation/update will trigger the restore action after the resource is created/updated. 
 
 * `backup_run_id` - (Required) The ID of the backup run to restore from.
