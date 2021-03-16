@@ -1077,10 +1077,9 @@ func resourceContainerCluster() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"channel": {
-							Type:             schema.TypeString,
-							Required:         true,
-							ValidateFunc:     validation.StringInSlice([]string{"UNSPECIFIED", "RAPID", "REGULAR", "STABLE"}, false),
-							DiffSuppressFunc: emptyOrDefaultStringSuppress("UNSPECIFIED"),
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"UNSPECIFIED", "RAPID", "REGULAR", "STABLE"}, false),
 							Description: `The selected release channel. Accepted values are:
 * UNSPECIFIED: Not set.
 * RAPID: Weekly upgrade cadence; Early testers and developers who requires new features.
@@ -2552,6 +2551,10 @@ func resourceContainerClusterDelete(d *schema.ResourceData, meta interface{}) er
 	clusterName := d.Get("name").(string)
 
 	if _, err := containerClusterAwaitRestingState(config, project, location, clusterName, userAgent, d.Timeout(schema.TimeoutDelete)); err != nil {
+		if isGoogleApiErrorWithCode(err, 404) {
+			log.Printf("[INFO] GKE cluster %s doesn't exist to delete", d.Id())
+			return nil
+		}
 		return err
 	}
 
@@ -2864,6 +2867,9 @@ func expandMaintenancePolicy(d *schema.ResourceData, meta interface{}) *containe
 	maintenancePolicy := l[0].(map[string]interface{})
 
 	if maintenanceExclusions, ok := maintenancePolicy["maintenance_exclusion"]; ok && len(maintenanceExclusions.(*schema.Set).List()) > 0 {
+		for k := range exclusions {
+			delete(exclusions, k)
+		}
 		for _, me := range maintenanceExclusions.(*schema.Set).List() {
 			exclusion := me.(map[string]interface{})
 			exclusions[exclusion["exclusion_name"].(string)] = containerBeta.TimeWindow{
@@ -3428,12 +3434,12 @@ func flattenVerticalPodAutoscaling(c *containerBeta.VerticalPodAutoscaling) []ma
 
 func flattenReleaseChannel(c *containerBeta.ReleaseChannel) []map[string]interface{} {
 	result := []map[string]interface{}{}
-	if c != nil {
+	if c != nil && c.Channel != "" {
 		result = append(result, map[string]interface{}{
 			"channel": c.Channel,
 		})
 	} else {
-		// Explicitly set the release channel to the default.
+		// Explicitly set the release channel to the UNSPECIFIED.
 		result = append(result, map[string]interface{}{
 			"channel": "UNSPECIFIED",
 		})

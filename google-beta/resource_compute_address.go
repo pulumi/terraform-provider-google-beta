@@ -274,8 +274,6 @@ func resourceComputeAddressCreate(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("Error waiting to create Address: %s", err)
 	}
 
-	log.Printf("[DEBUG] Finished creating Address %q: %#v", d.Id(), res)
-
 	if v, ok := d.GetOkExists("labels"); !isEmptyValue(reflect.ValueOf(v)) && (ok || !reflect.DeepEqual(v, labelsProp)) {
 		// Labels cannot be set in a create.  We'll have to set them here.
 		err = resourceComputeAddressRead(d, meta)
@@ -311,6 +309,8 @@ func resourceComputeAddressCreate(d *schema.ResourceData, meta interface{}) erro
 		}
 
 	}
+
+	log.Printf("[DEBUG] Finished creating Address %q: %#v", d.Id(), res)
 
 	return resourceComputeAddressRead(d, meta)
 }

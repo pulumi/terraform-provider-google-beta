@@ -119,8 +119,6 @@ func resourceKMSSecretCiphertextCreate(d *schema.ResourceData, meta interface{})
 	}
 	d.SetId(id)
 
-	log.Printf("[DEBUG] Finished creating SecretCiphertext %q: %#v", d.Id(), res)
-
 	// we don't set anything on read and instead do it all in create
 	ciphertext, ok := res["ciphertext"]
 	if !ok {
@@ -135,6 +133,8 @@ func resourceKMSSecretCiphertextCreate(d *schema.ResourceData, meta interface{})
 		return fmt.Errorf("Error constructing id: %s", err)
 	}
 	d.SetId(id)
+
+	log.Printf("[DEBUG] Finished creating SecretCiphertext %q: %#v", d.Id(), res)
 
 	return resourceKMSSecretCiphertextRead(d, meta)
 }

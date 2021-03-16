@@ -43,7 +43,7 @@ func resourceComputeSharedVpcHostProjectCreate(d *schema.ResourceData, meta inte
 	}
 
 	hostProject := d.Get("project").(string)
-	op, err := config.NewComputeBetaClient(userAgent).Projects.EnableXpnHost(hostProject).Do()
+	op, err := config.NewComputeClient(userAgent).Projects.EnableXpnHost(hostProject).Do()
 	if err != nil {
 		return fmt.Errorf("Error enabling Shared VPC Host %q: %s", hostProject, err)
 	}
@@ -68,7 +68,7 @@ func resourceComputeSharedVpcHostProjectRead(d *schema.ResourceData, meta interf
 
 	hostProject := d.Id()
 
-	project, err := config.NewComputeBetaClient(userAgent).Projects.Get(hostProject).Do()
+	project, err := config.NewComputeClient(userAgent).Projects.Get(hostProject).Do()
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("Project data for project %q", hostProject))
 	}
@@ -94,7 +94,7 @@ func resourceComputeSharedVpcHostProjectDelete(d *schema.ResourceData, meta inte
 
 	hostProject := d.Get("project").(string)
 
-	op, err := config.NewComputeBetaClient(userAgent).Projects.DisableXpnHost(hostProject).Do()
+	op, err := config.NewComputeClient(userAgent).Projects.DisableXpnHost(hostProject).Do()
 	if err != nil {
 		return fmt.Errorf("Error disabling Shared VPC Host %q: %s", hostProject, err)
 	}

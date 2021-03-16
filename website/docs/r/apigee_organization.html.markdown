@@ -121,7 +121,7 @@ resource "google_apigee_organization" "org" {
   description                          = "Terraform-provisioned Apigee Org."
   project_id                           = data.google_client_config.current.project
   authorized_network                   = google_compute_network.apigee_network.id
-  runtime_database_encryption_key_name = google_kms_key.apigee_key.id
+  runtime_database_encryption_key_name = google_kms_crypto_key.apigee_key.id
 
   depends_on = [
     google_service_networking_connection.apigee_vpc_connection,
@@ -198,9 +198,9 @@ In addition to the arguments listed above, the following computed attributes are
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 4 minutes.
+- `create` - Default is 10 minutes.
 - `update` - Default is 4 minutes.
-- `delete` - Default is 4 minutes.
+- `delete` - Default is 10 minutes.
 
 ## Import
 

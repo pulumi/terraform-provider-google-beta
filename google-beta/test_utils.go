@@ -74,7 +74,7 @@ func (d *ResourceDataMock) Timeout(key string) time.Duration {
 type ResourceDiffMock struct {
 	Before     map[string]interface{}
 	After      map[string]interface{}
-	Cleared    map[string]struct{}
+	Cleared    map[string]interface{}
 	IsForceNew bool
 }
 
@@ -93,9 +93,9 @@ func (d *ResourceDiffMock) Get(key string) interface{} {
 
 func (d *ResourceDiffMock) Clear(key string) error {
 	if d.Cleared == nil {
-		d.Cleared = map[string]struct{}{}
+		d.Cleared = map[string]interface{}{}
 	}
-	d.Cleared[key] = struct{}{}
+	d.Cleared[key] = true
 	return nil
 }
 

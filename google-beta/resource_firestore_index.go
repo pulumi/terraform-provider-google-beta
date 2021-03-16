@@ -210,8 +210,6 @@ func resourceFirestoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 	d.SetId(id)
 
-	log.Printf("[DEBUG] Finished creating Index %q: %#v", d.Id(), res)
-
 	// The operation for this resource contains the generated name that we need
 	// in order to perform a READ.
 	metadata := res["metadata"].(map[string]interface{})
@@ -221,6 +219,8 @@ func resourceFirestoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("Error setting name: %s", err)
 	}
 	d.SetId(name)
+
+	log.Printf("[DEBUG] Finished creating Index %q: %#v", d.Id(), res)
 
 	return resourceFirestoreIndexRead(d, meta)
 }
