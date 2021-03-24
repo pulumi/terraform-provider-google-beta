@@ -264,6 +264,11 @@ The `source_snapshot_encryption_key` block supports:
   The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied
   encryption key that protects this resource.
 
+* `kms_key_service_account` -
+  (Optional)
+  The service account used for the encryption request for the given KMS key.
+  If absent, the Compute Engine Service Agent service account is used.
+
 ## Attributes Reference
 
 In addition to the arguments listed above, the following computed attributes are exported:

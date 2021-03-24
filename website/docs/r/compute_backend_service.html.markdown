@@ -615,7 +615,7 @@ The `cdn_policy` block supports:
 
 * `default_ttl` -
   (Optional)
-  Specifies the default TTL for cached content served by this origin for responses 
+  Specifies the default TTL for cached content served by this origin for responses
   that do not have an existing valid TTL (max-age or s-max-age).
 
 * `max_ttl` -

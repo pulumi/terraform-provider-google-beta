@@ -14,7 +14,7 @@ require (
 	github.com/golangci/golangci-lint v1.18.0
 	github.com/hashicorp/errwrap v1.0.0
 	github.com/hashicorp/go-cleanhttp v0.5.2
-	github.com/hashicorp/go-multierror v1.0.0
+	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-version v1.2.1
 	github.com/hashicorp/hcl/v2 v2.6.0 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.4
@@ -26,9 +26,9 @@ require (
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/zclconf/go-cty v1.5.1 // indirect
-	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
-	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423
-	google.golang.org/api v0.40.0
+	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
+	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
+	google.golang.org/api v0.41.0
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
 

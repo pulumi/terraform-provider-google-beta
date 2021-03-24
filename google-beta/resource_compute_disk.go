@@ -491,6 +491,13 @@ in the cloud console. Your project's Compute Engine System service account
 'roles/cloudkms.cryptoKeyEncrypterDecrypter' to use this feature.
 See https://cloud.google.com/compute/docs/disks/customer-managed-encryption#encrypt_a_new_persistent_disk_with_your_own_keys`,
 						},
+						"kms_key_service_account": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+							Description: `The service account used for the encryption request for the given KMS key.
+If absent, the Compute Engine Service Agent service account is used.`,
+						},
 						"raw_key": {
 							Type:     schema.TypeString,
 							Optional: true,
