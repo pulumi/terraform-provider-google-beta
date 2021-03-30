@@ -24,15 +24,15 @@ import (
 )
 
 func init() {
-	resource.AddTestSweepers("ArtifactRegistryRepository", &resource.Sweeper{
-		Name: "ArtifactRegistryRepository",
-		F:    testSweepArtifactRegistryRepository,
+	resource.AddTestSweepers("TagsTagKey", &resource.Sweeper{
+		Name: "TagsTagKey",
+		F:    testSweepTagsTagKey,
 	})
 }
 
 // At the time of writing, the CI only passes us-central1 as the region
-func testSweepArtifactRegistryRepository(region string) error {
-	resourceName := "ArtifactRegistryRepository"
+func testSweepTagsTagKey(region string) error {
+	resourceName := "TagsTagKey"
 	log.Printf("[INFO][SWEEPER_LOG] Starting sweeper for %s", resourceName)
 
 	config, err := sharedConfigForRegion(region)
@@ -61,7 +61,7 @@ func testSweepArtifactRegistryRepository(region string) error {
 		},
 	}
 
-	listTemplate := strings.Split("https://artifactregistry.googleapis.com/v1beta2/projects/{{project}}/locations/{{location}}/repositories", "?")[0]
+	listTemplate := strings.Split("https://cloudresourcemanager.googleapis.com/v3/tagKeys", "?")[0]
 	listUrl, err := replaceVars(d, config, listTemplate)
 	if err != nil {
 		log.Printf("[INFO][SWEEPER_LOG] error preparing sweeper list url: %s", err)
@@ -74,7 +74,7 @@ func testSweepArtifactRegistryRepository(region string) error {
 		return nil
 	}
 
-	resourceList, ok := res["repositories"]
+	resourceList, ok := res["tagKeys"]
 	if !ok {
 		log.Printf("[INFO][SWEEPER_LOG] Nothing found in response.")
 		return nil
@@ -87,23 +87,19 @@ func testSweepArtifactRegistryRepository(region string) error {
 	nonPrefixCount := 0
 	for _, ri := range rl {
 		obj := ri.(map[string]interface{})
-		var name string
-		// Id detected in the delete URL, attempt to use id.
-		if obj["id"] != nil {
-			name = GetResourceNameFromSelfLink(obj["id"].(string))
-		} else if obj["name"] != nil {
-			name = GetResourceNameFromSelfLink(obj["name"].(string))
-		} else {
-			log.Printf("[INFO][SWEEPER_LOG] %s resource name and id were nil", resourceName)
+		if obj["name"] == nil {
+			log.Printf("[INFO][SWEEPER_LOG] %s resource name was nil", resourceName)
 			return nil
 		}
+
+		name := GetResourceNameFromSelfLink(obj["name"].(string))
 		// Skip resources that shouldn't be sweeped
 		if !isSweepableTestResource(name) {
 			nonPrefixCount++
 			continue
 		}
 
-		deleteTemplate := "https://artifactregistry.googleapis.com/v1beta2/projects/{{project}}/locations/{{location}}/repositories/{{repository_id}}"
+		deleteTemplate := "https://cloudresourcemanager.googleapis.com/v3/tagKeys/{{name}}"
 		deleteUrl, err := replaceVars(d, config, deleteTemplate)
 		if err != nil {
 			log.Printf("[INFO][SWEEPER_LOG] error preparing delete url: %s", err)

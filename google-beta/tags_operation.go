@@ -19,24 +19,23 @@ import (
 	"time"
 )
 
-type ArtifactRegistryOperationWaiter struct {
+type TagsOperationWaiter struct {
 	Config    *Config
 	UserAgent string
-	Project   string
 	CommonOperationWaiter
 }
 
-func (w *ArtifactRegistryOperationWaiter) QueryOp() (interface{}, error) {
+func (w *TagsOperationWaiter) QueryOp() (interface{}, error) {
 	if w == nil {
 		return nil, fmt.Errorf("Cannot query operation, it's unset or nil.")
 	}
 	// Returns the proper get.
-	url := fmt.Sprintf("https://artifactregistry.googleapis.com/v1beta2/%s", w.CommonOperationWaiter.Op.Name)
+	url := fmt.Sprintf("https://cloudresourcemanager.googleapis.com/v3/%s", w.CommonOperationWaiter.Op.Name)
 
-	return sendRequest(w.Config, "GET", w.Project, url, w.UserAgent, nil)
+	return sendRequest(w.Config, "GET", "", url, w.UserAgent, nil)
 }
 
-func createArtifactRegistryWaiter(config *Config, op map[string]interface{}, project, activity, userAgent string) (*ArtifactRegistryOperationWaiter, error) {
+func createTagsWaiter(config *Config, op map[string]interface{}, activity, userAgent string) (*TagsOperationWaiter, error) {
 	if val, ok := op["name"]; !ok || val == "" {
 		// An operation could also be indicated with a "metadata" field.
 		if _, ok := op["metadata"]; !ok {
@@ -44,10 +43,9 @@ func createArtifactRegistryWaiter(config *Config, op map[string]interface{}, pro
 			return nil, nil
 		}
 	}
-	w := &ArtifactRegistryOperationWaiter{
+	w := &TagsOperationWaiter{
 		Config:    config,
 		UserAgent: userAgent,
-		Project:   project,
 	}
 	if err := w.CommonOperationWaiter.SetOp(op); err != nil {
 		return nil, err
@@ -56,8 +54,8 @@ func createArtifactRegistryWaiter(config *Config, op map[string]interface{}, pro
 }
 
 // nolint: deadcode,unused
-func artifactRegistryOperationWaitTimeWithResponse(config *Config, op map[string]interface{}, response *map[string]interface{}, project, activity, userAgent string, timeout time.Duration) error {
-	w, err := createArtifactRegistryWaiter(config, op, project, activity, userAgent)
+func tagsOperationWaitTimeWithResponse(config *Config, op map[string]interface{}, response *map[string]interface{}, activity, userAgent string, timeout time.Duration) error {
+	w, err := createTagsWaiter(config, op, activity, userAgent)
 	if err != nil || w == nil {
 		// If w is nil, the op was synchronous.
 		return err
@@ -68,8 +66,8 @@ func artifactRegistryOperationWaitTimeWithResponse(config *Config, op map[string
 	return json.Unmarshal([]byte(w.CommonOperationWaiter.Op.Response), response)
 }
 
-func artifactRegistryOperationWaitTime(config *Config, op map[string]interface{}, project, activity, userAgent string, timeout time.Duration) error {
-	w, err := createArtifactRegistryWaiter(config, op, project, activity, userAgent)
+func tagsOperationWaitTime(config *Config, op map[string]interface{}, activity, userAgent string, timeout time.Duration) error {
+	w, err := createTagsWaiter(config, op, activity, userAgent)
 	if err != nil || w == nil {
 		// If w is nil, the op was synchronous.
 		return err

@@ -19,24 +19,24 @@ import (
 	"time"
 )
 
-type ArtifactRegistryOperationWaiter struct {
+type GKEHubOperationWaiter struct {
 	Config    *Config
 	UserAgent string
 	Project   string
 	CommonOperationWaiter
 }
 
-func (w *ArtifactRegistryOperationWaiter) QueryOp() (interface{}, error) {
+func (w *GKEHubOperationWaiter) QueryOp() (interface{}, error) {
 	if w == nil {
 		return nil, fmt.Errorf("Cannot query operation, it's unset or nil.")
 	}
 	// Returns the proper get.
-	url := fmt.Sprintf("https://artifactregistry.googleapis.com/v1beta2/%s", w.CommonOperationWaiter.Op.Name)
+	url := fmt.Sprintf("https://gkehub.googleapis.com/v1beta1/%s", w.CommonOperationWaiter.Op.Name)
 
 	return sendRequest(w.Config, "GET", w.Project, url, w.UserAgent, nil)
 }
 
-func createArtifactRegistryWaiter(config *Config, op map[string]interface{}, project, activity, userAgent string) (*ArtifactRegistryOperationWaiter, error) {
+func createGKEHubWaiter(config *Config, op map[string]interface{}, project, activity, userAgent string) (*GKEHubOperationWaiter, error) {
 	if val, ok := op["name"]; !ok || val == "" {
 		// An operation could also be indicated with a "metadata" field.
 		if _, ok := op["metadata"]; !ok {
@@ -44,7 +44,7 @@ func createArtifactRegistryWaiter(config *Config, op map[string]interface{}, pro
 			return nil, nil
 		}
 	}
-	w := &ArtifactRegistryOperationWaiter{
+	w := &GKEHubOperationWaiter{
 		Config:    config,
 		UserAgent: userAgent,
 		Project:   project,
@@ -56,8 +56,8 @@ func createArtifactRegistryWaiter(config *Config, op map[string]interface{}, pro
 }
 
 // nolint: deadcode,unused
-func artifactRegistryOperationWaitTimeWithResponse(config *Config, op map[string]interface{}, response *map[string]interface{}, project, activity, userAgent string, timeout time.Duration) error {
-	w, err := createArtifactRegistryWaiter(config, op, project, activity, userAgent)
+func gKEHubOperationWaitTimeWithResponse(config *Config, op map[string]interface{}, response *map[string]interface{}, project, activity, userAgent string, timeout time.Duration) error {
+	w, err := createGKEHubWaiter(config, op, project, activity, userAgent)
 	if err != nil || w == nil {
 		// If w is nil, the op was synchronous.
 		return err
@@ -68,8 +68,8 @@ func artifactRegistryOperationWaitTimeWithResponse(config *Config, op map[string
 	return json.Unmarshal([]byte(w.CommonOperationWaiter.Op.Response), response)
 }
 
-func artifactRegistryOperationWaitTime(config *Config, op map[string]interface{}, project, activity, userAgent string, timeout time.Duration) error {
-	w, err := createArtifactRegistryWaiter(config, op, project, activity, userAgent)
+func gKEHubOperationWaitTime(config *Config, op map[string]interface{}, project, activity, userAgent string, timeout time.Duration) error {
+	w, err := createGKEHubWaiter(config, op, project, activity, userAgent)
 	if err != nil || w == nil {
 		// If w is nil, the op was synchronous.
 		return err

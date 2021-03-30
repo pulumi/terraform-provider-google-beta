@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
 	"google.golang.org/api/option"
 
+	kms "cloud.google.com/go/kms/apiv1"
 	dcl "github.com/GoogleCloudPlatform/declarative-resource-client-library/dcl"
 	eventarcDcl "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/eventarc/beta"
 	"golang.org/x/oauth2"
@@ -120,6 +122,7 @@ type Config struct {
 	FirebaseBasePath             string
 	FirestoreBasePath            string
 	GameServicesBasePath         string
+	GKEHubBasePath               string
 	HealthcareBasePath           string
 	IAMBetaBasePath              string
 	IapBasePath                  string
@@ -149,6 +152,7 @@ type Config struct {
 	SpannerBasePath              string
 	SQLBasePath                  string
 	StorageBasePath              string
+	TagsBasePath                 string
 	TPUBasePath                  string
 	VPCAccessBasePath            string
 	WorkflowsBasePath            string
@@ -184,7 +188,7 @@ var ActiveDirectoryDefaultBasePath = "https://managedidentities.googleapis.com/v
 var ApiGatewayDefaultBasePath = "https://apigateway.googleapis.com/v1beta/"
 var ApigeeDefaultBasePath = "https://apigee.googleapis.com/v1/"
 var AppEngineDefaultBasePath = "https://appengine.googleapis.com/v1/"
-var ArtifactRegistryDefaultBasePath = "https://artifactregistry.googleapis.com/v1beta1/"
+var ArtifactRegistryDefaultBasePath = "https://artifactregistry.googleapis.com/v1beta2/"
 var BigQueryDefaultBasePath = "https://bigquery.googleapis.com/bigquery/v2/"
 var BigqueryConnectionDefaultBasePath = "https://bigqueryconnection.googleapis.com/v1beta1/"
 var BigqueryDataTransferDefaultBasePath = "https://bigquerydatatransfer.googleapis.com/v1/"
@@ -216,6 +220,7 @@ var FilestoreDefaultBasePath = "https://file.googleapis.com/v1beta1/"
 var FirebaseDefaultBasePath = "https://firebase.googleapis.com/v1beta1/"
 var FirestoreDefaultBasePath = "https://firestore.googleapis.com/v1/"
 var GameServicesDefaultBasePath = "https://gameservices.googleapis.com/v1beta/"
+var GKEHubDefaultBasePath = "https://gkehub.googleapis.com/v1beta1/"
 var HealthcareDefaultBasePath = "https://healthcare.googleapis.com/v1beta1/"
 var IAMBetaDefaultBasePath = "https://iam.googleapis.com/v1beta/"
 var IapDefaultBasePath = "https://iap.googleapis.com/v1/"
@@ -245,6 +250,7 @@ var SourceRepoDefaultBasePath = "https://sourcerepo.googleapis.com/v1/"
 var SpannerDefaultBasePath = "https://spanner.googleapis.com/v1/"
 var SQLDefaultBasePath = "https://sqladmin.googleapis.com/sql/v1beta4/"
 var StorageDefaultBasePath = "https://storage.googleapis.com/storage/v1/"
+var TagsDefaultBasePath = "https://cloudresourcemanager.googleapis.com/v3/"
 var TPUDefaultBasePath = "https://tpu.googleapis.com/v1/"
 var VPCAccessDefaultBasePath = "https://vpcaccess.googleapis.com/v1beta1/"
 var WorkflowsDefaultBasePath = "https://workflows.googleapis.com/v1beta/"
@@ -444,6 +450,26 @@ func (c *Config) NewKmsClient(userAgent string) *cloudkms.Service {
 	clientKms.UserAgent = userAgent
 	clientKms.BasePath = kmsClientBasePath
 
+	return clientKms
+}
+
+func (c *Config) NewKeyManagementClient(ctx context.Context, userAgent string) *kms.KeyManagementClient {
+	u, err := url.Parse(c.KMSBasePath)
+	if err != nil {
+		log.Printf("[WARN] Error creating client kms invalid base path url %s, %s", c.KMSBasePath, err)
+		return nil
+	}
+	endpoint := u.Host
+	if u.Port() == "" {
+		endpoint = fmt.Sprintf("%s:443", u.Host)
+	}
+
+	log.Printf("[INFO] Instantiating Google Cloud KMS client for path on endpoint %s", endpoint)
+	clientKms, err := kms.NewKeyManagementClient(ctx, option.WithUserAgent(userAgent), option.WithEndpoint(endpoint))
+	if err != nil {
+		log.Printf("[WARN] Error creating client kms: %s", err)
+		return nil
+	}
 	return clientKms
 }
 
@@ -982,6 +1008,7 @@ func ConfigureBasePaths(c *Config) {
 	c.FirebaseBasePath = FirebaseDefaultBasePath
 	c.FirestoreBasePath = FirestoreDefaultBasePath
 	c.GameServicesBasePath = GameServicesDefaultBasePath
+	c.GKEHubBasePath = GKEHubDefaultBasePath
 	c.HealthcareBasePath = HealthcareDefaultBasePath
 	c.IAMBetaBasePath = IAMBetaDefaultBasePath
 	c.IapBasePath = IapDefaultBasePath
@@ -1011,6 +1038,7 @@ func ConfigureBasePaths(c *Config) {
 	c.SpannerBasePath = SpannerDefaultBasePath
 	c.SQLBasePath = SQLDefaultBasePath
 	c.StorageBasePath = StorageDefaultBasePath
+	c.TagsBasePath = TagsDefaultBasePath
 	c.TPUBasePath = TPUDefaultBasePath
 	c.VPCAccessBasePath = VPCAccessDefaultBasePath
 	c.WorkflowsBasePath = WorkflowsDefaultBasePath
