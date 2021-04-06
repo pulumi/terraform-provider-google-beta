@@ -1,4 +1,6 @@
-## 3.62.0 (March 29, 2021)
+## 3.63.0 (April 05, 2021)
+
+## 3.62.0 (March 27, 2021)
 
 FEATURES:
 * **New Data Source:** `google_compute_health_check` ([#3066](https://github.com/hashicorp/terraform-provider-google-beta/pull/3066))
@@ -19,6 +21,7 @@ BUG FIXES:
 ## 3.61.0 (March 23, 2021)
 
 IMPROVEMENTS:
+<<<<<<< HEAD
 * compute: added `proxy_bind` to `google_compute_target_tcp_proxy`, `google_compute_target_http_proxy` and `google_compute_target_https_proxy` ([#3061](https://github.com/hashicorp/terraform-provider-google-beta/pull/3061))
 <<<<<<< HEAD
 * compute: changed `google_compute_subnetwork` to accept more values in the `purpose` field ([#3043](https://github.com/hashicorp/terraform-provider-google-beta/pull/3043))
@@ -29,15 +32,26 @@ IMPROVEMENTS:
 * dataflow: added field `enable_streaming_engine` to `google_dataflow_job` ([#3049](https://github.com/hashicorp/terraform-provider-google-beta/pull/3049))
 * vpcaccess: added beta fields `subnet` and `machine_type` to `google_vpc_access_connector` ([#3042](https://github.com/hashicorp/terraform-provider-google-beta/pull/3042))
 >>>>>>> v3.62.0
+=======
+* provider: The provider now supports [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation). The federated json credentials must be loaded through the `GOOGLE_APPLICATION_CREDENTIALS` environment variable. ([#3054](https://github.com/hashicorp/terraform-provider-google-beta/pull/3054))
+* compute: added `proxy_bind` to `google_compute_target_tcp_proxy`, `google_compute_target_http_proxy` and `google_compute_target_https_proxy` ([#3061](https://github.com/hashicorp/terraform-provider-google-beta/pull/3061))
+* compute: changed `google_compute_subnetwork` to accept more values in the `purpose` field ([#3043](https://github.com/hashicorp/terraform-provider-google-beta/pull/3043))
+* dataflow: added `enable_streaming_engine` argument ([#3049](https://github.com/hashicorp/terraform-provider-google-beta/pull/3049))
+* vpcaccess: added `subnet`, `machine_type` beta fields to `google_vpc_access_connector` ([#3042](https://github.com/hashicorp/terraform-provider-google-beta/pull/3042))
+>>>>>>> v3.63.0
 
 BUG FIXES:
 * bigtable: fixed bug where gc_policy would attempt to recreate the resource when switching from deprecated attribute but maintaining the same value underlying value ([#3037](https://github.com/hashicorp/terraform-provider-google-beta/pull/3037))
 * binaryauthorization: fixed permadiff in `google_binary_authorization_attestor` ([#3035](https://github.com/hashicorp/terraform-provider-google-beta/pull/3035))
 <<<<<<< HEAD
+<<<<<<< HEAD
 * container: Fixed updates on `export_custom_routes` and `import_custom_routes` in `google_compute_network_peering` ([#3045](https://github.com/hashicorp/terraform-provider-google-beta/pull/3045))
 =======
 * container: fixed update support for fields `export_custom_routes` and `import_custom_routes` in `google_compute_network_peering` ([#3045](https://github.com/hashicorp/terraform-provider-google-beta/pull/3045))
 >>>>>>> v3.62.0
+=======
+* container: Fixed updates on `export_custom_routes` and `import_custom_routes` in `google_compute_network_peering` ([#3045](https://github.com/hashicorp/terraform-provider-google-beta/pull/3045))
+>>>>>>> v3.63.0
 
 ## 3.60.0 (March 15, 2021)
 

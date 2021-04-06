@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceTagsTagKey() *schema.Resource {
@@ -49,17 +50,19 @@ func resourceTagsTagKey() *schema.Resource {
 				Description: `Input only. The resource name of the new TagKey's parent. Must be of the form organizations/{org_id}.`,
 			},
 			"short_name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.StringLenBetween(1, 63),
 				Description: `Input only. The user friendly name for a TagKey. The short name should be unique for TagKeys within the same tag namespace.
 
 The short name must be 1-63 characters, beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.`,
 			},
 			"description": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: `User-assigned description of the TagKey. Must not exceed 256 characters.`,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringLenBetween(0, 256),
+				Description:  `User-assigned description of the TagKey. Must not exceed 256 characters.`,
 			},
 			"create_time": {
 				Type:     schema.TypeString,
