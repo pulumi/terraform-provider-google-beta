@@ -198,8 +198,8 @@ The following arguments are supported:
 
 * `database_version` - (Optional, Default: `MYSQL_5_6`) The MySQL, PostgreSQL or
 SQL Server (beta) version to use. Supported values include `MYSQL_5_6`,
-`MYSQL_5_7`, `MYSQL_8_0`, `POSTGRES_9_6`,`POSTGRES_10`, `POSTGRES_11`, 
-`POSTGRES_12`, `POSTGRES_13`, `SQLSERVER_2017_STANDARD`, 
+`MYSQL_5_7`, `MYSQL_8_0`, `POSTGRES_9_6`,`POSTGRES_10`, `POSTGRES_11`,
+`POSTGRES_12`, `POSTGRES_13`, `SQLSERVER_2017_STANDARD`,
 `SQLSERVER_2017_ENTERPRISE`, `SQLSERVER_2017_EXPRESS`, `SQLSERVER_2017_WEB`.
 [Database Version Policies](https://cloud.google.com/sql/docs/db-versions)
 includes an up-to-date reference of supported versions.
@@ -217,7 +217,7 @@ includes an up-to-date reference of supported versions.
     is not provided, the provider project is used.
 
 * `replica_configuration` - (Optional) The configuration for replication. The
-    configuration is detailed below.
+    configuration is detailed below. Valid only for MySQL instances.
 
 * `root_password` - (Optional) Initial root password. Required for MS SQL Server, ignored by MySQL and PostgreSQL.
 
@@ -237,9 +237,9 @@ in state, a `destroy` or `update` command that deletes the instance will fail.
 * `restore_backup_context` - (optional) The context needed to restore the database to a backup run. This field will
     cause the provider to trigger the database to restore from the backup run indicated. The configuration is detailed below.
     **NOTE:** Restoring from a backup is an imperative action and not recommended via the provider. Adding or modifying this
-    block during resource creation/update will trigger the restore action after the resource is created/updated. 
+    block during resource creation/update will trigger the restore action after the resource is created/updated.
 
-* `clone` - (Optional) The context needed to create this instance as a clone of another instance. When this field is set during 
+* `clone` - (Optional) The context needed to create this instance as a clone of another instance. When this field is set during
     resource creation, the provider will attempt to clone another instance as indicated in the context. The
     configuration is detailed below.
 
@@ -317,13 +317,13 @@ The optional `settings.backup_configuration.backup_retention_settings` subblock 
 The optional `settings.ip_configuration` subblock supports:
 
 * `ipv4_enabled` - (Optional) Whether this Cloud SQL instance should be assigned
-a public IPV4 address. Either `ipv4_enabled` must be enabled or a
+a public IPV4 address. At least `ipv4_enabled` must be enabled or a
 `private_network` must be configured.
 
 * `private_network` - (Optional) The VPC network from which the Cloud SQL
 instance is accessible for private IP. For example, projects/myProject/global/networks/default.
 Specifying a network enables private IP.
-Either `ipv4_enabled` must be enabled or a `private_network` must be configured.
+At least `ipv4_enabled` must be enabled or a `private_network` must be configured.
 This setting can be updated, but it cannot be removed after it is set.
 
 * `require_ssl` - (Optional) Whether SSL connections over IP are enforced or not.
@@ -413,7 +413,7 @@ The optional `clone` block supports:
 
 The optional `restore_backup_context` block supports:
 **NOTE:** Restoring from a backup is an imperative action and not recommended via the provider. Adding or modifying this
-block during resource creation/update will trigger the restore action after the resource is created/updated. 
+block during resource creation/update will trigger the restore action after the resource is created/updated.
 
 * `backup_run_id` - (Required) The ID of the backup run to restore from.
 

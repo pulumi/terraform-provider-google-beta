@@ -1,4 +1,50 @@
-## 3.63.0 (April 05, 2021)
+## 3.64.0 (April 12, 2021)
+
+FEATURES:
+* **New Resource:** `google_tags_tag_binding` ([#3121](https://github.com/hashicorp/terraform-provider-google-beta/pull/3121))
+* **New Resource:** `google_tags_tag_key_iam_binding` ([#3124](https://github.com/hashicorp/terraform-provider-google-beta/pull/3124))
+* **New Resource:** `google_tags_tag_key_iam_member` ([#3124](https://github.com/hashicorp/terraform-provider-google-beta/pull/3124))
+* **New Resource:** `google_tags_tag_key_iam_policy` ([#3124](https://github.com/hashicorp/terraform-provider-google-beta/pull/3124))
+* **New Resource:** `google_tags_tag_value_iam_binding` ([#3124](https://github.com/hashicorp/terraform-provider-google-beta/pull/3124))
+* **New Resource:** `google_tags_tag_value_iam_member` ([#3124](https://github.com/hashicorp/terraform-provider-google-beta/pull/3124))
+* **New Resource:** `google_tags_tag_value_iam_policy` ([#3124](https://github.com/hashicorp/terraform-provider-google-beta/pull/3124))
+* **New Resource:** `google_apigee_envgroup_attachment` ([#3129](https://github.com/hashicorp/terraform-provider-google-beta/pull/3129))
+
+IMPROVEMENTS:
+* bigquery: added `require_partition_filter` field to `google_bigquery_table` when provisioning `hive_partitioning_options` ([#3106](https://github.com/hashicorp/terraform-provider-google-beta/pull/3106))
+* cloudbuild: added new machine types for `google_cloudbuild_trigger` ([#3115](https://github.com/hashicorp/terraform-provider-google-beta/pull/3115))
+* compute: added field `maintenance_window.start_time` to `google_compute_node_group` ([#3125](https://github.com/hashicorp/terraform-provider-google-beta/pull/3125))
+* compute: added gVNIC support for `google_compute_instance_template` ([#3123](https://github.com/hashicorp/terraform-provider-google-beta/pull/3123))
+* datacatalog: added `description` field to `google_data_catalog_tag_template ` resource ([#3128](https://github.com/hashicorp/terraform-provider-google-beta/pull/3128))
+* iam: added support for third party identities via the principle and principleSet IAM members ([#3133](https://github.com/hashicorp/terraform-provider-google-beta/pull/3133))
+
+BUG FIXES:
+* compute: reverted datatype change for `mtu` in `google_compute_interconnect_attachment` as it was incompatible with existing state representation ([#3112](https://github.com/hashicorp/terraform-provider-google-beta/pull/3112))
+* iam: fixed issue with principle and principleSet members not retaining their casing ([#3133](https://github.com/hashicorp/terraform-provider-google-beta/pull/3133))
+* storage: fixed intermittent `Provider produced inconsistent result after apply` error when creating ([#3107](https://github.com/hashicorp/terraform-provider-google-beta/pull/3107))
+
+## 3.63.0 (April 5, 2021)
+
+FEATURES:
+* **New Data Source:** `google_monitoring_istio_canonical_service` ([#3092](https://github.com/hashicorp/terraform-provider-google-beta/pull/3092))
+* **New Resource:** `google_apigee_instance_attachment` ([#3093](https://github.com/hashicorp/terraform-provider-google-beta/pull/3093))
+* **New Resource:** `google_gke_hub_membership` ([#3079](https://github.com/hashicorp/terraform-provider-google-beta/pull/3079))
+* **New Resource:** `google_tags_tag_value` ([#3097](https://github.com/hashicorp/terraform-provider-google-beta/pull/3097))
+
+IMPROVEMENTS:
+* added support for Apple silicon chip (updated to go 1.16) ([#3057](https://github.com/hashicorp/terraform-provider-google-beta/pull/3057))
+* container:
+  * added support for GKE Autopilot in `google_container_cluster`([#3101](https://github.com/hashicorp/terraform-provider-google-beta/pull/3101))
+  * added `enable_l4_ilb_subsetting` (beta) and `private_ipv6_google_access` fields to `google_container_cluster` ([#3095](https://github.com/hashicorp/terraform-provider-google-beta/pull/3095))
+* sql: changed the default timeout of `google_sql_database_instance` to 30m from 20m ([#3099](https://github.com/hashicorp/terraform-provider-google-beta/pull/3099))
+
+BUG FIXES:
+* bigquery: fixed issue where you couldn't extend an existing `schema` with additional columns in `google_bigquery_table` ([#3100](https://github.com/hashicorp/terraform-provider-google-beta/pull/3100))
+* cloudidentity: modified `google_cloud_identity_groups` and `google_cloud_identity_group_memberships ` to respect the `user_project_override` and `billing_project` configurations and send the appropriate headers to establish a quota project ([#3081](https://github.com/hashicorp/terraform-provider-google-beta/pull/3081))
+* compute: added minimum for `scopes` field to `google_compute_instance` resource ([#3098](https://github.com/hashicorp/terraform-provider-google-beta/pull/3098))
+* notebooks: fixed permadiff on labels for `google_notebook_instance` ([#3096](https://github.com/hashicorp/terraform-provider-google-beta/pull/3096))
+* secretmanager: set required on `secrest_data` in `google_secret_manager_secret_version` ([#3094](https://github.com/hashicorp/terraform-provider-google-beta/pull/3094))
+
 
 ## 3.62.0 (March 27, 2021)
 

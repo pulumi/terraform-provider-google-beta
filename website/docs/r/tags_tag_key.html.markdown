@@ -24,8 +24,6 @@ description: |-
 
 A TagKey, used to group a set of TagValues.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
 
 To get more information about TagKey, see:
 
@@ -38,11 +36,9 @@ To get more information about TagKey, see:
 
 ```hcl
 resource "google_tags_tag_key" "key" {
-  provider = google-beta
-
   parent = "organizations/123456789"
-  short_name = "foo"
-  description = "For foo resources."
+  short_name = "keyname"
+  description = "For keyname resources."
 }
 ```
 
