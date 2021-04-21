@@ -5,6 +5,7 @@ package google
 import (
 	"fmt"
 	"log"
+	"os"
 	"sort"
 	"strings"
 	"time"
@@ -479,4 +480,21 @@ func SnakeToPascalCase(s string) string {
 		split[i] = strings.Title(split[i])
 	}
 	return strings.Join(split, "")
+}
+
+func checkStringMap(v interface{}) map[string]string {
+	m, ok := v.(map[string]string)
+	if ok {
+		return m
+	}
+	return convertStringMap(v.(map[string]interface{}))
+}
+
+func multiEnvSearch(ks []string) string {
+	for _, k := range ks {
+		if v := os.Getenv(k); v != "" {
+			return v
+		}
+	}
+	return ""
 }

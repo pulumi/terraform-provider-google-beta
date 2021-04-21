@@ -31,11 +31,8 @@ func TestAccWorkflowsWorkflow_workflowBasicExample(t *testing.T) {
 	}
 
 	vcrTest(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
-		ExternalProviders: map[string]resource.ExternalProvider{
-			"random": {},
-		},
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckWorkflowsWorkflowDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
@@ -100,7 +97,7 @@ func testAccCheckWorkflowsWorkflowDestroyProducer(t *testing.T) func(s *terrafor
 
 			config := googleProviderConfig(t)
 
-			url, err := replaceVarsForTest(config, rs, "{{WorkflowsBasePath}}{{name}}")
+			url, err := replaceVarsForTest(config, rs, "{{WorkflowsBasePath}}projects/{{project}}/locations/{{region}}/workflows/{{name}}")
 			if err != nil {
 				return err
 			}

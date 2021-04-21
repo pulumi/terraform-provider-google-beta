@@ -23,22 +23,14 @@ func Provider() *schema.Provider {
 	provider := &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"credentials": {
-				Type:     schema.TypeString,
-				Optional: true,
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"GOOGLE_CREDENTIALS",
-					"GOOGLE_CLOUD_KEYFILE_JSON",
-					"GCLOUD_KEYFILE_JSON",
-				}, nil),
+				Type:         schema.TypeString,
+				Optional:     true,
 				ValidateFunc: validateCredentials,
 			},
 
 			"access_token": {
-				Type:     schema.TypeString,
-				Optional: true,
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"GOOGLE_OAUTH_ACCESS_TOKEN",
-				}, nil),
+				Type:          schema.TypeString,
+				Optional:      true,
 				ConflictsWith: []string{"credentials"},
 			},
 			"impersonate_service_account": {
@@ -790,6 +782,7 @@ func Provider() *schema.Provider {
 			"google_kms_key_ring":                                 dataSourceGoogleKmsKeyRing(),
 			"google_kms_secret":                                   dataSourceGoogleKmsSecret(),
 			"google_kms_secret_ciphertext":                        dataSourceGoogleKmsSecretCiphertext(),
+			"google_kms_secret_asymmetric":                        dataSourceGoogleKmsSecretAsymmetric(),
 			"google_firebase_web_app":                             dataSourceGoogleFirebaseWebApp(),
 			"google_firebase_web_app_config":                      dataSourceGoogleFirebaseWebappConfig(),
 			"google_folder":                                       dataSourceGoogleFolder(),
@@ -1349,6 +1342,18 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 			return nil, diag.FromErr(err)
 		}
 	}
+
+	// Search for default credentials
+	config.Credentials = multiEnvSearch([]string{
+		"GOOGLE_CREDENTIALS",
+		"GOOGLE_CLOUD_KEYFILE_JSON",
+		"GCLOUD_KEYFILE_JSON",
+	})
+
+	config.AccessToken = multiEnvSearch([]string{
+		"GOOGLE_OAUTH_ACCESS_TOKEN",
+	})
+
 	// Add credential source
 	if v, ok := d.GetOk("access_token"); ok {
 		config.AccessToken = v.(string)
