@@ -75,6 +75,7 @@ resource "google_compute_region_backend_service" "login" {
 
   name        = "login"
   protocol    = "HTTP"
+  load_balancing_scheme = "INTERNAL_MANAGED"
   timeout_sec = 10
 
   health_checks = [google_compute_region_health_check.default.id]
@@ -85,6 +86,7 @@ resource "google_compute_region_backend_service" "home" {
 
   name        = "home"
   protocol    = "HTTP"
+  load_balancing_scheme = "INTERNAL_MANAGED"
   timeout_sec = 10
 
   health_checks = [google_compute_region_health_check.default.id]
