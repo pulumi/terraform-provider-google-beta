@@ -86,6 +86,25 @@ resource "google_container_cluster" "primary" {
 }
 ```
 
+## Example Usage - autopilot
+
+```hcl
+resource "google_service_account" "default" {
+  account_id   = "service-account-id"
+  display_name = "Service Account"
+}
+
+resource "google_container_cluster" "primary" {
+  name             = "marcellus-wallace"
+  location         = "us-central1-a"
+  enable_autopilot = true
+  timeouts {
+    create = "30m"
+    update = "40m"
+  }
+}
+```
+
 ## Argument Reference
 
 * `name` - (Required) The name of the cluster, unique within the project and

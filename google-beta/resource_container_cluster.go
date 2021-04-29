@@ -462,7 +462,7 @@ func resourceContainerCluster() *schema.Resource {
 			},
 
 			"enable_binary_authorization": {
-				Default:       false,
+				//Default:       false, // there should never be a default value here when we have a conflicts_with
 				Type:          schema.TypeBool,
 				Optional:      true,
 				Description:   `Enable Binary Authorization for this cluster. If enabled, all container images will be validated by Google Binary Authorization.`,
