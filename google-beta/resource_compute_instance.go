@@ -577,7 +577,9 @@ func resourceComputeInstance() *schema.Resource {
 				Type:             schema.TypeList,
 				MaxItems:         1,
 				Optional:         true,
-				DiffSuppressFunc: serviceAccountDiffSuppress,
+				// Removed by stack72 429 as this causes a panic due as follows
+				// interface {} is *schema.Set, not []interface {}
+				//DiffSuppressFunc: serviceAccountDiffSuppress,
 				Description:      `The service account to attach to the instance.`,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
