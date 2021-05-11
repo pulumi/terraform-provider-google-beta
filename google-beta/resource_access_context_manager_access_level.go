@@ -116,8 +116,8 @@ An empty list allows all types and all versions.`,
 															"os_type": {
 																Type:         schema.TypeString,
 																Required:     true,
-																ValidateFunc: validation.StringInSlice([]string{"OS_UNSPECIFIED", "DESKTOP_MAC", "DESKTOP_WINDOWS", "DESKTOP_LINUX", "DESKTOP_CHROME_OS"}, false),
-																Description:  `The operating system type of the device. Possible values: ["OS_UNSPECIFIED", "DESKTOP_MAC", "DESKTOP_WINDOWS", "DESKTOP_LINUX", "DESKTOP_CHROME_OS"]`,
+																ValidateFunc: validation.StringInSlice([]string{"OS_UNSPECIFIED", "DESKTOP_MAC", "DESKTOP_WINDOWS", "DESKTOP_LINUX", "DESKTOP_CHROME_OS", "ANDROID", "IOS"}, false),
+																Description:  `The operating system type of the device. Possible values: ["OS_UNSPECIFIED", "DESKTOP_MAC", "DESKTOP_WINDOWS", "DESKTOP_LINUX", "DESKTOP_CHROME_OS", "ANDROID", "IOS"]`,
 															},
 															"minimum_version": {
 																Type:     schema.TypeString,
@@ -125,6 +125,11 @@ An empty list allows all types and all versions.`,
 																Description: `The minimum allowed OS version. If not set, any version
 of this OS satisfies the constraint.
 Format: "major.minor.patch" such as "10.5.301", "9.2.1".`,
+															},
+															"require_verified_chrome_os": {
+																Type:        schema.TypeBool,
+																Optional:    true,
+																Description: `If you specify DESKTOP_CHROME_OS for osType, you can optionally include requireVerifiedChromeOs to require Chrome Verified Access.`,
 															},
 														},
 													},
@@ -699,13 +704,18 @@ func flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstrai
 			continue
 		}
 		transformed = append(transformed, map[string]interface{}{
-			"minimum_version": flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsMinimumVersion(original["minimumVersion"], d, config),
-			"os_type":         flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsOsType(original["osType"], d, config),
+			"minimum_version":            flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsMinimumVersion(original["minimumVersion"], d, config),
+			"require_verified_chrome_os": flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsRequireVerifiedChromeOs(original["requireVerifiedChromeOs"], d, config),
+			"os_type":                    flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsOsType(original["osType"], d, config),
 		})
 	}
 	return transformed
 }
 func flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsMinimumVersion(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
+func flattenAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsRequireVerifiedChromeOs(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	return v
 }
 
@@ -971,6 +981,13 @@ func expandAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstrain
 			transformed["minimumVersion"] = transformedMinimumVersion
 		}
 
+		transformedRequireVerifiedChromeOs, err := expandAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsRequireVerifiedChromeOs(original["require_verified_chrome_os"], d, config)
+		if err != nil {
+			return nil, err
+		} else if val := reflect.ValueOf(transformedRequireVerifiedChromeOs); val.IsValid() && !isEmptyValue(val) {
+			transformed["requireVerifiedChromeOs"] = transformedRequireVerifiedChromeOs
+		}
+
 		transformedOsType, err := expandAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsOsType(original["os_type"], d, config)
 		if err != nil {
 			return nil, err
@@ -984,6 +1001,10 @@ func expandAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstrain
 }
 
 func expandAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsMinimumVersion(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandAccessContextManagerAccessLevelBasicConditionsDevicePolicyOsConstraintsRequireVerifiedChromeOs(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 

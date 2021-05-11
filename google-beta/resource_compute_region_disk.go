@@ -24,6 +24,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"google.golang.org/api/googleapi"
 )
 
@@ -120,6 +121,14 @@ encryption key that protects this resource.`,
 						},
 					},
 				},
+			},
+			"interface": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.StringInSlice([]string{"SCSI", "NVME", ""}, false),
+				Description:  `Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Default value: "SCSI" Possible values: ["SCSI", "NVME"]`,
+				Default:      "SCSI",
 			},
 			"labels": {
 				Type:        schema.TypeMap,
@@ -327,6 +336,12 @@ func resourceComputeRegionDiskCreate(d *schema.ResourceData, meta interface{}) e
 	} else if v, ok := d.GetOkExists("type"); !isEmptyValue(reflect.ValueOf(typeProp)) && (ok || !reflect.DeepEqual(v, typeProp)) {
 		obj["type"] = typeProp
 	}
+	interfaceProp, err := expandComputeRegionDiskInterface(d.Get("interface"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("interface"); !isEmptyValue(reflect.ValueOf(interfaceProp)) && (ok || !reflect.DeepEqual(v, interfaceProp)) {
+		obj["interface"] = interfaceProp
+	}
 	regionProp, err := expandComputeRegionDiskRegion(d.Get("region"), d, config)
 	if err != nil {
 		return err
@@ -484,6 +499,9 @@ func resourceComputeRegionDiskRead(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("Error reading RegionDisk: %s", err)
 	}
 	if err := d.Set("type", flattenComputeRegionDiskType(res["type"], d, config)); err != nil {
+		return fmt.Errorf("Error reading RegionDisk: %s", err)
+	}
+	if err := d.Set("interface", flattenComputeRegionDiskInterface(res["interface"], d, config)); err != nil {
 		return fmt.Errorf("Error reading RegionDisk: %s", err)
 	}
 	if err := d.Set("region", flattenComputeRegionDiskRegion(res["region"], d, config)); err != nil {
@@ -810,6 +828,10 @@ func flattenComputeRegionDiskType(v interface{}, d *schema.ResourceData, config 
 	return NameFromSelfLinkStateFunc(v)
 }
 
+func flattenComputeRegionDiskInterface(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
 func flattenComputeRegionDiskRegion(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	if v == nil {
 		return v
@@ -939,6 +961,10 @@ func expandComputeRegionDiskType(v interface{}, d TerraformResourceData, config 
 		return nil, fmt.Errorf("Invalid value for type: %s", err)
 	}
 	return f.RelativeLink(), nil
+}
+
+func expandComputeRegionDiskInterface(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
 }
 
 func expandComputeRegionDiskRegion(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {

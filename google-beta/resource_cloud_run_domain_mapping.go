@@ -27,12 +27,17 @@ import (
 	"google.golang.org/api/googleapi"
 )
 
-const domainMappingGoogleProvidedLabel = "cloud.googleapis.com/location"
+var domainMappingGoogleProvidedLabels = []string{
+	"cloud.googleapis.com/location",
+	"run.googleapis.com/overrideAt",
+}
 
 func domainMappingLabelDiffSuppress(k, old, new string, d *schema.ResourceData) bool {
-	// Suppress diffs for the label provided by Google
-	if strings.Contains(k, domainMappingGoogleProvidedLabel) && new == "" {
-		return true
+	// Suppress diffs for the labels provided by Google
+	for _, label := range domainMappingGoogleProvidedLabels {
+		if strings.Contains(k, label) && new == "" {
+			return true
+		}
 	}
 
 	// Let diff be determined by labels (above)
@@ -145,7 +150,7 @@ More info: http://kubernetes.io/docs/user-guide/identifiers#uids`,
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: `Name should be a verified domain`,
+				Description: `Name should be a [verified](https://support.google.com/webmasters/answer/9008080) domain`,
 			},
 			"spec": {
 				Type:        schema.TypeList,
