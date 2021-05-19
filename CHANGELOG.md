@@ -1,5 +1,19 @@
-## 3.67.0 (May 10, 2021)
+## 3.68.0 (May 18, 2021)
+FEATURES:
+* **New Resource:** `google_pubsub_schema` ([#3243](https://github.com/hashicorp/terraform-provider-google-beta/pull/3243))
 
+IMPROVEMENTS:
+* compute: added `initial_size` in resource `google_compute_node_group` to account for scenarios where size may change under the hood ([#3228](https://github.com/hashicorp/terraform-provider-google-beta/pull/3228))
+* compute: added support for setting `kms_key_name` on `google_compute_machine_image` ([#3241](https://github.com/hashicorp/terraform-provider-google-beta/pull/3241))
+* dataflow: enabled updates for `google_dataflow_flex_template_job` ([#3246](https://github.com/hashicorp/terraform-provider-google-beta/pull/3246))
+
+BUG FIXES:
+* compute: Fixed permadiff for `cdn_policy.serve_while_stale` and `cdn_policy.*_ttl` in `google_compute_region_backend_service` (beta) ([#3230](https://github.com/hashicorp/terraform-provider-google-beta/pull/3230))
+* compute: fixed bug where, when an organization security policy association was removed outside of terraform, the next plan/apply would fail. ([#3234](https://github.com/hashicorp/terraform-provider-google-beta/pull/3234))
+* container: added validation to check that both `node_version` and `remove_default_node_pool` cannot be set on `google_container_cluster` ([#3237](https://github.com/hashicorp/terraform-provider-google-beta/pull/3237))
+* dns: suppressed spurious diffs due to case changes in DS records ([#3236](https://github.com/hashicorp/terraform-provider-google-beta/pull/3236))
+
+## 3.67.0 (May 10, 2021)
 NOTES:
 * all: changed default HTTP request timeout from 30 seconds to 120 seconds ([#3181](https://github.com/hashicorp/terraform-provider-google-beta/pull/3181))
 BREAKING CHANGES:
@@ -32,7 +46,10 @@ BUG FIXES:
 * serviceusage: added `google_project_service.service` validation to reject invalid service domains that don't contain a period ([#3191](https://github.com/hashicorp/terraform-provider-google-beta/pull/3191))
 * storage: fixed bug where `role_entity` user wouldn't update if the role changed. ([#3199](https://github.com/hashicorp/terraform-provider-google-beta/pull/3199))
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v3.68.0
 ## 3.66.1 (April 29, 2021)
 BUG FIXES:
 * compute: fixed bug where terraform would crash if updating from no `service_account.scopes` to more. ([#3208](https://github.com/hashicorp/terraform-provider-google-beta/pull/3208))
