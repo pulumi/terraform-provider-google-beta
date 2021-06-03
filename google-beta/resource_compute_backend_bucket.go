@@ -731,7 +731,7 @@ func expandComputeBackendBucketCdnPolicy(v interface{}, d TerraformResourceData,
 	transformedNegativeCaching, err := expandComputeBackendBucketCdnPolicyNegativeCaching(original["negative_caching"], d, config)
 	if err != nil {
 		return nil, err
-	} else if val := reflect.ValueOf(transformedNegativeCaching); val.IsValid() && !isEmptyValue(val) {
+	} else {
 		transformed["negativeCaching"] = transformedNegativeCaching
 	}
 
@@ -752,7 +752,7 @@ func expandComputeBackendBucketCdnPolicy(v interface{}, d TerraformResourceData,
 	transformedServeWhileStale, err := expandComputeBackendBucketCdnPolicyServeWhileStale(original["serve_while_stale"], d, config)
 	if err != nil {
 		return nil, err
-	} else if val := reflect.ValueOf(transformedServeWhileStale); val.IsValid() && !isEmptyValue(val) {
+	} else {
 		transformed["serveWhileStale"] = transformedServeWhileStale
 	}
 
