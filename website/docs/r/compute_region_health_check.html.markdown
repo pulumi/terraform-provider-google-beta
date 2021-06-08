@@ -425,7 +425,8 @@ The following arguments are supported:
 
 * `log_config` -
   (Optional)
-  Configure logging on this health check.  Structure is documented below.
+  Configure logging on this health check.
+  Structure is documented below.
 
 * `region` -
   (Optional)

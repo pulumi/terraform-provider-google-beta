@@ -1,3 +1,18 @@
+## 3.71.0 (June 07, 2021)
+FEATURES:
+* **New Resource:** `google_dialogflow_fulfillment` ([#3286](https://github.com/hashicorp/terraform-provider-google-beta/pull/3286))
+
+IMPROVEMENTS:
+* compute: added `reservation_affinity` to `google_compute_instance` and `google_compute_instance_template` ([#3288](https://github.com/hashicorp/terraform-provider-google-beta/pull/3288))
+* compute: added support for `wait_for_instances_status` on `google_compute_instance_group_manager` and `google_compute_region_instance_group_manager` ([#3283](https://github.com/hashicorp/terraform-provider-google-beta/pull/3283))
+* compute: added support for output-only `status` field on `google_compute_instance_group_manager` and `google_compute_region_instance_group_manager` ([#3283](https://github.com/hashicorp/terraform-provider-google-beta/pull/3283))
+* compute: set the default value for log_config.enable on `google_compute_region_health_check` to avoid permanent diff on plan/apply. ([#3291](https://github.com/hashicorp/terraform-provider-google-beta/pull/3291))
+
+BUG FIXES:
+* composer: fixed a check that did not allow for preview versions in `google_composer_environment` ([#3287](https://github.com/hashicorp/terraform-provider-google-beta/pull/3287))
+* storage: fixed error when `matches_storage_class` is set empty on `google_storage_bucket` ([#3282](https://github.com/hashicorp/terraform-provider-google-beta/pull/3282))
+* vpcaccess: fixed permadiff when `max_throughput` is not set on `google_vpc_access_connector` ([#3294](https://github.com/hashicorp/terraform-provider-google-beta/pull/3294))
+
 ## 3.70.0 (June 01, 2021)
 IMPROVEMENTS:
 * compute: added `provisioned_iops` to `google_compute_disk` ([#3269](https://github.com/hashicorp/terraform-provider-google-beta/pull/3269))
@@ -41,7 +56,7 @@ BUG FIXES:
 ## 3.67.0 (May 10, 2021)
 NOTES:
 * all: changed default HTTP request timeout from 30 seconds to 120 seconds ([#3181](https://github.com/hashicorp/terraform-provider-google-beta/pull/3181))
-BREAKING CHANGES:
+  BREAKING CHANGES:
 * bigquery: updating `dataset_id` or `project_id` in `google_bigquery_dataset` will now recreate the resource ([#3185](https://github.com/hashicorp/terraform-provider-google-beta/pull/3185))
 
 IMPROVEMENTS:
@@ -71,10 +86,6 @@ BUG FIXES:
 * serviceusage: added `google_project_service.service` validation to reject invalid service domains that don't contain a period ([#3191](https://github.com/hashicorp/terraform-provider-google-beta/pull/3191))
 * storage: fixed bug where `role_entity` user wouldn't update if the role changed. ([#3199](https://github.com/hashicorp/terraform-provider-google-beta/pull/3199))
 
-<<<<<<< HEAD
-
-=======
->>>>>>> v3.68.0
 ## 3.66.1 (April 29, 2021)
 BUG FIXES:
 * compute: fixed bug where terraform would crash if updating from no `service_account.scopes` to more. ([#3208](https://github.com/hashicorp/terraform-provider-google-beta/pull/3208))
@@ -191,37 +202,16 @@ BUG FIXES:
 ## 3.61.0 (March 23, 2021)
 
 IMPROVEMENTS:
-<<<<<<< HEAD
-* compute: added `proxy_bind` to `google_compute_target_tcp_proxy`, `google_compute_target_http_proxy` and `google_compute_target_https_proxy` ([#3061](https://github.com/hashicorp/terraform-provider-google-beta/pull/3061))
-<<<<<<< HEAD
-* compute: changed `google_compute_subnetwork` to accept more values in the `purpose` field ([#3043](https://github.com/hashicorp/terraform-provider-google-beta/pull/3043))
-* dataflow: added `enable_streaming_engine` argument ([#3049](https://github.com/hashicorp/terraform-provider-google-beta/pull/3049))
-* vpcaccess: added `subnet`, `machine_type` beta fields to `google_vpc_access_connector` ([#3042](https://github.com/hashicorp/terraform-provider-google-beta/pull/3042))
-=======
-* compute: updated `google_compute_subnetwork` to accept more values in the `purpose` field ([#3043](https://github.com/hashicorp/terraform-provider-google-beta/pull/3043))
-* dataflow: added field `enable_streaming_engine` to `google_dataflow_job` ([#3049](https://github.com/hashicorp/terraform-provider-google-beta/pull/3049))
-* vpcaccess: added beta fields `subnet` and `machine_type` to `google_vpc_access_connector` ([#3042](https://github.com/hashicorp/terraform-provider-google-beta/pull/3042))
->>>>>>> v3.62.0
-=======
 * provider: The provider now supports [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation). The federated json credentials must be loaded through the `GOOGLE_APPLICATION_CREDENTIALS` environment variable. ([#3054](https://github.com/hashicorp/terraform-provider-google-beta/pull/3054))
 * compute: added `proxy_bind` to `google_compute_target_tcp_proxy`, `google_compute_target_http_proxy` and `google_compute_target_https_proxy` ([#3061](https://github.com/hashicorp/terraform-provider-google-beta/pull/3061))
 * compute: changed `google_compute_subnetwork` to accept more values in the `purpose` field ([#3043](https://github.com/hashicorp/terraform-provider-google-beta/pull/3043))
 * dataflow: added `enable_streaming_engine` argument ([#3049](https://github.com/hashicorp/terraform-provider-google-beta/pull/3049))
 * vpcaccess: added `subnet`, `machine_type` beta fields to `google_vpc_access_connector` ([#3042](https://github.com/hashicorp/terraform-provider-google-beta/pull/3042))
->>>>>>> v3.63.0
 
 BUG FIXES:
 * bigtable: fixed bug where gc_policy would attempt to recreate the resource when switching from deprecated attribute but maintaining the same value underlying value ([#3037](https://github.com/hashicorp/terraform-provider-google-beta/pull/3037))
 * binaryauthorization: fixed permadiff in `google_binary_authorization_attestor` ([#3035](https://github.com/hashicorp/terraform-provider-google-beta/pull/3035))
-<<<<<<< HEAD
-<<<<<<< HEAD
 * container: Fixed updates on `export_custom_routes` and `import_custom_routes` in `google_compute_network_peering` ([#3045](https://github.com/hashicorp/terraform-provider-google-beta/pull/3045))
-=======
-* container: fixed update support for fields `export_custom_routes` and `import_custom_routes` in `google_compute_network_peering` ([#3045](https://github.com/hashicorp/terraform-provider-google-beta/pull/3045))
->>>>>>> v3.62.0
-=======
-* container: Fixed updates on `export_custom_routes` and `import_custom_routes` in `google_compute_network_peering` ([#3045](https://github.com/hashicorp/terraform-provider-google-beta/pull/3045))
->>>>>>> v3.63.0
 
 ## 3.60.0 (March 15, 2021)
 
@@ -279,10 +269,6 @@ BUG FIXES:
 * compute: fixed a panic on empty `target_size` in `google_compute_region_instance_group_manager` ([#2979](https://github.com/hashicorp/terraform-provider-google-beta/pull/2979))
 * redis: fixed invalid value error on `auth_string` in `google_redis_instance` ([#2970](https://github.com/hashicorp/terraform-provider-google-beta/pull/2970))
 
-<<<<<<< HEAD
-
-=======
->>>>>>> v3.60.0
 ## 3.58.0 (February 23, 2021)
 
 NOTES:
@@ -365,7 +351,7 @@ IMPROVEMENTS:
 BUG FIXES:
 * bigquery: fixed permadiff on expiration_ms for `google_bigquery_table` ([#8298](https://github.com/hashicorp/terraform-provider-google/pull/8298))
 * billing: fixed perma-diff on currency_code in `google_billing_budget` ([#8266](https://github.com/hashicorp/terraform-provider-google/pull/8266))
- * compute: changed private_ipv6_google_access in `google_compute_subnetwork` to correctly send a fingerprint ([#8290](https://github.com/hashicorp/terraform-provider-google/pull/8290))
+* compute: changed private_ipv6_google_access in `google_compute_subnetwork` to correctly send a fingerprint ([#8290](https://github.com/hashicorp/terraform-provider-google/pull/8290))
 * healthcare: add retry logic on healthcare dataset not initialized error ([#8256](https://github.com/hashicorp/terraform-provider-google/pull/8256))
 
 ## 3.54.0 (January 25, 2021)
@@ -1473,7 +1459,7 @@ BUG FIXES:
 ## 3.8.0 (February 10, 2020)
 NOTES:
 * provider: added documentation for the `id` field for many resources, including format ([#1697](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1697))
-BREAKING CHANGES:
+  BREAKING CHANGES:
 * compute: Added conditional requirement of `google_compute_**region**_backend_service` `backend.capacity_scaler` to no longer accept the API default if not INTERNAL. Non-INTERNAL backend services must now specify `capacity_scaler` explicitly and have a total capacity greater than 0. In addition, API default of 1.0 must now be explicitly set and will be treated as nil or zero if not set in config. ([#1707](https://github.com/terraform-providers/terraform-provider-google-beta/pull/1707))
 
 FEATURES:
@@ -1845,7 +1831,7 @@ BREAKING CHANGES:
 
 NOTES:
 * `2.20.3` is a backport release, and some changes will not appear in `3.X` series releases until `3.12.0`.
-To upgrade to `3.X` you will need to perform a large jump in versions, and it is _strongly_ advised that you attempt to upgrade to `3.X` instead of using this release.
+  To upgrade to `3.X` you will need to perform a large jump in versions, and it is _strongly_ advised that you attempt to upgrade to `3.X` instead of using this release.
 * `2.20.3` is primarily a preventative fix, in anticipation of a change in API response messages adding a default value.
 
 BUG FIXES:
