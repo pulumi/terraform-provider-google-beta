@@ -262,7 +262,6 @@ resource "google_compute_ha_vpn_gateway" "vpn-gateway" {
       id                      = 1
       interconnect_attachment = google_compute_interconnect_attachment.attachment2.self_link
   }
-  provider = google-beta
 }
 
 resource "google_compute_interconnect_attachment" "attachment1" {
@@ -274,7 +273,6 @@ resource "google_compute_interconnect_attachment" "attachment1" {
   ipsec_internal_addresses = [
     google_compute_address.address1.self_link,
   ]
-  provider = google-beta
 }
 
 resource "google_compute_interconnect_attachment" "attachment2" {
@@ -286,7 +284,6 @@ resource "google_compute_interconnect_attachment" "attachment2" {
   ipsec_internal_addresses = [
     google_compute_address.address2.self_link,
   ]
-  provider = google-beta
 }
 
 resource "google_compute_address" "address1" {
@@ -296,7 +293,6 @@ resource "google_compute_address" "address1" {
   address       = "192.168.1.0"
   prefix_length = 29
   network       = google_compute_network.network.self_link
-  provider = google-beta
 }
 
 resource "google_compute_address" "address2" {
@@ -306,7 +302,6 @@ resource "google_compute_address" "address2" {
   address       = "192.168.2.0"
   prefix_length = 29
   network       = google_compute_network.network.self_link
-  provider = google-beta
 }
 
 resource "google_compute_router" "router" {
@@ -316,13 +311,11 @@ resource "google_compute_router" "router" {
   bgp {
     asn = 16550
   }
-  provider = google-beta
 }
 
 resource "google_compute_network" "network" {
   name                    = "test-network"
   auto_create_subnetworks = false
-  provider = google-beta
 }
 ```
 
@@ -376,7 +369,7 @@ The `vpn_interfaces` block supports:
   The external IP address for this VPN gateway interface.
 
 * `interconnect_attachment` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   URL of the interconnect attachment resource. When the value
   of this field is present, the VPN Gateway will be used for
   IPsec-encrypted Cloud Interconnect; all Egress or Ingress

@@ -346,7 +346,7 @@ resource "google_cloud_run_service" "default" {
   metadata {
     annotations = {
       generated-by = "magic-modules"
-      "run.googleapis.com/launch-stage" = "ALPHA"
+      "run.googleapis.com/launch-stage" = "BETA"
     }
   }
 
@@ -434,7 +434,7 @@ resource "google_cloud_run_service" "default" {
   metadata {
     annotations = {
       generated-by = "magic-modules"
-      "run.googleapis.com/launch-stage" = "ALPHA"
+      "run.googleapis.com/launch-stage" = "BETA"
     }
   }
 

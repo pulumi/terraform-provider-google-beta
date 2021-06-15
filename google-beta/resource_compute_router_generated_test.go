@@ -101,13 +101,11 @@ resource "google_compute_router" "encrypted-interconnect-router" {
   bgp {
     asn = 64514
   }
-  provider = google-beta
 }
 
 resource "google_compute_network" "network" {
   name                    = "tf-test-test-network%{random_suffix}"
   auto_create_subnetworks = false
-  provider = google-beta
 }
 `, context)
 }

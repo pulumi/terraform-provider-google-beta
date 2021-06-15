@@ -103,7 +103,6 @@ resource "google_compute_interconnect_attachment" "ipsec-encrypted-interconnect-
   ipsec_internal_addresses = [
     google_compute_address.address.self_link,
   ]
-  provider = google-beta
 }
 
 resource "google_compute_address" "address" {
@@ -113,7 +112,6 @@ resource "google_compute_address" "address" {
   address       = "192.168.1.0"
   prefix_length = 29
   network       = google_compute_network.network.self_link
-  provider = google-beta
 }
 
 resource "google_compute_router" "router" {
@@ -123,13 +121,11 @@ resource "google_compute_router" "router" {
   bgp {
     asn = 16550
   }
-  provider = google-beta
 }
 
 resource "google_compute_network" "network" {
   name                    = "tf-test-test-network%{random_suffix}"
   auto_create_subnetworks = false
-  provider = google-beta
 }
 `, context)
 }
