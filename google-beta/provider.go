@@ -20,6 +20,18 @@ var mutexKV = NewMutexKV()
 
 // Provider returns a *schema.Provider.
 func Provider() *schema.Provider {
+
+	// The mtls service client gives the type of endpoint (mtls/regular)
+	// at client creation. Since we use a shared client for requests we must
+	// rewrite the endpoints to be mtls endpoints for the scenario where
+	// mtls is enabled.
+	if isMtls() {
+		// if mtls is enabled switch all default endpoints to use the mtls endpoint
+		for key, bp := range DefaultBasePaths {
+			DefaultBasePaths[key] = getMtlsEndpoint(bp)
+		}
+	}
+
 	provider := &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"credentials": {
@@ -133,7 +145,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_ACCESS_APPROVAL_CUSTOM_ENDPOINT",
-				}, AccessApprovalDefaultBasePath),
+				}, DefaultBasePaths[AccessApprovalBasePathKey]),
 			},
 			"access_context_manager_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -141,7 +153,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_ACCESS_CONTEXT_MANAGER_CUSTOM_ENDPOINT",
-				}, AccessContextManagerDefaultBasePath),
+				}, DefaultBasePaths[AccessContextManagerBasePathKey]),
 			},
 			"active_directory_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -149,7 +161,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_ACTIVE_DIRECTORY_CUSTOM_ENDPOINT",
-				}, ActiveDirectoryDefaultBasePath),
+				}, DefaultBasePaths[ActiveDirectoryBasePathKey]),
 			},
 			"api_gateway_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -157,7 +169,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_API_GATEWAY_CUSTOM_ENDPOINT",
-				}, ApiGatewayDefaultBasePath),
+				}, DefaultBasePaths[ApiGatewayBasePathKey]),
 			},
 			"apigee_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -165,7 +177,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_APIGEE_CUSTOM_ENDPOINT",
-				}, ApigeeDefaultBasePath),
+				}, DefaultBasePaths[ApigeeBasePathKey]),
 			},
 			"app_engine_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -173,7 +185,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_APP_ENGINE_CUSTOM_ENDPOINT",
-				}, AppEngineDefaultBasePath),
+				}, DefaultBasePaths[AppEngineBasePathKey]),
 			},
 			"artifact_registry_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -181,7 +193,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_ARTIFACT_REGISTRY_CUSTOM_ENDPOINT",
-				}, ArtifactRegistryDefaultBasePath),
+				}, DefaultBasePaths[ArtifactRegistryBasePathKey]),
 			},
 			"big_query_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -189,7 +201,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_BIG_QUERY_CUSTOM_ENDPOINT",
-				}, BigQueryDefaultBasePath),
+				}, DefaultBasePaths[BigQueryBasePathKey]),
 			},
 			"bigquery_connection_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -197,7 +209,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_BIGQUERY_CONNECTION_CUSTOM_ENDPOINT",
-				}, BigqueryConnectionDefaultBasePath),
+				}, DefaultBasePaths[BigqueryConnectionBasePathKey]),
 			},
 			"bigquery_data_transfer_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -205,7 +217,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_BIGQUERY_DATA_TRANSFER_CUSTOM_ENDPOINT",
-				}, BigqueryDataTransferDefaultBasePath),
+				}, DefaultBasePaths[BigqueryDataTransferBasePathKey]),
 			},
 			"bigquery_reservation_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -213,7 +225,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_BIGQUERY_RESERVATION_CUSTOM_ENDPOINT",
-				}, BigqueryReservationDefaultBasePath),
+				}, DefaultBasePaths[BigqueryReservationBasePathKey]),
 			},
 			"bigtable_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -221,7 +233,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_BIGTABLE_CUSTOM_ENDPOINT",
-				}, BigtableDefaultBasePath),
+				}, DefaultBasePaths[BigtableBasePathKey]),
 			},
 			"billing_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -229,7 +241,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_BILLING_CUSTOM_ENDPOINT",
-				}, BillingDefaultBasePath),
+				}, DefaultBasePaths[BillingBasePathKey]),
 			},
 			"binary_authorization_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -237,7 +249,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_BINARY_AUTHORIZATION_CUSTOM_ENDPOINT",
-				}, BinaryAuthorizationDefaultBasePath),
+				}, DefaultBasePaths[BinaryAuthorizationBasePathKey]),
 			},
 			"cloud_asset_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -245,7 +257,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CLOUD_ASSET_CUSTOM_ENDPOINT",
-				}, CloudAssetDefaultBasePath),
+				}, DefaultBasePaths[CloudAssetBasePathKey]),
 			},
 			"cloud_build_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -253,7 +265,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CLOUD_BUILD_CUSTOM_ENDPOINT",
-				}, CloudBuildDefaultBasePath),
+				}, DefaultBasePaths[CloudBuildBasePathKey]),
 			},
 			"cloud_functions_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -261,7 +273,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CLOUD_FUNCTIONS_CUSTOM_ENDPOINT",
-				}, CloudFunctionsDefaultBasePath),
+				}, DefaultBasePaths[CloudFunctionsBasePathKey]),
 			},
 			"cloud_identity_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -269,7 +281,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CLOUD_IDENTITY_CUSTOM_ENDPOINT",
-				}, CloudIdentityDefaultBasePath),
+				}, DefaultBasePaths[CloudIdentityBasePathKey]),
 			},
 			"cloud_iot_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -277,7 +289,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CLOUD_IOT_CUSTOM_ENDPOINT",
-				}, CloudIotDefaultBasePath),
+				}, DefaultBasePaths[CloudIotBasePathKey]),
 			},
 			"cloud_run_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -285,7 +297,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CLOUD_RUN_CUSTOM_ENDPOINT",
-				}, CloudRunDefaultBasePath),
+				}, DefaultBasePaths[CloudRunBasePathKey]),
 			},
 			"cloud_scheduler_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -293,7 +305,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CLOUD_SCHEDULER_CUSTOM_ENDPOINT",
-				}, CloudSchedulerDefaultBasePath),
+				}, DefaultBasePaths[CloudSchedulerBasePathKey]),
 			},
 			"cloud_tasks_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -301,7 +313,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CLOUD_TASKS_CUSTOM_ENDPOINT",
-				}, CloudTasksDefaultBasePath),
+				}, DefaultBasePaths[CloudTasksBasePathKey]),
 			},
 			"compute_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -309,7 +321,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_COMPUTE_CUSTOM_ENDPOINT",
-				}, ComputeDefaultBasePath),
+				}, DefaultBasePaths[ComputeBasePathKey]),
 			},
 			"container_analysis_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -317,7 +329,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_CONTAINER_ANALYSIS_CUSTOM_ENDPOINT",
-				}, ContainerAnalysisDefaultBasePath),
+				}, DefaultBasePaths[ContainerAnalysisBasePathKey]),
 			},
 			"data_catalog_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -325,7 +337,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DATA_CATALOG_CUSTOM_ENDPOINT",
-				}, DataCatalogDefaultBasePath),
+				}, DefaultBasePaths[DataCatalogBasePathKey]),
 			},
 			"data_fusion_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -333,7 +345,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DATA_FUSION_CUSTOM_ENDPOINT",
-				}, DataFusionDefaultBasePath),
+				}, DefaultBasePaths[DataFusionBasePathKey]),
 			},
 			"data_loss_prevention_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -341,7 +353,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DATA_LOSS_PREVENTION_CUSTOM_ENDPOINT",
-				}, DataLossPreventionDefaultBasePath),
+				}, DefaultBasePaths[DataLossPreventionBasePathKey]),
 			},
 			"dataproc_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -349,7 +361,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DATAPROC_CUSTOM_ENDPOINT",
-				}, DataprocDefaultBasePath),
+				}, DefaultBasePaths[DataprocBasePathKey]),
 			},
 			"dataproc_metastore_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -357,7 +369,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DATAPROC_METASTORE_CUSTOM_ENDPOINT",
-				}, DataprocMetastoreDefaultBasePath),
+				}, DefaultBasePaths[DataprocMetastoreBasePathKey]),
 			},
 			"datastore_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -365,7 +377,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DATASTORE_CUSTOM_ENDPOINT",
-				}, DatastoreDefaultBasePath),
+				}, DefaultBasePaths[DatastoreBasePathKey]),
 			},
 			"deployment_manager_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -373,7 +385,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DEPLOYMENT_MANAGER_CUSTOM_ENDPOINT",
-				}, DeploymentManagerDefaultBasePath),
+				}, DefaultBasePaths[DeploymentManagerBasePathKey]),
 			},
 			"dialogflow_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -381,7 +393,15 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DIALOGFLOW_CUSTOM_ENDPOINT",
-				}, DialogflowDefaultBasePath),
+				}, DefaultBasePaths[DialogflowBasePathKey]),
+			},
+			"dialogflow_cx_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_DIALOGFLOW_CX_CUSTOM_ENDPOINT",
+				}, DefaultBasePaths[DialogflowCXBasePathKey]),
 			},
 			"dns_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -389,7 +409,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_DNS_CUSTOM_ENDPOINT",
-				}, DNSDefaultBasePath),
+				}, DefaultBasePaths[DNSBasePathKey]),
 			},
 			"essential_contacts_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -397,7 +417,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_ESSENTIAL_CONTACTS_CUSTOM_ENDPOINT",
-				}, EssentialContactsDefaultBasePath),
+				}, DefaultBasePaths[EssentialContactsBasePathKey]),
 			},
 			"filestore_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -405,7 +425,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_FILESTORE_CUSTOM_ENDPOINT",
-				}, FilestoreDefaultBasePath),
+				}, DefaultBasePaths[FilestoreBasePathKey]),
 			},
 			"firebase_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -413,7 +433,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_FIREBASE_CUSTOM_ENDPOINT",
-				}, FirebaseDefaultBasePath),
+				}, DefaultBasePaths[FirebaseBasePathKey]),
 			},
 			"firestore_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -421,7 +441,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_FIRESTORE_CUSTOM_ENDPOINT",
-				}, FirestoreDefaultBasePath),
+				}, DefaultBasePaths[FirestoreBasePathKey]),
 			},
 			"game_services_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -429,7 +449,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_GAME_SERVICES_CUSTOM_ENDPOINT",
-				}, GameServicesDefaultBasePath),
+				}, DefaultBasePaths[GameServicesBasePathKey]),
 			},
 			"gke_hub_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -437,7 +457,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_GKE_HUB_CUSTOM_ENDPOINT",
-				}, GKEHubDefaultBasePath),
+				}, DefaultBasePaths[GKEHubBasePathKey]),
 			},
 			"healthcare_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -445,7 +465,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_HEALTHCARE_CUSTOM_ENDPOINT",
-				}, HealthcareDefaultBasePath),
+				}, DefaultBasePaths[HealthcareBasePathKey]),
 			},
 			"iam_beta_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -453,7 +473,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_IAM_BETA_CUSTOM_ENDPOINT",
-				}, IAMBetaDefaultBasePath),
+				}, DefaultBasePaths[IAMBetaBasePathKey]),
 			},
 			"iap_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -461,7 +481,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_IAP_CUSTOM_ENDPOINT",
-				}, IapDefaultBasePath),
+				}, DefaultBasePaths[IapBasePathKey]),
 			},
 			"identity_platform_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -469,7 +489,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_IDENTITY_PLATFORM_CUSTOM_ENDPOINT",
-				}, IdentityPlatformDefaultBasePath),
+				}, DefaultBasePaths[IdentityPlatformBasePathKey]),
 			},
 			"kms_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -477,7 +497,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_KMS_CUSTOM_ENDPOINT",
-				}, KMSDefaultBasePath),
+				}, DefaultBasePaths[KMSBasePathKey]),
 			},
 			"logging_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -485,7 +505,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_LOGGING_CUSTOM_ENDPOINT",
-				}, LoggingDefaultBasePath),
+				}, DefaultBasePaths[LoggingBasePathKey]),
 			},
 			"memcache_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -493,7 +513,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_MEMCACHE_CUSTOM_ENDPOINT",
-				}, MemcacheDefaultBasePath),
+				}, DefaultBasePaths[MemcacheBasePathKey]),
 			},
 			"ml_engine_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -501,7 +521,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_ML_ENGINE_CUSTOM_ENDPOINT",
-				}, MLEngineDefaultBasePath),
+				}, DefaultBasePaths[MLEngineBasePathKey]),
 			},
 			"monitoring_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -509,7 +529,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_MONITORING_CUSTOM_ENDPOINT",
-				}, MonitoringDefaultBasePath),
+				}, DefaultBasePaths[MonitoringBasePathKey]),
 			},
 			"network_management_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -517,7 +537,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_NETWORK_MANAGEMENT_CUSTOM_ENDPOINT",
-				}, NetworkManagementDefaultBasePath),
+				}, DefaultBasePaths[NetworkManagementBasePathKey]),
 			},
 			"notebooks_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -525,7 +545,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_NOTEBOOKS_CUSTOM_ENDPOINT",
-				}, NotebooksDefaultBasePath),
+				}, DefaultBasePaths[NotebooksBasePathKey]),
 			},
 			"os_config_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -533,7 +553,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_OS_CONFIG_CUSTOM_ENDPOINT",
-				}, OSConfigDefaultBasePath),
+				}, DefaultBasePaths[OSConfigBasePathKey]),
 			},
 			"os_login_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -541,7 +561,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_OS_LOGIN_CUSTOM_ENDPOINT",
-				}, OSLoginDefaultBasePath),
+				}, DefaultBasePaths[OSLoginBasePathKey]),
 			},
 			"privateca_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -549,7 +569,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_PRIVATECA_CUSTOM_ENDPOINT",
-				}, PrivatecaDefaultBasePath),
+				}, DefaultBasePaths[PrivatecaBasePathKey]),
 			},
 			"pubsub_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -557,7 +577,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_PUBSUB_CUSTOM_ENDPOINT",
-				}, PubsubDefaultBasePath),
+				}, DefaultBasePaths[PubsubBasePathKey]),
 			},
 			"pubsub_lite_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -565,7 +585,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_PUBSUB_LITE_CUSTOM_ENDPOINT",
-				}, PubsubLiteDefaultBasePath),
+				}, DefaultBasePaths[PubsubLiteBasePathKey]),
 			},
 			"redis_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -573,7 +593,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_REDIS_CUSTOM_ENDPOINT",
-				}, RedisDefaultBasePath),
+				}, DefaultBasePaths[RedisBasePathKey]),
 			},
 			"resource_manager_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -581,7 +601,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_RESOURCE_MANAGER_CUSTOM_ENDPOINT",
-				}, ResourceManagerDefaultBasePath),
+				}, DefaultBasePaths[ResourceManagerBasePathKey]),
 			},
 			"runtime_config_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -589,7 +609,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_RUNTIME_CONFIG_CUSTOM_ENDPOINT",
-				}, RuntimeConfigDefaultBasePath),
+				}, DefaultBasePaths[RuntimeConfigBasePathKey]),
 			},
 			"secret_manager_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -597,7 +617,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_SECRET_MANAGER_CUSTOM_ENDPOINT",
-				}, SecretManagerDefaultBasePath),
+				}, DefaultBasePaths[SecretManagerBasePathKey]),
 			},
 			"security_center_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -605,7 +625,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_SECURITY_CENTER_CUSTOM_ENDPOINT",
-				}, SecurityCenterDefaultBasePath),
+				}, DefaultBasePaths[SecurityCenterBasePathKey]),
 			},
 			"security_scanner_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -613,7 +633,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_SECURITY_SCANNER_CUSTOM_ENDPOINT",
-				}, SecurityScannerDefaultBasePath),
+				}, DefaultBasePaths[SecurityScannerBasePathKey]),
 			},
 			"service_directory_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -621,7 +641,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_SERVICE_DIRECTORY_CUSTOM_ENDPOINT",
-				}, ServiceDirectoryDefaultBasePath),
+				}, DefaultBasePaths[ServiceDirectoryBasePathKey]),
 			},
 			"service_management_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -629,7 +649,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_SERVICE_MANAGEMENT_CUSTOM_ENDPOINT",
-				}, ServiceManagementDefaultBasePath),
+				}, DefaultBasePaths[ServiceManagementBasePathKey]),
 			},
 			"service_usage_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -637,7 +657,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_SERVICE_USAGE_CUSTOM_ENDPOINT",
-				}, ServiceUsageDefaultBasePath),
+				}, DefaultBasePaths[ServiceUsageBasePathKey]),
 			},
 			"source_repo_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -645,7 +665,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_SOURCE_REPO_CUSTOM_ENDPOINT",
-				}, SourceRepoDefaultBasePath),
+				}, DefaultBasePaths[SourceRepoBasePathKey]),
 			},
 			"spanner_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -653,7 +673,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_SPANNER_CUSTOM_ENDPOINT",
-				}, SpannerDefaultBasePath),
+				}, DefaultBasePaths[SpannerBasePathKey]),
 			},
 			"sql_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -661,7 +681,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_SQL_CUSTOM_ENDPOINT",
-				}, SQLDefaultBasePath),
+				}, DefaultBasePaths[SQLBasePathKey]),
 			},
 			"storage_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -669,7 +689,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_STORAGE_CUSTOM_ENDPOINT",
-				}, StorageDefaultBasePath),
+				}, DefaultBasePaths[StorageBasePathKey]),
 			},
 			"tags_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -677,7 +697,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_TAGS_CUSTOM_ENDPOINT",
-				}, TagsDefaultBasePath),
+				}, DefaultBasePaths[TagsBasePathKey]),
 			},
 			"tpu_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -685,7 +705,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_TPU_CUSTOM_ENDPOINT",
-				}, TPUDefaultBasePath),
+				}, DefaultBasePaths[TPUBasePathKey]),
 			},
 			"vpc_access_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -693,7 +713,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_VPC_ACCESS_CUSTOM_ENDPOINT",
-				}, VPCAccessDefaultBasePath),
+				}, DefaultBasePaths[VPCAccessBasePathKey]),
 			},
 			"workflows_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -701,7 +721,7 @@ func Provider() *schema.Provider {
 				ValidateFunc: validateCustomEndpoint,
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_WORKFLOWS_CUSTOM_ENDPOINT",
-				}, WorkflowsDefaultBasePath),
+				}, DefaultBasePaths[WorkflowsBasePathKey]),
 			},
 
 			// Handwritten Products / Versioned / Atypical Entries
@@ -722,7 +742,8 @@ func Provider() *schema.Provider {
 			BigtableAdminCustomEndpointEntryKey:     BigtableAdminCustomEndpointEntry,
 
 			// dcl
-			EventarcEndpointEntryKey: EventarcEndpointEntry,
+			EventarcEndpointEntryKey:            EventarcEndpointEntry,
+			GkeHubFeatureCustomEndpointEntryKey: GkeHubFeatureCustomEndpointEntry,
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -832,9 +853,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 223
+// Generated resources: 225
 // Generated IAM resources: 117
-// Total generated resources: 340
+// Total generated resources: 342
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -984,6 +1005,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_compute_managed_ssl_certificate":                       resourceComputeManagedSslCertificate(),
 			"google_compute_region_ssl_certificate":                        resourceComputeRegionSslCertificate(),
 			"google_compute_reservation":                                   resourceComputeReservation(),
+			"google_compute_service_attachment":                            resourceComputeServiceAttachment(),
 			"google_compute_ssl_policy":                                    resourceComputeSslPolicy(),
 			"google_compute_subnetwork":                                    resourceComputeSubnetwork(),
 			"google_compute_subnetwork_iam_binding":                        ResourceIamBinding(ComputeSubnetworkIamSchema, ComputeSubnetworkIamUpdaterProducer, ComputeSubnetworkIdParseFunc),
@@ -1035,6 +1057,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_dialogflow_intent":                                     resourceDialogflowIntent(),
 			"google_dialogflow_entity_type":                                resourceDialogflowEntityType(),
 			"google_dialogflow_fulfillment":                                resourceDialogflowFulfillment(),
+			"google_dialogflow_cx_agent":                                   resourceDialogflowCXAgent(),
 			"google_dns_managed_zone":                                      resourceDNSManagedZone(),
 			"google_dns_policy":                                            resourceDNSPolicy(),
 			"google_dns_record_set":                                        resourceDNSResourceDnsRecordSet(),
@@ -1222,6 +1245,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_eventarc_trigger":                      resourceEventarcTrigger(),
 			"google_folder":                                resourceGoogleFolder(),
 			"google_folder_organization_policy":            resourceGoogleFolderOrganizationPolicy(),
+			"google_gke_hub_feature":                       resourceGkeHubFeature(),
+			"google_gke_hub_feature_membership":            resourceGkeHubFeatureMembership(),
 			"google_logging_billing_account_sink":          resourceLoggingBillingAccountSink(),
 			"google_logging_billing_account_exclusion":     ResourceLoggingExclusion(BillingAccountLoggingExclusionSchema, NewBillingAccountLoggingExclusionUpdater, billingAccountLoggingExclusionIdParseFunc),
 			"google_logging_billing_account_bucket_config": ResourceLoggingBillingAccountBucketConfig(),
@@ -1425,6 +1450,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.DatastoreBasePath = d.Get("datastore_custom_endpoint").(string)
 	config.DeploymentManagerBasePath = d.Get("deployment_manager_custom_endpoint").(string)
 	config.DialogflowBasePath = d.Get("dialogflow_custom_endpoint").(string)
+	config.DialogflowCXBasePath = d.Get("dialogflow_cx_custom_endpoint").(string)
 	config.DNSBasePath = d.Get("dns_custom_endpoint").(string)
 	config.EssentialContactsBasePath = d.Get("essential_contacts_custom_endpoint").(string)
 	config.FilestoreBasePath = d.Get("filestore_custom_endpoint").(string)
@@ -1486,6 +1512,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 
 	// dcl
 	config.EventarcBasePath = d.Get(EventarcEndpointEntryKey).(string)
+	config.GkeHubBasePath = d.Get(GkeHubFeatureCustomEndpointEntryKey).(string)
 
 	stopCtx, ok := schema.StopContext(ctx)
 	if !ok {

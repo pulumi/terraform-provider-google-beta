@@ -35,5 +35,7 @@ The following arguments are supported:
 
 The following attributes are exported:
 
+* `number` - The numeric identifier of the project.
+
 See `google_project` resource for details of the available attributes.
 

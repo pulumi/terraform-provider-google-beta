@@ -263,7 +263,7 @@ region are guaranteed to support the same version.
     when fuzzy versions are used. See the `google_container_engine_versions` data source's
     `version_prefix` field to approximate fuzzy versions.
     To update nodes in other node pools, use the `version` attribute on the node pool.
-  
+
 * `notification_config` - (Optional) Configuration for the [cluster upgrade notifications](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-upgrade-notifications) feature. Structure is documented below.
 
 * `pod_security_policy_config` - (Optional) Configuration for the
