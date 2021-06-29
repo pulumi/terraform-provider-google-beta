@@ -70,7 +70,6 @@ resource "google_compute_health_check" "default" {
 
 ```hcl
 resource "google_compute_region_backend_service" "default" {
-  provider                        = google-beta
   name                            = "region-service"
   region                          = "us-central1"
   health_checks                   = [google_compute_region_health_check.default.id]
@@ -90,7 +89,6 @@ resource "google_compute_region_backend_service" "default" {
 }
 
 resource "google_compute_region_health_check" "default" {
-  provider           = google-beta
   name               = "rbs-health-check"
   region             = "us-central1"
 

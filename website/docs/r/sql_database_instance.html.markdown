@@ -24,7 +24,7 @@ Once upgraded, update the following attributes in your config to the correct val
 the above documentation:
 * `region`
 * `database_version` (if applicable)
-* `tier`  
+* `tier`
 Remove any fields that are not applicable to Second-generation instances:
 * `settings.crash_safe_replication`
 * `settings.replication_type`
@@ -209,9 +209,9 @@ includes an up-to-date reference of supported versions.
     created. This is done because after a name is used, it cannot be reused for
     up to [one week](https://cloud.google.com/sql/docs/delete-instance).
 
-* `master_instance_name` - (Optional) The name of the instance that will act as
-    the master in the replication setup. Note, this requires the master to have
-    `binary_log_enabled` set, as well as existing backups.
+* `master_instance_name` - (Optional) The name of the existing instance that will
+    act as the master in the replication setup. Note, this requires the master to
+    have `binary_log_enabled` set, as well as existing backups.
 
 * `project` - (Optional) The ID of the project in which the resource belongs. If it
     is not provided, the provider project is used.
@@ -235,12 +235,21 @@ includes an up-to-date reference of supported versions.
 in state, a `destroy` or `update` command that deletes the instance will fail.
 
 * `restore_backup_context` - (optional) The context needed to restore the database to a backup run. This field will
+<<<<<<< HEAD
     cause the provider to trigger the database to restore from the backup run indicated. The configuration is detailed below.
     **NOTE:** Restoring from a backup is an imperative action and not recommended via the provider. Adding or modifying this
     block during resource creation/update will trigger the restore action after the resource is created/updated.
 
 * `clone` - (Optional) The context needed to create this instance as a clone of another instance. When this field is set during
     resource creation, the provider will attempt to clone another instance as indicated in the context. The
+=======
+    cause Terraform to trigger the database to restore from the backup run indicated. The configuration is detailed below.
+    **NOTE:** Restoring from a backup is an imperative action and not recommended via Terraform. Adding or modifying this
+    block during resource creation/update will trigger the restore action after the resource is created/updated.
+
+* `clone` - (Optional) The context needed to create this instance as a clone of another instance. When this field is set during
+    resource creation, Terraform will attempt to clone another instance as indicated in the context. The
+>>>>>>> v3.74.0
     configuration is detailed below.
 
 The `settings` block supports:
@@ -412,7 +421,11 @@ The optional `clone` block supports:
     A timestamp in RFC3339 UTC "Zulu" format, with nanosecond resolution and up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and "2014-10-02T15:01:23.045123456Z".
 
 The optional `restore_backup_context` block supports:
+<<<<<<< HEAD
 **NOTE:** Restoring from a backup is an imperative action and not recommended via the provider. Adding or modifying this
+=======
+**NOTE:** Restoring from a backup is an imperative action and not recommended via Terraform. Adding or modifying this
+>>>>>>> v3.74.0
 block during resource creation/update will trigger the restore action after the resource is created/updated.
 
 * `backup_run_id` - (Required) The ID of the backup run to restore from.
