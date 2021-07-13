@@ -252,6 +252,7 @@ resource "google_compute_router_peer" "router2_peer2" {
 
 ```hcl
 resource "google_compute_ha_vpn_gateway" "vpn-gateway" {
+  provider = google-beta
   name           = "test-ha-vpngw"
   network        = google_compute_network.network.id
   vpn_interfaces {
@@ -265,6 +266,7 @@ resource "google_compute_ha_vpn_gateway" "vpn-gateway" {
 }
 
 resource "google_compute_interconnect_attachment" "attachment1" {
+  provider = google-beta
   name                     = "test-interconnect-attachment1"
   edge_availability_domain = "AVAILABILITY_DOMAIN_1"
   type                     = "PARTNER"
@@ -276,6 +278,7 @@ resource "google_compute_interconnect_attachment" "attachment1" {
 }
 
 resource "google_compute_interconnect_attachment" "attachment2" {
+  provider = google-beta
   name                     = "test-interconnect-attachment2"
   edge_availability_domain = "AVAILABILITY_DOMAIN_2"
   type                     = "PARTNER"
@@ -287,6 +290,7 @@ resource "google_compute_interconnect_attachment" "attachment2" {
 }
 
 resource "google_compute_address" "address1" {
+  provider = google-beta
   name          = "test-address1"
   address_type  = "INTERNAL"
   purpose       = "IPSEC_INTERCONNECT"
@@ -296,6 +300,7 @@ resource "google_compute_address" "address1" {
 }
 
 resource "google_compute_address" "address2" {
+  provider = google-beta
   name          = "test-address2"
   address_type  = "INTERNAL"
   purpose       = "IPSEC_INTERCONNECT"
@@ -305,6 +310,7 @@ resource "google_compute_address" "address2" {
 }
 
 resource "google_compute_router" "router" {
+  provider = google-beta
   name                          = "test-router"
   network                       = google_compute_network.network.name
   encrypted_interconnect_router = true
@@ -314,6 +320,7 @@ resource "google_compute_router" "router" {
 }
 
 resource "google_compute_network" "network" {
+  provider = google-beta
   name                    = "test-network"
   auto_create_subnetworks = false
 }

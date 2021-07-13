@@ -474,7 +474,9 @@ func resourceBillingBudgetUpdate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	if d.HasChange("amount") {
-		updateMask = append(updateMask, "amount")
+		updateMask = append(updateMask, "amount.specifiedAmount.currencyCode",
+			"amount.specifiedAmount.units",
+			"amount.specifiedAmount.nanos")
 	}
 
 	if d.HasChange("threshold_rules") {
@@ -482,7 +484,10 @@ func resourceBillingBudgetUpdate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	if d.HasChange("all_updates_rule") {
-		updateMask = append(updateMask, "notificationsRule")
+		updateMask = append(updateMask, "notificationsRule.pubsubTopic",
+			"notificationsRule.schemaVersion",
+			"notificationsRule.monitoringNotificationChannels",
+			"notificationsRule.disableDefaultIamRecipients")
 	}
 	// updateMask is a URL parameter but not present in the schema, so replaceVars
 	// won't set it

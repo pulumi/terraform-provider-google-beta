@@ -14,23 +14,27 @@
 # ----------------------------------------------------------------------------
 subcategory: "Certificate Authority Service"
 layout: "google"
-page_title: "Google: google_privateca_certificate_authority_iam"
-sidebar_current: "docs-google-privateca-certificate-authority-iam"
+page_title: "Google: google_privateca_ca_pool_iam"
+sidebar_current: "docs-google-privateca-ca-pool-iam"
 description: |-
-  Collection of resources to manage IAM policy for Certificate Authority Service CertificateAuthority
+  Collection of resources to manage IAM policy for Certificate Authority Service CaPool
 ---
 
-# IAM policy for Certificate Authority Service CertificateAuthority
-Three different resources help you manage your IAM policy for Certificate Authority Service CertificateAuthority. Each of these resources serves a different use case:
+# IAM policy for Certificate Authority Service CaPool
+Three different resources help you manage your IAM policy for Certificate Authority Service CaPool. Each of these resources serves a different use case:
 
-* `google_privateca_certificate_authority_iam_policy`: Authoritative. Sets the IAM policy for the certificateauthority and replaces any existing policy already attached.
-* `google_privateca_certificate_authority_iam_binding`: Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the certificateauthority are preserved.
-* `google_privateca_certificate_authority_iam_member`: Non-authoritative. Updates the IAM policy to grant a role to a new member. Other members for the role for the certificateauthority are preserved.
+* `google_privateca_ca_pool_iam_policy`: Authoritative. Sets the IAM policy for the capool and replaces any existing policy already attached.
+* `google_privateca_ca_pool_iam_binding`: Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the capool are preserved.
+* `google_privateca_ca_pool_iam_member`: Non-authoritative. Updates the IAM policy to grant a role to a new member. Other members for the role for the capool are preserved.
 
-~> **Note:** `google_privateca_certificate_authority_iam_policy` **cannot** be used in conjunction with `google_privateca_certificate_authority_iam_binding` and `google_privateca_certificate_authority_iam_member` or they will fight over what your policy should be.
+~> **Note:** `google_privateca_ca_pool_iam_policy` **cannot** be used in conjunction with `google_privateca_ca_pool_iam_binding` and `google_privateca_ca_pool_iam_member` or they will fight over what your policy should be.
 
-~> **Note:** `google_privateca_certificate_authority_iam_binding` resources **can be** used in conjunction with `google_privateca_certificate_authority_iam_member` resources **only if** they do not grant privilege to the same role.
-## google\_privateca\_certificate\_authority\_iam\_policy
+~> **Note:** `google_privateca_ca_pool_iam_binding` resources **can be** used in conjunction with `google_privateca_ca_pool_iam_member` resources **only if** they do not grant privilege to the same role.
+
+
+
+
+## google\_privateca\_ca\_pool\_iam\_policy
 
 ```hcl
 data "google_iam_policy" "admin" {
@@ -42,17 +46,17 @@ data "google_iam_policy" "admin" {
   }
 }
 
-resource "google_privateca_certificate_authority_iam_policy" "policy" {
-  certificate_authority = google_privateca_certificate_authority.default.id
+resource "google_privateca_ca_pool_iam_policy" "policy" {
+  ca_pool = google_privateca_ca_pool.default.id
   policy_data = data.google_iam_policy.admin.policy_data
 }
 ```
 
-## google\_privateca\_certificate\_authority\_iam\_binding
+## google\_privateca\_ca\_pool\_iam\_binding
 
 ```hcl
-resource "google_privateca_certificate_authority_iam_binding" "binding" {
-  certificate_authority = google_privateca_certificate_authority.default.id
+resource "google_privateca_ca_pool_iam_binding" "binding" {
+  ca_pool = google_privateca_ca_pool.default.id
   role = "roles/privateca.certificateManager"
   members = [
     "user:jane@example.com",
@@ -60,11 +64,11 @@ resource "google_privateca_certificate_authority_iam_binding" "binding" {
 }
 ```
 
-## google\_privateca\_certificate\_authority\_iam\_member
+## google\_privateca\_ca\_pool\_iam\_member
 
 ```hcl
-resource "google_privateca_certificate_authority_iam_member" "member" {
-  certificate_authority = google_privateca_certificate_authority.default.id
+resource "google_privateca_ca_pool_iam_member" "member" {
+  ca_pool = google_privateca_ca_pool.default.id
   role = "roles/privateca.certificateManager"
   member = "user:jane@example.com"
 }
@@ -74,8 +78,9 @@ resource "google_privateca_certificate_authority_iam_member" "member" {
 
 The following arguments are supported:
 
-* `location` - (Required) Location of the CertificateAuthority. A full list of valid locations can be found by
-running `gcloud beta privateca locations list`.
+* `ca_pool` - (Required) Used to find the parent resource to bind the IAM policy to
+* `location` - (Required) Location of the CaPool. A full list of valid locations can be found by
+running `gcloud privateca locations list`.
  Used to find the parent resource to bind the IAM policy to
 
 * `project` - (Optional) The ID of the project in which the resource belongs.
@@ -91,10 +96,10 @@ running `gcloud beta privateca locations list`.
   * **domain:{domain}**: A G Suite domain (primary, instead of alias) name that represents all the users of that domain. For example, google.com or example.com.
 
 * `role` - (Required) The role that should be applied. Only one
-    `google_privateca_certificate_authority_iam_binding` can be used per role. Note that custom roles must be of the format
+    `google_privateca_ca_pool_iam_binding` can be used per role. Note that custom roles must be of the format
     `[projects|organizations]/{parent-name}/roles/{role-name}`.
 
-* `policy_data` - (Required only by `google_privateca_certificate_authority_iam_policy`) The policy data generated by
+* `policy_data` - (Required only by `google_privateca_ca_pool_iam_policy`) The policy data generated by
   a `google_iam_policy` data source.
 
 ## Attributes Reference
@@ -108,27 +113,27 @@ exported:
 
 For all import syntaxes, the "resource in question" can take any of the following forms:
 
-* projects/{{project}}/locations/{{location}}/certificateAuthorities/{{certificate_authority_id}}
-* {{project}}/{{location}}/{{certificate_authority_id}}
-* {{location}}/{{certificate_authority_id}}
+* projects/{{project}}/locations/{{location}}/caPools/{{name}}
+* {{project}}/{{location}}/{{name}}
+* {{location}}/{{name}}
 
 Any variables not passed in the import command will be taken from the provider configuration.
 
-Certificate Authority Service certificateauthority IAM resources can be imported using the resource identifiers, role, and member.
+Certificate Authority Service capool IAM resources can be imported using the resource identifiers, role, and member.
 
 IAM member imports use space-delimited identifiers: the resource in question, the role, and the member identity, e.g.
 ```
-$ terraform import google_privateca_certificate_authority_iam_member.editor "projects/{{project}}/locations/{{location}}/certificateAuthorities/{{certificate_authority_id}} roles/privateca.certificateManager user:jane@example.com"
+$ terraform import google_privateca_ca_pool_iam_member.editor "projects/{{project}}/locations/{{location}}/caPools/{{ca_pool}} roles/privateca.certificateManager user:jane@example.com"
 ```
 
 IAM binding imports use space-delimited identifiers: the resource in question and the role, e.g.
 ```
-$ terraform import google_privateca_certificate_authority_iam_binding.editor "projects/{{project}}/locations/{{location}}/certificateAuthorities/{{certificate_authority_id}} roles/privateca.certificateManager"
+$ terraform import google_privateca_ca_pool_iam_binding.editor "projects/{{project}}/locations/{{location}}/caPools/{{ca_pool}} roles/privateca.certificateManager"
 ```
 
 IAM policy imports use the identifier of the resource in question, e.g.
 ```
-$ terraform import google_privateca_certificate_authority_iam_policy.editor projects/{{project}}/locations/{{location}}/certificateAuthorities/{{certificate_authority_id}}
+$ terraform import google_privateca_ca_pool_iam_policy.editor projects/{{project}}/locations/{{location}}/caPools/{{ca_pool}}
 ```
 
 -> **Custom Roles**: If you're importing a IAM resource with a custom role, make sure to use the

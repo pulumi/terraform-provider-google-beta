@@ -114,6 +114,11 @@ Creation, truncation and append actions occur as one atomic update upon job comp
 										Description: `Describes the Cloud KMS encryption key that will be used to protect destination BigQuery table.
 The BigQuery Service Account associated with your project requires access to this encryption key.`,
 									},
+									"kms_key_version": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: `Describes the Cloud KMS encryption key version used to protect destination BigQuery table.`,
+									},
 								},
 							},
 						},
@@ -407,6 +412,11 @@ Creation, truncation and append actions occur as one atomic update upon job comp
 										Description: `Describes the Cloud KMS encryption key that will be used to protect destination BigQuery table.
 The BigQuery Service Account associated with your project requires access to this encryption key.`,
 									},
+									"kms_key_version": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: `Describes the Cloud KMS encryption key version used to protect destination BigQuery table.`,
+									},
 								},
 							},
 						},
@@ -644,6 +654,11 @@ or of the form 'projects/{{project}}/datasets/{{dataset_id}}' if not.`,
 										ForceNew: true,
 										Description: `Describes the Cloud KMS encryption key that will be used to protect destination BigQuery table.
 The BigQuery Service Account associated with your project requires access to this encryption key.`,
+									},
+									"kms_key_version": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: `Describes the Cloud KMS encryption key version used to protect destination BigQuery table.`,
 									},
 								},
 							},
@@ -1346,21 +1361,29 @@ func flattenBigQueryJobConfigurationQuerySchemaUpdateOptions(v interface{}, d *s
 	return v
 }
 
+// KmsKeyName switched from using a key name to a key version, this will separate the key name from the key version and save them
+// separately in state.  https://github.com/hashicorp/terraform-provider-google/issues/9208
 func flattenBigQueryJobConfigurationQueryDestinationEncryptionConfiguration(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	if v == nil {
-		return nil
+		return []map[string]interface{}{}
 	}
-	original := v.(map[string]interface{})
-	if len(original) == 0 {
-		return nil
+
+	kmsKeyName := v.(map[string]interface{})["kmsKeyName"].(string)
+	re := regexp.MustCompile(`(projects/.*/locations/.*/keyRings/.*/cryptoKeys/.*)/cryptoKeyVersions/.*`)
+	paths := re.FindStringSubmatch(kmsKeyName)
+
+	if len(paths) > 0 {
+		return []map[string]interface{}{
+			{
+				"kms_key_name":    paths[0],
+				"kms_key_version": kmsKeyName,
+			},
+		}
 	}
-	transformed := make(map[string]interface{})
-	transformed["kms_key_name"] =
-		flattenBigQueryJobConfigurationQueryDestinationEncryptionConfigurationKmsKeyName(original["kmsKeyName"], d, config)
-	return []interface{}{transformed}
-}
-func flattenBigQueryJobConfigurationQueryDestinationEncryptionConfigurationKmsKeyName(v interface{}, d *schema.ResourceData, config *Config) interface{} {
-	return v
+
+	//	The key name was returned, no need to set the version
+	return []map[string]interface{}{{"kms_key_name": kmsKeyName, "kms_key_version": ""}}
+
 }
 
 func flattenBigQueryJobConfigurationQueryScriptOptions(v interface{}, d *schema.ResourceData, config *Config) interface{} {
@@ -1580,21 +1603,29 @@ func flattenBigQueryJobConfigurationLoadTimePartitioningField(v interface{}, d *
 	return v
 }
 
+// KmsKeyName switched from using a key name to a key version, this will separate the key name from the key version and save them
+// separately in state.  https://github.com/hashicorp/terraform-provider-google/issues/9208
 func flattenBigQueryJobConfigurationLoadDestinationEncryptionConfiguration(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	if v == nil {
-		return nil
+		return []map[string]interface{}{}
 	}
-	original := v.(map[string]interface{})
-	if len(original) == 0 {
-		return nil
+
+	kmsKeyName := v.(map[string]interface{})["kmsKeyName"].(string)
+	re := regexp.MustCompile(`(projects/.*/locations/.*/keyRings/.*/cryptoKeys/.*)/cryptoKeyVersions/.*`)
+	paths := re.FindStringSubmatch(kmsKeyName)
+
+	if len(paths) > 0 {
+		return []map[string]interface{}{
+			{
+				"kms_key_name":    paths[0],
+				"kms_key_version": kmsKeyName,
+			},
+		}
 	}
-	transformed := make(map[string]interface{})
-	transformed["kms_key_name"] =
-		flattenBigQueryJobConfigurationLoadDestinationEncryptionConfigurationKmsKeyName(original["kmsKeyName"], d, config)
-	return []interface{}{transformed}
-}
-func flattenBigQueryJobConfigurationLoadDestinationEncryptionConfigurationKmsKeyName(v interface{}, d *schema.ResourceData, config *Config) interface{} {
-	return v
+
+	//	The key name was returned, no need to set the version
+	return []map[string]interface{}{{"kms_key_name": kmsKeyName, "kms_key_version": ""}}
+
 }
 
 func flattenBigQueryJobConfigurationCopy(v interface{}, d *schema.ResourceData, config *Config) interface{} {
@@ -1674,21 +1705,29 @@ func flattenBigQueryJobConfigurationCopyWriteDisposition(v interface{}, d *schem
 	return v
 }
 
+// KmsKeyName switched from using a key name to a key version, this will separate the key name from the key version and save them
+// separately in state.  https://github.com/hashicorp/terraform-provider-google/issues/9208
 func flattenBigQueryJobConfigurationCopyDestinationEncryptionConfiguration(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	if v == nil {
-		return nil
+		return []map[string]interface{}{}
 	}
-	original := v.(map[string]interface{})
-	if len(original) == 0 {
-		return nil
+
+	kmsKeyName := v.(map[string]interface{})["kmsKeyName"].(string)
+	re := regexp.MustCompile(`(projects/.*/locations/.*/keyRings/.*/cryptoKeys/.*)/cryptoKeyVersions/.*`)
+	paths := re.FindStringSubmatch(kmsKeyName)
+
+	if len(paths) > 0 {
+		return []map[string]interface{}{
+			{
+				"kms_key_name":    paths[0],
+				"kms_key_version": kmsKeyName,
+			},
+		}
 	}
-	transformed := make(map[string]interface{})
-	transformed["kms_key_name"] =
-		flattenBigQueryJobConfigurationCopyDestinationEncryptionConfigurationKmsKeyName(original["kmsKeyName"], d, config)
-	return []interface{}{transformed}
-}
-func flattenBigQueryJobConfigurationCopyDestinationEncryptionConfigurationKmsKeyName(v interface{}, d *schema.ResourceData, config *Config) interface{} {
-	return v
+
+	//	The key name was returned, no need to set the version
+	return []map[string]interface{}{{"kms_key_name": kmsKeyName, "kms_key_version": ""}}
+
 }
 
 func flattenBigQueryJobConfigurationExtract(v interface{}, d *schema.ResourceData, config *Config) interface{} {
@@ -2261,10 +2300,21 @@ func expandBigQueryJobConfigurationQueryDestinationEncryptionConfiguration(v int
 		transformed["kmsKeyName"] = transformedKmsKeyName
 	}
 
+	transformedKmsKeyVersion, err := expandBigQueryJobConfigurationQueryDestinationEncryptionConfigurationKmsKeyVersion(original["kms_key_version"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedKmsKeyVersion); val.IsValid() && !isEmptyValue(val) {
+		transformed["kmsKeyVersion"] = transformedKmsKeyVersion
+	}
+
 	return transformed, nil
 }
 
 func expandBigQueryJobConfigurationQueryDestinationEncryptionConfigurationKmsKeyName(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandBigQueryJobConfigurationQueryDestinationEncryptionConfigurationKmsKeyVersion(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 
@@ -2616,10 +2666,21 @@ func expandBigQueryJobConfigurationLoadDestinationEncryptionConfiguration(v inte
 		transformed["kmsKeyName"] = transformedKmsKeyName
 	}
 
+	transformedKmsKeyVersion, err := expandBigQueryJobConfigurationLoadDestinationEncryptionConfigurationKmsKeyVersion(original["kms_key_version"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedKmsKeyVersion); val.IsValid() && !isEmptyValue(val) {
+		transformed["kmsKeyVersion"] = transformedKmsKeyVersion
+	}
+
 	return transformed, nil
 }
 
 func expandBigQueryJobConfigurationLoadDestinationEncryptionConfigurationKmsKeyName(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandBigQueryJobConfigurationLoadDestinationEncryptionConfigurationKmsKeyVersion(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 
@@ -2764,10 +2825,21 @@ func expandBigQueryJobConfigurationCopyDestinationEncryptionConfiguration(v inte
 		transformed["kmsKeyName"] = transformedKmsKeyName
 	}
 
+	transformedKmsKeyVersion, err := expandBigQueryJobConfigurationCopyDestinationEncryptionConfigurationKmsKeyVersion(original["kms_key_version"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedKmsKeyVersion); val.IsValid() && !isEmptyValue(val) {
+		transformed["kmsKeyVersion"] = transformedKmsKeyVersion
+	}
+
 	return transformed, nil
 }
 
 func expandBigQueryJobConfigurationCopyDestinationEncryptionConfigurationKmsKeyName(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandBigQueryJobConfigurationCopyDestinationEncryptionConfigurationKmsKeyVersion(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 
