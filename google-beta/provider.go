@@ -552,6 +552,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_NETWORK_MANAGEMENT_CUSTOM_ENDPOINT",
 				}, DefaultBasePaths[NetworkManagementBasePathKey]),
 			},
+			"network_services_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_NETWORK_SERVICES_CUSTOM_ENDPOINT",
+				}, DefaultBasePaths[NetworkServicesBasePathKey]),
+			},
 			"notebooks_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -875,9 +883,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 228
+// Generated resources: 236
 // Generated IAM resources: 117
-// Total generated resources: 345
+// Total generated resources: 353
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1081,6 +1089,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_dialogflow_entity_type":                                resourceDialogflowEntityType(),
 			"google_dialogflow_fulfillment":                                resourceDialogflowFulfillment(),
 			"google_dialogflow_cx_agent":                                   resourceDialogflowCXAgent(),
+			"google_dialogflow_cx_intent":                                  resourceDialogflowCXIntent(),
+			"google_dialogflow_cx_flow":                                    resourceDialogflowCXFlow(),
+			"google_dialogflow_cx_version":                                 resourceDialogflowCXVersion(),
 			"google_dns_managed_zone":                                      resourceDNSManagedZone(),
 			"google_dns_policy":                                            resourceDNSPolicy(),
 			"google_dns_record_set":                                        resourceDNSResourceDnsRecordSet(),
@@ -1155,6 +1166,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_monitoring_uptime_check_config":                        resourceMonitoringUptimeCheckConfig(),
 			"google_monitoring_metric_descriptor":                          resourceMonitoringMetricDescriptor(),
 			"google_network_management_connectivity_test":                  resourceNetworkManagementConnectivityTest(),
+			"google_network_services_edge_cache_keyset":                    resourceNetworkServicesEdgeCacheKeyset(),
+			"google_network_services_edge_cache_origin":                    resourceNetworkServicesEdgeCacheOrigin(),
+			"google_network_services_edge_cache_service":                   resourceNetworkServicesEdgeCacheService(),
 			"google_notebooks_environment":                                 resourceNotebooksEnvironment(),
 			"google_notebooks_instance":                                    resourceNotebooksInstance(),
 			"google_notebooks_instance_iam_binding":                        ResourceIamBinding(NotebooksInstanceIamSchema, NotebooksInstanceIamUpdaterProducer, NotebooksInstanceIdParseFunc),
@@ -1229,6 +1243,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_tags_tag_binding":                                      resourceTagsTagBinding(),
 			"google_tpu_node":                                              resourceTPUNode(),
 			"google_vertex_ai_dataset":                                     resourceVertexAIDataset(),
+			"google_vertex_ai_featurestore":                                resourceVertexAIFeaturestore(),
+			"google_vertex_ai_featurestore_entitytype":                     resourceVertexAIFeaturestoreEntitytype(),
 			"google_vpc_access_connector":                                  resourceVPCAccessConnector(),
 			"google_workflows_workflow":                                    resourceWorkflowsWorkflow(),
 		},
@@ -1509,6 +1525,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.MLEngineBasePath = d.Get("ml_engine_custom_endpoint").(string)
 	config.MonitoringBasePath = d.Get("monitoring_custom_endpoint").(string)
 	config.NetworkManagementBasePath = d.Get("network_management_custom_endpoint").(string)
+	config.NetworkServicesBasePath = d.Get("network_services_custom_endpoint").(string)
 	config.NotebooksBasePath = d.Get("notebooks_custom_endpoint").(string)
 	config.OSConfigBasePath = d.Get("os_config_custom_endpoint").(string)
 	config.OSLoginBasePath = d.Get("os_login_custom_endpoint").(string)

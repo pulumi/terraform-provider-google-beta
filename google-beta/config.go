@@ -130,6 +130,7 @@ type Config struct {
 	MLEngineBasePath             string
 	MonitoringBasePath           string
 	NetworkManagementBasePath    string
+	NetworkServicesBasePath      string
 	NotebooksBasePath            string
 	OSConfigBasePath             string
 	OSLoginBasePath              string
@@ -231,6 +232,7 @@ const MemcacheBasePathKey = "Memcache"
 const MLEngineBasePathKey = "MLEngine"
 const MonitoringBasePathKey = "Monitoring"
 const NetworkManagementBasePathKey = "NetworkManagement"
+const NetworkServicesBasePathKey = "NetworkServices"
 const NotebooksBasePathKey = "Notebooks"
 const OSConfigBasePathKey = "OSConfig"
 const OSLoginBasePathKey = "OSLogin"
@@ -304,7 +306,7 @@ var DefaultBasePaths = map[string]string{
 	DatastoreBasePathKey:            "https://datastore.googleapis.com/v1/",
 	DeploymentManagerBasePathKey:    "https://www.googleapis.com/deploymentmanager/v2/",
 	DialogflowBasePathKey:           "https://dialogflow.googleapis.com/v2/",
-	DialogflowCXBasePathKey:         "https://{{location}}-dialogflow.googleapis.com/v3/",
+	DialogflowCXBasePathKey:         "https://dialogflow.googleapis.com/v3/",
 	DNSBasePathKey:                  "https://dns.googleapis.com/dns/v1beta2/",
 	EssentialContactsBasePathKey:    "https://essentialcontacts.googleapis.com/v1beta1/",
 	FilestoreBasePathKey:            "https://file.googleapis.com/v1beta1/",
@@ -322,6 +324,7 @@ var DefaultBasePaths = map[string]string{
 	MLEngineBasePathKey:             "https://ml.googleapis.com/v1/",
 	MonitoringBasePathKey:           "https://monitoring.googleapis.com/",
 	NetworkManagementBasePathKey:    "https://networkmanagement.googleapis.com/v1/",
+	NetworkServicesBasePathKey:      "https://networkservices.googleapis.com/v1/",
 	NotebooksBasePathKey:            "https://notebooks.googleapis.com/v1beta1/",
 	OSConfigBasePathKey:             "https://osconfig.googleapis.com/v1beta/",
 	OSLoginBasePathKey:              "https://oslogin.googleapis.com/v1/",
@@ -1166,6 +1169,7 @@ func ConfigureBasePaths(c *Config) {
 	c.MLEngineBasePath = DefaultBasePaths[MLEngineBasePathKey]
 	c.MonitoringBasePath = DefaultBasePaths[MonitoringBasePathKey]
 	c.NetworkManagementBasePath = DefaultBasePaths[NetworkManagementBasePathKey]
+	c.NetworkServicesBasePath = DefaultBasePaths[NetworkServicesBasePathKey]
 	c.NotebooksBasePath = DefaultBasePaths[NotebooksBasePathKey]
 	c.OSConfigBasePath = DefaultBasePaths[OSConfigBasePathKey]
 	c.OSLoginBasePath = DefaultBasePaths[OSLoginBasePathKey]
