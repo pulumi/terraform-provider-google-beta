@@ -1,28 +1,43 @@
+// ----------------------------------------------------------------------------
+//
+//     ***     AUTO GENERATED CODE    ***    Type: DCL     ***
+//
+// ----------------------------------------------------------------------------
+//
+//     This file is managed by Magic Modules (https://github.com/GoogleCloudPlatform/magic-modules)
+//     and is based on the DCL (https://github.com/GoogleCloudPlatform/declarative-resource-client-library).
+//     Changes will need to be made to the DCL or Magic Modules instead of here.
+//
+//     We are not currently able to accept contributions to this file. If changes
+//     are required, please file an issue at https://github.com/hashicorp/terraform-provider-google/issues/new/choose
+//
+// ----------------------------------------------------------------------------
+
 package google
 
 import (
 	"context"
 	"fmt"
-	"log"
-	"strconv"
-	"strings"
-	"testing"
-	"time"
-
 	dcl "github.com/GoogleCloudPlatform/declarative-resource-client-library/dcl"
 	assuredworkloads "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/assuredworkloads/beta"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"log"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
 )
 
-func TestAccAssuredWorkloadsWorkload_basic(t *testing.T) {
+func TestAccAssuredWorkloadsWorkload_BasicHandWritten(t *testing.T) {
 	t.Parallel()
 
 	context := map[string]interface{}{
-		"random_suffix":   randString(t, 10),
-		"org_id":          getTestOrgFromEnv(t),
-		"billing_account": getTestBillingAccountFromEnv(t),
+		"billing_acct":  getTestBillingAccountFromEnv(t),
+		"org_id":        getTestOrgFromEnv(t),
+		"region":        getTestRegionFromEnv(),
+		"random_suffix": randString(t, 10),
 	}
 
 	vcrTest(t, resource.TestCase{
@@ -31,20 +46,21 @@ func TestAccAssuredWorkloadsWorkload_basic(t *testing.T) {
 		CheckDestroy: testAccCheckAssuredWorkloadsWorkloadDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAssuredWorkloadsWorkload_basic(context),
+				Config: testAccAssuredWorkloadsWorkload_BasicHandWritten(context),
+				Check:  resource.ComposeTestCheckFunc(deleteAssuredWorkloadProvisionedResources(t)),
 			},
 			{
-				ResourceName:            "google_assured_workloads_workload.meep",
+				ResourceName:            "google_assured_workloads_workload.primary",
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"billing_account", "kms_settings", "resource_settings", "provisioned_resources_parent"},
 			},
 			{
-				Config: testAccAssuredWorkloadsWorkload_basicUpdate(context),
-				Check:  deleteAssuredWorkloadProvisionedResources(t),
+				Config: testAccAssuredWorkloadsWorkload_BasicHandWrittenUpdate0(context),
+				Check:  resource.ComposeTestCheckFunc(deleteAssuredWorkloadProvisionedResources(t)),
 			},
 			{
-				ResourceName:            "google_assured_workloads_workload.meep",
+				ResourceName:            "google_assured_workloads_workload.primary",
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"billing_account", "kms_settings", "resource_settings", "provisioned_resources_parent"},
@@ -52,14 +68,14 @@ func TestAccAssuredWorkloadsWorkload_basic(t *testing.T) {
 		},
 	})
 }
-
-func TestAccAssuredWorkloadsWorkload_full(t *testing.T) {
+func TestAccAssuredWorkloadsWorkload_FullHandWritten(t *testing.T) {
 	t.Parallel()
 
 	context := map[string]interface{}{
-		"random_suffix":   randString(t, 10),
-		"org_id":          getTestOrgFromEnv(t),
-		"billing_account": getTestBillingAccountFromEnv(t),
+		"billing_acct":  getTestBillingAccountFromEnv(t),
+		"org_id":        getTestOrgFromEnv(t),
+		"region":        getTestRegionFromEnv(),
+		"random_suffix": randString(t, 10),
 	}
 
 	vcrTest(t, resource.TestCase{
@@ -68,11 +84,11 @@ func TestAccAssuredWorkloadsWorkload_full(t *testing.T) {
 		CheckDestroy: testAccCheckAssuredWorkloadsWorkloadDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAssuredWorkloadsWorkload_full(context),
+				Config: testAccAssuredWorkloadsWorkload_FullHandWritten(context),
 				Check:  resource.ComposeTestCheckFunc(deleteAssuredWorkloadProvisionedResources(t)),
 			},
 			{
-				ResourceName:            "google_assured_workloads_workload.meep",
+				ResourceName:            "google_assured_workloads_workload.primary",
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"billing_account", "kms_settings", "resource_settings", "provisioned_resources_parent"},
@@ -160,35 +176,14 @@ func deleteAssuredWorkloadProvisionedResources(t *testing.T) resource.TestCheckF
 	}
 }
 
-func testAccAssuredWorkloadsWorkload_basic(context map[string]interface{}) string {
+func testAccAssuredWorkloadsWorkload_BasicHandWritten(context map[string]interface{}) string {
 	return Nprintf(`
-resource "google_assured_workloads_workload" "meep" {
-  display_name = "workloadExample-%{random_suffix}"
-  labels = {
-    a = "a"
-  }
-  billing_account = "billingAccounts/%{billing_account}"
-  compliance_regime = "FEDRAMP_MODERATE"
-  provisioned_resources_parent = google_folder.folder1.name
-  organization = "%{org_id}"
-  location = "us-central1"
-}
-
-resource "google_folder" "folder1" {
-  display_name = "tf-test-%{random_suffix}"
-  parent       = "organizations/%{org_id}"
-}
-`, context)
-}
-
-func testAccAssuredWorkloadsWorkload_basicUpdate(context map[string]interface{}) string {
-	return Nprintf(`
-resource "google_assured_workloads_workload" "meep" {
-  display_name = "updatedExample-%{random_suffix}"
+resource "google_assured_workloads_workload" "primary" {
+  display_name = "workload%{random_suffix}"
   labels = {
     a = "b"
   }
-  billing_account = "billingAccounts/%{billing_account}"
+  billing_account = "billingAccounts/%{billing_acct}"
   compliance_regime = "FEDRAMP_MODERATE"
   provisioned_resources_parent = google_folder.folder1.name
   organization = "%{org_id}"
@@ -196,17 +191,38 @@ resource "google_assured_workloads_workload" "meep" {
 }
 
 resource "google_folder" "folder1" {
-  display_name = "tf-test-%{random_suffix}"
+  display_name = "workload%{random_suffix}"
   parent       = "organizations/%{org_id}"
 }
 `, context)
 }
 
-func testAccAssuredWorkloadsWorkload_full(context map[string]interface{}) string {
+func testAccAssuredWorkloadsWorkload_BasicHandWrittenUpdate0(context map[string]interface{}) string {
 	return Nprintf(`
-resource "google_assured_workloads_workload" "meep" {
-  display_name = "workloadExample-%{random_suffix}"
-  billing_account = "billingAccounts/%{billing_account}"
+resource "google_assured_workloads_workload" "primary" {
+  display_name = "workload%{random_suffix}"
+  labels = {
+    a = "b"
+  }
+  billing_account = "billingAccounts/%{billing_acct}"
+  compliance_regime = "FEDRAMP_MODERATE"
+  provisioned_resources_parent = google_folder.folder1.name
+  organization = "%{org_id}"
+  location = "us-central1"
+}
+
+resource "google_folder" "folder1" {
+  display_name = "workload%{random_suffix}"
+  parent       = "organizations/%{org_id}"
+}
+`, context)
+}
+
+func testAccAssuredWorkloadsWorkload_FullHandWritten(context map[string]interface{}) string {
+	return Nprintf(`
+resource "google_assured_workloads_workload" "primary" {
+  display_name = "workload%{random_suffix}"
+  billing_account = "billingAccounts/%{billing_acct}"
   compliance_regime = "FEDRAMP_MODERATE"
   organization = "%{org_id}"
   location = "us-central1"
@@ -218,7 +234,7 @@ resource "google_assured_workloads_workload" "meep" {
 }
 
 resource "google_folder" "folder1" {
-  display_name = "tf-test-%{random_suffix}"
+  display_name = "workload%{random_suffix}"
   parent       = "organizations/%{org_id}"
 }
 `, context)
@@ -227,7 +243,7 @@ resource "google_folder" "folder1" {
 func testAccCheckAssuredWorkloadsWorkloadDestroyProducer(t *testing.T) func(s *terraform.State) error {
 	return func(s *terraform.State) error {
 		for name, rs := range s.RootModule().Resources {
-			if rs.Type != "google_assured_workloads_workload" {
+			if rs.Type != "rs.google_assured_workloads_workload" {
 				continue
 			}
 			if strings.HasPrefix(name, "data.") {
@@ -237,28 +253,27 @@ func testAccCheckAssuredWorkloadsWorkloadDestroyProducer(t *testing.T) func(s *t
 			config := googleProviderConfig(t)
 
 			billingProject := ""
-
 			if config.BillingProject != "" {
 				billingProject = config.BillingProject
 			}
 
-			billingAccount := rs.Primary.Attributes["billing_account"]
-			location := rs.Primary.Attributes["location"]
-			name := rs.Primary.Attributes["name"]
-
 			obj := &assuredworkloads.Workload{
-				BillingAccount: dcl.String(rs.Primary.Attributes["billing_account"]),
-				Location:       dcl.String(rs.Primary.Attributes["location"]),
-				Name:           dcl.StringOrNil(rs.Primary.Attributes["name"]),
+				BillingAccount:             dcl.String(rs.Primary.Attributes["billing_account"]),
+				ComplianceRegime:           assuredworkloads.WorkloadComplianceRegimeEnumRef(rs.Primary.Attributes["compliance_regime"]),
+				DisplayName:                dcl.String(rs.Primary.Attributes["display_name"]),
+				Location:                   dcl.String(rs.Primary.Attributes["location"]),
+				Organization:               dcl.String(rs.Primary.Attributes["organization"]),
+				ProvisionedResourcesParent: dcl.String(rs.Primary.Attributes["provisioned_resources_parent"]),
+				CreateTime:                 dcl.StringOrNil(rs.Primary.Attributes["create_time"]),
+				Name:                       dcl.StringOrNil(rs.Primary.Attributes["name"]),
 			}
 
 			client := NewDCLAssuredWorkloadsClient(config, config.userAgent, billingProject)
 			_, err := client.GetWorkload(context.Background(), obj)
 			if err == nil {
-				return fmt.Errorf("AssuredWorkloadsWorkloadResource still exists at %s, %s, %s", billingAccount, location, name)
+				return fmt.Errorf("google_assured_workloads_workload still exists %v", obj)
 			}
 		}
-
 		return nil
 	}
 }
