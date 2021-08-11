@@ -317,7 +317,10 @@ func resourceGkeHubFeatureMembershipCreate(d *schema.ResourceData, meta interfac
 	}
 	client := NewDCLGkeHubClient(config, userAgent, billingProject)
 	res, err := client.ApplyFeatureMembership(context.Background(), obj, createDirective...)
-	if err != nil {
+
+	if _, ok := err.(dcl.DiffAfterApplyError); ok {
+		log.Printf("[DEBUG] Diff after apply returned from the DCL: %s", err)
+	} else if err != nil {
 		// The resource didn't actually create
 		d.SetId("")
 		return fmt.Errorf("Error creating FeatureMembership: %s", err)
@@ -411,7 +414,12 @@ func resourceGkeHubFeatureMembershipUpdate(d *schema.ResourceData, meta interfac
 	}
 	client := NewDCLGkeHubClient(config, userAgent, billingProject)
 	res, err := client.ApplyFeatureMembership(context.Background(), obj, directive...)
-	if err != nil {
+
+	if _, ok := err.(dcl.DiffAfterApplyError); ok {
+		log.Printf("[DEBUG] Diff after apply returned from the DCL: %s", err)
+	} else if err != nil {
+		// The resource didn't actually create
+		d.SetId("")
 		return fmt.Errorf("Error updating FeatureMembership: %s", err)
 	}
 
