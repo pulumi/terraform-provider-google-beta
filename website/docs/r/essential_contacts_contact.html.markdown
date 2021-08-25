@@ -31,9 +31,9 @@ To get more information about Contact, see:
     * [Official Documentation](https://cloud.google.com/resource-manager/docs/managing-notification-contacts)
 
 ~> **Warning:** If you are using User ADCs (Application Default Credentials) with this resource,
-you must specify a `billing_project` and set `user_project_override` to true 
-in the provider configuration. Otherwise the Essential Contacts API will return a 403 error. 
-Your account must have the `serviceusage.services.use` permission on the 
+you must specify a `billing_project` and set `user_project_override` to true
+in the provider configuration. Otherwise the Essential Contacts API will return a 403 error.
+Your account must have the `serviceusage.services.use` permission on the
 `billing_project` you defined.
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
@@ -46,11 +46,9 @@ Your account must have the `serviceusage.services.use` permission on the
 
 ```hcl
 data "google_project" "project" {
-  provider = google-beta
 }
 
 resource "google_essential_contacts_contact" "contact" {
-  provider = google-beta
   parent = data.google_project.project.id
   email = "foo@bar.com"
   language_tag = "en-GB"

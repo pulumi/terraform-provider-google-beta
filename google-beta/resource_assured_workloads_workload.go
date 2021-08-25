@@ -171,7 +171,7 @@ func AssuredWorkloadsWorkloadResourceSettingsSchema() *schema.Resource {
 				Optional:     true,
 				ForceNew:     true,
 				Description:  ``,
-				ValidateFunc: validation.StringInSlice([]string{"RESOURCE_TYPE_UNSPECIFIED", "CONSUMER_PROJECT", "ENCRYPTION_KEYS_PROJECT", "KEYRING", ""}, false),
+				ValidateFunc: validation.StringInSlice([]string{"RESOURCE_TYPE_UNSPECIFIED", "CONSUMER_PROJECT", "ENCRYPTION_KEYS_PROJECT", "KEYRING", "CONSUMER_FOLDER", ""}, false),
 			},
 		},
 	}
@@ -357,6 +357,7 @@ func resourceAssuredWorkloadsWorkloadUpdate(d *schema.ResourceData, meta interfa
 	if err != nil {
 		return err
 	}
+
 	billingProject := ""
 	// err == nil indicates that the billing_project value was found
 	if bp, err := getBillingProject(d, config); err == nil {

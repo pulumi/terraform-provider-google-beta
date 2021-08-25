@@ -893,6 +893,10 @@ func resourcePrivatecaCertificateAuthorityImport(d *schema.ResourceData, meta in
 	}
 	d.SetId(id)
 
+	if err := d.Set("ignore_active_certificates_on_deletion", false); err != nil {
+		return nil, err
+	}
+
 	return []*schema.ResourceData{d}, nil
 }
 
@@ -1314,7 +1318,7 @@ func expandPrivatecaCertificateAuthorityConfigX509ConfigCaOptions(v interface{},
 	transformedMaxIssuerPathLength, err := expandPrivatecaCertificateAuthorityConfigX509ConfigCaOptionsMaxIssuerPathLength(original["max_issuer_path_length"], d, config)
 	if err != nil {
 		return nil, err
-	} else if val := reflect.ValueOf(transformedMaxIssuerPathLength); val.IsValid() && !isEmptyValue(val) {
+	} else {
 		transformed["maxIssuerPathLength"] = transformedMaxIssuerPathLength
 	}
 

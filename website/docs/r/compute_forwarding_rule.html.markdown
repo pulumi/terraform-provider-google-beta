@@ -34,6 +34,205 @@ To get more information about ForwardingRule, see:
     * [Official Documentation](https://cloud.google.com/compute/docs/load-balancing/network/forwarding-rules)
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=internal_http_lb_with_mig_backend&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Internal Http Lb With Mig Backend
+
+
+```hcl
+# Internal HTTP load balancer with a managed instance group backend
+
+# VPC
+resource "google_compute_network" "ilb_network" {
+  name                    = "l7-ilb-network"
+  provider                = google-beta
+  auto_create_subnetworks = false
+}
+
+# proxy-only subnet
+resource "google_compute_subnetwork" "proxy_subnet" {
+  name          = "l7-ilb-proxy-subnet"
+  provider      = google-beta
+  ip_cidr_range = "10.0.0.0/24"
+  region        = "europe-west1"
+  purpose       = "INTERNAL_HTTPS_LOAD_BALANCER"
+  role          = "ACTIVE"
+  network       = google_compute_network.ilb_network.id
+}
+
+# backed subnet
+resource "google_compute_subnetwork" "ilb_subnet" {
+  name          = "l7-ilb-subnet"
+  provider      = google-beta
+  ip_cidr_range = "10.0.1.0/24"
+  region        = "europe-west1"
+  network       = google_compute_network.ilb_network.id
+}
+
+# forwarding rule
+resource "google_compute_forwarding_rule" "google_compute_forwarding_rule" {
+  name                  = "l7-ilb-forwarding-rule"
+  provider              = google-beta
+  region                = "europe-west1"
+  depends_on            = [google_compute_subnetwork.proxy_subnet]
+  ip_protocol           = "TCP"
+  load_balancing_scheme = "INTERNAL_MANAGED"
+  port_range            = "80"
+  target                = google_compute_region_target_http_proxy.default.id
+  network               = google_compute_network.ilb_network.id
+  subnetwork            = google_compute_subnetwork.ilb_subnet.id
+  network_tier          = "PREMIUM"
+}
+
+# http proxy
+resource "google_compute_region_target_http_proxy" "default" {
+  name     = "l7-ilb-target-http-proxy"
+  provider = google-beta
+  region   = "europe-west1"
+  url_map  = google_compute_region_url_map.default.id
+}
+
+# url map
+resource "google_compute_region_url_map" "default" {
+  name            = "l7-ilb-regional-url-map"
+  provider        = google-beta
+  region          = "europe-west1"
+  default_service = google_compute_region_backend_service.default.id
+}
+
+# backend service
+resource "google_compute_region_backend_service" "default" {
+  name                  = "l7-ilb-backend-subnet"
+  provider              = google-beta
+  region                = "europe-west1"
+  protocol              = "HTTP"
+  load_balancing_scheme = "INTERNAL_MANAGED"
+  timeout_sec           = 10
+  health_checks         = [google_compute_region_health_check.default.id]
+  backend {
+    group           = google_compute_region_instance_group_manager.mig.instance_group
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 1.0
+  }
+}
+
+# instance template
+resource "google_compute_instance_template" "instance_template" {
+  name         = "l7-ilb-mig-template"
+  provider     = google-beta
+  machine_type = "e2-small"
+  tags         = ["http-server"]
+
+  network_interface {
+    network    = google_compute_network.ilb_network.id
+    subnetwork = google_compute_subnetwork.ilb_subnet.id
+    access_config {
+      # add external ip to fetch packages
+    }
+  }
+  disk {
+    source_image = "debian-cloud/debian-10"
+    auto_delete  = true
+    boot         = true
+  }
+
+  # install nginx and serve a simple web page
+  metadata = {
+    startup-script = <<-EOF1
+      #! /bin/bash
+      set -euo pipefail
+
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update
+      apt-get install -y nginx-light jq
+
+      NAME=$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/hostname")
+      IP=$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip")
+      METADATA=$(curl -f -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/attributes/?recursive=True" | jq 'del(.["startup-script"])')
+
+      cat <<EOF > /var/www/html/index.html
+      <pre>
+      Name: $NAME
+      IP: $IP
+      Metadata: $METADATA
+      </pre>
+      EOF
+    EOF1
+  }
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# health check
+resource "google_compute_region_health_check" "default" {
+  name     = "l7-ilb-hc"
+  provider = google-beta
+  region   = "europe-west1"
+  http_health_check {
+    port_specification = "USE_SERVING_PORT"
+  }
+}
+
+# MIG
+resource "google_compute_region_instance_group_manager" "mig" {
+  name     = "l7-ilb-mig1"
+  provider = google-beta
+  region   = "europe-west1"
+  version {
+    instance_template = google_compute_instance_template.instance_template.id
+    name              = "primary"
+  }
+  base_instance_name = "vm"
+  target_size        = 2
+}
+
+# allow all access from IAP and health check ranges
+resource "google_compute_firewall" "fw-iap" {
+  name          = "l7-ilb-fw-allow-iap-hc"
+  provider      = google-beta
+  direction     = "INGRESS"
+  network       = google_compute_network.ilb_network.id
+  source_ranges = ["130.211.0.0/22", "35.191.0.0/16", "35.235.240.0/20"]
+  allow {
+    protocol = "tcp"
+  }
+}
+
+# allow http from proxy subnet to backends
+resource "google_compute_firewall" "fw-ilb-to-backends" {
+  name          = "l7-ilb-fw-allow-ilb-to-backends"
+  provider      = google-beta
+  direction     = "INGRESS"
+  network       = google_compute_network.ilb_network.id
+  source_ranges = ["10.0.0.0/24"]
+  target_tags   = ["http-server"]
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443", "8080"]
+  }
+}
+
+# test instance
+resource "google_compute_instance" "vm-test" {
+  name         = "l7-ilb-test-vm"
+  provider     = google-beta
+  zone         = "europe-west1-b"
+  machine_type = "e2-small"
+  network_interface {
+    network    = google_compute_network.ilb_network.id
+    subnetwork = google_compute_subnetwork.ilb_subnet.id
+  }
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-10"
+    }
+  }
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=forwarding_rule_externallb&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
@@ -130,6 +329,42 @@ resource "google_compute_forwarding_rule" "default" {
 
 resource "google_compute_target_pool" "default" {
   name = "website-target-pool"
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=forwarding_rule_l3_default&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Forwarding Rule L3 Default
+
+
+```hcl
+resource "google_compute_forwarding_rule" "fwd_rule" {
+  provider        = google-beta
+  name            = "l3-forwarding-rule"
+  backend_service = google_compute_region_backend_service.service.id
+  ip_protocol     = "L3_DEFAULT"
+  all_ports       = true
+}
+
+resource "google_compute_region_backend_service" "service" {
+  provider              = google-beta
+  region                = "us-central1"
+  name                  = "service"
+  health_checks         = [google_compute_region_health_check.health_check.id]
+  protocol              = "UNSPECIFIED"
+  load_balancing_scheme = "EXTERNAL"
+}
+
+resource "google_compute_region_health_check" "health_check" {
+  provider           = google-beta
+  name               = "health-check"
+  region             = "us-central1"
+
+  tcp_health_check {
+    port = 80
+  }
 }
 ```
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
@@ -435,7 +670,7 @@ The following arguments are supported:
   The IP protocol to which this rule applies.
   When the load balancing scheme is INTERNAL, only TCP and UDP are
   valid.
-  Possible values are `TCP`, `UDP`, `ESP`, `AH`, `SCTP`, and `ICMP`.
+  Possible values are `TCP`, `UDP`, `ESP`, `AH`, `SCTP`, `ICMP`, and `L3_DEFAULT`.
 
 * `backend_service` -
   (Optional)
@@ -482,13 +717,15 @@ The following arguments are supported:
 
 * `ports` -
   (Optional)
-  This field is used along with the backend_service field for internal
-  load balancing.
-  When the load balancing scheme is INTERNAL, a single port or a comma
-  separated list of ports can be configured. Only packets addressed to
-  these ports will be forwarded to the backends configured with this
-  forwarding rule.
-  You may specify a maximum of up to 5 ports.
+  This field is used along with internal load balancing and network
+  load balancer when the forwarding rule references a backend service
+  and when protocol is not L3_DEFAULT.
+  A single port or a comma separated list of ports can be configured.
+  Only packets addressed to these ports will be forwarded to the backends
+  configured with this forwarding rule.
+  You can only use one of ports and portRange, or allPorts.
+  The three are mutually exclusive.
+  You may specify a maximum of up to 5 ports, which can be non-contiguous.
 
 * `subnetwork` -
   (Optional)
@@ -516,11 +753,13 @@ The following arguments are supported:
 
 * `all_ports` -
   (Optional)
-  For internal TCP/UDP load balancing (i.e. load balancing scheme is
-  INTERNAL and protocol is TCP/UDP), set this to true to allow packets
-  addressed to any ports to be forwarded to the backends configured
-  with this forwarding rule. Used with backend service. Cannot be set
-  if port or portRange are set.
+  This field can be used with internal load balancer or network load balancer
+  when the forwarding rule references a backend service, or with the target
+  field when it references a TargetInstance. Set this to true to
+  allow packets addressed to any ports to be forwarded to the backends configured
+  with this forwarding rule. This can be used when the protocol is TCP/UDP, and it
+  must be set to true when the protocol is set to L3_DEFAULT.
+  Cannot be set if port or portRange are set.
 
 * `network_tier` -
   (Optional)

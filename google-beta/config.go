@@ -69,6 +69,7 @@ type Config struct {
 	Scopes                             []string
 	BatchingConfig                     *batchingConfig
 	UserProjectOverride                bool
+	RequestReason                      string
 	RequestTimeout                     time.Duration
 	// PollInterval is passed to resource.StateChangeConf in common_operation.go
 	// It controls the interval at which we poll for successful operations
@@ -309,7 +310,7 @@ var DefaultBasePaths = map[string]string{
 	DialogflowBasePathKey:           "https://dialogflow.googleapis.com/v2/",
 	DialogflowCXBasePathKey:         "https://dialogflow.googleapis.com/v3/",
 	DNSBasePathKey:                  "https://dns.googleapis.com/dns/v1beta2/",
-	EssentialContactsBasePathKey:    "https://essentialcontacts.googleapis.com/v1beta1/",
+	EssentialContactsBasePathKey:    "https://essentialcontacts.googleapis.com/v1/",
 	FilestoreBasePathKey:            "https://file.googleapis.com/v1beta1/",
 	FirebaseBasePathKey:             "https://firebase.googleapis.com/v1beta1/",
 	FirestoreBasePathKey:            "https://firestore.googleapis.com/v1/",
@@ -396,6 +397,7 @@ func (c *Config) LoadAndValidate(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	// Userinfo is fetched before request logging is enabled to reduce additional noise.
 	err = c.logGoogleIdentities()
 	if err != nil {
@@ -414,6 +416,15 @@ func (c *Config) LoadAndValidate(ctx context.Context) error {
 	// 4. Header Transport - outer wrapper to inject additional headers we want to apply
 	// before making requests
 	headerTransport := newTransportWithHeaders(retryTransport)
+	if c.RequestReason != "" {
+		headerTransport.Set("X-Goog-Request-Reason", c.RequestReason)
+	}
+
+	// Ensure $userProject is set for all HTTP requests using the client if specified by the provider config
+	// See https://cloud.google.com/apis/docs/system-parameters
+	if c.UserProjectOverride && c.BillingProject != "" {
+		headerTransport.Set("X-Goog-User-Project", c.BillingProject)
+	}
 
 	// Set final transport value.
 	client.Transport = headerTransport
@@ -532,29 +543,27 @@ func (c *Config) getTokenSource(clientScopes []string, initialCredentialsOnly bo
 // of those "projects" as well. You can find out if this is required by looking at
 // the basePath value in the client library file.
 func (c *Config) NewComputeClient(userAgent string) *compute.Service {
-	computeClientBasePath := c.ComputeBasePath + "projects/"
-	log.Printf("[INFO] Instantiating GCE client for path %s", computeClientBasePath)
+	log.Printf("[INFO] Instantiating GCE client for path %s", c.ComputeBasePath)
 	clientCompute, err := compute.NewService(c.context, option.WithHTTPClient(c.client))
 	if err != nil {
 		log.Printf("[WARN] Error creating client compute: %s", err)
 		return nil
 	}
 	clientCompute.UserAgent = userAgent
-	clientCompute.BasePath = computeClientBasePath
+	clientCompute.BasePath = c.ComputeBasePath
 
 	return clientCompute
 }
 
 func (c *Config) NewComputeBetaClient(userAgent string) *computeBeta.Service {
-	computeBetaClientBasePath := c.ComputeBetaBasePath + "projects/"
-	log.Printf("[INFO] Instantiating GCE Beta client for path %s", computeBetaClientBasePath)
+	log.Printf("[INFO] Instantiating GCE Beta client for path %s", c.ComputeBetaBasePath)
 	clientComputeBeta, err := computeBeta.NewService(c.context, option.WithHTTPClient(c.client))
 	if err != nil {
 		log.Printf("[WARN] Error creating client compute beta: %s", err)
 		return nil
 	}
 	clientComputeBeta.UserAgent = userAgent
-	clientComputeBeta.BasePath = computeBetaClientBasePath
+	clientComputeBeta.BasePath = c.ComputeBetaBasePath
 
 	return clientComputeBeta
 }
