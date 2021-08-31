@@ -779,8 +779,11 @@ func Provider() *schema.Provider {
 			BigtableAdminCustomEndpointEntryKey:     BigtableAdminCustomEndpointEntry,
 
 			// dcl
-			EventarcEndpointEntryKey:             EventarcEndpointEntry,
-			GkeHubFeatureCustomEndpointEntryKey:  GkeHubFeatureCustomEndpointEntry,
+			AssuredWorkloadsEndpointEntryKey:             AssuredWorkloadsEndpointEntry,
+			EventarcEndpointEntryKey:                     EventarcEndpointEntry,
+			GkeHubFeatureCustomEndpointEntryKey:          GkeHubFeatureCustomEndpointEntry,
+			PrivatecaCertificateTemplateEndpointEntryKey: PrivatecaCertificateTemplateCustomEndpointEntry,
+
 			CloudBuildWorkerPoolEndpointEntryKey: CloudBuildWorkerPoolEndpointEntry,
 		},
 
@@ -1271,6 +1274,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_cloudfunctions_function":               resourceCloudFunctionsFunction(),
 			"google_composer_environment":                  resourceComposerEnvironment(),
 			"google_compute_attached_disk":                 resourceComputeAttachedDisk(),
+			"google_compute_firewall_policy_association":   resourceComputeFirewallPolicyAssociation(),
+			"google_compute_firewall_policy":               resourceComputeFirewallPolicy(),
+			"google_compute_firewall_policy_rule":          resourceComputeFirewallPolicyRule(),
 			"google_compute_instance":                      resourceComputeInstance(),
 			"google_compute_instance_from_machine_image":   resourceComputeInstanceFromMachineImage(),
 			"google_compute_instance_from_template":        resourceComputeInstanceFromTemplate(),
@@ -1299,6 +1305,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_eventarc_trigger":                      resourceEventarcTrigger(),
 			"google_folder":                                resourceGoogleFolder(),
 			"google_folder_organization_policy":            resourceGoogleFolderOrganizationPolicy(),
+			"google_privateca_certificate_template":        resourcePrivatecaCertificateTemplate(),
 			"google_gke_hub_feature":                       resourceGkeHubFeature(),
 			"google_gke_hub_feature_membership":            resourceGkeHubFeatureMembership(),
 			"google_logging_billing_account_sink":          resourceLoggingBillingAccountSink(),
@@ -1586,8 +1593,10 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.BigtableAdminBasePath = d.Get(BigtableAdminCustomEndpointEntryKey).(string)
 
 	// dcl
+	config.AssuredWorkloadsBasePath = d.Get(AssuredWorkloadsEndpointEntryKey).(string)
 	config.EventarcBasePath = d.Get(EventarcEndpointEntryKey).(string)
 	config.GkeHubBasePath = d.Get(GkeHubFeatureCustomEndpointEntryKey).(string)
+	config.PrivatecaBasePath = d.Get(PrivatecaCertificateTemplateEndpointEntryKey).(string)
 	config.CloudBuildWorkerPoolBasePath = d.Get(CloudBuildWorkerPoolEndpointEntryKey).(string)
 
 	stopCtx, ok := schema.StopContext(ctx)

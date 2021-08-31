@@ -22,12 +22,30 @@ import (
 // empty string is passed for dcl default since dcl
 // [hardcodes the values](https://github.com/GoogleCloudPlatform/declarative-resource-client-library/blob/main/services/google/eventarc/beta/trigger_internal.go#L96-L103)
 
+var AssuredWorkloadsEndpointEntryKey = "assured_workloads_custom_endpoint"
+var AssuredWorkloadsEndpointEntry = &schema.Schema{
+	Type:     schema.TypeString,
+	Optional: true,
+	DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+		"GOOGLE_ASSURED_WORKLOADS_CUSTOM_ENDPOINT",
+	}, ""),
+}
+
 var CloudBuildWorkerPoolEndpointEntryKey = "cloud_build_worker_pool_custom_endpoint"
 var CloudBuildWorkerPoolEndpointEntry = &schema.Schema{
 	Type:     schema.TypeString,
 	Optional: true,
 	DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 		"GOOGLE_CLOUD_BUILD_WORKER_POOL_CUSTOM_ENDPOINT",
+	}, ""),
+}
+
+var ComputeEndpointEntryKey = "compute_custom_endpoint"
+var ComputeEndpointEntry = &schema.Schema{
+	Type:     schema.TypeString,
+	Optional: true,
+	DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+		"GOOGLE_COMPUTE_CUSTOM_ENDPOINT",
 	}, ""),
 }
 
@@ -40,14 +58,29 @@ var EventarcEndpointEntry = &schema.Schema{
 	}, ""),
 }
 
+var PrivatecaEndpointEntryKey = "privateca_custom_endpoint"
+var PrivatecaEndpointEntry = &schema.Schema{
+	Type:     schema.TypeString,
+	Optional: true,
+	DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+		"GOOGLE_PRIVATECA_CUSTOM_ENDPOINT",
+	}, ""),
+}
+
 //Add new values to config.go.erb config object declaration
 //CloudBuildWorkerPoolBasePath string
+//ComputeBasePath string
 //EventarcBasePath string
+//PrivatecaBasePath string
 
 //Add new values to provider.go.erb schema initialization
 // CloudBuildWorkerPoolEndpointEntryKey:               CloudBuildWorkerPoolEndpointEntry,
+// ComputeEndpointEntryKey:               ComputeEndpointEntry,
 // EventarcEndpointEntryKey:               EventarcEndpointEntry,
+// PrivatecaEndpointEntryKey:               PrivatecaEndpointEntry,
 
 //Add new values to provider.go.erb - provider block read
 // config.CloudBuildWorkerPoolBasePath = d.Get(CloudBuildWorkerPoolEndpointEntryKey).(string)
+// config.ComputeBasePath = d.Get(ComputeEndpointEntryKey).(string)
 // config.EventarcBasePath = d.Get(EventarcEndpointEntryKey).(string)
+// config.PrivatecaBasePath = d.Get(PrivatecaEndpointEntryKey).(string)
