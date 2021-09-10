@@ -149,6 +149,13 @@ If set to true, the peer connection can be established with routing information.
 The default is true.`,
 				Default: true,
 			},
+			"ip_address": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+				Description: `IP address of the interface inside Google Cloud Platform.
+Only IPv4 is supported.`,
+			},
 			"region": {
 				Type:             schema.TypeString,
 				Computed:         true,
@@ -157,12 +164,6 @@ The default is true.`,
 				DiffSuppressFunc: compareSelfLinkOrResourceName,
 				Description: `Region where the router and BgpPeer reside.
 If it is not provided, the provider region is used.`,
-			},
-			"ip_address": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Description: `IP address of the interface inside Google Cloud Platform.
-Only IPv4 is supported.`,
 			},
 			"management_type": {
 				Type:     schema.TypeString,
@@ -209,6 +210,12 @@ func resourceComputeRouterBgpPeerCreate(d *schema.ResourceData, meta interface{}
 		return err
 	} else if v, ok := d.GetOkExists("interface"); !isEmptyValue(reflect.ValueOf(interfaceNameProp)) && (ok || !reflect.DeepEqual(v, interfaceNameProp)) {
 		obj["interfaceName"] = interfaceNameProp
+	}
+	ipAddressProp, err := expandNestedComputeRouterBgpPeerIpAddress(d.Get("ip_address"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("ip_address"); !isEmptyValue(reflect.ValueOf(ipAddressProp)) && (ok || !reflect.DeepEqual(v, ipAddressProp)) {
+		obj["ipAddress"] = ipAddressProp
 	}
 	peerIpAddressProp, err := expandNestedComputeRouterBgpPeerPeerIpAddress(d.Get("peer_ip_address"), d, config)
 	if err != nil {
@@ -412,6 +419,12 @@ func resourceComputeRouterBgpPeerUpdate(d *schema.ResourceData, meta interface{}
 	billingProject = project
 
 	obj := make(map[string]interface{})
+	ipAddressProp, err := expandNestedComputeRouterBgpPeerIpAddress(d.Get("ip_address"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("ip_address"); !isEmptyValue(reflect.ValueOf(v)) && (ok || !reflect.DeepEqual(v, ipAddressProp)) {
+		obj["ipAddress"] = ipAddressProp
+	}
 	peerIpAddressProp, err := expandNestedComputeRouterBgpPeerPeerIpAddress(d.Get("peer_ip_address"), d, config)
 	if err != nil {
 		return err
@@ -671,6 +684,9 @@ func flattenNestedComputeRouterBgpPeerManagementType(v interface{}, d *schema.Re
 }
 
 func flattenNestedComputeRouterBgpPeerEnable(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	if v == nil {
+		return true
+	}
 	b, err := strconv.ParseBool(v.(string))
 	if err != nil {
 		// If we can't convert it into a bool return value as is and let caller handle it
@@ -684,6 +700,10 @@ func expandNestedComputeRouterBgpPeerName(v interface{}, d TerraformResourceData
 }
 
 func expandNestedComputeRouterBgpPeerInterface(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandNestedComputeRouterBgpPeerIpAddress(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 
