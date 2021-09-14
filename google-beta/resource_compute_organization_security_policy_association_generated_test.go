@@ -39,22 +39,32 @@ func TestAccComputeOrganizationSecurityPolicyAssociation_organizationSecurityPol
 			{
 				Config: testAccComputeOrganizationSecurityPolicyAssociation_organizationSecurityPolicyAssociationBasicExample(context),
 			},
+			{
+				ResourceName:            "google_compute_organization_security_policy_association.policy",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"policy_id"},
+			},
 		},
 	})
 }
 
 func testAccComputeOrganizationSecurityPolicyAssociation_organizationSecurityPolicyAssociationBasicExample(context map[string]interface{}) string {
 	return Nprintf(`
+resource "google_folder" "security_policy_target" {
+  provider     = google-beta
+  display_name = "tf-test-secpol-%{random_suffix}"
+  parent       = "organizations/%{org_id}"
+}
+
 resource "google_compute_organization_security_policy" "policy" {
   provider = google-beta
-
   display_name = "tf-test%{random_suffix}"
-  parent       = "organizations/%{org_id}"
+  parent       = google_folder.security_policy_target.name
 }
 
 resource "google_compute_organization_security_policy_rule" "policy" {
   provider = google-beta
-
   policy_id = google_compute_organization_security_policy.policy.id
   action = "allow"
 
@@ -77,7 +87,6 @@ resource "google_compute_organization_security_policy_rule" "policy" {
 
 resource "google_compute_organization_security_policy_association" "policy" {
   provider = google-beta
-
   name          = "tf-test%{random_suffix}"
   attachment_id = google_compute_organization_security_policy.policy.parent
   policy_id     = google_compute_organization_security_policy.policy.id

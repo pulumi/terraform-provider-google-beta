@@ -83,6 +83,12 @@ func TestAccFilestoreInstance_filestoreInstanceFullExample(t *testing.T) {
 			{
 				Config: testAccFilestoreInstance_filestoreInstanceFullExample(context),
 			},
+			{
+				ResourceName:            "google_filestore_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"name", "zone"},
+			},
 		},
 	})
 }
@@ -117,6 +123,7 @@ resource "google_filestore_instance" "instance" {
   networks {
     network = "default"
     modes   = ["MODE_IPV4"]
+    connect_mode = "DIRECT_PEERING"
   }
 }
 `, context)

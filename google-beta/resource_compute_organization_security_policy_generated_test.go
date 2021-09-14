@@ -39,6 +39,11 @@ func TestAccComputeOrganizationSecurityPolicy_organizationSecurityPolicyBasicExa
 			{
 				Config: testAccComputeOrganizationSecurityPolicy_organizationSecurityPolicyBasicExample(context),
 			},
+			{
+				ResourceName:      "google_compute_organization_security_policy.policy",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }
@@ -47,7 +52,6 @@ func testAccComputeOrganizationSecurityPolicy_organizationSecurityPolicyBasicExa
 	return Nprintf(`
 resource "google_compute_organization_security_policy" "policy" {
   provider = google-beta
-
   display_name = "tf-test%{random_suffix}"
   parent       = "organizations/%{org_id}"
 }
