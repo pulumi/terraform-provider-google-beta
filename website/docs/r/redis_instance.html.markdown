@@ -274,10 +274,10 @@ In addition to the arguments listed above, the following computed attributes are
 
 * `server_ca_certs` -
   List of server CA certificates for the instance.
-  Structure is documented below.
+  Structure is [documented below](#nested_server_ca_certs).
 
 
-The `server_ca_certs` block contains:
+<a name="nested_server_ca_certs"></a>The `server_ca_certs` block contains:
 
 * `serial_number` -
   Serial number, as extracted from the certificate.
@@ -299,9 +299,9 @@ The `server_ca_certs` block contains:
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 10 minutes.
-- `update` - Default is 10 minutes.
-- `delete` - Default is 10 minutes.
+- `create` - Default is 20 minutes.
+- `update` - Default is 20 minutes.
+- `delete` - Default is 20 minutes.
 
 ## Import
 

@@ -86,7 +86,7 @@ The following arguments are supported:
 * `encryption_config` -
   (Optional)
   Encryption configuration for the database
-  Structure is documented below.
+  Structure is [documented below](#nested_encryption_config).
 
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.
@@ -95,7 +95,7 @@ The following arguments are supported:
 in state, a `destroy` or `update` that would delete the instance will fail.
 
 
-The `encryption_config` block supports:
+<a name="nested_encryption_config"></a>The `encryption_config` block supports:
 
 * `kms_key_name` -
   (Required)

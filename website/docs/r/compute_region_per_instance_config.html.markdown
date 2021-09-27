@@ -132,7 +132,7 @@ The following arguments are supported:
 * `preserved_state` -
   (Optional)
   The preserved state for this instance.
-  Structure is documented below.
+  Structure is [documented below](#nested_preserved_state).
 
 * `region` -
   (Optional)
@@ -160,7 +160,7 @@ When false, deleting this config will *not* immediately remove any state from th
 State will be removed on the next instance recreation or update.
 
 
-The `preserved_state` block supports:
+<a name="nested_preserved_state"></a>The `preserved_state` block supports:
 
 * `metadata` -
   (Optional)
@@ -169,10 +169,10 @@ The `preserved_state` block supports:
 * `disk` -
   (Optional)
   Stateful disks for the instance.
-  Structure is documented below.
+  Structure is [documented below](#nested_disk).
 
 
-The `disk` block supports:
+<a name="nested_disk"></a>The `disk` block supports:
 
 * `device_name` -
   (Required)

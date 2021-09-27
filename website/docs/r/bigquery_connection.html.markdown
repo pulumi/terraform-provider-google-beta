@@ -152,10 +152,10 @@ The following arguments are supported:
 * `cloud_sql` -
   (Required)
   Cloud SQL properties.
-  Structure is documented below.
+  Structure is [documented below](#nested_cloud_sql).
 
 
-The `cloud_sql` block supports:
+<a name="nested_cloud_sql"></a>The `cloud_sql` block supports:
 
 * `instance_id` -
   (Required)
@@ -168,7 +168,7 @@ The `cloud_sql` block supports:
 * `credential` -
   (Required)
   Cloud SQL properties.
-  Structure is documented below.
+  Structure is [documented below](#nested_credential).
 
 * `type` -
   (Required)
@@ -176,7 +176,7 @@ The `cloud_sql` block supports:
   Possible values are `DATABASE_TYPE_UNSPECIFIED`, `POSTGRES`, and `MYSQL`.
 
 
-The `credential` block supports:
+<a name="nested_credential"></a>The `credential` block supports:
 
 * `username` -
   (Required)
