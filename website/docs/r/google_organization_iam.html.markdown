@@ -38,7 +38,7 @@ Four different resources help you manage your IAM policy for a organization. Eac
 
 ```hcl
 resource "google_organization_iam_policy" "organization" {
-  organization     = "your-organization-id"
+  org_id      = "your-organization-id"
   policy_data = data.google_iam_policy.admin.policy_data
 }
 
@@ -57,7 +57,7 @@ With IAM Conditions:
 
 ```hcl
 resource "google_organization_iam_policy" "organization" {
-  organization     = "your-organization-id"
+  org_id      = "your-organization-id"
   policy_data = "${data.google_iam_policy.admin.policy_data}"
 }
 

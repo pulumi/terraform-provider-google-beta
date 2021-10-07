@@ -36,7 +36,7 @@ EdgeCacheOrigin represents a HTTP-reachable backend for an EdgeCacheService.
 
 ```hcl
 resource "google_network_services_edge_cache_origin" "default" {
-  name                 = "default"
+  name                 = "my-origin"
   origin_address       = "gs://media-edge-default"
   description          = "The default bucket for media edge test"
 }
@@ -52,7 +52,7 @@ resource "google_network_services_edge_cache_origin" "default" {
 ```hcl
 
 resource "google_network_services_edge_cache_origin" "fallback" {
-  name                 = "fallback"
+  name                 = "my-fallback"
   origin_address       = "gs://media-edge-fallback"
   description          = "The default bucket for media edge test"
   max_attempts         = 3
@@ -72,7 +72,7 @@ resource "google_network_services_edge_cache_origin" "fallback" {
 }
 
 resource "google_network_services_edge_cache_origin" "default" {
-  name                 = "default"
+  name                 = "my-origin"
   origin_address       = "gs://media-edge-default"
   failover_origin      = google_network_services_edge_cache_origin.fallback.id
   description          = "The default bucket for media edge test"
@@ -200,9 +200,9 @@ In addition to the arguments listed above, the following computed attributes are
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 30 minutes.
-- `update` - Default is 30 minutes.
-- `delete` - Default is 30 minutes.
+- `create` - Default is 60 minutes.
+- `update` - Default is 60 minutes.
+- `delete` - Default is 60 minutes.
 
 ## Import
 
