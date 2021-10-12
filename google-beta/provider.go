@@ -874,10 +874,13 @@ func Provider() *schema.Provider {
 			"google_service_account_access_token":                 dataSourceGoogleServiceAccountAccessToken(),
 			"google_service_account_id_token":                     dataSourceGoogleServiceAccountIdToken(),
 			"google_service_account_key":                          dataSourceGoogleServiceAccountKey(),
+			"google_sourcerepo_repository":                        dataSourceGoogleSourceRepoRepository(),
 			"google_spanner_instance":                             dataSourceSpannerInstance(),
 			"google_sql_ca_certs":                                 dataSourceGoogleSQLCaCerts(),
 			"google_sql_backup_run":                               dataSourceSqlBackupRun(),
 			"google_sql_database_instance":                        dataSourceSqlDatabaseInstance(),
+			"google_service_networking_peered_dns_domain":         dataSourceGoogleServiceNetworkingPeeredDNSDomain(),
+			"google_storage_bucket":                               dataSourceGoogleStorageBucket(),
 			"google_storage_bucket_object":                        dataSourceGoogleStorageBucketObject(),
 			"google_storage_bucket_object_content":                dataSourceGoogleStorageBucketObjectContent(),
 			"google_storage_object_signed_url":                    dataSourceGoogleSignedUrl(),
@@ -897,9 +900,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 239
+// Generated resources: 240
 // Generated IAM resources: 117
-// Total generated resources: 356
+// Total generated resources: 357
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1206,13 +1209,14 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_pubsub_topic_iam_policy":                               ResourceIamPolicy(PubsubTopicIamSchema, PubsubTopicIamUpdaterProducer, PubsubTopicIdParseFunc),
 			"google_pubsub_subscription":                                   resourcePubsubSubscription(),
 			"google_pubsub_schema":                                         resourcePubsubSchema(),
+			"google_pubsub_lite_reservation":                               resourcePubsubLiteReservation(),
 			"google_pubsub_lite_topic":                                     resourcePubsubLiteTopic(),
 			"google_pubsub_lite_subscription":                              resourcePubsubLiteSubscription(),
 			"google_redis_instance":                                        resourceRedisInstance(),
 			"google_resource_manager_lien":                                 resourceResourceManagerLien(),
-			"google_runtimeconfig_config_iam_binding":                      ResourceIamBinding(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc),
-			"google_runtimeconfig_config_iam_member":                       ResourceIamMember(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc),
-			"google_runtimeconfig_config_iam_policy":                       ResourceIamPolicy(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc),
+			"google_runtimeconfig_config_iam_binding":                      ResourceIamBinding(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc, IamWithGAResourceDeprecation()),
+			"google_runtimeconfig_config_iam_member":                       ResourceIamMember(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc, IamWithGAResourceDeprecation()),
+			"google_runtimeconfig_config_iam_policy":                       ResourceIamPolicy(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc, IamWithGAResourceDeprecation()),
 			"google_secret_manager_secret":                                 resourceSecretManagerSecret(),
 			"google_secret_manager_secret_iam_binding":                     ResourceIamBinding(SecretManagerSecretIamSchema, SecretManagerSecretIamUpdaterProducer, SecretManagerSecretIdParseFunc),
 			"google_secret_manager_secret_iam_member":                      ResourceIamMember(SecretManagerSecretIamSchema, SecretManagerSecretIamUpdaterProducer, SecretManagerSecretIdParseFunc),
@@ -1332,6 +1336,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_runtimeconfig_variable":                resourceRuntimeconfigVariable(),
 			"google_service_account":                       resourceGoogleServiceAccount(),
 			"google_service_account_key":                   resourceGoogleServiceAccountKey(),
+			"google_service_networking_peered_dns_domain":  resourceGoogleServiceNetworkingPeeredDNSDomain(),
 			"google_storage_bucket":                        resourceStorageBucket(),
 			"google_storage_bucket_acl":                    resourceStorageBucketAcl(),
 			"google_storage_bucket_object":                 resourceStorageBucketObject(),

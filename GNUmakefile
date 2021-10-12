@@ -1,4 +1,4 @@
-TEST?=$$(go list ./...)
+TEST?=$$(go list ./... | grep -v github.com/hashicorp/terraform-provider-google-beta/scripts)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=google
 DIR_NAME=google-beta
@@ -49,13 +49,6 @@ ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
 	git clone https://$(WEBSITE_REPO) $(GOPATH)/src/$(WEBSITE_REPO)
 endif
 	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
-
-website-test:
-ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
-	echo "$(WEBSITE_REPO) not found in your GOPATH (necessary for layouts and assets), get-ting..."
-	git clone https://$(WEBSITE_REPO) $(GOPATH)/src/$(WEBSITE_REPO)
-endif
-	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider-test PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
 
 docscheck:
 	@sh -c "'$(CURDIR)/scripts/docscheck.sh'"

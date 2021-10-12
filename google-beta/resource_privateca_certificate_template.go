@@ -599,19 +599,7 @@ func resourcePrivatecaCertificateTemplateUpdate(d *schema.ResourceData, meta int
 		PredefinedValues:      expandPrivatecaCertificateTemplatePredefinedValues(d.Get("predefined_values")),
 		Project:               dcl.String(project),
 	}
-	// Construct state hint from old values
-	old := &privateca.CertificateTemplate{
-		Location:              dcl.String(oldValue(d.GetChange("location")).(string)),
-		Name:                  dcl.String(oldValue(d.GetChange("name")).(string)),
-		Description:           dcl.String(oldValue(d.GetChange("description")).(string)),
-		IdentityConstraints:   expandPrivatecaCertificateTemplateIdentityConstraints(oldValue(d.GetChange("identity_constraints"))),
-		Labels:                checkStringMap(oldValue(d.GetChange("labels"))),
-		PassthroughExtensions: expandPrivatecaCertificateTemplatePassthroughExtensions(oldValue(d.GetChange("passthrough_extensions"))),
-		PredefinedValues:      expandPrivatecaCertificateTemplatePredefinedValues(oldValue(d.GetChange("predefined_values"))),
-		Project:               dcl.StringOrNil(oldValue(d.GetChange("project")).(string)),
-	}
 	directive := UpdateDirective
-	directive = append(directive, dcl.WithStateHint(old))
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -786,12 +774,12 @@ func flattenPrivatecaCertificateTemplatePassthroughExtensions(obj *privateca.Cer
 }
 func expandPrivatecaCertificateTemplatePassthroughExtensionsAdditionalExtensionsArray(o interface{}) []privateca.CertificateTemplatePassthroughExtensionsAdditionalExtensions {
 	if o == nil {
-		return nil
+		return make([]privateca.CertificateTemplatePassthroughExtensionsAdditionalExtensions, 0)
 	}
 
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-		return nil
+		return make([]privateca.CertificateTemplatePassthroughExtensionsAdditionalExtensions, 0)
 	}
 
 	items := make([]privateca.CertificateTemplatePassthroughExtensionsAdditionalExtensions, 0, len(objs))
@@ -875,12 +863,12 @@ func flattenPrivatecaCertificateTemplatePredefinedValues(obj *privateca.Certific
 }
 func expandPrivatecaCertificateTemplatePredefinedValuesAdditionalExtensionsArray(o interface{}) []privateca.CertificateTemplatePredefinedValuesAdditionalExtensions {
 	if o == nil {
-		return nil
+		return make([]privateca.CertificateTemplatePredefinedValuesAdditionalExtensions, 0)
 	}
 
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-		return nil
+		return make([]privateca.CertificateTemplatePredefinedValuesAdditionalExtensions, 0)
 	}
 
 	items := make([]privateca.CertificateTemplatePredefinedValuesAdditionalExtensions, 0, len(objs))
@@ -1096,12 +1084,12 @@ func flattenPrivatecaCertificateTemplatePredefinedValuesKeyUsageExtendedKeyUsage
 }
 func expandPrivatecaCertificateTemplatePredefinedValuesKeyUsageUnknownExtendedKeyUsagesArray(o interface{}) []privateca.CertificateTemplatePredefinedValuesKeyUsageUnknownExtendedKeyUsages {
 	if o == nil {
-		return nil
+		return make([]privateca.CertificateTemplatePredefinedValuesKeyUsageUnknownExtendedKeyUsages, 0)
 	}
 
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-		return nil
+		return make([]privateca.CertificateTemplatePredefinedValuesKeyUsageUnknownExtendedKeyUsages, 0)
 	}
 
 	items := make([]privateca.CertificateTemplatePredefinedValuesKeyUsageUnknownExtendedKeyUsages, 0, len(objs))
@@ -1151,12 +1139,12 @@ func flattenPrivatecaCertificateTemplatePredefinedValuesKeyUsageUnknownExtendedK
 }
 func expandPrivatecaCertificateTemplatePredefinedValuesPolicyIdsArray(o interface{}) []privateca.CertificateTemplatePredefinedValuesPolicyIds {
 	if o == nil {
-		return nil
+		return make([]privateca.CertificateTemplatePredefinedValuesPolicyIds, 0)
 	}
 
 	objs := o.([]interface{})
 	if len(objs) == 0 {
-		return nil
+		return make([]privateca.CertificateTemplatePredefinedValuesPolicyIds, 0)
 	}
 
 	items := make([]privateca.CertificateTemplatePredefinedValuesPolicyIds, 0, len(objs))

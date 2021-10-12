@@ -431,7 +431,14 @@ The following arguments are supported:
   (Optional)
   Type of session affinity to use. The default is NONE. Session affinity is
   not applicable if the protocol is UDP.
-  Possible values are `NONE`, `CLIENT_IP`, `CLIENT_IP_PORT_PROTO`, `CLIENT_IP_PROTO`, `GENERATED_COOKIE`, `HEADER_FIELD`, and `HTTP_COOKIE`.
+  Possible values are `NONE`, `CLIENT_IP`, `CLIENT_IP_PORT_PROTO`, `CLIENT_IP_PROTO`, `GENERATED_COOKIE`, `HEADER_FIELD`, `HTTP_COOKIE`, and `CLIENT_IP_NO_DESTINATION`.
+
+* `connection_tracking_policy` -
+  (Optional)
+  Connection Tracking configuration for this BackendService.
+  This is available only for Layer 4 Internal Load Balancing and
+  Network Load Balancing.
+  Structure is [documented below](#nested_connection_tracking_policy).
 
 * `timeout_sec` -
   (Optional)

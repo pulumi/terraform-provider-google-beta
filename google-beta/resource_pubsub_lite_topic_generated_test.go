@@ -50,6 +50,12 @@ func TestAccPubsubLiteTopic_pubsubLiteTopicBasicExample(t *testing.T) {
 
 func testAccPubsubLiteTopic_pubsubLiteTopicBasicExample(context map[string]interface{}) string {
 	return Nprintf(`
+resource "google_pubsub_lite_reservation" "example" {
+  name = "tf-test-example-reservation%{random_suffix}"
+  project = data.google_project.project.number
+  throughput_capacity = 2
+}
+
 resource "google_pubsub_lite_topic" "example" {
   name = "tf-test-example-topic%{random_suffix}"
   project = data.google_project.project.number
@@ -64,6 +70,10 @@ resource "google_pubsub_lite_topic" "example" {
 
   retention_config {
     per_partition_bytes = 32212254720
+  }
+
+  reservation_config {
+    throughput_reservation = google_pubsub_lite_reservation.example.name
   }
 }
 

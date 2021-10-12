@@ -1,7 +1,7 @@
 module github.com/hashicorp/terraform-provider-google-beta
 require (
 	cloud.google.com/go/bigtable v1.10.1
-	github.com/GoogleCloudPlatform/declarative-resource-client-library v0.0.0-20210923224644-6d2562f679ca
+	github.com/GoogleCloudPlatform/declarative-resource-client-library v0.0.0-20210929201636-4f607239a42a
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/client9/misspell v0.3.4
 	github.com/davecgh/go-spew v1.1.1
@@ -14,6 +14,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-version v1.3.0
 	github.com/hashicorp/hcl/v2 v2.6.0 // indirect
+	github.com/hashicorp/terraform-json v0.12.0 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.5.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/hashstructure v1.1.0
