@@ -204,7 +204,7 @@ The following arguments are supported:
   A list of IPv4 or IPv6 addresses.
 
 * `connect_mode` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The network connect mode of the Filestore instance.
   If not provided, the connect mode defaults to
   DIRECT_PEERING.

@@ -62,7 +62,7 @@ The following arguments are supported:
     rule (rule with priority 2147483647 and match "\*"). If no rules are provided when creating a
     security policy, a default rule with action "allow" will be added. Structure is [documented below](#nested_rule).
 
-* `adaptive_protection_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Configuration for [Google Cloud Armor Adaptive Protection](https://cloud.google.com/armor/docs/adaptive-protection-overview?hl=en). Structure is [documented below](#nested_adaptive_protection_config).
+* `adaptive_protection_config` - (Optional) Configuration for [Google Cloud Armor Adaptive Protection](https://cloud.google.com/armor/docs/adaptive-protection-overview?hl=en). Structure is [documented below](#nested_adaptive_protection_config).
 
 <a name="nested_rule"></a>The `rule` block supports:
 
@@ -108,13 +108,13 @@ The following arguments are supported:
 
 <a name="nested_adaptive_protection_config"></a>The `adaptive_protection_config` block supports:
 
-* `layer_7_ddos_defense_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Configuration for [Google Cloud Armor Adaptive Protection Layer 7 DDoS Defense](https://cloud.google.com/armor/docs/adaptive-protection-overview?hl=en). Structure is [documented below](#nested_layer_7_ddos_defense_config).
+* `layer_7_ddos_defense_config` - (Optional) Configuration for [Google Cloud Armor Adaptive Protection Layer 7 DDoS Defense](https://cloud.google.com/armor/docs/adaptive-protection-overview?hl=en). Structure is [documented below](#nested_layer_7_ddos_defense_config).
 
 <a name="nested_layer_7_ddos_defense_config"></a>The `layer_7_ddos_defense_config` block supports:
 
-* `enable` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) If set to true, enables CAAP for L7 DDoS detection.
+* `enable` - (Optional) If set to true, enables CAAP for L7 DDoS detection.
 
-* `rule_visibility` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Rule visibility can be one of the following: STANDARD - opaque rules. (default) PREMIUM - transparent rules.
+* `rule_visibility` - (Optional) Rule visibility can be one of the following: STANDARD - opaque rules. (default) PREMIUM - transparent rules.
 
 ## Attributes Reference
 
@@ -125,14 +125,4 @@ exported:
 
 * `fingerprint` - Fingerprint of this resource.
 
-* `self_link` - The URI of the created resource.
-
-## Import
-
-Security policies can be imported using any of the following formats
-
-```
-$ terraform import google_compute_security_policy.policy projects/{{project}}/global/securityPolicies/{{name}}
-$ terraform import google_compute_security_policy.policy {{project}}/{{name}}
-$ terraform import google_compute_security_policy.policy {{name}}
-```
+* `self_link` - The URI of the created resourc

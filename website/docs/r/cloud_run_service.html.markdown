@@ -569,7 +569,7 @@ The following arguments are supported:
   will use the project's default service account.
 
 * `volumes` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Volume represents a named volume in a container.
   Structure is [documented below](#nested_volumes).
 
@@ -647,7 +647,7 @@ The following arguments are supported:
   Structure is [documented below](#nested_resources).
 
 * `volume_mounts` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Volume to mount into the container's filesystem.
   Only supports SecretVolumeSources.
   Structure is [documented below](#nested_volume_mounts).
@@ -728,7 +728,7 @@ The following arguments are supported:
   Defaults to "".
 
 * `value_from` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Source for the environment variable's value. Only supports secret_key_ref.
   Structure is [documented below](#nested_value_from).
 

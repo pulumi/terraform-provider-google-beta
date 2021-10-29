@@ -101,7 +101,7 @@ The following arguments are supported:
   The range of internal addresses that follows RFC 4632 notation. Example: `10.132.0.0/28`.
 
 * `machine_type` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Machine type of VM Instance underlying connector. Default is e2-micro
 
 * `min_throughput` -
@@ -109,11 +109,11 @@ The following arguments are supported:
   Minimum throughput of the connector in Mbps. Default and min is 200.
 
 * `min_instances` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Minimum value of instances in autoscaling group underlying the connector.
 
 * `max_instances` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Maximum value of instances in autoscaling group underlying the connector.
 
 * `max_throughput` -
@@ -121,7 +121,7 @@ The following arguments are supported:
   Maximum throughput of the connector in Mbps, must be greater than `min_throughput`. Default is 300.
 
 * `subnet` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The subnet in which to house the connector
   Structure is [documented below](#nested_subnet).
 
@@ -136,12 +136,12 @@ The following arguments are supported:
 <a name="nested_subnet"></a>The `subnet` block supports:
 
 * `name` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Subnet name (relative, not fully qualified). E.g. if the full subnet selfLink is
   https://compute.googleapis.com/compute/v1/projects/{project}/regions/{region}/subnetworks/{subnetName} the correct input for this field would be {subnetName}"
 
 * `project_id` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Project in which the subnet exists. If not set, this project is assumed to be the project for which the connector create request was issued.
 
 ## Attributes Reference

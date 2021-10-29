@@ -286,7 +286,7 @@ The following arguments are supported:
   in versions composer-1.*.*-airflow-*.*.*.
 
 * `enable_ip_masq_agent` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Deploys 'ip-masq-agent' daemon set in the GKE cluster and defines
   nonMasqueradeCIDRs equals to pod IP range so IP masquerading is used for
   all destination addresses, except between pods traffic.
@@ -374,7 +374,7 @@ See [documentation](https://cloud.google.com/composer/docs/how-to/managing/confi
   The CIDR block from which IP range in tenant project will be reserved for Cloud SQL. Needs to be disjoint from `web_server_ipv4_cidr_block`
 
 * `cloud_composer_network_ipv4_cidr_block"` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The CIDR block from which IP range for Cloud Composer Network in tenant project will be reserved. Needs to be disjoint from private_cluster_config.master_ipv4_cidr_block and cloud_sql_ipv4_cidr_block. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.
 
 * `web_server_ipv4_cidr_block` -
@@ -382,7 +382,7 @@ See [documentation](https://cloud.google.com/composer/docs/how-to/managing/confi
   The CIDR block from which IP range for web server will be reserved. Needs to be disjoint from `master_ipv4_cidr_block` and `cloud_sql_ipv4_cidr_block`. This field is supported for Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.
 
 * `enable_privately_used_public_ips` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   When enabled, IPs from public (non-RFC1918) ranges can be used for
   `ip_allocation_policy.cluster_ipv4_cidr_block` and `ip_allocation_policy.service_ipv4_cidr_block`.
 
@@ -577,24 +577,3 @@ In addition to the arguments listed above, the following computed attributes are
   reside in a simulated directory with this prefix.
 
 * `config.0.airflow_uri` -
-  The URI of the Apache Airflow Web UI hosted within this
-  environment.
-
-## Timeouts
-
-This resource provides the following
-[customTimeouts](https://www.pulumi.com/docs/intro/concepts/programming-model/#customtimeouts) configuration options:
-
-- `create` - Default is 60 minutes.
-- `update` - Default is 60 minutes.
-- `delete` - Default is 6 minutes.
-
-## Import
-
-Environment can be imported using any of these accepted formats:
-
-```
-$ terraform import google_composer_environment.default projects/{{project}}/locations/{{region}}/environments/{{name}}
-$ terraform import google_composer_environment.default {{project}}/{{region}}/{{name}}
-$ terraform import google_composer_environment.default {{name}}
-```

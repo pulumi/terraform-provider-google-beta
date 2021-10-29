@@ -373,7 +373,7 @@ The following arguments are supported:
   The security policy associated with this backend service.
 
 * `security_settings` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The security settings that apply to this backend service. This field is applicable to either
   a regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and
   load_balancing_scheme set to INTERNAL_MANAGED; or a global backend service with the

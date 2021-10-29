@@ -213,12 +213,12 @@ The following arguments are supported:
   Structure is [documented below](#nested_shielded_instance_config).
 
 * `nic_type` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The type of vNIC driver.
   Possible values are `UNSPECIFIED_NIC_TYPE`, `VIRTIO_NET`, and `GVNIC`.
 
 * `reservation_affinity` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Reservation Affinity for consuming Zonal reservation.
   Structure is [documented below](#nested_reservation_affinity).
 

@@ -260,7 +260,7 @@ region are guaranteed to support the same version.
     manages the default node pool, which isn't recommended to be used.
     Structure is [documented below](#nested_node_config).
 
-* `network_config` -  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Configuration for
+* `network_config` -  (Optional) Configuration for
    [Adding Pod IP address ranges](https://cloud.google.com/kubernetes-engine/docs/how-to/multi-pod-cidr)) to the node pool. Structure is [documented below](#nested_network_config)
 
 * `node_pool` - (Optional) List of node pools associated with this cluster.
@@ -279,7 +279,7 @@ region are guaranteed to support the same version.
     `version_prefix` field to approximate fuzzy versions.
     To update nodes in other node pools, use the `version` attribute on the node pool.
 
-* `notification_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Configuration for the [cluster upgrade notifications](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-upgrade-notifications) feature. Structure is [documented below](#nested_notification_config).
+* `notification_config` - (Optional) Configuration for the [cluster upgrade notifications](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-upgrade-notifications) feature. Structure is [documented below](#nested_notification_config).
 
 * `pod_security_policy_config` - (Optional) Configuration for the
     [PodSecurityPolicy](https://cloud.google.com/kubernetes-engine/docs/how-to/pod-security-policies) feature.
@@ -336,7 +336,7 @@ subnetwork in which the cluster's instances are launched.
 * `enable_intranode_visibility` - (Optional)
     Whether Intra-node visibility is enabled for this cluster. This makes same node pod to pod traffic visible for VPC network.
 
-* `enable_l4_ilb_subsetting` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `enable_l4_ilb_subsetting` - (Optional)
     Whether L4ILB Subsetting is enabled for this cluster.
 
 * `private_ipv6_google_access` - (Optional)
@@ -348,7 +348,7 @@ subnetwork in which the cluster's instances are launched.
 * `default_snat_status` - (Optional)
   [GKE SNAT](https://cloud.google.com/kubernetes-engine/docs/how-to/ip-masquerade-agent#how_ipmasq_works) DefaultSnatStatus contains the desired state of whether default sNAT should be disabled on the cluster, [API doc](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters#networkconfig). Structure is [documented below](#nested_default_snat_status)
 
-* `dns_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `dns_config` - (Optional)
   Configuration for [Using Cloud DNS for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns). Structure is [documented below](#nested_dns_config).
 
 <a name="nested_default_snat_status"></a>The `default_snat_status` block supports
@@ -380,7 +380,7 @@ subnetwork in which the cluster's instances are launched.
 
 * `cloudrun_config` - (Optional). Structure is [documented below](#nested_cloudrun_config).
 
-* `istio_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)).
+* `istio_config` - (Optional).
     Structure is [documented below](#nested_istio_config).
 
 * `dns_cache_config` - (Optional).
@@ -680,7 +680,7 @@ ephemeral_storage_config {
     are preemptible. See the [official documentation](https://cloud.google.com/container-engine/docs/preemptible-vm)
     for more information. Defaults to false.
 
-* `sandbox_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) [GKE Sandbox](https://cloud.google.com/kubernetes-engine/docs/how-to/sandbox-pods) configuration. When enabling this feature you must specify `image_type = "COS_CONTAINERD"` and `node_version = "1.12.7-gke.17"` or later to use it.
+* `sandbox_config` - (Optional) [GKE Sandbox](https://cloud.google.com/kubernetes-engine/docs/how-to/sandbox-pods) configuration. When enabling this feature you must specify `image_type = "COS_CONTAINERD"` and `node_version = "1.12.7-gke.17"` or later to use it.
     Structure is [documented below](#nested_sandbox_config).
 
 * `boot_disk_kms_key` - (Optional) The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https://cloud.google.com/compute/docs/disks/customer-managed-encryption
@@ -733,11 +733,11 @@ linux_node_config {
 
 <a name="nested_network_config"></a>The `network_config` block supports:
 
-* `create_pod_range` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Whether to create a new range for pod IPs in this node pool. Defaults are provided for `pod_range` and `pod_ipv4_cidr_block` if they are not specified.
+* `create_pod_range` - (Optional) Whether to create a new range for pod IPs in this node pool. Defaults are provided for `pod_range` and `pod_ipv4_cidr_block` if they are not specified.
 
-* `pod_ipv4_cidr_block` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) The IP address range for pod IPs in this node pool. Only applicable if createPodRange is true. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0/14) to pick a specific range to use.
+* `pod_ipv4_cidr_block` - (Optional) The IP address range for pod IPs in this node pool. Only applicable if createPodRange is true. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0/14) to pick a specific range to use.
 
-* `pod_range` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) The ID of the secondary range for pod IPs. If `create_pod_range` is true, this ID is used for the new range. If `create_pod_range` is false, uses an existing secondary range with this ID.
+* `pod_range` - (Optional) The ID of the secondary range for pod IPs. If `create_pod_range` is true, this ID is used for the new range. If `create_pod_range` is false, uses an existing secondary range with this ID.
 
 <a name="nested_ephemeral_storage_config"></a>The `ephemeral_storage_config` block supports:
 
@@ -934,81 +934,4 @@ and all pods running on the nodes. Specified as a map from the key, such as
 
 <a name="nested_dns_config"></a>The `dns_config` block supports:
 
-* `cluster_dns` - (Optional) Which in-cluster DNS provider should be used. `PROVIDER_UNSPECIFIED` (default) or `PLATFORM_DEFAULT` or `CLOUD_DNS`.
-
-* `cluster_dns_scope` - (Optional) The scope of access to cluster DNS records. `DNS_SCOPE_UNSPECIFIED` (default) or `CLUSTER_SCOPE` or `VPC_SCOPE`.
-
-* `cluster_dns_domain` - (Optional) The suffix used for all cluster service records.
-
-## Attributes Reference
-
-In addition to the arguments listed above, the following computed attributes are
-exported:
-
-* `id` - an identifier for the resource with format `projects/{{project}}/locations/{{zone}}/clusters/{{name}}`
-
-* `self_link` - The server-defined URL for the resource.
-
-* `endpoint` - The IP address of this cluster's Kubernetes master.
-
-* `instance_group_urls` - List of instance group URLs which have been assigned
-    to the cluster.
-
-* `label_fingerprint` - The fingerprint of the set of labels for this cluster.
-
-* `maintenance_policy.0.daily_maintenance_window.0.duration` - Duration of the time window, automatically chosen to be
-    smallest possible in the given scenario.
-    Duration will be in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) format "PTnHnMnS".
-
-* `master_auth.0.client_certificate` - Base64 encoded public certificate
-    used by clients to authenticate to the cluster endpoint.
-
-* `master_auth.0.client_key` - Base64 encoded private key used by clients
-    to authenticate to the cluster endpoint.
-
-* `master_auth.0.cluster_ca_certificate` - Base64 encoded public certificate
-    that is the root of trust for the cluster.
-
-* `master_version` - The current version of the master in the cluster. This may
-    be different than the `min_master_version` set in the config if the master
-    has been updated by GKE.
-
-* `tpu_ipv4_cidr_block` - The IP address range of the Cloud TPUs in this cluster, in
-    [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
-    notation (e.g. `1.2.3.4/29`).
-
-* `services_ipv4_cidr` - The IP address range of the Kubernetes services in this
-  cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
-  notation (e.g. `1.2.3.4/29`). Service addresses are typically put in the last
-  `/16` from the container CIDR.
-
-## Timeouts
-
-This resource provides the following
-[Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
-
-- `create` - Default is 40 minutes.
-- `read`   - Default is 40 minutes.
-- `update` - Default is 60 minutes.
-- `delete` - Default is 40 minutes.
-
-## Import
-
-GKE clusters can be imported using the `project` , `location`, and `name`. If the project is omitted, the default
-provider value will be used. Examples:
-
-```
-$ terraform import google_container_cluster.mycluster projects/my-gcp-project/locations/us-east1-a/clusters/my-cluster
-
-$ terraform import google_container_cluster.mycluster my-gcp-project/us-east1-a/my-cluster
-
-$ terraform import google_container_cluster.mycluster us-east1-a/my-cluster
-```
-
-~> **Note:** This resource has several fields that control provider-specific behavior and aren't present in the API. If they are set in config and you import a cluster, the provider may need to perform an update immediately after import. Most of these updates should be no-ops but some may modify your cluster if the imported state differs.
-
-For example, the following fields will show diffs if set in config:
-
-- `min_master_version`
-- `remove_default_node_pool`
-
+* `cluster_dns` - (Optional) Which in-cluster DNS provider shoul
