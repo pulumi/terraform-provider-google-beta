@@ -56,6 +56,7 @@ var (
 		"config.0.encryption_config",
 		"config.0.maintenance_window",
 		"config.0.workloads_config",
+		"config.0.environment_size",
 	}
 
 	allowedIpRangesConfig = &schema.Resource{
@@ -140,7 +141,8 @@ func resourceComposerEnvironment() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"zone": {
 										Type:             schema.TypeString,
-										Required:         true,
+										Optional:         true,
+										Computed:         true,
 										ForceNew:         true,
 										DiffSuppressFunc: compareSelfLinkOrResourceName,
 										Description:      `The Compute Engine zone in which to deploy the VMs running the Apache Airflow software, specified as the zone name or relative resource name (e.g. "projects/{project}/zones/{zone}"). Must belong to the enclosing environment's project and region. This field is supported for Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.`,
@@ -302,7 +304,7 @@ func resourceComposerEnvironment() *schema.Resource {
 										AtLeastOneOf: composerSoftwareConfigKeys,
 										Elem:         &schema.Schema{Type: schema.TypeString},
 										ValidateFunc: validateComposerEnvironmentEnvVariables,
-										Description:  `Additional environment variables to provide to the Apache Airflow scheduler, worker, and webserver processes. Environment variable names must match the regular expression [a-zA-Z_][a-zA-Z0-9_]*. They cannot specify Apache Airflow software configuration overrides (they cannot match the regular expression AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+), and they cannot match any of the following reserved names: AIRFLOW_HOME C_FORCE_ROOT CONTAINER_NAME DAGS_FOLDER GCP_PROJECT GCS_BUCKET GKE_CLUSTER_NAME SQL_DATABASE SQL_INSTANCE SQL_PASSWORD SQL_PROJECT SQL_REGION SQL_USER.`,
+										Description:  `Additional environment variables to provide to the Apache Airflow schedulerf, worker, and webserver processes. Environment variable names must match the regular expression [a-zA-Z_][a-zA-Z0-9_]*. They cannot specify Apache Airflow software configuration overrides (they cannot match the regular expression AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+), and they cannot match any of the following reserved names: AIRFLOW_HOME C_FORCE_ROOT CONTAINER_NAME DAGS_FOLDER GCP_PROJECT GCS_BUCKET GKE_CLUSTER_NAME SQL_DATABASE SQL_INSTANCE SQL_PASSWORD SQL_PROJECT SQL_REGION SQL_USER.`,
 									},
 									"image_version": {
 										Type:             schema.TypeString,
@@ -649,6 +651,14 @@ func resourceComposerEnvironment() *schema.Resource {
 									},
 								},
 							},
+						},
+						"environment_size": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							ForceNew:     false,
+							AtLeastOneOf: composerConfigKeys,
+							ValidateFunc: validation.StringInSlice([]string{"ENVIRONMENT_SIZE_SMALL", "ENVIRONMENT_SIZE_MEDIUM", "ENVIRONMENT_SIZE_LARGE"}, false),
+							Description:  `The size of the Cloud Composer environment. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.`,
 						},
 						"airflow_uri": {
 							Type:        schema.TypeString,
@@ -1063,6 +1073,7 @@ func flattenComposerEnvironmentConfig(envCfg *composer.EnvironmentConfig) interf
 	transformed["encryption_config"] = flattenComposerEnvironmentConfigEncryptionConfig(envCfg.EncryptionConfig)
 	transformed["maintenance_window"] = flattenComposerEnvironmentConfigMaintenanceWindow(envCfg.MaintenanceWindow)
 	transformed["workloads_config"] = flattenComposerEnvironmentConfigWorkloadsConfig(envCfg.WorkloadsConfig)
+	transformed["environment_size"] = envCfg.EnvironmentSize
 
 	return []interface{}{transformed}
 }
@@ -1328,6 +1339,12 @@ func expandComposerEnvironmentConfig(v interface{}, d *schema.ResourceData, conf
 		return nil, err
 	}
 	transformed.WorkloadsConfig = transformedWorkloadsConfig
+
+	transformedEnvironmentSize, err := expandComposerEnvironmentConfigEnvironmentSize(original["environment_size"], d, config)
+	if err != nil {
+		return nil, err
+	}
+	transformed.EnvironmentSize = transformedEnvironmentSize
 	return transformed, nil
 }
 
@@ -1479,6 +1496,13 @@ func expandComposerEnvironmentConfigWorkloadsConfig(v interface{}, d *schema.Res
 	}
 
 	return transformed, nil
+}
+
+func expandComposerEnvironmentConfigEnvironmentSize(v interface{}, d *schema.ResourceData, config *Config) (string, error) {
+	if v == nil {
+		return "", nil
+	}
+	return v.(string), nil
 }
 
 func expandComposerEnvironmentConfigPrivateEnvironmentConfig(v interface{}, d *schema.ResourceData, config *Config) (*composer.PrivateEnvironmentConfig, error) {
@@ -1668,9 +1692,6 @@ func expandComposerEnvironmentMachineType(v interface{}, d *schema.ResourceData,
 
 	fv, err := ParseMachineTypesFieldValue(v.(string), d, config)
 	if err != nil {
-		if requiredZone == "" {
-			return "", err
-		}
 
 		// Try to construct machine type with zone/project given in config.
 		project, err := getProject(d, config)

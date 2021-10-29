@@ -294,12 +294,13 @@ func resourceContainerCluster() *schema.Resource {
 							},
 						},
 						"dns_cache_config": {
-							Type:         schema.TypeList,
-							Optional:     true,
-							Computed:     true,
-							AtLeastOneOf: addonsConfigKeys,
-							MaxItems:     1,
-							Description:  `The status of the NodeLocal DNSCache addon. It is disabled by default. Set enabled = true to enable.`,
+							Type:          schema.TypeList,
+							Optional:      true,
+							Computed:      true,
+							AtLeastOneOf:  addonsConfigKeys,
+							MaxItems:      1,
+							Description:   `The status of the NodeLocal DNSCache addon. It is disabled by default. Set enabled = true to enable.`,
+							ConflictsWith: []string{"enable_autopilot"},
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"enabled": {
@@ -663,10 +664,10 @@ func resourceContainerCluster() *schema.Resource {
 						"enable_components": {
 							Type:        schema.TypeList,
 							Required:    true,
-							Description: `GKE components exposing metrics. Valid values include SYSTEM_COMPONENTS.`,
+							Description: `GKE components exposing metrics. Valid values include SYSTEM_COMPONENTS and WORKLOADS.`,
 							Elem: &schema.Schema{
 								Type:         schema.TypeString,
-								ValidateFunc: validation.StringInSlice([]string{"SYSTEM_COMPONENTS"}, false),
+								ValidateFunc: validation.StringInSlice([]string{"SYSTEM_COMPONENTS", "WORKLOADS"}, false),
 							},
 						},
 					},
@@ -729,6 +730,7 @@ func resourceContainerCluster() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Computed:    true,
+				Deprecated:  `Basic authentication was removed for GKE cluster versions >= 1.19.`,
 				Description: `The authentication information for accessing the Kubernetes master. Some values in this block are only returned by the API if your service account has permission to get credentials for your GKE cluster. If you see an unexpected diff removing a username/password or unsetting your client cert, ensure you have the container.clusters.getCredentials permission.`,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -921,6 +923,7 @@ func resourceContainerCluster() *schema.Resource {
 			"instance_group_urls": {
 				Type:        schema.TypeList,
 				Computed:    true,
+				Deprecated:  `Please use node_pool.instance_group_urls instead.`,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: `List of instance group URLs which have been assigned to the cluster.`,
 			},
@@ -1109,9 +1112,12 @@ func resourceContainerCluster() *schema.Resource {
 				},
 			},
 			"workload_identity_config": {
-				Type:          schema.TypeList,
-				MaxItems:      1,
-				Optional:      true,
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				// Computed is unsafe to remove- this API may return `"workloadIdentityConfig": {},` or omit the key entirely
+				// and both will be valid. Note that we don't handle the case where the API returns nothing & the user has defined
+				// workload_identity_config today.
 				Computed:      true,
 				Description:   `Configuration for the use of Kubernetes Service Accounts in GCP IAM policies.`,
 				ConflictsWith: []string{"enable_autopilot"},
@@ -1119,8 +1125,15 @@ func resourceContainerCluster() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"identity_namespace": {
 							Type:        schema.TypeString,
-							Required:    true,
+							Optional:    true,
 							Description: `Enables workload identity.`,
+							Deprecated:  "This field will be removed in a future major release as it has been deprecated in the API. Use `workload_pool` instead.",
+						},
+
+						"workload_pool": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The workload pool to attach all Kubernetes service accounts to.",
 						},
 					},
 				},
@@ -1855,7 +1868,7 @@ func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	if err := d.Set("workload_identity_config", flattenWorkloadIdentityConfig(cluster.WorkloadIdentityConfig)); err != nil {
+	if err := d.Set("workload_identity_config", flattenWorkloadIdentityConfig(cluster.WorkloadIdentityConfig, d, config)); err != nil {
 		return err
 	}
 
@@ -3454,13 +3467,19 @@ func expandDefaultSnatStatus(configured interface{}) *containerBeta.DefaultSnatS
 
 func expandWorkloadIdentityConfig(configured interface{}) *containerBeta.WorkloadIdentityConfig {
 	l := configured.([]interface{})
+	v := &containerBeta.WorkloadIdentityConfig{}
+
+	// this API considers unset and set-to-empty equivalent. Note that it will
+	// always return an empty block given that we always send one, but clusters
+	// not created in TF will not always return one (and may return nil)
 	if len(l) == 0 || l[0] == nil {
-		return nil
+		return v
 	}
+
 	config := l[0].(map[string]interface{})
-	return &containerBeta.WorkloadIdentityConfig{
-		IdentityNamespace: config["identity_namespace"].(string),
-	}
+	v.IdentityNamespace = config["identity_namespace"].(string)
+	v.WorkloadPool = config["workload_pool"].(string)
+	return v
 }
 
 func expandPodSecurityPolicyConfig(configured interface{}) *containerBeta.PodSecurityPolicyConfig {
@@ -3780,10 +3799,32 @@ func flattenDefaultSnatStatus(c *containerBeta.DefaultSnatStatus) []map[string]i
 	return result
 }
 
-func flattenWorkloadIdentityConfig(c *containerBeta.WorkloadIdentityConfig) []map[string]interface{} {
+func flattenWorkloadIdentityConfig(c *containerBeta.WorkloadIdentityConfig, d *schema.ResourceData, config *Config) []map[string]interface{} {
 	if c == nil {
 		return nil
 	}
+
+	_, identityNamespaceSet := d.GetOk("workload_identity_config.0.identity_namespace")
+	_, workloadPoolSet := d.GetOk("workload_identity_config.0.workload_pool")
+
+	if identityNamespaceSet && workloadPoolSet {
+		// if both are set, set both
+		return []map[string]interface{}{
+			{
+				"identity_namespace": c.IdentityNamespace,
+				"workload_pool":      c.WorkloadPool,
+			},
+		}
+	} else if workloadPoolSet {
+		// if the new value is set, set it
+		return []map[string]interface{}{
+			{
+				"workload_pool": c.WorkloadPool,
+			},
+		}
+	}
+
+	// otherwise, set the old value (incl. import)
 	return []map[string]interface{}{
 		{
 			"identity_namespace": c.IdentityNamespace,
