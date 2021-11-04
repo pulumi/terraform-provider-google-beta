@@ -175,7 +175,7 @@ for more information.
     will have statically granted permissions beyond those provided by the RBAC configuration or IAM.
     Defaults to `false`
 
-* `enable_shielded_nodes` - (Optional) Enable Shielded Nodes features on all nodes in this cluster.  Defaults to `false`.
+* `enable_shielded_nodes` - (Optional) Enable Shielded Nodes features on all nodes in this cluster.  Defaults to `true`.
 
 * `enable_autopilot` - (Optional) Enable Autopilot for this cluster. Defaults to `false`.
     Note that when this option is enabled, certain features of Standard GKE are not available.
@@ -211,9 +211,9 @@ and requires the `ip_allocation_policy` block to be defined. By default when thi
 * `master_auth` - (Optional) The authentication information for accessing the
 Kubernetes master. Some values in this block are only returned by the API if
 your service account has permission to get credentials for your GKE cluster. If
-you see an unexpected diff removing a username/password or unsetting your client
-cert, ensure you have the `container.clusters.getCredentials` permission.
-Structure is [documented below](#nested_master_auth). This has been deprecated as of GKE 1.19.
+you see an unexpected diff unsetting your client cert, ensure you have the
+`container.clusters.getCredentials` permission.
+Structure is [documented below](#nested_master_auth).
 
 * `master_authorized_networks_config` - (Optional) The desired
     configuration options for master authorized networks. Omit the
@@ -589,13 +589,7 @@ pick a specific range to use.
 
 <a name="nested_master_auth"></a>The `master_auth` block supports:
 
-* `password` - (Optional) The password to use for HTTP basic authentication when accessing
-    the Kubernetes master endpoint. This has been deprecated as of GKE 1.19.
-
-* `username` - (Optional) The username to use for HTTP basic authentication when accessing
-    the Kubernetes master endpoint. If not present basic auth will be disabled. This has been deprecated as of GKE 1.19.
-
-* `client_certificate_config` - (Optional) Whether client certificate authorization is enabled for this cluster.  For example:
+* `client_certificate_config` - (Required) Whether client certificate authorization is enabled for this cluster.  For example:
 
 ```hcl
 master_auth {
@@ -753,8 +747,6 @@ linux_node_config {
 
 <a name="nested_workload_identity_config"></a> The `workload_identity_config` block supports:
 
-* `identity_namespace` (Optional, Deprecated) - Currently, the only supported identity namespace is the project's default.
-
 * `workload_pool` (Optional) - The workload pool to attach all Kubernetes service accounts to. Currently, the only supported identity namespace is the project of the cluster.
 
 ```hcl
@@ -888,16 +880,9 @@ Enables monitoring and attestation of the boot integrity of the instance. The at
 
 * `effect` (Required) Effect for taint. Accepted values are `NO_SCHEDULE`, `PREFER_NO_SCHEDULE`, and `NO_EXECUTE`.
 
-<a name="nested_workload_metadata_config"></a>The `workload_metadata_config` must have exactly one of `node_metadata` (deprecated) or `mode` set. This block supports:
+<a name="nested_workload_metadata_config"></a>The `workload_metadata_config` block supports:
 
-* `node_metadata` (Optional, Deprecated) How to expose the node metadata to the workload running on the node. This is deprecated in favor of `mode`
-    Accepted values are:
-    * UNSPECIFIED: Not Set
-    * SECURE: Prevent workloads not in hostNetwork from accessing certain VM metadata, specifically kube-env, which contains Kubelet credentials, and the instance identity token. See [Metadata Concealment](https://cloud.google.com/kubernetes-engine/docs/how-to/metadata-proxy) documentation.
-    * EXPOSE: Expose all VM metadata to pods.
-    * GKE_METADATA_SERVER: Enables [workload identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity) on the node.
-
-* `mode` (Optional) How to expose the node metadata to the workload running on the node.
+* `mode` (Required) How to expose the node metadata to the workload running on the node.
     Accepted values are:
     * UNSPECIFIED: Not Set
     * GCE_METADATA: Expose all Compute Engine metadata to pods.
@@ -934,4 +919,81 @@ and all pods running on the nodes. Specified as a map from the key, such as
 
 <a name="nested_dns_config"></a>The `dns_config` block supports:
 
-* `cluster_dns` - (Optional) Which in-cluster DNS provider shoul
+* `cluster_dns` - (Optional) Which in-cluster DNS provider should be used. `PROVIDER_UNSPECIFIED` (default) or `PLATFORM_DEFAULT` or `CLOUD_DNS`.
+
+* `cluster_dns_scope` - (Optional) The scope of access to cluster DNS records. `DNS_SCOPE_UNSPECIFIED` (default) or `CLUSTER_SCOPE` or `VPC_SCOPE`.
+
+* `cluster_dns_domain` - (Optional) The suffix used for all cluster service records.
+
+## Attributes Reference
+
+In addition to the arguments listed above, the following computed attributes are
+exported:
+
+* `id` - an identifier for the resource with format `projects/{{project}}/locations/{{zone}}/clusters/{{name}}`
+
+* `self_link` - The server-defined URL for the resource.
+
+* `endpoint` - The IP address of this cluster's Kubernetes master.
+
+* `label_fingerprint` - The fingerprint of the set of labels for this cluster.
+
+* `maintenance_policy.0.daily_maintenance_window.0.duration` - Duration of the time window, automatically chosen to be
+    smallest possible in the given scenario.
+    Duration will be in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) format "PTnHnMnS".
+
+* `master_auth.0.client_certificate` - Base64 encoded public certificate
+    used by clients to authenticate to the cluster endpoint.
+
+* `master_auth.0.client_key` - Base64 encoded private key used by clients
+    to authenticate to the cluster endpoint.
+
+* `master_auth.0.cluster_ca_certificate` - Base64 encoded public certificate
+    that is the root of trust for the cluster.
+
+* `master_version` - The current version of the master in the cluster. This may
+    be different than the `min_master_version` set in the config if the master
+    has been updated by GKE.
+
+* `tpu_ipv4_cidr_block` - The IP address range of the Cloud TPUs in this cluster, in
+    [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+    notation (e.g. `1.2.3.4/29`).
+
+* `services_ipv4_cidr` - The IP address range of the Kubernetes services in this
+  cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+  notation (e.g. `1.2.3.4/29`). Service addresses are typically put in the last
+  `/16` from the container CIDR.
+
+## Timeouts
+
+This resource provides the following
+[Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
+
+- `create` - Default is 40 minutes.
+- `read`   - Default is 40 minutes.
+- `update` - Default is 60 minutes.
+- `delete` - Default is 40 minutes.
+
+## Import
+
+GKE clusters can be imported using the `project` , `location`, and `name`. If the project is omitted, the default
+provider value will be used. Examples:
+
+```
+$ terraform import google_container_cluster.mycluster projects/my-gcp-project/locations/us-east1-a/clusters/my-cluster
+
+$ terraform import google_container_cluster.mycluster my-gcp-project/us-east1-a/my-cluster
+
+$ terraform import google_container_cluster.mycluster us-east1-a/my-cluster
+```
+
+~> **Note:** This resource has several fields that control Terraform-specific behavior and aren't present in the API. If they are set in config and you import a cluster, Terraform may need to perform an update immediately after import. Most of these updates should be no-ops but some may modify your cluster if the imported state differs.
+
+For example, the following fields will show diffs if set in config:
+
+- `min_master_version`
+- `remove_default_node_pool`
+
+## User Project Overrides
+
+This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/guides/provider_reference.html#user_project_override).

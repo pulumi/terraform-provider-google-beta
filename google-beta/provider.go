@@ -35,9 +35,10 @@ func Provider() *schema.Provider {
 	provider := &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"credentials": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validateCredentials,
+				Type:          schema.TypeString,
+				Optional:      true,
+				ValidateFunc:  validateCredentials,
+				ConflictsWith: []string{"access_token"},
 			},
 
 			"access_token": {
@@ -45,6 +46,7 @@ func Provider() *schema.Provider {
 				Optional:      true,
 				ConflictsWith: []string{"credentials"},
 			},
+
 			"impersonate_service_account": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -764,10 +766,7 @@ func Provider() *schema.Provider {
 			// Handwritten Products / Versioned / Atypical Entries
 			CloudBillingCustomEndpointEntryKey:      CloudBillingCustomEndpointEntry,
 			ComposerCustomEndpointEntryKey:          ComposerCustomEndpointEntry,
-			ComputeBetaCustomEndpointEntryKey:       ComputeBetaCustomEndpointEntry,
 			ContainerCustomEndpointEntryKey:         ContainerCustomEndpointEntry,
-			ContainerBetaCustomEndpointEntryKey:     ContainerBetaCustomEndpointEntry,
-			DataprocBetaCustomEndpointEntryKey:      DataprocBetaCustomEndpointEntry,
 			DataflowCustomEndpointEntryKey:          DataflowCustomEndpointEntry,
 			IamCredentialsCustomEndpointEntryKey:    IamCredentialsCustomEndpointEntry,
 			ResourceManagerV2CustomEndpointEntryKey: ResourceManagerV2CustomEndpointEntry,
@@ -1214,9 +1213,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_pubsub_lite_subscription":                              resourcePubsubLiteSubscription(),
 			"google_redis_instance":                                        resourceRedisInstance(),
 			"google_resource_manager_lien":                                 resourceResourceManagerLien(),
-			"google_runtimeconfig_config_iam_binding":                      ResourceIamBinding(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc, IamWithGAResourceDeprecation()),
-			"google_runtimeconfig_config_iam_member":                       ResourceIamMember(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc, IamWithGAResourceDeprecation()),
-			"google_runtimeconfig_config_iam_policy":                       ResourceIamPolicy(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc, IamWithGAResourceDeprecation()),
+			"google_runtimeconfig_config_iam_binding":                      ResourceIamBinding(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc),
+			"google_runtimeconfig_config_iam_member":                       ResourceIamMember(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc),
+			"google_runtimeconfig_config_iam_policy":                       ResourceIamPolicy(RuntimeConfigConfigIamSchema, RuntimeConfigConfigIamUpdaterProducer, RuntimeConfigConfigIdParseFunc),
 			"google_secret_manager_secret":                                 resourceSecretManagerSecret(),
 			"google_secret_manager_secret_iam_binding":                     ResourceIamBinding(SecretManagerSecretIamSchema, SecretManagerSecretIamUpdaterProducer, SecretManagerSecretIdParseFunc),
 			"google_secret_manager_secret_iam_member":                      ResourceIamMember(SecretManagerSecretIamSchema, SecretManagerSecretIamUpdaterProducer, SecretManagerSecretIdParseFunc),
@@ -1412,7 +1411,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_organization_iam_member":             ResourceIamMember(IamOrganizationSchema, NewOrganizationIamUpdater, OrgIdParseFunc),
 			"google_organization_iam_policy":             ResourceIamPolicy(IamOrganizationSchema, NewOrganizationIamUpdater, OrgIdParseFunc),
 			"google_organization_iam_audit_config":       ResourceIamAuditConfig(IamOrganizationSchema, NewOrganizationIamUpdater, OrgIdParseFunc),
-			"google_project_iam_policy":                  ResourceIamPolicy(IamPolicyProjectSchema, NewProjectIamPolicyUpdater, ProjectIdParseFunc),
+			"google_project_iam_policy":                  ResourceIamPolicy(IamProjectSchema, NewProjectIamUpdater, ProjectIdParseFunc),
 			"google_project_iam_binding":                 ResourceIamBindingWithBatching(IamProjectSchema, NewProjectIamUpdater, ProjectIdParseFunc, IamBatchingEnabled),
 			"google_project_iam_member":                  ResourceIamMemberWithBatching(IamProjectSchema, NewProjectIamUpdater, ProjectIdParseFunc, IamBatchingEnabled),
 			"google_project_iam_audit_config":            ResourceIamAuditConfigWithBatching(IamProjectSchema, NewProjectIamUpdater, ProjectIdParseFunc, IamBatchingEnabled),
@@ -1469,33 +1468,34 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 		config.RequestReason = v.(string)
 	}
 
-	// Search for default credentials
-	config.Credentials = multiEnvSearch([]string{
-		"GOOGLE_CREDENTIALS",
-		"GOOGLE_CLOUD_KEYFILE_JSON",
-		"GCLOUD_KEYFILE_JSON",
-	})
-
-	config.AccessToken = multiEnvSearch([]string{
-		"GOOGLE_OAUTH_ACCESS_TOKEN",
-	})
-
-	// Add credential source
+	// Check for primary credentials in config. Note that if neither is set, ADCs
+	// will be used if available.
 	if v, ok := d.GetOk("access_token"); ok {
 		config.AccessToken = v.(string)
-	} else if v, ok := d.GetOk("credentials"); ok {
-		config.Credentials = v.(string)
-	}
-	if v, ok := d.GetOk("impersonate_service_account"); ok {
-		config.ImpersonateServiceAccount = v.(string)
 	}
 
-	scopes := d.Get("scopes").([]interface{})
-	if len(scopes) > 0 {
-		config.Scopes = make([]string, len(scopes))
+	if v, ok := d.GetOk("credentials"); ok {
+		config.Credentials = v.(string)
 	}
-	for i, scope := range scopes {
-		config.Scopes[i] = scope.(string)
+
+	// only check environment variables if neither value was set in config- this
+	// means config beats env var in all cases.
+	if config.AccessToken == "" && config.Credentials == "" {
+		config.Credentials = multiEnvSearch([]string{
+			"GOOGLE_CREDENTIALS",
+			"GOOGLE_CLOUD_KEYFILE_JSON",
+			"GCLOUD_KEYFILE_JSON",
+		})
+
+		config.AccessToken = multiEnvSearch([]string{
+			"GOOGLE_OAUTH_ACCESS_TOKEN",
+		})
+	}
+
+	// Given that impersonate_service_account is a secondary auth method, it has
+	// no conflicts to worry about. We pull the env var in a DefaultFunc.
+	if v, ok := d.GetOk("impersonate_service_account"); ok {
+		config.ImpersonateServiceAccount = v.(string)
 	}
 
 	delegates := d.Get("impersonate_service_account_delegates").([]interface{})
@@ -1504,6 +1504,14 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	}
 	for i, delegate := range delegates {
 		config.ImpersonateServiceAccountDelegates[i] = delegate.(string)
+	}
+
+	scopes := d.Get("scopes").([]interface{})
+	if len(scopes) > 0 {
+		config.Scopes = make([]string, len(scopes))
+	}
+	for i, scope := range scopes {
+		config.Scopes[i] = scope.(string)
 	}
 
 	batchCfg, err := expandProviderBatchingConfig(d.Get("batching"))
@@ -1590,13 +1598,9 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.WorkflowsBasePath = d.Get("workflows_custom_endpoint").(string)
 
 	// Handwritten Products / Versioned / Atypical Entries
-
 	config.CloudBillingBasePath = d.Get(CloudBillingCustomEndpointEntryKey).(string)
 	config.ComposerBasePath = d.Get(ComposerCustomEndpointEntryKey).(string)
-	config.ComputeBetaBasePath = d.Get(ComputeBetaCustomEndpointEntryKey).(string)
 	config.ContainerBasePath = d.Get(ContainerCustomEndpointEntryKey).(string)
-	config.ContainerBetaBasePath = d.Get(ContainerBetaCustomEndpointEntryKey).(string)
-	config.DataprocBetaBasePath = d.Get(DataprocBetaCustomEndpointEntryKey).(string)
 	config.DataflowBasePath = d.Get(DataflowCustomEndpointEntryKey).(string)
 	config.IamCredentialsBasePath = d.Get(IamCredentialsCustomEndpointEntryKey).(string)
 	config.ResourceManagerV2BasePath = d.Get(ResourceManagerV2CustomEndpointEntryKey).(string)

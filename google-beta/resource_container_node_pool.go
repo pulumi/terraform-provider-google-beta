@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	containerBeta "google.golang.org/api/container/v1beta1"
+	container "google.golang.org/api/container/v1beta1"
 )
 
 var clusterIdRegex = regexp.MustCompile("projects/(?P<project>[^/]+)/locations/(?P<location>[^/]+)/clusters/(?P<name>[^/]+)")
@@ -153,6 +153,13 @@ var schemaNodePool = map[string]*schema.Schema{
 		Computed:    true,
 		Elem:        &schema.Schema{Type: schema.TypeString},
 		Description: `The resource URLs of the managed instance groups associated with this node pool.`,
+	},
+
+	"managed_instance_group_urls": {
+		Type:        schema.TypeList,
+		Computed:    true,
+		Elem:        &schema.Schema{Type: schema.TypeString},
+		Description: `List of instance group URLs which have been assigned to this node pool.`,
 	},
 
 	"management": {
@@ -328,7 +335,7 @@ func resourceContainerNodePoolCreate(d *schema.ResourceData, meta interface{}) e
 	mutexKV.Lock(nodePoolInfo.lockKey())
 	defer mutexKV.Unlock(nodePoolInfo.lockKey())
 
-	req := &containerBeta.CreateNodePoolRequest{
+	req := &container.CreateNodePoolRequest{
 		NodePool: nodePool,
 	}
 
@@ -338,7 +345,7 @@ func resourceContainerNodePoolCreate(d *schema.ResourceData, meta interface{}) e
 	// we attempt to prefetch the node pool to make sure it doesn't exist before creation
 	var id = fmt.Sprintf("projects/%s/locations/%s/clusters/%s/nodePools/%s", nodePoolInfo.project, nodePoolInfo.location, nodePoolInfo.cluster, nodePool.Name)
 	name := getNodePoolName(id)
-	clusterNodePoolsGetCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Get(nodePoolInfo.fullyQualifiedName(name))
+	clusterNodePoolsGetCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Get(nodePoolInfo.fullyQualifiedName(name))
 	if config.UserProjectOverride {
 		clusterNodePoolsGetCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 	}
@@ -352,9 +359,9 @@ func resourceContainerNodePoolCreate(d *schema.ResourceData, meta interface{}) e
 		return fmt.Errorf("resource - %s - already exists", id)
 	}
 
-	var operation *containerBeta.Operation
+	var operation *container.Operation
 	err = resource.Retry(timeout, func() *resource.RetryError {
-		clusterNodePoolsCreateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Create(nodePoolInfo.parent(), req)
+		clusterNodePoolsCreateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Create(nodePoolInfo.parent(), req)
 		if config.UserProjectOverride {
 			clusterNodePoolsCreateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 		}
@@ -443,7 +450,7 @@ func resourceContainerNodePoolRead(d *schema.ResourceData, meta interface{}) err
 	operation := d.Get("operation").(string)
 	if operation != "" {
 		log.Printf("[DEBUG] in progress operation detected at %v, attempting to resume", operation)
-		op := &containerBeta.Operation{
+		op := &container.Operation{
 			Name: operation,
 		}
 		if err := d.Set("operation", ""); err != nil {
@@ -457,7 +464,7 @@ func resourceContainerNodePoolRead(d *schema.ResourceData, meta interface{}) err
 
 	name := getNodePoolName(d.Id())
 
-	clusterNodePoolsGetCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Get(nodePoolInfo.fullyQualifiedName(name))
+	clusterNodePoolsGetCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Get(nodePoolInfo.fullyQualifiedName(name))
 	if config.UserProjectOverride {
 		clusterNodePoolsGetCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 	}
@@ -572,9 +579,9 @@ func resourceContainerNodePoolDelete(d *schema.ResourceData, meta interface{}) e
 	timeout := d.Timeout(schema.TimeoutDelete)
 	startTime := time.Now()
 
-	var operation *containerBeta.Operation
+	var operation *container.Operation
 	err = resource.Retry(timeout, func() *resource.RetryError {
-		clusterNodePoolsDeleteCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Delete(nodePoolInfo.fullyQualifiedName(name))
+		clusterNodePoolsDeleteCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Delete(nodePoolInfo.fullyQualifiedName(name))
 		if config.UserProjectOverride {
 			clusterNodePoolsDeleteCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 		}
@@ -624,7 +631,7 @@ func resourceContainerNodePoolExists(d *schema.ResourceData, meta interface{}) (
 	}
 
 	name := getNodePoolName(d.Id())
-	clusterNodePoolsGetCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Get(nodePoolInfo.fullyQualifiedName(name))
+	clusterNodePoolsGetCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Get(nodePoolInfo.fullyQualifiedName(name))
 	if config.UserProjectOverride {
 		clusterNodePoolsGetCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 	}
@@ -682,7 +689,7 @@ func resourceContainerNodePoolStateImporter(d *schema.ResourceData, meta interfa
 	return []*schema.ResourceData{d}, nil
 }
 
-func expandNodePool(d *schema.ResourceData, prefix string) (*containerBeta.NodePool, error) {
+func expandNodePool(d *schema.ResourceData, prefix string) (*container.NodePool, error) {
 	var name string
 	if v, ok := d.GetOk(prefix + "name"); ok {
 		if _, ok := d.GetOk(prefix + "name_prefix"); ok {
@@ -711,7 +718,7 @@ func expandNodePool(d *schema.ResourceData, prefix string) (*containerBeta.NodeP
 		locations = convertStringSet(v.(*schema.Set))
 	}
 
-	np := &containerBeta.NodePool{
+	np := &container.NodePool{
 		Name:             name,
 		InitialNodeCount: int64(nodeCount),
 		Config:           expandNodeConfig(d.Get(prefix + "node_config")),
@@ -722,7 +729,7 @@ func expandNodePool(d *schema.ResourceData, prefix string) (*containerBeta.NodeP
 
 	if v, ok := d.GetOk(prefix + "autoscaling"); ok {
 		autoscaling := v.([]interface{})[0].(map[string]interface{})
-		np.Autoscaling = &containerBeta.NodePoolAutoscaling{
+		np.Autoscaling = &container.NodePoolAutoscaling{
 			Enabled:         true,
 			MinNodeCount:    int64(autoscaling["min_node_count"].(int)),
 			MaxNodeCount:    int64(autoscaling["max_node_count"].(int)),
@@ -731,14 +738,14 @@ func expandNodePool(d *schema.ResourceData, prefix string) (*containerBeta.NodeP
 	}
 
 	if v, ok := d.GetOk(prefix + "max_pods_per_node"); ok {
-		np.MaxPodsConstraint = &containerBeta.MaxPodsConstraint{
+		np.MaxPodsConstraint = &container.MaxPodsConstraint{
 			MaxPodsPerNode: int64(v.(int)),
 		}
 	}
 
 	if v, ok := d.GetOk(prefix + "management"); ok {
 		managementConfig := v.([]interface{})[0].(map[string]interface{})
-		np.Management = &containerBeta.NodeManagement{}
+		np.Management = &container.NodeManagement{}
 
 		if v, ok := managementConfig["auto_repair"]; ok {
 			np.Management.AutoRepair = v.(bool)
@@ -751,7 +758,7 @@ func expandNodePool(d *schema.ResourceData, prefix string) (*containerBeta.NodeP
 
 	if v, ok := d.GetOk(prefix + "upgrade_settings"); ok {
 		upgradeSettingsConfig := v.([]interface{})[0].(map[string]interface{})
-		np.UpgradeSettings = &containerBeta.UpgradeSettings{}
+		np.UpgradeSettings = &container.UpgradeSettings{}
 
 		if v, ok := upgradeSettingsConfig["max_surge"]; ok {
 			np.UpgradeSettings.MaxSurge = int64(v.(int))
@@ -765,7 +772,7 @@ func expandNodePool(d *schema.ResourceData, prefix string) (*containerBeta.NodeP
 	return np, nil
 }
 
-func flattenNodePool(d *schema.ResourceData, config *Config, np *containerBeta.NodePool, prefix string) (map[string]interface{}, error) {
+func flattenNodePool(d *schema.ResourceData, config *Config, np *container.NodePool, prefix string) (map[string]interface{}, error) {
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return nil, err
@@ -776,13 +783,14 @@ func flattenNodePool(d *schema.ResourceData, config *Config, np *containerBeta.N
 	// failed or something else strange happened, we'll just use the average size.
 	size := 0
 	igmUrls := []string{}
+	managedIgmUrls := []string{}
 	for _, url := range np.InstanceGroupUrls {
 		// retrieve instance group manager (InstanceGroupUrls are actually URLs for InstanceGroupManagers)
 		matches := instanceGroupManagerURL.FindStringSubmatch(url)
 		if len(matches) < 4 {
 			return nil, fmt.Errorf("Error reading instance group manage URL '%q'", url)
 		}
-		igm, err := config.NewComputeBetaClient(userAgent).InstanceGroupManagers.Get(matches[1], matches[2], matches[3]).Do()
+		igm, err := config.NewComputeClient(userAgent).InstanceGroupManagers.Get(matches[1], matches[2], matches[3]).Do()
 		if isGoogleApiErrorWithCode(err, 404) {
 			// The IGM URL in is stale; don't include it
 			continue
@@ -792,21 +800,23 @@ func flattenNodePool(d *schema.ResourceData, config *Config, np *containerBeta.N
 		}
 		size += int(igm.TargetSize)
 		igmUrls = append(igmUrls, url)
+		managedIgmUrls = append(managedIgmUrls, igm.InstanceGroup)
 	}
 	nodeCount := 0
 	if len(igmUrls) > 0 {
 		nodeCount = size / len(igmUrls)
 	}
 	nodePool := map[string]interface{}{
-		"name":                np.Name,
-		"name_prefix":         d.Get(prefix + "name_prefix"),
-		"initial_node_count":  np.InitialNodeCount,
-		"node_locations":      schema.NewSet(schema.HashString, convertStringArrToInterface(np.Locations)),
-		"node_count":          nodeCount,
-		"node_config":         flattenNodeConfig(np.Config),
-		"instance_group_urls": igmUrls,
-		"version":             np.Version,
-		"network_config":      flattenNodeNetworkConfig(np.NetworkConfig, d, prefix),
+		"name":                        np.Name,
+		"name_prefix":                 d.Get(prefix + "name_prefix"),
+		"initial_node_count":          np.InitialNodeCount,
+		"node_locations":              schema.NewSet(schema.HashString, convertStringArrToInterface(np.Locations)),
+		"node_count":                  nodeCount,
+		"node_config":                 flattenNodeConfig(np.Config),
+		"instance_group_urls":         igmUrls,
+		"managed_instance_group_urls": managedIgmUrls,
+		"version":                     np.Version,
+		"network_config":              flattenNodeNetworkConfig(np.NetworkConfig, d, prefix),
 	}
 
 	if np.Autoscaling != nil {
@@ -847,7 +857,7 @@ func flattenNodePool(d *schema.ResourceData, config *Config, np *containerBeta.N
 	return nodePool, nil
 }
 
-func flattenNodeNetworkConfig(c *containerBeta.NodeNetworkConfig, d *schema.ResourceData, prefix string) []map[string]interface{} {
+func flattenNodeNetworkConfig(c *container.NodeNetworkConfig, d *schema.ResourceData, prefix string) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	if c != nil {
 		result = append(result, map[string]interface{}{
@@ -859,10 +869,10 @@ func flattenNodeNetworkConfig(c *containerBeta.NodeNetworkConfig, d *schema.Reso
 	return result
 }
 
-func expandNodeNetworkConfig(v interface{}) *containerBeta.NodeNetworkConfig {
+func expandNodeNetworkConfig(v interface{}) *container.NodeNetworkConfig {
 	networkNodeConfigs := v.([]interface{})
 
-	nnc := &containerBeta.NodeNetworkConfig{}
+	nnc := &container.NodeNetworkConfig{}
 
 	if len(networkNodeConfigs) == 0 {
 		return nnc
@@ -897,29 +907,29 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 	}
 
 	if d.HasChange(prefix + "autoscaling") {
-		update := &containerBeta.ClusterUpdate{
+		update := &container.ClusterUpdate{
 			DesiredNodePoolId: name,
 		}
 		if v, ok := d.GetOk(prefix + "autoscaling"); ok {
 			autoscaling := v.([]interface{})[0].(map[string]interface{})
-			update.DesiredNodePoolAutoscaling = &containerBeta.NodePoolAutoscaling{
+			update.DesiredNodePoolAutoscaling = &container.NodePoolAutoscaling{
 				Enabled:         true,
 				MinNodeCount:    int64(autoscaling["min_node_count"].(int)),
 				MaxNodeCount:    int64(autoscaling["max_node_count"].(int)),
 				ForceSendFields: []string{"MinNodeCount"},
 			}
 		} else {
-			update.DesiredNodePoolAutoscaling = &containerBeta.NodePoolAutoscaling{
+			update.DesiredNodePoolAutoscaling = &container.NodePoolAutoscaling{
 				Enabled: false,
 			}
 		}
 
-		req := &containerBeta.UpdateClusterRequest{
+		req := &container.UpdateClusterRequest{
 			Update: update,
 		}
 
 		updateF := func() error {
-			clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(nodePoolInfo.parent(), req)
+			clusterUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.Update(nodePoolInfo.parent(), req)
 			if config.UserProjectOverride {
 				clusterUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 			}
@@ -945,15 +955,15 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 
 	if d.HasChange(prefix + "node_config") {
 		if d.HasChange(prefix + "node_config.0.image_type") {
-			req := &containerBeta.UpdateClusterRequest{
-				Update: &containerBeta.ClusterUpdate{
+			req := &container.UpdateClusterRequest{
+				Update: &container.ClusterUpdate{
 					DesiredNodePoolId: name,
 					DesiredImageType:  d.Get(prefix + "node_config.0.image_type").(string),
 				},
 			}
 
 			updateF := func() error {
-				clusterUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.Update(nodePoolInfo.parent(), req)
+				clusterUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.Update(nodePoolInfo.parent(), req)
 				if config.UserProjectOverride {
 					clusterUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 				}
@@ -978,7 +988,7 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 		}
 
 		if d.HasChange(prefix + "node_config.0.workload_metadata_config") {
-			req := &containerBeta.UpdateNodePoolRequest{
+			req := &container.UpdateNodePoolRequest{
 				NodePoolId: name,
 				WorkloadMetadataConfig: expandWorkloadMetadataConfig(
 					d.Get(prefix + "node_config.0.workload_metadata_config")),
@@ -987,7 +997,7 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 				req.ForceSendFields = []string{"WorkloadMetadataConfig"}
 			}
 			updateF := func() error {
-				clusterNodePoolsUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
+				clusterNodePoolsUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
 				if config.UserProjectOverride {
 					clusterNodePoolsUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 				}
@@ -1014,7 +1024,7 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 		}
 
 		if d.HasChange(prefix + "node_config.0.kubelet_config") {
-			req := &containerBeta.UpdateNodePoolRequest{
+			req := &container.UpdateNodePoolRequest{
 				NodePoolId: name,
 				KubeletConfig: expandKubeletConfig(
 					d.Get(prefix + "node_config.0.kubelet_config")),
@@ -1023,7 +1033,7 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 				req.ForceSendFields = []string{"KubeletConfig"}
 			}
 			updateF := func() error {
-				clusterNodePoolsUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
+				clusterNodePoolsUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
 				if config.UserProjectOverride {
 					clusterNodePoolsUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 				}
@@ -1048,7 +1058,7 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 			log.Printf("[INFO] Updated kubelet_config for node pool %s", name)
 		}
 		if d.HasChange(prefix + "node_config.0.linux_node_config") {
-			req := &containerBeta.UpdateNodePoolRequest{
+			req := &container.UpdateNodePoolRequest{
 				NodePoolId: name,
 				LinuxNodeConfig: expandLinuxNodeConfig(
 					d.Get(prefix + "node_config.0.linux_node_config")),
@@ -1057,7 +1067,7 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 				req.ForceSendFields = []string{"LinuxNodeConfig"}
 			}
 			updateF := func() error {
-				clusterNodePoolsUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
+				clusterNodePoolsUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
 				if config.UserProjectOverride {
 					clusterNodePoolsUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 				}
@@ -1086,11 +1096,11 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 
 	if d.HasChange(prefix + "node_count") {
 		newSize := int64(d.Get(prefix + "node_count").(int))
-		req := &containerBeta.SetNodePoolSizeRequest{
+		req := &container.SetNodePoolSizeRequest{
 			NodeCount: newSize,
 		}
 		updateF := func() error {
-			clusterNodePoolsSetSizeCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.SetSize(nodePoolInfo.fullyQualifiedName(name), req)
+			clusterNodePoolsSetSizeCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.SetSize(nodePoolInfo.fullyQualifiedName(name), req)
 			if config.UserProjectOverride {
 				clusterNodePoolsSetSizeCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 			}
@@ -1116,19 +1126,19 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 	}
 
 	if d.HasChange(prefix + "management") {
-		management := &containerBeta.NodeManagement{}
+		management := &container.NodeManagement{}
 		if v, ok := d.GetOk(prefix + "management"); ok {
 			managementConfig := v.([]interface{})[0].(map[string]interface{})
 			management.AutoRepair = managementConfig["auto_repair"].(bool)
 			management.AutoUpgrade = managementConfig["auto_upgrade"].(bool)
 			management.ForceSendFields = []string{"AutoRepair", "AutoUpgrade"}
 		}
-		req := &containerBeta.SetNodePoolManagementRequest{
+		req := &container.SetNodePoolManagementRequest{
 			Management: management,
 		}
 
 		updateF := func() error {
-			clusterNodePoolsSetManagementCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.SetManagement(nodePoolInfo.fullyQualifiedName(name), req)
+			clusterNodePoolsSetManagementCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.SetManagement(nodePoolInfo.fullyQualifiedName(name), req)
 			if config.UserProjectOverride {
 				clusterNodePoolsSetManagementCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 			}
@@ -1153,12 +1163,12 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 	}
 
 	if d.HasChange(prefix + "version") {
-		req := &containerBeta.UpdateNodePoolRequest{
+		req := &container.UpdateNodePoolRequest{
 			NodePoolId:  name,
 			NodeVersion: d.Get(prefix + "version").(string),
 		}
 		updateF := func() error {
-			clusterNodePoolsUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
+			clusterNodePoolsUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
 			if config.UserProjectOverride {
 				clusterNodePoolsUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 			}
@@ -1183,11 +1193,11 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 	}
 
 	if d.HasChange(prefix + "node_locations") {
-		req := &containerBeta.UpdateNodePoolRequest{
+		req := &container.UpdateNodePoolRequest{
 			Locations: convertStringSet(d.Get(prefix + "node_locations").(*schema.Set)),
 		}
 		updateF := func() error {
-			clusterNodePoolsUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
+			clusterNodePoolsUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
 			if config.UserProjectOverride {
 				clusterNodePoolsUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 			}
@@ -1210,17 +1220,17 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 	}
 
 	if d.HasChange(prefix + "upgrade_settings") {
-		upgradeSettings := &containerBeta.UpgradeSettings{}
+		upgradeSettings := &container.UpgradeSettings{}
 		if v, ok := d.GetOk(prefix + "upgrade_settings"); ok {
 			upgradeSettingsConfig := v.([]interface{})[0].(map[string]interface{})
 			upgradeSettings.MaxSurge = int64(upgradeSettingsConfig["max_surge"].(int))
 			upgradeSettings.MaxUnavailable = int64(upgradeSettingsConfig["max_unavailable"].(int))
 		}
-		req := &containerBeta.UpdateNodePoolRequest{
+		req := &container.UpdateNodePoolRequest{
 			UpgradeSettings: upgradeSettings,
 		}
 		updateF := func() error {
-			clusterNodePoolsUpdateCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
+			clusterNodePoolsUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
 			if config.UserProjectOverride {
 				clusterNodePoolsUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
 			}
@@ -1261,7 +1271,7 @@ var containerNodePoolRestingStates = RestingStates{
 // returns a state with no error if the state is a resting state, and the last state with an error otherwise
 func containerNodePoolAwaitRestingState(config *Config, name, project, userAgent string, timeout time.Duration) (state string, err error) {
 	err = resource.Retry(timeout, func() *resource.RetryError {
-		clusterNodePoolsGetCall := config.NewContainerBetaClient(userAgent).Projects.Locations.Clusters.NodePools.Get(name)
+		clusterNodePoolsGetCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Get(name)
 		if config.UserProjectOverride {
 			clusterNodePoolsGetCall.Header().Add("X-Goog-User-Project", project)
 		}

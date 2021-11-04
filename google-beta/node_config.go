@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	containerBeta "google.golang.org/api/container/v1beta1"
+	container "google.golang.org/api/container/v1beta1"
 )
 
 // Matches gke-default scope from https://cloud.google.com/sdk/gcloud/reference/container/clusters/create
@@ -254,8 +254,6 @@ func schemaNodeConfig() *schema.Schema {
 					},
 				},
 
-				// Note that ExactlyOneOf can't be set because this schema is reused by
-				// two different resources.
 				"workload_metadata_config": {
 					Computed:    true,
 					Type:        schema.TypeList,
@@ -264,18 +262,9 @@ func schemaNodeConfig() *schema.Schema {
 					Description: `The workload metadata configuration for this node.`,
 					Elem: &schema.Resource{
 						Schema: map[string]*schema.Schema{
-							"node_metadata": {
-								Type:         schema.TypeString,
-								Optional:     true,
-								Computed:     true,
-								Deprecated:   "Deprecated in favor of mode.",
-								ValidateFunc: validation.StringInSlice([]string{"UNSPECIFIED", "SECURE", "EXPOSE", "GKE_METADATA_SERVER"}, false),
-								Description:  `NodeMetadata is the configuration for how to expose metadata to the workloads running on the node.`,
-							},
 							"mode": {
 								Type:         schema.TypeString,
-								Optional:     true,
-								Computed:     true,
+								Required:     true,
 								ValidateFunc: validation.StringInSlice([]string{"MODE_UNSPECIFIED", "GCE_METADATA", "GKE_METADATA"}, false),
 								Description:  `Mode is the configuration for how to expose metadata to workloads running on the node.`,
 							},
@@ -357,9 +346,9 @@ func schemaNodeConfig() *schema.Schema {
 	}
 }
 
-func expandNodeConfig(v interface{}) *containerBeta.NodeConfig {
+func expandNodeConfig(v interface{}) *container.NodeConfig {
 	nodeConfigs := v.([]interface{})
-	nc := &containerBeta.NodeConfig{
+	nc := &container.NodeConfig{
 		// Defaults can't be set on a list/set in the schema, so set the default on create here.
 		OauthScopes: defaultOauthScopes,
 	}
@@ -375,13 +364,13 @@ func expandNodeConfig(v interface{}) *containerBeta.NodeConfig {
 
 	if v, ok := nodeConfig["guest_accelerator"]; ok {
 		accels := v.([]interface{})
-		guestAccelerators := make([]*containerBeta.AcceleratorConfig, 0, len(accels))
+		guestAccelerators := make([]*container.AcceleratorConfig, 0, len(accels))
 		for _, raw := range accels {
 			data := raw.(map[string]interface{})
 			if data["count"].(int) == 0 {
 				continue
 			}
-			guestAccelerators = append(guestAccelerators, &containerBeta.AcceleratorConfig{
+			guestAccelerators = append(guestAccelerators, &container.AcceleratorConfig{
 				AcceleratorCount: int64(data["count"].(int)),
 				AcceleratorType:  data["type"].(string),
 				GpuPartitionSize: data["gpu_partition_size"].(string),
@@ -404,7 +393,7 @@ func expandNodeConfig(v interface{}) *containerBeta.NodeConfig {
 
 	if v, ok := nodeConfig["ephemeral_storage_config"]; ok && len(v.([]interface{})) > 0 {
 		conf := v.([]interface{})[0].(map[string]interface{})
-		nc.EphemeralStorageConfig = &containerBeta.EphemeralStorageConfig{
+		nc.EphemeralStorageConfig = &container.EphemeralStorageConfig{
 			LocalSsdCount: int64(conf["local_ssd_count"].(int)),
 		}
 	}
@@ -456,7 +445,7 @@ func expandNodeConfig(v interface{}) *containerBeta.NodeConfig {
 
 	if v, ok := nodeConfig["shielded_instance_config"]; ok && len(v.([]interface{})) > 0 {
 		conf := v.([]interface{})[0].(map[string]interface{})
-		nc.ShieldedInstanceConfig = &containerBeta.ShieldedInstanceConfig{
+		nc.ShieldedInstanceConfig = &container.ShieldedInstanceConfig{
 			EnableSecureBoot:          conf["enable_secure_boot"].(bool),
 			EnableIntegrityMonitoring: conf["enable_integrity_monitoring"].(bool),
 		}
@@ -471,10 +460,10 @@ func expandNodeConfig(v interface{}) *containerBeta.NodeConfig {
 
 	if v, ok := nodeConfig["taint"]; ok && len(v.([]interface{})) > 0 {
 		taints := v.([]interface{})
-		nodeTaints := make([]*containerBeta.NodeTaint, 0, len(taints))
+		nodeTaints := make([]*container.NodeTaint, 0, len(taints))
 		for _, raw := range taints {
 			data := raw.(map[string]interface{})
-			taint := &containerBeta.NodeTaint{
+			taint := &container.NodeTaint{
 				Key:    data["key"].(string),
 				Value:  data["value"].(string),
 				Effect: data["effect"].(string),
@@ -490,7 +479,7 @@ func expandNodeConfig(v interface{}) *containerBeta.NodeConfig {
 
 	if v, ok := nodeConfig["sandbox_config"]; ok && len(v.([]interface{})) > 0 {
 		conf := v.([]interface{})[0].(map[string]interface{})
-		nc.SandboxConfig = &containerBeta.SandboxConfig{
+		nc.SandboxConfig = &container.SandboxConfig{
 			SandboxType: conf["sandbox_type"].(string),
 		}
 	}
@@ -510,7 +499,7 @@ func expandNodeConfig(v interface{}) *containerBeta.NodeConfig {
 	return nc
 }
 
-func expandWorkloadMetadataConfig(v interface{}) *containerBeta.WorkloadMetadataConfig {
+func expandWorkloadMetadataConfig(v interface{}) *container.WorkloadMetadataConfig {
 	if v == nil {
 		return nil
 	}
@@ -518,7 +507,7 @@ func expandWorkloadMetadataConfig(v interface{}) *containerBeta.WorkloadMetadata
 	if len(ls) == 0 {
 		return nil
 	}
-	wmc := &containerBeta.WorkloadMetadataConfig{}
+	wmc := &container.WorkloadMetadataConfig{}
 
 	cfg := ls[0].(map[string]interface{})
 
@@ -526,14 +515,10 @@ func expandWorkloadMetadataConfig(v interface{}) *containerBeta.WorkloadMetadata
 		wmc.Mode = v.(string)
 	}
 
-	if v, ok := cfg["node_metadata"]; ok {
-		wmc.NodeMetadata = v.(string)
-	}
-
 	return wmc
 }
 
-func expandKubeletConfig(v interface{}) *containerBeta.NodeKubeletConfig {
+func expandKubeletConfig(v interface{}) *container.NodeKubeletConfig {
 	if v == nil {
 		return nil
 	}
@@ -542,7 +527,7 @@ func expandKubeletConfig(v interface{}) *containerBeta.NodeKubeletConfig {
 		return nil
 	}
 	cfg := ls[0].(map[string]interface{})
-	kConfig := &containerBeta.NodeKubeletConfig{}
+	kConfig := &container.NodeKubeletConfig{}
 	if cpuManagerPolicy, ok := cfg["cpu_manager_policy"]; ok {
 		kConfig.CpuManagerPolicy = cpuManagerPolicy.(string)
 	}
@@ -556,7 +541,7 @@ func expandKubeletConfig(v interface{}) *containerBeta.NodeKubeletConfig {
 	return kConfig
 }
 
-func expandLinuxNodeConfig(v interface{}) *containerBeta.LinuxNodeConfig {
+func expandLinuxNodeConfig(v interface{}) *container.LinuxNodeConfig {
 	if v == nil {
 		return nil
 	}
@@ -573,12 +558,12 @@ func expandLinuxNodeConfig(v interface{}) *containerBeta.LinuxNodeConfig {
 	for k, v := range sysCfgRaw.(map[string]interface{}) {
 		m[k] = v.(string)
 	}
-	return &containerBeta.LinuxNodeConfig{
+	return &container.LinuxNodeConfig{
 		Sysctls: m,
 	}
 }
 
-func flattenNodeConfig(c *containerBeta.NodeConfig) []map[string]interface{} {
+func flattenNodeConfig(c *container.NodeConfig) []map[string]interface{} {
 	config := make([]map[string]interface{}, 0, 1)
 
 	if c == nil {
@@ -615,7 +600,7 @@ func flattenNodeConfig(c *containerBeta.NodeConfig) []map[string]interface{} {
 	return config
 }
 
-func flattenContainerGuestAccelerators(c []*containerBeta.AcceleratorConfig) []map[string]interface{} {
+func flattenContainerGuestAccelerators(c []*container.AcceleratorConfig) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	for _, accel := range c {
 		result = append(result, map[string]interface{}{
@@ -627,7 +612,7 @@ func flattenContainerGuestAccelerators(c []*containerBeta.AcceleratorConfig) []m
 	return result
 }
 
-func flattenShieldedInstanceConfig(c *containerBeta.ShieldedInstanceConfig) []map[string]interface{} {
+func flattenShieldedInstanceConfig(c *container.ShieldedInstanceConfig) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	if c != nil {
 		result = append(result, map[string]interface{}{
@@ -638,7 +623,7 @@ func flattenShieldedInstanceConfig(c *containerBeta.ShieldedInstanceConfig) []ma
 	return result
 }
 
-func flattenEphemeralStorageConfig(c *containerBeta.EphemeralStorageConfig) []map[string]interface{} {
+func flattenEphemeralStorageConfig(c *container.EphemeralStorageConfig) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	if c != nil {
 		result = append(result, map[string]interface{}{
@@ -648,7 +633,7 @@ func flattenEphemeralStorageConfig(c *containerBeta.EphemeralStorageConfig) []ma
 	return result
 }
 
-func flattenTaints(c []*containerBeta.NodeTaint) []map[string]interface{} {
+func flattenTaints(c []*container.NodeTaint) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	for _, taint := range c {
 		result = append(result, map[string]interface{}{
@@ -660,17 +645,16 @@ func flattenTaints(c []*containerBeta.NodeTaint) []map[string]interface{} {
 	return result
 }
 
-func flattenWorkloadMetadataConfig(c *containerBeta.WorkloadMetadataConfig) []map[string]interface{} {
+func flattenWorkloadMetadataConfig(c *container.WorkloadMetadataConfig) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	if c != nil {
 		result = append(result, map[string]interface{}{
-			"mode":          c.Mode,
-			"node_metadata": c.NodeMetadata,
+			"mode": c.Mode,
 		})
 	}
 	return result
 }
-func flattenSandboxConfig(c *containerBeta.SandboxConfig) []map[string]interface{} {
+func flattenSandboxConfig(c *container.SandboxConfig) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	if c != nil {
 		result = append(result, map[string]interface{}{
@@ -795,7 +779,7 @@ func containerNodePoolTaintSuppress(k, old, new string, d *schema.ResourceData) 
 	return true
 }
 
-func flattenKubeletConfig(c *containerBeta.NodeKubeletConfig) []map[string]interface{} {
+func flattenKubeletConfig(c *container.NodeKubeletConfig) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	if c != nil {
 		result = append(result, map[string]interface{}{
@@ -807,7 +791,7 @@ func flattenKubeletConfig(c *containerBeta.NodeKubeletConfig) []map[string]inter
 	return result
 }
 
-func flattenLinuxNodeConfig(c *containerBeta.LinuxNodeConfig) []map[string]interface{} {
+func flattenLinuxNodeConfig(c *container.LinuxNodeConfig) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	if c != nil {
 		result = append(result, map[string]interface{}{

@@ -9,7 +9,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-	compute "google.golang.org/api/compute/v1"
+
+	compute "google.golang.org/api/compute/v0.beta"
 )
 
 func TestAccDataflowFlexTemplateJob_basic(t *testing.T) {
@@ -210,11 +211,14 @@ resource "google_dataflow_flex_template_job" "job" {
 // note: this config creates a job that doesn't actually do anything, but still runs
 func testAccDataflowFlexTemplateJob_serviceAccount(job, accountId, zone string) string {
 	return fmt.Sprintf(`
+data "google_project" "project" {}
+
 resource "google_service_account" "dataflow-sa" {
   account_id   = "%s"
   display_name = "DataFlow Service Account"
 }
 resource "google_project_iam_member" "dataflow-worker" {
+  project = data.google_project.project.project_id
   role   = "roles/dataflow.worker"
   member = "serviceAccount:${google_service_account.dataflow-sa.email}"
 }

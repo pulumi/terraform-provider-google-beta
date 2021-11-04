@@ -592,7 +592,8 @@ func sweepCloudFunctionSourceZipArchives(_ string) error {
 func testAccCloudFunctionsFunction_basic(functionName string, bucketName string, zipFilePath string) string {
 	return fmt.Sprintf(`
 resource "google_storage_bucket" "bucket" {
-  name = "%s"
+  name     = "%s"
+  location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {
@@ -619,7 +620,7 @@ resource "google_cloudfunctions_function" "function" {
     TEST_ENV_VARIABLE = "test-env-variable-value"
   }
   build_environment_variables = {
-    TEST_ENV_VARIABLE = "test-env-variable-value"
+    TEST_ENV_VARIABLE = "test-build-env-variable-value"
   }
   max_instances = 10
 }
@@ -629,7 +630,8 @@ resource "google_cloudfunctions_function" "function" {
 func testAccCloudFunctionsFunction_updated(functionName string, bucketName string, zipFilePath string) string {
 	return fmt.Sprintf(`
 resource "google_storage_bucket" "bucket" {
-  name = "%s"
+  name     = "%s"
+  location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {
@@ -658,8 +660,8 @@ resource "google_cloudfunctions_function" "function" {
     NEW_ENV_VARIABLE  = "new-env-variable-value"
   }
   build_environment_variables = {
-    TEST_ENV_VARIABLE = "test-env-variable-value"
-    NEW_ENV_VARIABLE  = "new-env-variable-value"
+    TEST_ENV_VARIABLE = "test-build-env-variable-value"
+    NEW_ENV_VARIABLE  = "new-build-env-variable-value"
   }
   max_instances = 15
 }
@@ -670,7 +672,8 @@ func testAccCloudFunctionsFunction_pubsub(functionName string, bucketName string
 	topic string, zipFilePath string) string {
 	return fmt.Sprintf(`
 resource "google_storage_bucket" "bucket" {
-  name = "%s"
+  name     = "%s"
+  location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {
@@ -709,7 +712,8 @@ data "google_client_config" "current" {
 }
 
 resource "google_storage_bucket" "bucket" {
-  name = "%s"
+  name     = "%s"
+  location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {
@@ -741,7 +745,8 @@ func testAccCloudFunctionsFunction_bucketNoRetry(functionName string, bucketName
 	zipFilePath string) string {
 	return fmt.Sprintf(`
 resource "google_storage_bucket" "bucket" {
-  name = "%s"
+  name     = "%s"
+  location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {
@@ -770,7 +775,8 @@ func testAccCloudFunctionsFunction_firestore(functionName string, bucketName str
 	zipFilePath string) string {
 	return fmt.Sprintf(`
 resource "google_storage_bucket" "bucket" {
-  name = "%s"
+  name     = "%s"
+  location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {
@@ -818,7 +824,8 @@ resource "google_cloudfunctions_function" "function" {
 func testAccCloudFunctionsFunction_serviceAccountEmail(functionName, bucketName, zipFilePath string) string {
 	return fmt.Sprintf(`
 resource "google_storage_bucket" "bucket" {
-  name = "%s"
+  name     = "%s"
+  location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {
@@ -847,8 +854,10 @@ resource "google_cloudfunctions_function" "function" {
 
 func testAccCloudFunctionsFunction_vpcConnector(projectNumber, networkName, functionName, bucketName, zipFilePath, vpcIp, vpcConnectorName string) string {
 	return fmt.Sprintf(`
+data "google_project" "project" {}
 
 resource "google_project_iam_member" "gcfadmin" {
+  project = data.google_project.project.project_id
   role     = "roles/editor"
   member   = "serviceAccount:service-%s@gcf-admin-robot.iam.gserviceaccount.com"
 }
@@ -867,6 +876,7 @@ resource "google_vpc_access_connector" "%s" {
 
 resource "google_storage_bucket" "bucket" {
   name     = "%s"
+  location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {

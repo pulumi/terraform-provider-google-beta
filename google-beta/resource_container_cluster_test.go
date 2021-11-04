@@ -150,7 +150,7 @@ func TestAccContainerCluster_withAddons(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				// TODO: clean up this list in `4.0.0`, remove both `workload_identity_config` fields (same for below)
-				ImportStateVerifyIgnore: []string{"min_master_version", "workload_identity_config.0.identity_namespace", "workload_identity_config.0.workload_pool"},
+				ImportStateVerifyIgnore: []string{"min_master_version"},
 			},
 			{
 				Config: testAccContainerCluster_updateAddons(pid, clusterName),
@@ -159,7 +159,7 @@ func TestAccContainerCluster_withAddons(t *testing.T) {
 				ResourceName:            "google_container_cluster.primary",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"min_master_version", "workload_identity_config.0.identity_namespace", "workload_identity_config.0.workload_pool"},
+				ImportStateVerifyIgnore: []string{"min_master_version"},
 			},
 			{
 				Config: testAccContainerCluster_withInternalLoadBalancer(pid, clusterName),
@@ -168,7 +168,7 @@ func TestAccContainerCluster_withAddons(t *testing.T) {
 				ResourceName:            "google_container_cluster.primary",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"min_master_version", "workload_identity_config.0.identity_namespace", "workload_identity_config.0.workload_pool"},
+				ImportStateVerifyIgnore: []string{"min_master_version"},
 			},
 		},
 	})
@@ -293,6 +293,31 @@ func TestAccContainerCluster_withILBSubsetting(t *testing.T) {
 			},
 			{
 				ResourceName:      "google_container_cluster.confidential_nodes",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+func TestAccContainerCluster_withMasterAuthConfig_NoCert(t *testing.T) {
+	t.Parallel()
+
+	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckContainerClusterDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccContainerCluster_withMasterAuthNoCert(clusterName),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("google_container_cluster.with_master_auth_no_cert", "master_auth.0.client_certificate", ""),
+				),
+			},
+			{
+				ResourceName:      "google_container_cluster.with_master_auth_no_cert",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -1670,11 +1695,10 @@ func TestAccContainerCluster_withWorkloadIdentityConfig(t *testing.T) {
 				Config: testAccContainerCluster_withWorkloadIdentityConfigEnabled(pid, clusterName),
 			},
 			{
-				ResourceName:      "google_container_cluster.with_workload_identity_config",
-				ImportState:       true,
-				ImportStateVerify: true,
-				// TODO: clean up this list in `4.0.0`, remove both `workload_identity_config` fields (same for below)
-				ImportStateVerifyIgnore: []string{"remove_default_node_pool", "workload_identity_config.0.identity_namespace", "workload_identity_config.0.workload_pool"},
+				ResourceName:            "google_container_cluster.with_workload_identity_config",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"remove_default_node_pool"},
 			},
 			{
 				Config: testAccContainerCluster_updateWorkloadIdentityConfig(pid, clusterName, false),
@@ -1683,59 +1707,10 @@ func TestAccContainerCluster_withWorkloadIdentityConfig(t *testing.T) {
 				ResourceName:            "google_container_cluster.with_workload_identity_config",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"remove_default_node_pool", "workload_identity_config.0.identity_namespace", "workload_identity_config.0.workload_pool"},
+				ImportStateVerifyIgnore: []string{"remove_default_node_pool"},
 			},
 			{
 				Config: testAccContainerCluster_updateWorkloadIdentityConfig(pid, clusterName, true),
-			},
-			{
-				ResourceName:            "google_container_cluster.with_workload_identity_config",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"remove_default_node_pool", "workload_identity_config.0.identity_namespace", "workload_identity_config.0.workload_pool"},
-			},
-		},
-	})
-}
-
-func TestAccContainerCluster_withWorkloadIdentityConfigDeprecation(t *testing.T) {
-	t.Parallel()
-
-	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
-	pid := getTestProjectFromEnv()
-
-	vcrTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckContainerClusterDestroyProducer(t),
-		Steps: []resource.TestStep{
-			{
-				Config: testAccContainerCluster_withWorkloadIdentityConfigDeprecationDisabled(pid, clusterName),
-			},
-			{
-				ResourceName:            "google_container_cluster.with_workload_identity_config",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"remove_default_node_pool"},
-			},
-			{
-				Config: testAccContainerCluster_withWorkloadIdentityConfigDeprecationIdentityNamespace(pid, clusterName),
-			},
-			{
-				ResourceName:            "google_container_cluster.with_workload_identity_config",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"remove_default_node_pool"},
-			},
-			{
-				Config: testAccContainerCluster_withWorkloadIdentityConfigDeprecationWorkloadPool(pid, clusterName),
-			},
-			// skip ISV here + below as ignoring nested fields is a pain. It will import with `identity_namespace` only.
-			{
-				Config: testAccContainerCluster_withWorkloadIdentityConfigDeprecationBoth(pid, clusterName),
-			},
-			{
-				Config: testAccContainerCluster_withWorkloadIdentityConfigDeprecationDisabled(pid, clusterName),
 			},
 			{
 				ResourceName:            "google_container_cluster.with_workload_identity_config",
@@ -2597,7 +2572,6 @@ func testAccContainerCluster_withConfidentialNodes(clusterName string, npName st
 resource "google_container_cluster" "confidential_nodes" {
   name               = "%s"
   location           = "us-central1-a"
-  enable_shielded_nodes = true
   release_channel {
     channel = "RAPID"
   }
@@ -2622,7 +2596,6 @@ func testAccContainerCluster_disableConfidentialNodes(clusterName string, npName
 resource "google_container_cluster" "confidential_nodes" {
   name               = "%s"
   location           = "us-central1-a"
-  enable_shielded_nodes = true
   release_channel {
     channel = "RAPID"
   }
@@ -2647,7 +2620,6 @@ func testAccContainerCluster_withILBSubSetting(clusterName string, npName string
 resource "google_container_cluster" "confidential_nodes" {
   name               = "%s"
   location           = "us-central1-a"
-  enable_shielded_nodes = true
   release_channel {
     channel = "RAPID"
   }
@@ -2670,7 +2642,6 @@ func testAccContainerCluster_disableILBSubSetting(clusterName string, npName str
 resource "google_container_cluster" "confidential_nodes" {
   name               = "%s"
   location           = "us-central1-a"
-  enable_shielded_nodes = true
   release_channel {
     channel = "RAPID"
   }
@@ -3044,6 +3015,21 @@ resource "google_container_cluster" "with_version" {
 `, clusterName)
 }
 
+func testAccContainerCluster_withMasterAuthNoCert(clusterName string) string {
+	return fmt.Sprintf(`
+resource "google_container_cluster" "with_master_auth_no_cert" {
+  name               = "%s"
+  location           = "us-central1-a"
+  initial_node_count = 3
+  master_auth {
+    client_certificate_config {
+      issue_client_certificate = false
+    }
+  }
+}
+`, clusterName)
+}
+
 func testAccContainerCluster_updateVersion(clusterName string) string {
 	return fmt.Sprintf(`
 data "google_container_engine_versions" "central1a" {
@@ -3342,7 +3328,7 @@ resource "google_kms_key_ring" "keyring" {
 
 resource "google_kms_crypto_key" "example-key" {
   name            = "%s-kms-key"
-  key_ring        = google_kms_key_ring.keyring.self_link
+  key_ring        = google_kms_key_ring.keyring.id
   rotation_period = "100000s"
 }
 
@@ -3360,7 +3346,7 @@ resource "google_container_cluster" "with_boot_disk_kms_key" {
 
     image_type = "COS_CONTAINERD"
 
-    boot_disk_kms_key = google_kms_crypto_key.example-key.self_link
+    boot_disk_kms_key = google_kms_crypto_key.example-key.id
   }
 }
 `, project, clusterName, clusterName, clusterName)
@@ -3399,7 +3385,7 @@ resource "google_compute_backend_service" "my-backend-service" {
   protocol  = "HTTP"
 
   backend {
-    group = element(google_container_cluster.primary.instance_group_urls, 1)
+    group = element(google_container_cluster.primary.node_pool[0].managed_instance_group_urls, 1)
   }
 
   health_checks = [google_compute_http_health_check.default.self_link]
@@ -4206,80 +4192,6 @@ resource "google_container_cluster" "with_workload_identity_config" {
 }
 `, projectID, clusterName, workloadIdentityConfig)
 }
-
-// TODO: remove until next TODO during `4.0.0`
-func testAccContainerCluster_withWorkloadIdentityConfigDeprecationDisabled(projectID string, clusterName string) string {
-	return fmt.Sprintf(`
-data "google_project" "project" {
-  project_id = "%s"
-}
-
-resource "google_container_cluster" "with_workload_identity_config" {
-  name               = "%s"
-  location           = "us-central1-a"
-  initial_node_count = 1
-
-  workload_identity_config {}
-}
-`, projectID, clusterName)
-}
-
-func testAccContainerCluster_withWorkloadIdentityConfigDeprecationIdentityNamespace(projectID string, clusterName string) string {
-	return fmt.Sprintf(`
-data "google_project" "project" {
-  project_id = "%s"
-}
-
-resource "google_container_cluster" "with_workload_identity_config" {
-  name               = "%s"
-  location           = "us-central1-a"
-  initial_node_count = 1
-
-  workload_identity_config {
-    identity_namespace = "${data.google_project.project.project_id}.svc.id.goog"
-  }
-}
-`, projectID, clusterName)
-}
-
-func testAccContainerCluster_withWorkloadIdentityConfigDeprecationWorkloadPool(projectID string, clusterName string) string {
-	return fmt.Sprintf(`
-data "google_project" "project" {
-  project_id = "%s"
-}
-
-resource "google_container_cluster" "with_workload_identity_config" {
-  name               = "%s"
-  location           = "us-central1-a"
-  initial_node_count = 1
-
-  workload_identity_config {
-    workload_pool = "${data.google_project.project.project_id}.svc.id.goog"
-  }
-}
-`, projectID, clusterName)
-}
-
-func testAccContainerCluster_withWorkloadIdentityConfigDeprecationBoth(projectID string, clusterName string) string {
-	return fmt.Sprintf(`
-data "google_project" "project" {
-  project_id = "%s"
-}
-
-resource "google_container_cluster" "with_workload_identity_config" {
-  name               = "%s"
-  location           = "us-central1-a"
-  initial_node_count = 1
-
-  workload_identity_config {
-    workload_pool = "${data.google_project.project.project_id}.svc.id.goog"
-    identity_namespace = "${data.google_project.project.project_id}.svc.id.goog"
-  }
-}
-`, projectID, clusterName)
-}
-
-// TODO: remove until above TODO during `4.0.0`
 
 func testAccContainerCluster_sharedVpc(org, billingId, projectName, name string, suffix string) string {
 	return fmt.Sprintf(`
