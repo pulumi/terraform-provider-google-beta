@@ -276,12 +276,9 @@ resource "google_cloud_run_service" "default" {
 
 ```hcl
 data "google_project" "project" {
-  provider = google-beta
 }
 
 resource "google_secret_manager_secret" "secret" {
-  provider = google-beta
-
   secret_id = "secret"
   replication {
     automatic = true
@@ -289,15 +286,11 @@ resource "google_secret_manager_secret" "secret" {
 }
 
 resource "google_secret_manager_secret_version" "secret-version-data" {
-  provider = google-beta
-
   secret = google_secret_manager_secret.secret.name
   secret_data = "secret-data"
 }
 
 resource "google_secret_manager_secret_iam_member" "secret-access" {
-  provider = google-beta
-
   secret_id = google_secret_manager_secret.secret.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
@@ -305,8 +298,6 @@ resource "google_secret_manager_secret_iam_member" "secret-access" {
 }
 
 resource "google_cloud_run_service" "default" {
-  provider = google-beta
-
   name     = "cloudrun-srv"
   location = "us-central1"
 
@@ -330,7 +321,6 @@ resource "google_cloud_run_service" "default" {
   metadata {
     annotations = {
       generated-by = "magic-modules"
-      "run.googleapis.com/launch-stage" = "BETA"
     }
   }
 
@@ -355,12 +345,9 @@ resource "google_cloud_run_service" "default" {
 
 ```hcl
 data "google_project" "project" {
-  provider = google-beta
 }
 
 resource "google_secret_manager_secret" "secret" {
-  provider = google-beta
-
   secret_id = "secret"
   replication {
     automatic = true
@@ -368,15 +355,11 @@ resource "google_secret_manager_secret" "secret" {
 }
 
 resource "google_secret_manager_secret_version" "secret-version-data" {
-  provider = google-beta
-
   secret = google_secret_manager_secret.secret.name
   secret_data = "secret-data"
 }
 
 resource "google_secret_manager_secret_iam_member" "secret-access" {
-  provider = google-beta
-
   secret_id = google_secret_manager_secret.secret.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
@@ -384,8 +367,6 @@ resource "google_secret_manager_secret_iam_member" "secret-access" {
 }
 
 resource "google_cloud_run_service" "default" {
-  provider = google-beta
-
   name     = "cloudrun-srv"
   location = "us-central1"
 
@@ -414,7 +395,6 @@ resource "google_cloud_run_service" "default" {
   metadata {
     annotations = {
       generated-by = "magic-modules"
-      "run.googleapis.com/launch-stage" = "BETA"
     }
   }
 
