@@ -66,7 +66,7 @@ func testAccPrivatecaCertificateTemplate_BasicCertificateTemplate(context map[st
 	return Nprintf(`
 resource "google_privateca_certificate_template" "primary" {
   location    = "%{region}"
-  name        = "tf-test-template-test%{random_suffix}"
+  name        = "tf-test-template%{random_suffix}"
   description = "An updated sample certificate template"
 
   identity_constraints {
@@ -149,7 +149,7 @@ func testAccPrivatecaCertificateTemplate_BasicCertificateTemplateUpdate0(context
 	return Nprintf(`
 resource "google_privateca_certificate_template" "primary" {
   location    = "%{region}"
-  name        = "tf-test-template-test%{random_suffix}"
+  name        = "tf-test-template%{random_suffix}"
   description = "A sample certificate template"
 
   identity_constraints {
@@ -254,7 +254,7 @@ func testAccCheckPrivatecaCertificateTemplateDestroyProducer(t *testing.T) func(
 				UpdateTime:  dcl.StringOrNil(rs.Primary.Attributes["update_time"]),
 			}
 
-			client := NewDCLPrivatecaClient(config, config.userAgent, billingProject)
+			client := NewDCLPrivatecaClient(config, config.userAgent, billingProject, 0)
 			_, err := client.GetCertificateTemplate(context.Background(), obj)
 			if err == nil {
 				return fmt.Errorf("google_privateca_certificate_template still exists %v", obj)

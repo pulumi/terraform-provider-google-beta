@@ -61,8 +61,8 @@ resource "google_monitoring_monitored_project" "primary" {
   provider      = google-beta
 }
 resource "google_project" "basic" {
-  project_id = "id%{random_suffix}"
-  name       = "id%{random_suffix}"
+  project_id = "tf-test-id%{random_suffix}"
+  name       = "tf-test-id%{random_suffix}"
   org_id     = "%{org_id}"
   provider   = google-beta
 }
@@ -93,7 +93,7 @@ func testAccCheckMonitoringMonitoredProjectDestroyProducer(t *testing.T) func(s 
 				CreateTime:   dcl.StringOrNil(rs.Primary.Attributes["create_time"]),
 			}
 
-			client := NewDCLMonitoringClient(config, config.userAgent, billingProject)
+			client := NewDCLMonitoringClient(config, config.userAgent, billingProject, 0)
 			_, err := client.GetMonitoredProject(context.Background(), obj)
 			if err == nil {
 				return fmt.Errorf("google_monitoring_monitored_project still exists %v", obj)

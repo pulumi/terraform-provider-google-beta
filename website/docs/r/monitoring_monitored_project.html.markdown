@@ -18,23 +18,27 @@ layout: "google"
 page_title: "Google: google_monitoring_monitored_project"
 sidebar_current: "docs-google-monitoring-monitored-project"
 description: |-
-Beta only
+Beta only: Monitored Project allows you to set a project as monitored by a _metrics scope_, which is a term for a project used to group the metrics of multiple projects, potentially across multiple organizations.  This enables you to view these groups in the Monitoring page of the cloud console.
 ---
 
 # google\_monitoring\_monitored\_project
 
-Beta only
+Beta only: Monitored Project allows you to set a project as monitored by a _metrics scope_, which is a term for a project used to group the metrics of multiple projects, potentially across multiple organizations.  This enables you to view these groups in the Monitoring page of the cloud console.
+
+For more information, see:
+* [Understanding metrics scopes](https://cloud.google.com/monitoring/settings#concept-scope)
+* [API notes](https://cloud.google.com/monitoring/settings/manage-api)
 ## Example Usage - basic_monitored_project
 A basic example of a monitoring monitored project
 ```hcl
 resource "google_monitoring_monitored_project" "primary" {
-  metrics_scope = "my-project-name"
+  metrics_scope = "existing-metrics-scope-project"
   name          = google_project.basic.name
   provider      = google-beta
 }
 resource "google_project" "basic" {
-  project_id = "id"
-  name       = "id"
+  project_id = "my-monitored-project"
+  name       = "my-monitored-project"
   org_id     = "123456789"
   provider   = google-beta
 }
@@ -73,8 +77,8 @@ In addition to the arguments listed above, the following computed attributes are
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 30 minutes.
-- `delete` - Default is 30 minutes.
+- `create` - Default is 10 minutes.
+- `delete` - Default is 10 minutes.
 
 ## Import
 

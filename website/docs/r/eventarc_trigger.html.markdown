@@ -18,16 +18,17 @@ layout: "google"
 page_title: "Google: google_eventarc_trigger"
 sidebar_current: "docs-google-eventarc-trigger"
 description: |-
-
+The Eventarc Trigger resource
 ---
 
 # google\_eventarc\_trigger
 
+The Eventarc Trigger resource
 
 ## Example Usage - basic
 ```hcl
 resource "google_eventarc_trigger" "primary" {
-	name = "trigger"
+	name = "name"
 	location = "europe-west1"
 	matching_criteria {
 		attribute = "type"
@@ -49,7 +50,7 @@ resource "google_pubsub_topic" "foo" {
 }
 
 resource "google_cloud_run_service" "default" {
-	name     = "service-eventarc"
+	name     = "event_arc_service"
 	location = "europe-west1"
 
 	metadata {
@@ -187,9 +188,9 @@ In addition to the arguments listed above, the following computed attributes are
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 30 minutes.
-- `update` - Default is 30 minutes.
-- `delete` - Default is 30 minutes.
+- `create` - Default is 10 minutes.
+- `update` - Default is 10 minutes.
+- `delete` - Default is 10 minutes.
 
 ## Import
 
