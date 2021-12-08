@@ -36,6 +36,7 @@ Three different resources help you manage your IAM policy for API Gateway Gatewa
 
 ```hcl
 data "google_iam_policy" "admin" {
+  provider = google-beta
   binding {
     role = "roles/apigateway.viewer"
     members = [
@@ -45,6 +46,7 @@ data "google_iam_policy" "admin" {
 }
 
 resource "google_api_gateway_gateway_iam_policy" "policy" {
+  provider = google-beta
   project = google_api_gateway_gateway.api_gw.project
   region = google_api_gateway_gateway.api_gw.region
   gateway = google_api_gateway_gateway.api_gw.gateway_id
@@ -56,6 +58,7 @@ resource "google_api_gateway_gateway_iam_policy" "policy" {
 
 ```hcl
 resource "google_api_gateway_gateway_iam_binding" "binding" {
+  provider = google-beta
   project = google_api_gateway_gateway.api_gw.project
   region = google_api_gateway_gateway.api_gw.region
   gateway = google_api_gateway_gateway.api_gw.gateway_id
@@ -70,6 +73,7 @@ resource "google_api_gateway_gateway_iam_binding" "binding" {
 
 ```hcl
 resource "google_api_gateway_gateway_iam_member" "member" {
+  provider = google-beta
   project = google_api_gateway_gateway.api_gw.project
   region = google_api_gateway_gateway.api_gw.region
   gateway = google_api_gateway_gateway.api_gw.gateway_id

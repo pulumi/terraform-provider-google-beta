@@ -853,6 +853,7 @@ func Provider() *schema.Provider {
 			"google_firebase_web_app":                             dataSourceGoogleFirebaseWebApp(),
 			"google_firebase_web_app_config":                      dataSourceGoogleFirebaseWebappConfig(),
 			"google_folder":                                       dataSourceGoogleFolder(),
+			"google_folders":                                      dataSourceGoogleFolders(),
 			"google_folder_organization_policy":                   dataSourceGoogleFolderOrganizationPolicy(),
 			"google_monitoring_notification_channel":              dataSourceMonitoringNotificationChannel(),
 			"google_monitoring_cluster_istio_service":             dataSourceMonitoringServiceClusterIstio(),
@@ -900,9 +901,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 240
-// Generated IAM resources: 117
-// Total generated resources: 357
+// Generated resources: 242
+// Generated IAM resources: 123
+// Total generated resources: 365
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -939,6 +940,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_apigee_organization":                                   resourceApigeeOrganization(),
 			"google_apigee_instance":                                       resourceApigeeInstance(),
 			"google_apigee_environment":                                    resourceApigeeEnvironment(),
+			"google_apigee_environment_iam_binding":                        ResourceIamBinding(ApigeeEnvironmentIamSchema, ApigeeEnvironmentIamUpdaterProducer, ApigeeEnvironmentIdParseFunc),
+			"google_apigee_environment_iam_member":                         ResourceIamMember(ApigeeEnvironmentIamSchema, ApigeeEnvironmentIamUpdaterProducer, ApigeeEnvironmentIdParseFunc),
+			"google_apigee_environment_iam_policy":                         ResourceIamPolicy(ApigeeEnvironmentIamSchema, ApigeeEnvironmentIamUpdaterProducer, ApigeeEnvironmentIdParseFunc),
 			"google_apigee_envgroup":                                       resourceApigeeEnvgroup(),
 			"google_apigee_instance_attachment":                            resourceApigeeInstanceAttachment(),
 			"google_apigee_envgroup_attachment":                            resourceApigeeEnvgroupAttachment(),
@@ -1193,6 +1197,10 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_notebooks_instance_iam_binding":                        ResourceIamBinding(NotebooksInstanceIamSchema, NotebooksInstanceIamUpdaterProducer, NotebooksInstanceIdParseFunc),
 			"google_notebooks_instance_iam_member":                         ResourceIamMember(NotebooksInstanceIamSchema, NotebooksInstanceIamUpdaterProducer, NotebooksInstanceIdParseFunc),
 			"google_notebooks_instance_iam_policy":                         ResourceIamPolicy(NotebooksInstanceIamSchema, NotebooksInstanceIamUpdaterProducer, NotebooksInstanceIdParseFunc),
+			"google_notebooks_runtime":                                     resourceNotebooksRuntime(),
+			"google_notebooks_runtime_iam_binding":                         ResourceIamBinding(NotebooksRuntimeIamSchema, NotebooksRuntimeIamUpdaterProducer, NotebooksRuntimeIdParseFunc),
+			"google_notebooks_runtime_iam_member":                          ResourceIamMember(NotebooksRuntimeIamSchema, NotebooksRuntimeIamUpdaterProducer, NotebooksRuntimeIdParseFunc),
+			"google_notebooks_runtime_iam_policy":                          ResourceIamPolicy(NotebooksRuntimeIamSchema, NotebooksRuntimeIamUpdaterProducer, NotebooksRuntimeIdParseFunc),
 			"google_notebooks_location":                                    resourceNotebooksLocation(),
 			"google_os_config_patch_deployment":                            resourceOSConfigPatchDeployment(),
 			"google_os_config_guest_policies":                              resourceOSConfigGuestPolicies(),
@@ -1266,6 +1274,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_vertex_ai_dataset":                                     resourceVertexAIDataset(),
 			"google_vertex_ai_featurestore":                                resourceVertexAIFeaturestore(),
 			"google_vertex_ai_featurestore_entitytype":                     resourceVertexAIFeaturestoreEntitytype(),
+			"google_vertex_ai_metadata_store":                              resourceVertexAIMetadataStore(),
 			"google_vpc_access_connector":                                  resourceVPCAccessConnector(),
 			"google_workflows_workflow":                                    resourceWorkflowsWorkflow(),
 		},

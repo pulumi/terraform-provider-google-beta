@@ -193,6 +193,14 @@ func schemaNodeConfig() *schema.Schema {
 					Description: `Whether the nodes are created as preemptible VM instances.`,
 				},
 
+				"spot": {
+					Type:        schema.TypeBool,
+					Optional:    true,
+					ForceNew:    true,
+					Default:     false,
+					Description: `Whether the nodes are created as spot VM instances.`,
+				},
+
 				"service_account": {
 					Type:        schema.TypeString,
 					Optional:    true,
@@ -359,6 +367,12 @@ func schemaNodeConfig() *schema.Schema {
 						},
 					},
 				},
+				"node_group": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					ForceNew:    true,
+					Description: `Setting this field will assign instances of this pool to run on the specified node group. This is useful for running workloads on sole tenant nodes.`,
+				},
 			},
 		},
 	}
@@ -478,6 +492,7 @@ func expandNodeConfig(v interface{}) *container.NodeConfig {
 
 	// Preemptible Is Optional+Default, so it always has a value
 	nc.Preemptible = nodeConfig["preemptible"].(bool)
+	nc.Spot = nodeConfig["spot"].(bool)
 
 	if v, ok := nodeConfig["min_cpu_platform"]; ok {
 		nc.MinCpuPlatform = v.(string)
@@ -519,6 +534,10 @@ func expandNodeConfig(v interface{}) *container.NodeConfig {
 
 	if v, ok := nodeConfig["linux_node_config"]; ok {
 		nc.LinuxNodeConfig = expandLinuxNodeConfig(v)
+	}
+
+	if v, ok := nodeConfig["node_group"]; ok {
+		nc.NodeGroup = v.(string)
 	}
 
 	return nc
@@ -609,6 +628,7 @@ func flattenNodeConfig(c *container.NodeConfig) []map[string]interface{} {
 		"labels":                   c.Labels,
 		"tags":                     c.Tags,
 		"preemptible":              c.Preemptible,
+		"spot":                     c.Spot,
 		"min_cpu_platform":         c.MinCpuPlatform,
 		"shielded_instance_config": flattenShieldedInstanceConfig(c.ShieldedInstanceConfig),
 		"taint":                    flattenTaints(c.Taints),
@@ -617,6 +637,7 @@ func flattenNodeConfig(c *container.NodeConfig) []map[string]interface{} {
 		"boot_disk_kms_key":        c.BootDiskKmsKey,
 		"kubelet_config":           flattenKubeletConfig(c.KubeletConfig),
 		"linux_node_config":        flattenLinuxNodeConfig(c.LinuxNodeConfig),
+		"node_group":               c.NodeGroup,
 	})
 
 	if len(c.OauthScopes) > 0 {
