@@ -2973,6 +2973,7 @@ func expandIPAllocationPolicy(configured interface{}, networkingMode string) (*c
 		}
 		return &container.IPAllocationPolicy{
 			UseIpAliases:    false,
+			UseRoutes:       true,
 			ForceSendFields: []string{"UseIpAliases"},
 		}, nil
 	}

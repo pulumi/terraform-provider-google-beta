@@ -28,7 +28,9 @@ import (
 	gkehub "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/gkehub/beta"
 	monitoring "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/monitoring/beta"
 	orgpolicy "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/orgpolicy/beta"
+	osconfig "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/osconfig/beta"
 	privateca "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/privateca/beta"
+	recaptchaenterprise "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/recaptchaenterprise/beta"
 )
 
 func NewDCLAssuredWorkloadsClient(config *Config, userAgent, billingProject string, timeout time.Duration) *assuredworkloads.Client {
@@ -238,6 +240,29 @@ func NewDCLOrgPolicyClient(config *Config, userAgent, billingProject string, tim
 	return orgpolicy.NewClient(dclConfig)
 }
 
+func NewDCLOSConfigClient(config *Config, userAgent, billingProject string, timeout time.Duration) *osconfig.Client {
+	configOptions := []dcl.ConfigOption{
+		dcl.WithHTTPClient(config.client),
+		dcl.WithUserAgent(userAgent),
+		dcl.WithLogger(dclLogger{}),
+		dcl.WithBasePath(config.OSConfigBasePath),
+	}
+
+	if timeout != 0 {
+		configOptions = append(configOptions, dcl.WithTimeout(timeout))
+	}
+
+	if config.UserProjectOverride {
+		configOptions = append(configOptions, dcl.WithUserProjectOverride())
+		if billingProject != "" {
+			configOptions = append(configOptions, dcl.WithBillingProject(billingProject))
+		}
+	}
+
+	dclConfig := dcl.NewConfig(configOptions...)
+	return osconfig.NewClient(dclConfig)
+}
+
 func NewDCLPrivatecaClient(config *Config, userAgent, billingProject string, timeout time.Duration) *privateca.Client {
 	configOptions := []dcl.ConfigOption{
 		dcl.WithHTTPClient(config.client),
@@ -259,4 +284,27 @@ func NewDCLPrivatecaClient(config *Config, userAgent, billingProject string, tim
 
 	dclConfig := dcl.NewConfig(configOptions...)
 	return privateca.NewClient(dclConfig)
+}
+
+func NewDCLRecaptchaEnterpriseClient(config *Config, userAgent, billingProject string, timeout time.Duration) *recaptchaenterprise.Client {
+	configOptions := []dcl.ConfigOption{
+		dcl.WithHTTPClient(config.client),
+		dcl.WithUserAgent(userAgent),
+		dcl.WithLogger(dclLogger{}),
+		dcl.WithBasePath(config.RecaptchaEnterpriseBasePath),
+	}
+
+	if timeout != 0 {
+		configOptions = append(configOptions, dcl.WithTimeout(timeout))
+	}
+
+	if config.UserProjectOverride {
+		configOptions = append(configOptions, dcl.WithUserProjectOverride())
+		if billingProject != "" {
+			configOptions = append(configOptions, dcl.WithBillingProject(billingProject))
+		}
+	}
+
+	dclConfig := dcl.NewConfig(configOptions...)
+	return recaptchaenterprise.NewClient(dclConfig)
 }
