@@ -35,6 +35,12 @@ func resourceStorageBucket() *schema.Resource {
 			customdiff.ForceNewIfChange("retention_policy.0.is_locked", isPolicyLocked),
 		),
 
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(4 * time.Minute),
+			Update: schema.DefaultTimeout(4 * time.Minute),
+			Read:   schema.DefaultTimeout(4 * time.Minute),
+		},
+
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -657,7 +663,7 @@ func resourceStorageBucketRead(d *schema.ResourceData, meta interface{}) error {
 		var retryErr error
 		res, retryErr = config.NewStorageClient(userAgent).Buckets.Get(bucket).Do()
 		return retryErr
-	}, d.Timeout(schema.TimeoutCreate), isNotFoundRetryableError("bucket creation"))
+	}, d.Timeout(schema.TimeoutRead), isNotFoundRetryableError("bucket read"))
 
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("Storage Bucket %q", d.Get("name").(string)))
@@ -1323,6 +1329,10 @@ func resourceGCSBucketLifecycleRuleConditionHash(v interface{}) int {
 	m := v.(map[string]interface{})
 
 	if v, ok := m["age"]; ok {
+		buf.WriteString(fmt.Sprintf("%d-", v.(int)))
+	}
+
+	if v, ok := m["days_since_custom_time"]; ok {
 		buf.WriteString(fmt.Sprintf("%d-", v.(int)))
 	}
 

@@ -385,6 +385,8 @@ subnetwork in which the cluster's instances are launched.
 * `istio_config` - (Optional).
     Structure is [documented below](#nested_istio_config).
 
+* `identity_service_config` - (Optional). Structure is [documented below](#nested_identity_service_config).
+
 * `dns_cache_config` - (Optional).
     The status of the NodeLocal DNSCache addon. It is disabled by default.
     Set `enabled = true` to enable.
@@ -398,7 +400,7 @@ subnetwork in which the cluster's instances are launched.
 * `kalm_config` - (Optional).
     Configuration for the KALM addon, which manages the lifecycle of k8s. It is disabled by default; Set `enabled = true` to enable.
 
-*  `config_connector_config` -  (Optional).
+* `config_connector_config` -  (Optional).
     The status of the ConfigConnector addon. It is disabled by default; Set `enabled = true` to enable.
 
 This example `addons_config` disables two addons:
@@ -427,6 +429,10 @@ addons_config {
 
 * `load_balancer_type` - (Optional) The load balancer type of CloudRun ingress service. It is external load balancer by default.
     Set `load_balancer_type=LOAD_BALANCER_TYPE_INTERNAL` to configure it as internal load balancer.
+
+<a name="nested_identity_service_config"></a>The `identity_service_config` block supports:
+
+* `enabled` - (Optional) Whether to enable the Identity Service component. It is disabled by default. Set `enabled=true` to enable.
 
 <a name="nested_istio_config"></a>The `istio_config` block supports:
 
