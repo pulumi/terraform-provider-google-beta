@@ -221,6 +221,30 @@ resource "google_compute_backend_service" "default" {
   }
 }
 ```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=backend_service_external_managed&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Backend Service External Managed
+
+
+```hcl
+resource "google_compute_backend_service" "default" {
+  provider = google-beta
+  name          = "backend-service"
+  health_checks = [google_compute_health_check.default.id]
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+}
+
+resource "google_compute_health_check" "default" {
+  provider = google-beta
+  name = "health-check"
+  http_health_check {
+    port = 80
+  }
+}
+```
 
 ## Argument Reference
 
@@ -318,34 +342,44 @@ The following arguments are supported:
   (Optional)
   Indicates whether the backend service will be used with internal or
   external load balancing. A backend service created for one type of
-  load balancing cannot be used with the other.
+  load balancing cannot be used with the other. For more information, refer to
+  [Choosing a load balancer](https://cloud.google.com/load-balancing/docs/backend-service).
   Default value is `EXTERNAL`.
-  Possible values are `EXTERNAL` and `INTERNAL_SELF_MANAGED`.
+  Possible values are `EXTERNAL`, `INTERNAL_SELF_MANAGED`, and `EXTERNAL_MANAGED`.
 
 * `locality_lb_policy` -
   (Optional)
   The load balancing algorithm used within the scope of the locality.
-  The possible values are -
-  * ROUND_ROBIN - This is a simple policy in which each healthy backend
-                  is selected in round robin order.
-  * LEAST_REQUEST - An O(1) algorithm which selects two random healthy
-                    hosts and picks the host which has fewer active requests.
-  * RING_HASH - The ring/modulo hash load balancer implements consistent
-                hashing to backends. The algorithm has the property that the
-                addition/removal of a host from a set of N hosts only affects
-                1/N of the requests.
-  * RANDOM - The load balancer selects a random healthy host.
-  * ORIGINAL_DESTINATION - Backend host is selected based on the client
-                           connection metadata, i.e., connections are opened
-                           to the same address as the destination address of
-                           the incoming connection before the connection
-                           was redirected to the load balancer.
-  * MAGLEV - used as a drop in replacement for the ring hash load balancer.
-             Maglev is not as stable as ring hash but has faster table lookup
-             build times and host selection times. For more information about
-             Maglev, refer to https://ai.google/research/pubs/pub44824
-  This field is applicable only when the load_balancing_scheme is set to
-  INTERNAL_SELF_MANAGED.
+  The possible values are:
+  * `ROUND_ROBIN`: This is a simple policy in which each healthy backend
+                   is selected in round robin order.
+  * `LEAST_REQUEST`: An O(1) algorithm which selects two random healthy
+                     hosts and picks the host which has fewer active requests.
+  * `RING_HASH`: The ring/modulo hash load balancer implements consistent
+                 hashing to backends. The algorithm has the property that the
+                 addition/removal of a host from a set of N hosts only affects
+                 1/N of the requests.
+  * `RANDOM`: The load balancer selects a random healthy host.
+  * `ORIGINAL_DESTINATION`: Backend host is selected based on the client
+                            connection metadata, i.e., connections are opened
+                            to the same address as the destination address of
+                            the incoming connection before the connection
+                            was redirected to the load balancer.
+  * `MAGLEV`: used as a drop in replacement for the ring hash load balancer.
+              Maglev is not as stable as ring hash but has faster table lookup
+              build times and host selection times. For more information about
+              Maglev, refer to https://ai.google/research/pubs/pub44824
+
+  This field is applicable to either:
+  * A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2,
+    and loadBalancingScheme set to INTERNAL_MANAGED.
+  * A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
+
+  If session_affinity is not NONE, and this field is not set to MAGLEV or RING_HASH,
+  session affinity settings will not take effect.
+  Only ROUND_ROBIN and RING_HASH are supported when the backend service is referenced
+  by a URL map that is bound to target gRPC proxy that has validate_for_proxyless
+  field set to true.
   Possible values are `ROUND_ROBIN`, `LEAST_REQUEST`, `RING_HASH`, `RANDOM`, `ORIGINAL_DESTINATION`, and `MAGLEV`.
 
 * `outlier_detection` -
