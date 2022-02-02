@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceDataCatalogTaxonomy() *schema.Resource {
@@ -37,9 +36,9 @@ func resourceDataCatalogTaxonomy() *schema.Resource {
 		},
 
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(4 * time.Minute),
-			Update: schema.DefaultTimeout(4 * time.Minute),
-			Delete: schema.DefaultTimeout(4 * time.Minute),
+			Create: schema.DefaultTimeout(20 * time.Minute),
+			Update: schema.DefaultTimeout(20 * time.Minute),
+			Delete: schema.DefaultTimeout(20 * time.Minute),
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -58,7 +57,7 @@ long when encoded in UTF-8.`,
 defaults to an empty list. Possible values: ["POLICY_TYPE_UNSPECIFIED", "FINE_GRAINED_ACCESS_CONTROL"]`,
 				Elem: &schema.Schema{
 					Type:         schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{"POLICY_TYPE_UNSPECIFIED", "FINE_GRAINED_ACCESS_CONTROL"}, false),
+					ValidateFunc: validateEnum([]string{"POLICY_TYPE_UNSPECIFIED", "FINE_GRAINED_ACCESS_CONTROL"}),
 				},
 			},
 			"description": {

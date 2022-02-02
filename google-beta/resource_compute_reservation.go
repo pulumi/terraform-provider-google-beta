@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-	"strconv"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -37,9 +36,9 @@ func resourceComputeReservation() *schema.Resource {
 		},
 
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(4 * time.Minute),
-			Update: schema.DefaultTimeout(4 * time.Minute),
-			Delete: schema.DefaultTimeout(4 * time.Minute),
+			Create: schema.DefaultTimeout(20 * time.Minute),
+			Update: schema.DefaultTimeout(20 * time.Minute),
+			Delete: schema.DefaultTimeout(20 * time.Minute),
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -127,7 +126,7 @@ reserves disks of type 'local-ssd'.`,
 													Type:         schema.TypeString,
 													Optional:     true,
 													ForceNew:     true,
-													ValidateFunc: validation.StringInSlice([]string{"SCSI", "NVME", ""}, false),
+													ValidateFunc: validateEnum([]string{"SCSI", "NVME", ""}),
 													Description:  `The disk interface to use for attaching this disk. Default value: "SCSI" Possible values: ["SCSI", "NVME"]`,
 													Default:      "SCSI",
 												},
@@ -203,7 +202,7 @@ for information on available CPU platforms.`,
 							Computed:     true,
 							Optional:     true,
 							ForceNew:     true,
-							ValidateFunc: validation.StringInSlice([]string{"LOCAL", "SPECIFIC_PROJECTS", ""}, false),
+							ValidateFunc: validateEnum([]string{"LOCAL", "SPECIFIC_PROJECTS", ""}),
 							Description:  `Type of sharing for this shared-reservation Possible values: ["LOCAL", "SPECIFIC_PROJECTS"]`,
 						},
 					},
@@ -581,7 +580,7 @@ func flattenComputeReservationSpecificReservation(v interface{}, d *schema.Resou
 func flattenComputeReservationSpecificReservationCount(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
-		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+		if intVal, err := stringToFixed64(strVal); err == nil {
 			return intVal
 		}
 	}
@@ -598,7 +597,7 @@ func flattenComputeReservationSpecificReservationCount(v interface{}, d *schema.
 func flattenComputeReservationSpecificReservationInUseCount(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
-		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+		if intVal, err := stringToFixed64(strVal); err == nil {
 			return intVal
 		}
 	}
@@ -665,7 +664,7 @@ func flattenComputeReservationSpecificReservationInstancePropertiesGuestAccelera
 func flattenComputeReservationSpecificReservationInstancePropertiesGuestAcceleratorsAcceleratorCount(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
-		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+		if intVal, err := stringToFixed64(strVal); err == nil {
 			return intVal
 		}
 	}
@@ -705,7 +704,7 @@ func flattenComputeReservationSpecificReservationInstancePropertiesLocalSsdsInte
 func flattenComputeReservationSpecificReservationInstancePropertiesLocalSsdsDiskSizeGb(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
-		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+		if intVal, err := stringToFixed64(strVal); err == nil {
 			return intVal
 		}
 	}

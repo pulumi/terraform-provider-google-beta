@@ -228,8 +228,8 @@ In addition to the arguments listed above, the following computed attributes are
 This resource provides the following
 [customTimeouts](https://www.pulumi.com/docs/intro/concepts/programming-model/#customtimeouts) configuration options:
 
-- `create` - Default is 6 minutes.
-- `delete` - Default is 4 minutes.
+- `create` - Default is 20 minutes.
+- `delete` - Default is 20 minutes.
 
 ## Import
 

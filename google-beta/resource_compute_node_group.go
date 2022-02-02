@@ -19,11 +19,9 @@ import (
 	"log"
 	"reflect"
 	"regexp"
-	"strconv"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceComputeNodeGroup() *schema.Resource {
@@ -38,9 +36,9 @@ func resourceComputeNodeGroup() *schema.Resource {
 		},
 
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(4 * time.Minute),
-			Update: schema.DefaultTimeout(4 * time.Minute),
-			Delete: schema.DefaultTimeout(4 * time.Minute),
+			Create: schema.DefaultTimeout(20 * time.Minute),
+			Update: schema.DefaultTimeout(20 * time.Minute),
+			Delete: schema.DefaultTimeout(20 * time.Minute),
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -73,7 +71,7 @@ to 100 and greater than or equal to min-nodes.`,
 							Computed:     true,
 							Optional:     true,
 							ForceNew:     true,
-							ValidateFunc: validation.StringInSlice([]string{"OFF", "ON", "ONLY_SCALE_OUT"}, false),
+							ValidateFunc: validateEnum([]string{"OFF", "ON", "ONLY_SCALE_OUT"}),
 							Description: `The autoscaling mode. Set to one of the following:
   - OFF: Disables the autoscaler.
   - ON: Enables scaling in and scaling out.
@@ -499,7 +497,7 @@ func flattenComputeNodeGroupNodeTemplate(v interface{}, d *schema.ResourceData, 
 func flattenComputeNodeGroupSize(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
-		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+		if intVal, err := stringToFixed64(strVal); err == nil {
 			return intVal
 		}
 	}
@@ -558,7 +556,7 @@ func flattenComputeNodeGroupAutoscalingPolicyMode(v interface{}, d *schema.Resou
 func flattenComputeNodeGroupAutoscalingPolicyMinNodes(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
-		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+		if intVal, err := stringToFixed64(strVal); err == nil {
 			return intVal
 		}
 	}
@@ -575,7 +573,7 @@ func flattenComputeNodeGroupAutoscalingPolicyMinNodes(v interface{}, d *schema.R
 func flattenComputeNodeGroupAutoscalingPolicyMaxNodes(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
-		if intVal, err := strconv.ParseInt(strVal, 10, 64); err == nil {
+		if intVal, err := stringToFixed64(strVal); err == nil {
 			return intVal
 		}
 	}
