@@ -80,7 +80,10 @@ func resourceStorageObjectAclDiff(_ context.Context, diff *schema.ResourceDiff, 
 		return nil
 	}
 
-	objectOwner := sObject.Owner.Entity
+	var objectOwner string
+	if sObject.Owner != nil {
+		objectOwner = sObject.Owner.Entity
+	}
 	ownerRole := fmt.Sprintf("%s:%s", "OWNER", objectOwner)
 	oldRoleEntity, newRoleEntity := diff.GetChange("role_entity")
 
@@ -147,7 +150,10 @@ func resourceStorageObjectAclCreate(d *schema.ResourceData, meta interface{}) er
 			return fmt.Errorf("Error reading object %s in %s: %v", object, bucket, err)
 		}
 
-		objectOwner := sObject.Owner.Entity
+		var objectOwner string
+		if sObject.Owner != nil {
+			objectOwner = sObject.Owner.Entity
+		}
 		roleEntitiesUpstream, err := getRoleEntitiesAsStringsFromApi(config, bucket, object, userAgent)
 		if err != nil {
 			return fmt.Errorf("Error reading object %s in %s: %v", object, bucket, err)
@@ -228,7 +234,10 @@ func resourceStorageObjectAclUpdate(d *schema.ResourceData, meta interface{}) er
 			return fmt.Errorf("Error reading object %s in %s: %v", object, bucket, err)
 		}
 
-		objectOwner := sObject.Owner.Entity
+		var objectOwner string
+		if sObject.Owner != nil {
+			objectOwner = sObject.Owner.Entity
+		}
 
 		o, n := d.GetChange("role_entity")
 		create, update, remove, err := getRoleEntityChange(

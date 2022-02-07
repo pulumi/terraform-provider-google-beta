@@ -231,14 +231,12 @@ resource "google_compute_backend_service" "default" {
 
 ```hcl
 resource "google_compute_backend_service" "default" {
-  provider = google-beta
   name          = "backend-service"
   health_checks = [google_compute_health_check.default.id]
   load_balancing_scheme = "EXTERNAL_MANAGED"
 }
 
 resource "google_compute_health_check" "default" {
-  provider = google-beta
   name = "health-check"
   http_health_check {
     port = 80
@@ -853,13 +851,13 @@ The following arguments are supported:
 <a name="nested_security_settings"></a>The `security_settings` block supports:
 
 * `client_tls_policy` -
-  (Required, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Required)
   ClientTlsPolicy is a resource that specifies how a client should authenticate
   connections to backends of a service. This resource itself does not affect
   configuration unless it is attached to a backend service resource.
 
 * `subject_alt_names` -
-  (Required, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Required)
   A list of alternate names to verify the subject identity in the certificate.
   If specified, the client will verify that the server certificate's subject
   alt name matches one of the specified values.

@@ -59,6 +59,7 @@ var (
 		"addons_config.0.horizontal_pod_autoscaling",
 		"addons_config.0.network_policy_config",
 		"addons_config.0.cloudrun_config",
+		"addons_config.0.gcp_filestore_csi_driver_config",
 		"addons_config.0.istio_config",
 		"addons_config.0.dns_cache_config",
 		"addons_config.0.gce_persistent_disk_csi_driver_config",
@@ -248,6 +249,23 @@ func resourceContainerCluster() *schema.Resource {
 								},
 							},
 						},
+						"gcp_filestore_csi_driver_config": {
+							Type:          schema.TypeList,
+							Optional:      true,
+							Computed:      true,
+							AtLeastOneOf:  addonsConfigKeys,
+							MaxItems:      1,
+							Description:   `The status of the Filestore CSI driver addon, which allows the usage of filestore instance as volumes. Defaults to disabled; set enabled = true to enable.`,
+							ConflictsWith: []string{"enable_autopilot"},
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"enabled": {
+										Type:     schema.TypeBool,
+										Required: true,
+									},
+								},
+							},
+						},
 						"cloudrun_config": {
 							Type:         schema.TypeList,
 							Optional:     true,
@@ -424,6 +442,13 @@ func resourceContainerCluster() *schema.Resource {
 										Optional:    true,
 										Default:     "default",
 										Description: `The Google Cloud Platform Service Account to be used by the node VMs.`,
+									},
+									"image_type": {
+										Type:         schema.TypeString,
+										Optional:     true,
+										Default:      "COS_CONTAINERD",
+										Description:  `The default image type used by NAP once a new node pool is being created.`,
+										ValidateFunc: validation.StringInSlice([]string{"COS_CONTAINERD", "COS", "UBUNTU_CONTAINERD", "UBUNTU"}, false),
 									},
 									"min_cpu_platform": {
 										Type:             schema.TypeString,
@@ -2958,6 +2983,14 @@ func expandClusterAddonsConfig(configured interface{}) *container.AddonsConfig {
 		}
 	}
 
+	if v, ok := config["gcp_filestore_csi_driver_config"]; ok && len(v.([]interface{})) > 0 {
+		addon := v.([]interface{})[0].(map[string]interface{})
+		ac.GcpFilestoreCsiDriverConfig = &container.GcpFilestoreCsiDriverConfig{
+			Enabled:         addon["enabled"].(bool),
+			ForceSendFields: []string{"Enabled"},
+		}
+	}
+
 	if v, ok := config["cloudrun_config"]; ok && len(v.([]interface{})) > 0 {
 		addon := v.([]interface{})[0].(map[string]interface{})
 		ac.CloudRunConfig = &container.CloudRunConfig{
@@ -3183,6 +3216,7 @@ func expandAutoProvisioningDefaults(configured interface{}, d *schema.ResourceDa
 	npd := &container.AutoprovisioningNodePoolDefaults{
 		OauthScopes:    convertStringArr(config["oauth_scopes"].([]interface{})),
 		ServiceAccount: config["service_account"].(string),
+		ImageType:      config["image_type"].(string),
 	}
 
 	cpu := config["min_cpu_platform"].(string)
@@ -3591,6 +3625,14 @@ func flattenClusterAddonsConfig(c *container.AddonsConfig) []map[string]interfac
 		}
 	}
 
+	if c.GcpFilestoreCsiDriverConfig != nil {
+		result["gcp_filestore_csi_driver_config"] = []map[string]interface{}{
+			{
+				"enabled": c.GcpFilestoreCsiDriverConfig.Enabled,
+			},
+		}
+	}
+
 	if c.CloudRunConfig != nil {
 		cloudRunConfig := map[string]interface{}{
 			"disabled": c.CloudRunConfig.Disabled,
@@ -3893,6 +3935,7 @@ func flattenAutoProvisioningDefaults(a *container.AutoprovisioningNodePoolDefaul
 	r := make(map[string]interface{})
 	r["oauth_scopes"] = a.OauthScopes
 	r["service_account"] = a.ServiceAccount
+	r["image_type"] = a.ImageType
 	r["min_cpu_platform"] = a.MinCpuPlatform
 
 	return []map[string]interface{}{r}

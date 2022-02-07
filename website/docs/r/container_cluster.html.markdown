@@ -9,7 +9,6 @@ description: |-
 
 # google\_container\_cluster
 
-
 Manages a Google Kubernetes Engine (GKE) cluster. For more information see
 [the official documentation](https://cloud.google.com/container-engine/docs/clusters)
 and [the API reference](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters).
@@ -355,9 +354,10 @@ subnetwork in which the cluster's instances are launched.
 
 <a name="nested_default_snat_status"></a>The `default_snat_status` block supports
 
-*  `disabled` - (Required) Whether the cluster disables default in-node sNAT rules. In-node sNAT rules will be disabled when defaultSnatStatus is disabled.When disabled is set to false, default IP masquerade rules will be applied to the nodes to prevent sNAT on cluster internal traffic
+* `disabled` - (Required) Whether the cluster disables default in-node sNAT rules. In-node sNAT rules will be disabled when defaultSnatStatus is disabled.When disabled is set to false, default IP masquerade rules will be applied to the nodes to prevent sNAT on cluster internal traffic
 
 <a name="nested_cluster_telemetry"></a>The `cluster_telemetry` block supports
+
 * `type` - Telemetry integration for the cluster. Supported values (`ENABLED, DISABLED, SYSTEM_ONLY`);
    `SYSTEM_ONLY` (Only system components are monitored and logged) is only available in GKE versions 1.15 and later.
 
@@ -379,6 +379,10 @@ subnetwork in which the cluster's instances are launched.
     otherwise nothing will happen.
     It can only be disabled if the nodes already do not have network policies enabled.
     Defaults to disabled; set `disabled = false` to enable.
+
+* `gcp_filestore_csi_driver_config` - (Optional) The status of the Filestore CSI driver addon,
+    which allows the usage of filestore instance as volumes.
+    It is disbaled by default; set `enabled = true` to enable.
 
 * `cloudrun_config` - (Optional). Structure is [documented below](#nested_cloudrun_config).
 
@@ -482,20 +486,23 @@ as "Intel Haswell" or "Intel Sandy Bridge".
 
 * `service_account` - (Optional) The Google Cloud Platform Service Account to be used by the node VMs.
 
+* `image_type` - (Optional) The default image type used by NAP once a new node pool is being created. Please note that according to the [official documentation](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-provisioning#default-image-type) the value must be one of the [COS_CONTAINERD, COS, UBUNTU_CONTAINERD, UBUNTU].
+
 <a name="nested_authenticator_groups_config"></a>The `authenticator_groups_config` block supports:
 
 * `security_group` - (Required) The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format `gke-security-groups@yourdomain.com`.
 
 <a name="nested_logging_config"></a>The `logging_config` block supports:
 
-*  `enable_components` - (Required) The GKE components exposing logs. Supported values include:
+* `enable_components` - (Required) The GKE components exposing logs. Supported values include:
 `SYSTEM_COMPONENTS` and `WORKLOADS`.
 
 <a name="nested_monitoring_config"></a>The `monitoring_config` block supports:
 
-*  `enable_components` - (Required) The GKE components exposing logs. `SYSTEM_COMPONENTS` and in beta provider, both `SYSTEM_COMPONENTS` and `WORKLOADS` are supported.
+* `enable_components` - (Required) The GKE components exposing logs. `SYSTEM_COMPONENTS` and in beta provider, both `SYSTEM_COMPONENTS` and `WORKLOADS` are supported.
 
 <a name="nested_maintenance_policy"></a>The `maintenance_policy` block supports:
+
 * `daily_maintenance_window` - (Optional) structure documented below.
 * `recurring_window` - (Optional) structure documented below
 * `maintenance_exclusion` - (Optional) structure documented below
@@ -507,6 +514,7 @@ In beta, one or the other of `recurring_window` and `daily_maintenance_window` i
     where HH : \[00-23\] and MM : \[00-59\] GMT. For example:
 
 Examples:
+
 ```hcl
 maintenance_policy {
   daily_maintenance_window {
@@ -523,6 +531,7 @@ the initial date that the window starts, and the end time is used for calculatin
 Note that GKE may accept other formats, but will return values in UTC, causing a permanent diff.
 
 Examples:
+
 ```
 maintenance_policy {
   recurring_window {
@@ -694,18 +703,14 @@ gcfs_config {
     are preemptible. See the [official documentation](https://cloud.google.com/container-engine/docs/preemptible-vm)
     for more information. Defaults to false.
 
-<<<<<<< HEAD
 * `sandbox_config` - (Optional) [GKE Sandbox](https://cloud.google.com/kubernetes-engine/docs/how-to/sandbox-pods) configuration. When enabling this feature you must specify `image_type = "COS_CONTAINERD"` and `node_version = "1.12.7-gke.17"` or later to use it.
-=======
-* `spot` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) A boolean 
+    Structure is [documented below](#nested_sandbox_config).
+
+* `spot` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) A boolean
     that represents whether the underlying node VMs are spot. See the [official documentation](https://cloud.google.com/kubernetes-engine/docs/concepts/spot-vms)
     for more information. Defaults to false.
 
-* `sandbox_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) [GKE Sandbox](https://cloud.google.com/kubernetes-engine/docs/how-to/sandbox-pods) configuration. When enabling this feature you must specify `image_type = "COS_CONTAINERD"` and `node_version = "1.12.7-gke.17"` or later to use it.
->>>>>>> v4.3.0
-    Structure is [documented below](#nested_sandbox_config).
-
-* `boot_disk_kms_key` - (Optional) The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https://cloud.google.com/compute/docs/disks/customer-managed-encryption
+* `boot_disk_kms_key` - (Optional) The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: <https://cloud.google.com/compute/docs/disks/customer-managed-encryption>
 
 * `service_account` - (Optional) The service account to be used by the Node VMs.
     If not specified, the "default" service account is used.
@@ -863,16 +868,16 @@ not.
 * `sandbox_type` (Required) Which sandbox to use for pods in the node pool.
     Accepted values are:
 
-    * `"gvisor"`: Pods run within a gVisor sandbox.
+  * `"gvisor"`: Pods run within a gVisor sandbox.
 
 <a name="nested_release_channel"></a>The `release_channel` block supports:
 
 * `channel` - (Required) The selected release channel.
     Accepted values are:
-    * UNSPECIFIED: Not set.
-    * RAPID: Weekly upgrade cadence; Early testers and developers who requires new features.
-    * REGULAR: Multiple per month upgrade cadence; Production users who need features not yet offered in the Stable channel.
-    * STABLE: Every few months upgrade cadence; Production users who need stability above all else, and for whom frequent upgrades are too risky.
+  * UNSPECIFIED: Not set.
+  * RAPID: Weekly upgrade cadence; Early testers and developers who requires new features.
+  * REGULAR: Multiple per month upgrade cadence; Production users who need features not yet offered in the Stable channel.
+  * STABLE: Every few months upgrade cadence; Production users who need stability above all else, and for whom frequent upgrades are too risky.
 
 <a name="nested_resource_usage_export_config"></a>The `resource_usage_export_config` block supports:
 
@@ -922,9 +927,9 @@ Enables monitoring and attestation of the boot integrity of the instance. The at
 
 * `mode` (Required) How to expose the node metadata to the workload running on the node.
     Accepted values are:
-    * UNSPECIFIED: Not Set
-    * GCE_METADATA: Expose all Compute Engine metadata to pods.
-    * GKE_METADATA: Run the GKE Metadata Server on this node. The GKE Metadata Server exposes a metadata API to workloads that is compatible with the V1 Compute Metadata APIs exposed by the Compute Engine and App Engine Metadata Servers. This feature can only be enabled if [workload identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity) is enabled at the cluster level.
+  * UNSPECIFIED: Not Set
+  * GCE_METADATA: Expose all Compute Engine metadata to pods.
+  * GKE_METADATA: Run the GKE Metadata Server on this node. The GKE Metadata Server exposes a metadata API to workloads that is compatible with the V1 Compute Metadata APIs exposed by the Compute Engine and App Engine Metadata Servers. This feature can only be enabled if [workload identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity) is enabled at the cluster level.
 
 <a name="nested_kubelet_config"></a>The `kubelet_config` block supports:
 
@@ -1007,10 +1012,10 @@ exported:
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 40 minutes.
-- `read`   - Default is 40 minutes.
-- `update` - Default is 60 minutes.
-- `delete` - Default is 40 minutes.
+* `create` - Default is 40 minutes.
+* `read`   - Default is 40 minutes.
+* `update` - Default is 60 minutes.
+* `delete` - Default is 40 minutes.
 
 ## Import
 
@@ -1018,19 +1023,19 @@ GKE clusters can be imported using the `project` , `location`, and `name`. If th
 provider value will be used. Examples:
 
 ```
-$ terraform import google_container_cluster.mycluster projects/my-gcp-project/locations/us-east1-a/clusters/my-cluster
+terraform import google_container_cluster.mycluster projects/my-gcp-project/locations/us-east1-a/clusters/my-cluster
 
-$ terraform import google_container_cluster.mycluster my-gcp-project/us-east1-a/my-cluster
+terraform import google_container_cluster.mycluster my-gcp-project/us-east1-a/my-cluster
 
-$ terraform import google_container_cluster.mycluster us-east1-a/my-cluster
+terraform import google_container_cluster.mycluster us-east1-a/my-cluster
 ```
 
 ~> **Note:** This resource has several fields that control Terraform-specific behavior and aren't present in the API. If they are set in config and you import a cluster, Terraform may need to perform an update immediately after import. Most of these updates should be no-ops but some may modify your cluster if the imported state differs.
 
 For example, the following fields will show diffs if set in config:
 
-- `min_master_version`
-- `remove_default_node_pool`
+* `min_master_version`
+* `remove_default_node_pool`
 
 ## User Project Overrides
 
