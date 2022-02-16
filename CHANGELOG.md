@@ -1,4 +1,17 @@
-## 4.10.0 (Unreleased)
+## 4.11.0 (Unreleased)
+
+IMPROVEMENTS:
+* cloudfunctions: Added SecretManager integration support to `google_cloudfunctions_function`. ([#4040](https://github.com/hashicorp/terraform-provider-google-beta/pull/4040))
+* compute: Added field `serverless_deployment` to `google_compute_network_endpoint_group` ([#4041](https://github.com/hashicorp/terraform-provider-google-beta/pull/4041))
+* dataproc: increased the default timeout for `google_dataproc_cluster` from 20m to 45m ([#4027](https://github.com/hashicorp/terraform-provider-google-beta/pull/4027))
+* sql: added field `clone.allocated_ip_range` to support address range picker for clone in resource `google_sql_database_instance` ([#4037](https://github.com/hashicorp/terraform-provider-google-beta/pull/4037))
+* storagetransfer: added support for POSIX data source and data sink to `google_storage_transfer_job` via `transfer_spec.posix_data_source` and `transfer_spec.posix_data_sink` fields ([#4029](https://github.com/hashicorp/terraform-provider-google-beta/pull/4029))
+
+BUG FIXES:
+* cloudrun: updated `containers.ports.container_port` to be optional instead of required on `google_cloud_run_service` ([#4030](https://github.com/hashicorp/terraform-provider-google-beta/pull/4030))
+* compute: marked `project` field optional in `google_compute_instance_template` data source ([#4031](https://github.com/hashicorp/terraform-provider-google-beta/pull/4031))
+
+## 4.10.0 (February 7, 2022)
 
 FEATURES:
 * **New Resource:** `google_backend_service_iam_*` ([#4021](https://github.com/hashicorp/terraform-provider-google-beta/pull/4021))
@@ -67,15 +80,8 @@ BREAKING CHANGES:
 * pubsub: changed `google_pubsub_schema` so that modifiying fields will recreate the resource rather than causing Terraform to report it would attempt an invalid update ([#3933](https://github.com/hashicorp/terraform-provider-google-beta/pull/3933))
 
 FEATURES:
-* **New Data Source:** `google_container_aws_versions` ([#3928](https://github.com/hashicorp/terraform-provider-google-beta/pull/3928))
-* **New Data Source:** `google_container_azure_versions` ([#3928](https://github.com/hashicorp/terraform-provider-google-beta/pull/3928))
 * **New Resource:** `google_apigee_nat_address` ([#3941](https://github.com/hashicorp/terraform-provider-google-beta/pull/3941))
 * **New Resource:** `google_network_connectivity_hub` ([#3947](https://github.com/hashicorp/terraform-provider-google-beta/pull/3947))
-* **New Resource:** `google_container_aws_cluster` ([#3928](https://github.com/hashicorp/terraform-provider-google-beta/pull/3928))
-* **New Resource:** `google_container_aws_node_pool` ([#3928](https://github.com/hashicorp/terraform-provider-google-beta/pull/3928))
-* **New Resource:** `google_container_azure_client` ([#3928](https://github.com/hashicorp/terraform-provider-google-beta/pull/3928))
-* **New Resource:** `google_container_azure_cluster` ([#3928](https://github.com/hashicorp/terraform-provider-google-beta/pull/3928))
-* **New Resource:** `google_container_azure_node_pool` ([#3928](https://github.com/hashicorp/terraform-provider-google-beta/pull/3928))
 
 IMPROVEMENTS:
 * bigquery: added ability to create a table with both a schema and view simultaneously to `google_bigquery_table` ([#3950](https://github.com/hashicorp/terraform-provider-google-beta/pull/3950))
