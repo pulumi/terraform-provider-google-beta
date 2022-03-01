@@ -1,4 +1,44 @@
-## 4.11.0 (Unreleased)
+## 4.12.0 (Unreleased)
+NOTE:
+* updated to go 1.16.14 ([#4066](https://github.com/hashicorp/terraform-provider-google-beta/pull/4066))
+
+FEATURES:
+* **New Resource:** `dns_response_policy*` ([#4046](https://github.com/hashicorp/terraform-provider-google-beta/pull/4046))
+* **New Resource:** `dns_response_policy_rule*` ([#4046](https://github.com/hashicorp/terraform-provider-google-beta/pull/4046))
+
+DEPRECATIONS:
+* datafusion: deprecated `service_account` in `google_datafusion_instance`. Use `tenant_project_id` instead to extract the tenant project ID (beta) ([#4045](https://github.com/hashicorp/terraform-provider-google-beta/pull/4045))
+
+IMPROVEMENTS:
+* bigquery: added support for authorized datasets to `google_bigquery_dataset.access` and `google_bigquery_dataset_access` ([#4047](https://github.com/hashicorp/terraform-provider-google-beta/pull/4047))
+* bigtable: added `multi_cluster_routing_cluster_ids` fields to `google_bigtable_app_profile` ([#4051](https://github.com/hashicorp/terraform-provider-google-beta/pull/4051))
+* compute: added field `serverless_deployment` to `google_compute_network_endpoint_group` (beta only) for API Gateway resources ([#4041](https://github.com/hashicorp/terraform-provider-google-beta/pull/4041))
+* compute: updated `instance` attribute for `google_compute_network_endpoint` to be optional, as Hybrid connectivity NEGs use network endpoints with just IP and Port. ([#4068](https://github.com/hashicorp/terraform-provider-google-beta/pull/4068))
+* compute: added `NON_GCP_PRIVATE_IP_PORT` value for `network_endpoint_type` in the `google_compute_network_endpoint_group` resource ([#4068](https://github.com/hashicorp/terraform-provider-google-beta/pull/4068))
+* compute: added `provisioning_model` field to `google_compute_instance_template ` resource to support Spot VM(beta) ([#4033](https://github.com/hashicorp/terraform-provider-google-beta/pull/4033))
+* compute: added `provisioning_model` field to `google_compute_instance` resource to support Spot VM(beta) ([#4033](https://github.com/hashicorp/terraform-provider-google-beta/pull/4033))
+* container: Add support for GKE Compact Placement ([#4043](https://github.com/hashicorp/terraform-provider-google-beta/pull/4043))
+* datafusion: added support for `tenant_project_id` and `gcs_bucket` in `google_datafusion_instance` resource. ([#4045](https://github.com/hashicorp/terraform-provider-google-beta/pull/4045))
+* provider: added retries for `ReadRequest` errors incorrectly coded as `403` errors, particularly in Google Compute Engine ([#4064](https://github.com/hashicorp/terraform-provider-google-beta/pull/4064))
+
+BUG FIXES:
+* apigee: fixed a bug where multiple `google_apigee_instance` could not be used on the same `google_apigee_organization` ([#4059](https://github.com/hashicorp/terraform-provider-google-beta/pull/4059))
+* compute: corrected an issue in `google_compute_security_policy` where only alpha values for certain enums were accepted ([#4049](https://github.com/hashicorp/terraform-provider-google-beta/pull/4049))
+* compute: fixed permadiff in `google_compute_instance.scheduling.provisioning_model` ([#4044](https://github.com/hashicorp/terraform-provider-google-beta/pull/4044))
+* compute: fixed permadiff in `google_compute_instance_template.scheduling.provisioning_model` ([#4052](https://github.com/hashicorp/terraform-provider-google-beta/pull/4052))
+
+## 4.11.0 (February 16, 2022)
+
+IMPROVEMENTS:
+* cloudfunctions: Added SecretManager integration support to `google_cloudfunctions_function`. ([#4040](https://github.com/hashicorp/terraform-provider-google-beta/pull/4040))
+* compute: Added field `serverless_deployment` to `google_compute_network_endpoint_group` ([#4041](https://github.com/hashicorp/terraform-provider-google-beta/pull/4041))
+* dataproc: increased the default timeout for `google_dataproc_cluster` from 20m to 45m ([#4027](https://github.com/hashicorp/terraform-provider-google-beta/pull/4027))
+* sql: added field `clone.allocated_ip_range` to support address range picker for clone in resource `google_sql_database_instance` ([#4037](https://github.com/hashicorp/terraform-provider-google-beta/pull/4037))
+* storagetransfer: added support for POSIX data source and data sink to `google_storage_transfer_job` via `transfer_spec.posix_data_source` and `transfer_spec.posix_data_sink` fields ([#4029](https://github.com/hashicorp/terraform-provider-google-beta/pull/4029))
+
+BUG FIXES:
+* cloudrun: updated `containers.ports.container_port` to be optional instead of required on `google_cloud_run_service` ([#4030](https://github.com/hashicorp/terraform-provider-google-beta/pull/4030))
+* compute: marked `project` field optional in `google_compute_instance_template` data source ([#4031](https://github.com/hashicorp/terraform-provider-google-beta/pull/4031))
 
 IMPROVEMENTS:
 * cloudfunctions: Added SecretManager integration support to `google_cloudfunctions_function`. ([#4040](https://github.com/hashicorp/terraform-provider-google-beta/pull/4040))
@@ -154,10 +194,6 @@ DEPRECATIONS:
 * filestore: deprecated `zone` on `google_filestore_instance` in favor of `location` to allow for regional instances ([#3887](https://github.com/hashicorp/terraform-provider-google-beta/pull/3887))
 
 FEATURES:
-<<<<<<< HEAD
-* **New Data Source:** google_folders ([#3886](https://github.com/hashicorp/terraform-provider-google-beta/pull/3886))
-=======
->>>>>>> v4.5.0
 * **New Resource:** `google_os_config_os_policy_assignment` ([#3892](https://github.com/hashicorp/terraform-provider-google-beta/pull/3892))
 * **New Resource:** `google_recaptcha_enterprise_key` ([#3890](https://github.com/hashicorp/terraform-provider-google-beta/pull/3890))
 
@@ -167,15 +203,6 @@ IMPROVEMENTS:
 * sql: added field `allocated_ip_range` to resource `google_sql_database_instance` ([#3897](https://github.com/hashicorp/terraform-provider-google-beta/pull/3897))
 
 BUG FIXES:
-<<<<<<< HEAD
-* compute: Fixed incorrectly failing validation for `INTERNAL_MANAGED` `google_compute_region_backend_service`. ([#3888](https://github.com/hashicorp/terraform-provider-google-beta/pull/3888))
-=======
-* compute: fixed incorrectly failing validation for `INTERNAL_MANAGED` `google_compute_region_backend_service`. ([#3888](https://github.com/hashicorp/terraform-provider-google-beta/pull/3888))
->>>>>>> v4.5.0
-* compute: fixed scenario where `instance_group_manager` would not start update if `wait_for_instances` was set and initial status was not `STABLE` ([#3893](https://github.com/hashicorp/terraform-provider-google-beta/pull/3893))
-* container: fixed the `ROUTES` value for the `networking_mode` field in `google_container_cluster`. A recent API change unintentionally changed the default to a `VPC_NATIVE` cluster, and removed the ability to create a `ROUTES`-based one. Provider versions prior to this one will default to `VPC_NATIVE` due to this change, and are unable to create `ROUTES` clusters. ([#3896](https://github.com/hashicorp/terraform-provider-google-beta/pull/3896))
-
-## 4.3.0 (December 7, 2021)
 
 FEATURES:
 * **New Data Source:** `google_compute_router_status` ([#3859](https://github.com/hashicorp/terraform-provider-google-beta/pull/3859))
@@ -201,21 +228,6 @@ BUG FIXES:
 * provider: reverted a requirement in v4.2.0 for Terraform 0.13 and above. This release should be compatible with Terraform 0.12.31
 
 ## 4.2.0 (December 2, 2021)
-<<<<<<< HEAD
-FEATURES:
-New Data Source: google_compute_router_status (#3859)
-
-IMPROVEMENTS:
-compute: added support for queue_count to google_compute_instance.network_interface and google_compute_instance_template.network_interface (#3857)
-
-BUG FIXES:
-all: fixed an issue where some documentation for new resources was not showing up in the GA provider if it was beta-only. (#3848)
-bigquery: fixed update failure when attempting to change non-updatable fields in google_bigquery_routine. (#3849)
-compute: fixed a bug that would cause google_instance_from_machine_image to fail with a resourceInUseByAnotherResource error (#3855)
-compute: fixed a bug when cache_mode is set to FORCE_CACHE_ALL on google_compute_backend_bucket (#3858)
-compute: fixed a perma-diff on google_compute_region_health_check when log_config.enable is set to false (#3853)
-servicedirectory: added support for vpc network configuration in google_service_directory_endpoint. (#3856)
-=======
 
 FEATURES:
 * **New Data Source:** `google_compute_router_status` ([#3859](https://github.com/hashicorp/terraform-provider-google-beta/pull/3859))
@@ -230,7 +242,6 @@ BUG FIXES:
 * compute: fixed a bug when `cache_mode` is set to FORCE_CACHE_ALL on `google_compute_backend_bucket` ([#3858](https://github.com/hashicorp/terraform-provider-google-beta/pull/3858))
 * compute: fixed a perma-diff on `google_compute_region_health_check` when `log_config.enable` is set to false ([#3853](https://github.com/hashicorp/terraform-provider-google-beta/pull/3853))
 * servicedirectory: added support for vpc network configuration in `google_service_directory_endpoint`. ([#3856](https://github.com/hashicorp/terraform-provider-google-beta/pull/3856))
->>>>>>> v4.4.0
 
 ## 4.1.0 (November 15, 2021)
 
@@ -322,15 +333,12 @@ BUG FIXES:
 * compute: fixed the `google_compute_instance_group_manager.update_policy.0.min_ready_sec` field so that updating it to `0` works ([#3810](https://github.com/hashicorp/terraform-provider-google-beta/pull/3810))
 * compute: fixed the `google_compute_region_instance_group_manager.update_policy.0.min_ready_sec` field so that updating it to `0` works ([#3810](https://github.com/hashicorp/terraform-provider-google-beta/pull/3810))
 * spanner: fixed the schema for `data.google_spanner_instance` so that non-configurable fields are considered outputs ([#3804](https://github.com/hashicorp/terraform-provider-google-beta/pull/3804))
-<<<<<<< HEAD
-=======
 
 ## 3.90.1 (November 02, 2021)
 
 DEPRECATIONS:
 
 * container: fixed an overly-broad deprecation on `master_auth`, constraining it to `master_auth.username` and `master_auth.password`
->>>>>>> v4.1.0
 
 ## 3.90.0 (October 26, 2021)
 
@@ -444,10 +452,6 @@ BUG FIXES:
 * bigquery: fixed a bug where `destination_encryption_config.kms_key_name` stored the version rather than the key name. ([#3616](https://github.com/hashicorp/terraform-provider-google-beta/pull/3616))
 * redis: extended the default timeouts on `google_redis_instance` ([#3604](https://github.com/hashicorp/terraform-provider-google-beta/pull/3604))
 * serviceusage: fixed an issue in `google_project_service` where users could not reenable services that were disabled outside of Terraform. ([#3607](https://github.com/hashicorp/terraform-provider-google-beta/pull/3607))
-<<<<<<< HEAD
-
-=======
->>>>>>> v3.87.0
 
 ## 3.84.0 (September 13, 2021)
 DEPRECATIONS:
@@ -469,14 +473,7 @@ BUG FIXES:
 * osconfig: fixed import on google_os_config_guest_policies ([#3594](https://github.com/hashicorp/terraform-provider-google-beta/pull/3594))
 * storage: fixed an undetected change on `days_since_noncurrent_time` of `google_storage_bucket` ([#3599](https://github.com/hashicorp/terraform-provider-google-beta/pull/3599))
 
-<<<<<<< HEAD
-=======
-
->>>>>>> v3.86.0
-## 3.83.0 (September 09, 2021)
-FEATURES:
 * **New Resource:** `google_privateca_certificate_template` ([#3561](https://github.com/hashicorp/terraform-provider-google-beta/pull/3561))
-
 IMPROVEMENTS:
 * privateca: added `certificate_template` to `google_privateca_certificate`. ([#3567](https://github.com/hashicorp/terraform-provider-google-beta/pull/3567))
 * compute: allowed setting `ip_address` field of `google_compute_router_peer` ([#3565](https://github.com/hashicorp/terraform-provider-google-beta/pull/3565))
@@ -552,10 +549,6 @@ BUG FIXES:
 * privateca: fixed a failure to create `google_privateca_certificate_authority` of type `SUBORDINATE` due to an invalid attempt to activate it on creation. ([#3499](https://github.com/hashicorp/terraform-provider-google-beta/pull/3499))
 
 ## 3.79.0 (August 09, 2021)
-<<<<<<< HEAD
-=======
-
->>>>>>> v3.81.0
 NOTES:
 * spanner: The `num_nodes` field on `google_spanner_instance` will have its default removed in a future major release, and either `num_nodes` or `processing_units` will be required. ([#3479](https://github.com/hashicorp/terraform-provider-google-beta/pull/3479))
 

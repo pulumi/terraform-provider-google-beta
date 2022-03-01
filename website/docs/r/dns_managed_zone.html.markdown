@@ -27,12 +27,11 @@ A zone is a subtree of the DNS namespace under one administrative
 responsibility. A ManagedZone is a resource that represents a DNS zone
 hosted by the Cloud DNS service.
 
-
 To get more information about ManagedZone, see:
 
 * [API documentation](https://cloud.google.com/dns/api/v1/managedZones)
 * How-to Guides
-    * [Managing Zones](https://cloud.google.com/dns/zones/)
+  * [Managing Zones](https://cloud.google.com/dns/zones/)
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=dns_managed_zone_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -40,7 +39,6 @@ To get more information about ManagedZone, see:
   </a>
 </div>
 ## Example Usage - Dns Managed Zone Basic
-
 
 ```hcl
 resource "google_dns_managed_zone" "example-zone" {
@@ -52,13 +50,13 @@ resource "google_dns_managed_zone" "example-zone" {
   }
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=dns_managed_zone_private&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
 ## Example Usage - Dns Managed Zone Private
-
 
 ```hcl
 resource "google_dns_managed_zone" "private-zone" {
@@ -91,8 +89,8 @@ resource "google_compute_network" "network-2" {
   auto_create_subnetworks = false
 }
 ```
-## Example Usage - Dns Managed Zone Private Forwarding
 
+## Example Usage - Dns Managed Zone Private Forwarding
 
 ```hcl
 resource "google_dns_managed_zone" "private-zone" {
@@ -134,13 +132,13 @@ resource "google_compute_network" "network-2" {
   auto_create_subnetworks = false
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=dns_managed_zone_private_peering&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
 ## Example Usage - Dns Managed Zone Private Peering
-
 
 ```hcl
 resource "google_dns_managed_zone" "peering-zone" {
@@ -173,13 +171,13 @@ resource "google_compute_network" "network-target" {
   auto_create_subnetworks = false
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=dns_managed_zone_service_directory&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
 ## Example Usage - Dns Managed Zone Service Directory
-
 
 ```hcl
 resource "google_dns_managed_zone" "sd-zone" {
@@ -217,7 +215,6 @@ resource "google_compute_network" "network" {
 
 The following arguments are supported:
 
-
 * `dns_name` -
   (Required)
   The DNS name of this managed zone, for instance "example.com.".
@@ -227,9 +224,7 @@ The following arguments are supported:
   User assigned name for this resource.
   Must be unique within the project.
 
-
 - - -
-
 
 * `description` -
   (Optional)
@@ -311,7 +306,6 @@ The following arguments are supported:
   default_key_specs can only be updated when the state is `off`.
   Structure is [documented below](#nested_default_key_specs).
 
-
 <a name="nested_default_key_specs"></a>The `default_key_specs` block supports:
 
 * `algorithm` -
@@ -341,17 +335,12 @@ The following arguments are supported:
 
 * `networks` -
   (Required)
-<<<<<<< HEAD
-  The list of VPC networks that can see this zone. Structure is documented below.
-=======
   The list of VPC networks that can see this zone. Until the provider updates to use the Terraform 0.12 SDK in a future release, you
   may experience issues with this resource while updating. If you've defined a `networks` block and
   add another `networks` block while keeping the old block, Terraform will see an incorrect diff
   and apply an incorrect update to the resource. If you encounter this issue, remove all `networks`
   blocks in an update and then apply another update adding all of them back simultaneously.
   Structure is [documented below](#nested_networks).
->>>>>>> v3.86.0
-
 
 <a name="nested_networks"></a>The `networks` block supports:
 
@@ -369,7 +358,6 @@ The following arguments are supported:
   select the best available name server if more than
   one target is given.
   Structure is [documented below](#nested_target_name_servers).
-
 
 <a name="nested_target_name_servers"></a>The `target_name_servers` block supports:
 
@@ -391,7 +379,6 @@ The following arguments are supported:
   The network with which to peer.
   Structure is [documented below](#nested_target_network).
 
-
 <a name="nested_target_network"></a>The `target_network` block supports:
 
 * `network_url` -
@@ -406,7 +393,6 @@ The following arguments are supported:
   (Required)
   The namespace associated with the zone.
   Structure is [documented below](#nested_namespace).
-
 
 <a name="nested_namespace"></a>The `namespace` block supports:
 
@@ -428,25 +414,23 @@ In addition to the arguments listed above, the following computed attributes are
   Delegate your managed_zone to these virtual name servers;
   defined by the server
 
-
 ## Timeouts
 
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 20 minutes.
-- `update` - Default is 20 minutes.
-- `delete` - Default is 20 minutes.
+* `create` - Default is 20 minutes.
+* `update` - Default is 20 minutes.
+* `delete` - Default is 20 minutes.
 
 ## Import
-
 
 ManagedZone can be imported using any of these accepted formats:
 
 ```
-$ terraform import google_dns_managed_zone.default projects/{{project}}/managedZones/{{name}}
-$ terraform import google_dns_managed_zone.default {{project}}/{{name}}
-$ terraform import google_dns_managed_zone.default {{name}}
+terraform import google_dns_managed_zone.default projects/{{project}}/managedZones/{{name}}
+terraform import google_dns_managed_zone.default {{project}}/{{name}}
+terraform import google_dns_managed_zone.default {{name}}
 ```
 
 ## User Project Overrides

@@ -28,7 +28,7 @@ To get more information about Instance, see:
 
 * [API documentation](https://cloud.google.com/data-fusion/docs/reference/rest/v1beta1/projects.locations.instances)
 * How-to Guides
-    * [Official Documentation](https://cloud.google.com/data-fusion/docs/)
+  * [Official Documentation](https://cloud.google.com/data-fusion/docs/)
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=data_fusion_instance_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -37,15 +37,14 @@ To get more information about Instance, see:
 </div>
 ## Example Usage - Data Fusion Instance Basic
 
-
 ```hcl
 resource "google_data_fusion_instance" "basic_instance" {
-  provider = google-beta
   name = "my-instance"
   region = "us-central1"
   type = "BASIC"
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=data_fusion_instance_full&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
@@ -53,10 +52,8 @@ resource "google_data_fusion_instance" "basic_instance" {
 </div>
 ## Example Usage - Data Fusion Instance Full
 
-
 ```hcl
 resource "google_data_fusion_instance" "extended_instance" {
-  provider = google-beta
   name = "my-instance"
   description = "My Data Fusion instance"
   region = "us-central1"
@@ -76,14 +73,12 @@ resource "google_data_fusion_instance" "extended_instance" {
 }
 
 data "google_app_engine_default_service_account" "default" {
-  provider = google-beta
 }
 ```
 
 ## Argument Reference
 
 The following arguments are supported:
-
 
 * `name` -
   (Required)
@@ -93,19 +88,17 @@ The following arguments are supported:
   (Required)
   Represents the type of Data Fusion instance. Each type is configured with
   the default settings for processing and memory.
-  - BASIC: Basic Data Fusion instance. In Basic type, the user will be able to create data pipelines
+  * BASIC: Basic Data Fusion instance. In Basic type, the user will be able to create data pipelines
   using point and click UI. However, there are certain limitations, such as fewer number
   of concurrent pipelines, no support for streaming pipelines, etc.
-  - ENTERPRISE: Enterprise Data Fusion instance. In Enterprise type, the user will have more features
+  * ENTERPRISE: Enterprise Data Fusion instance. In Enterprise type, the user will have more features
   available, such as support for streaming pipelines, higher number of concurrent pipelines, etc.
-  - DEVELOPER: Developer Data Fusion instance. In Developer type, the user will have all features available but
-  with restrictive capabilities. This is to help enterprises design and develop their data ingestion and integration 
+  * DEVELOPER: Developer Data Fusion instance. In Developer type, the user will have all features available but
+  with restrictive capabilities. This is to help enterprises design and develop their data ingestion and integration
   pipelines at low cost.
   Possible values are `BASIC`, `ENTERPRISE`, and `DEVELOPER`.
 
-
 - - -
-
 
 * `description` -
   (Optional)
@@ -154,7 +147,6 @@ The following arguments are supported:
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.
 
-
 <a name="nested_network_config"></a>The `network_config` block supports:
 
 * `ip_allocation` -
@@ -182,12 +174,12 @@ In addition to the arguments listed above, the following computed attributes are
 
 * `state` -
   The current state of this Data Fusion instance.
-  - CREATING: Instance is being created
-  - RUNNING: Instance is running and ready for requests
-  - FAILED: Instance creation failed
-  - DELETING: Instance is being deleted
-  - UPGRADING: Instance is being upgraded
-  - RESTARTING: Instance is being restarted
+  * CREATING: Instance is being created
+  * RUNNING: Instance is running and ready for requests
+  * FAILED: Instance creation failed
+  * DELETING: Instance is being deleted
+  * UPGRADING: Instance is being upgraded
+  * RESTARTING: Instance is being restarted
 
 * `state_message` -
   Additional information about the current state of this Data Fusion instance if available.
@@ -196,28 +188,33 @@ In addition to the arguments listed above, the following computed attributes are
   Endpoint on which the Data Fusion UI and REST APIs are accessible.
 
 * `service_account` -
-  Service account which will be used to access resources in the customer project.
+  ([Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  Deprecated. Use `tenant_project_id` instead to extract the tenant project ID.
 
+* `tenant_project_id` -
+  The name of the tenant project.
+
+* `gcs_bucket` -
+  Cloud Storage bucket generated by Data Fusion in the customer project.
 
 ## Timeouts
 
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 60 minutes.
-- `update` - Default is 25 minutes.
-- `delete` - Default is 50 minutes.
+* `create` - Default is 60 minutes.
+* `update` - Default is 25 minutes.
+* `delete` - Default is 50 minutes.
 
 ## Import
-
 
 Instance can be imported using any of these accepted formats:
 
 ```
-$ terraform import google_data_fusion_instance.default projects/{{project}}/locations/{{region}}/instances/{{name}}
-$ terraform import google_data_fusion_instance.default {{project}}/{{region}}/{{name}}
-$ terraform import google_data_fusion_instance.default {{region}}/{{name}}
-$ terraform import google_data_fusion_instance.default {{name}}
+terraform import google_data_fusion_instance.default projects/{{project}}/locations/{{region}}/instances/{{name}}
+terraform import google_data_fusion_instance.default {{project}}/{{region}}/{{name}}
+terraform import google_data_fusion_instance.default {{region}}/{{name}}
+terraform import google_data_fusion_instance.default {{name}}
 ```
 
 ## User Project Overrides
