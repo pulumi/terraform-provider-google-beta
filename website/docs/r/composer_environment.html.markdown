@@ -32,19 +32,21 @@ guides](https://cloud.google.com/composer/docs/how-to) as the Environment resour
 deployment process and involves several layers of GCP infrastructure, including a Kubernetes Engine
 cluster, Cloud Storage, and Compute networking resources. Due to limitations of the API, this provider
 will not be able to automatically find or manage many of these underlying resources. In particular:
+
 * It can take up to one hour to create or update an environment resource. In addition, GCP may only
   detect some errors in configuration when they are used (e.g. ~40-50 minutes into the creation
   process), and is prone to limited error reporting. If you encounter confusing or uninformative
   errors, please verify your configuration is valid against GCP Cloud Composer before filing bugs
-  against the provider. * **Environments create Google Cloud Storage buckets that do not get
+  against the provider. ***Environments create Google Cloud Storage buckets that do not get
   cleaned up automatically** on environment deletion. [More about Composer's use of Cloud
-  Storage](https://cloud.google.com/composer/docs/concepts/cloud-storage). * Please review the [known
+Storage](https://cloud.google.com/composer/docs/concepts/cloud-storage).* Please review the [known
   issues](https://cloud.google.com/composer/docs/known-issues) for Composer if you are having
   problems.
 
 ## Example Usage
 
 ### Basic Usage (Cloud Composer 1)
+
 ```hcl
 resource "google_composer_environment" "test" {
   name   = "example-composer-env"
@@ -53,13 +55,16 @@ resource "google_composer_environment" "test" {
 ```
 
 ### Basic Usage (Cloud Composer 2)
+
 ```hcl
 resource "google_composer_environment" "test" {
   name   = "example-composer-env"
   region = "us-central1"
-
-  software_config {
-    image_version = "composer-2.0.0-preview.3-airflow-2.1.2"
+ 
+ config {
+    software_config {
+      image_version = "composer-2.0.0-preview.3-airflow-2.1.2"
+    }
   }
 }
 ```
@@ -70,23 +75,24 @@ resource "google_composer_environment" "test" {
 For more information, see the [Access Control](https://cloud.devsite.corp.google.com/composer/docs/how-to/access-control) page in the Cloud Composer documentation.
 You may need to assign additional roles depending on what the Airflow DAGs will be running.
 
-**NOTE** We STRONGLY recommend you read the [Cloud Composer guides](https://cloud.google.com/composer/docs/how-to) 
-as the Environment 
-resource requires a long deployment process and involves several layers of 
-Google Cloud infrastructure, including a Kubernetes Engine cluster, Cloud 
-Storage, and Compute networking resources. Composer manages most of these 
-resources fully and as a result, Terraform may not be able to automatically 
+**NOTE** We STRONGLY recommend you read the [Cloud Composer guides](https://cloud.google.com/composer/docs/how-to)
+as the Environment
+resource requires a long deployment process and involves several layers of
+Google Cloud infrastructure, including a Kubernetes Engine cluster, Cloud
+Storage, and Compute networking resources. Composer manages most of these
+resources fully and as a result, Terraform may not be able to automatically
 find or manage the underlying resources. In particular:
-* It can take up to 50 minutes to create or update an environment resource and 
-some errors may be detected later in the process. Also, some error messages may 
-not be clear at first sight because they involve issues with the underlying 
-resources. If you encounter such errors, please review Composer logs and verify 
-if your configuration is valid against Cloud Composer before filing bugs 
+
+* It can take up to 50 minutes to create or update an environment resource and
+some errors may be detected later in the process. Also, some error messages may
+not be clear at first sight because they involve issues with the underlying
+resources. If you encounter such errors, please review Composer logs and verify
+if your configuration is valid against Cloud Composer before filing bugs
 against the Terraform provider.
-* Environments create Google Cloud Storage buckets that contain your DAGs and 
-other work files. These buckets do not get deleted automatically on environment 
-deletion. This is by design; it ensures that DAGs source code and other 
-valuable data don’t get lost when an environment is deleted. [More about 
+* Environments create Google Cloud Storage buckets that contain your DAGs and
+other work files. These buckets do not get deleted automatically on environment
+deletion. This is by design; it ensures that DAGs source code and other
+valuable data don’t get lost when an environment is deleted. [More about
 Composer's use of Cloud Storage](https://cloud.google.com/composer/docs/concepts/cloud-storage).
 * Please review the [known issues](https://cloud.google.com/composer/docs/known-issues) for Cloud Composer if you are having problems.
 
@@ -240,6 +246,7 @@ resource "google_composer_environment" "test" {
   }
 }
 ```
+
 ## Argument Reference - Cloud Composer 1
 
 The following arguments are supported:
@@ -312,12 +319,12 @@ The following arguments are supported:
 * `maintenance_window` -
   (Optional)
   The configuration settings for Cloud Composer maintenance windows.
- 
+
 * `master_authorized_networks_config` -
   (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
-  Configuration options for the master authorized networks feature. Enabled 
-  master authorized networks will disallow all external traffic to access 
-  Kubernetes master through HTTPS except traffic from the given CIDR blocks, 
+  Configuration options for the master authorized networks feature. Enabled
+  master authorized networks will disallow all external traffic to access
+  Kubernetes master through HTTPS except traffic from the given CIDR blocks,
   Google Compute Engine Public IPs and Google Prod IPs. Structure is
   [documented below](#nested_master_authorized_networks_config).
 
@@ -426,6 +433,7 @@ The following arguments are supported:
   Environment variable names must match the regular expression `[a-zA-Z_][a-zA-Z0-9_]*`.
   They cannot specify Apache Airflow software configuration overrides (they cannot match the regular expression
   `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`), and they cannot match any of the following reserved names:
+
   ```
   AIRFLOW_HOME
   C_FORCE_ROOT
@@ -572,6 +580,7 @@ The `web_server_network_access_control` supports:
   i.e. projects/project-id/locations/location/keyRings/keyring/cryptoKeys/key. Cannot be updated.
 
 <a name="nested_maintenance_window"></a>The `maintenance_window` block supports:
+
 * `start_time` -
   (Required)
   Start time of the first recurrence of the maintenance window.
@@ -583,17 +592,18 @@ The `web_server_network_access_control` supports:
 
 * `recurrence` -
   (Required)
-  Maintenance window recurrence. Format is a subset of RFC-5545 (https://tools.ietf.org/html/rfc5545) 'RRULE'.
+  Maintenance window recurrence. Format is a subset of RFC-5545 (<https://tools.ietf.org/html/rfc5545>) 'RRULE'.
   The only allowed values for 'FREQ' field are 'FREQ=DAILY' and 'FREQ=WEEKLY;BYDAY=...'.
   Example values: 'FREQ=WEEKLY;BYDAY=TU,WE', 'FREQ=DAILY'.
 
 <a name="nested_master_authorized_networks_config"></a>The `master_authorized_networks_config` block supports:
+
 * `enabled` -
   (Required)
   Whether or not master authorized networks is enabled.
- 
+
 * `cidr_blocks` -
-  `cidr_blocks `define up to 50 external networks that could access Kubernetes master through HTTPS. Structure is [documented below](#nested_cidr_blocks).
+  `cidr_blocks`define up to 50 external networks that could access Kubernetes master through HTTPS. Structure is [documented below](#nested_cidr_blocks).
 
 <a name="nested_cidr_blocks"></a>The `cidr_blocks` supports:
 
@@ -654,7 +664,7 @@ The `config` block supports:
   below.
 
 * `maintenance_window` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The configuration settings for Cloud Composer maintenance windows.
 
 * `workloads_config` -
@@ -735,6 +745,7 @@ The `software_config` block supports:
   Environment variable names must match the regular expression `[a-zA-Z_][a-zA-Z0-9_]*`.
   They cannot specify Apache Airflow software configuration overrides (they cannot match the regular expression
   `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`), and they cannot match any of the following reserved names:
+
   ```
   AIRFLOW_HOME
   C_FORCE_ROOT
@@ -763,10 +774,8 @@ The `software_config` block supports:
   The Cloud Composer portion of the version is a semantic version.
   The portion of the image version following 'airflow-' is an official Apache Airflow repository release name.
   **Important**: You can only upgrade in-place between minor Cloud Composer versions. For example, you can upgrade
-  your environment from `composer-1.16.x` to `composer-1.17.x`. You cannot upgrade between major Cloud Composer 
+  your environment from `composer-1.16.x` to `composer-1.17.x`. You cannot upgrade between major Cloud Composer
   versions (from `1.x.x` to `2.x.x`). To do so, create a new environment.
-
-
 
 See [documentation](https://cloud.google.com/composer/docs/how-to/managing/configuring-private-ip) for setting up private environments. The `private_environment_config` block supports:
 
@@ -797,10 +806,9 @@ See [documentation](https://cloud.google.com/composer/docs/how-to/managing/confi
 * `cloud_composer_connection_subnetwork"` -
   (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
   When specified, the environment will use Private Service Connect instead of VPC peerings to connect
-  to Cloud SQL in the Tenant Project, and the PSC endpoint in the Customer Project will use an IP 
-  address from this subnetwork. This field is supported for Cloud Composer environments in 
+  to Cloud SQL in the Tenant Project, and the PSC endpoint in the Customer Project will use an IP
+  address from this subnetwork. This field is supported for Cloud Composer environments in
   versions `composer-2.*.*-airflow-*.*.*` and newer.
-
 
 The `ip_allocation_policy` block supports:
 
@@ -847,7 +855,7 @@ The `maintenance_window` block supports:
 
 * `recurrence` -
   (Required)
-  Maintenance window recurrence. Format is a subset of RFC-5545 (https://tools.ietf.org/html/rfc5545) 'RRULE'.
+  Maintenance window recurrence. Format is a subset of RFC-5545 (<https://tools.ietf.org/html/rfc5545>) 'RRULE'.
   The only allowed values for 'FREQ' field are 'FREQ=DAILY' and 'FREQ=WEEKLY;BYDAY=...'.
   Example values: 'FREQ=WEEKLY;BYDAY=TU,WE', 'FREQ=DAILY'.
 
@@ -947,16 +955,16 @@ In addition to the arguments listed above, the following computed attributes are
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 60 minutes.
-- `update` - Default is 60 minutes.
-- `delete` - Default is 6 minutes.
+* `create` - Default is 60 minutes.
+* `update` - Default is 60 minutes.
+* `delete` - Default is 6 minutes.
 
 ## Import
 
 Environment can be imported using any of these accepted formats:
 
 ```
-$ terraform import google_composer_environment.default projects/{{project}}/locations/{{region}}/environments/{{name}}
-$ terraform import google_composer_environment.default {{project}}/{{region}}/{{name}}
-$ terraform import google_composer_environment.default {{name}}
+terraform import google_composer_environment.default projects/{{project}}/locations/{{region}}/environments/{{name}}
+terraform import google_composer_environment.default {{project}}/{{region}}/{{name}}
+terraform import google_composer_environment.default {{name}}
 ```

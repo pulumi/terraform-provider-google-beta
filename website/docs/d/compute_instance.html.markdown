@@ -14,7 +14,6 @@ Get information about a VM instance resource within GCE. For more information se
 and
 [API](https://cloud.google.com/compute/docs/reference/latest/instances).
 
-
 ## Example Usage
 
 ```hcl
@@ -98,15 +97,15 @@ The following arguments are supported:
 
 * `attached_disk.0.disk_encryption_key_sha256` - The [RFC 4648 base64](https://tools.ietf.org/html/rfc4648#section-4)
     encoded SHA-256 hash of the [customer-supplied encryption key]
-    (https://cloud.google.com/compute/docs/disks/customer-supplied-encryption) that protects this resource.
+    (<https://cloud.google.com/compute/docs/disks/customer-supplied-encryption>) that protects this resource.
 
 * `boot_disk.disk_encryption_key_sha256` - The [RFC 4648 base64](https://tools.ietf.org/html/rfc4648#section-4)
     encoded SHA-256 hash of the [customer-supplied encryption key]
-    (https://cloud.google.com/compute/docs/disks/customer-supplied-encryption) that protects this resource.
+    (<https://cloud.google.com/compute/docs/disks/customer-supplied-encryption>) that protects this resource.
 
 * `disk.0.disk_encryption_key_sha256` - The [RFC 4648 base64](https://tools.ietf.org/html/rfc4648#section-4)
     encoded SHA-256 hash of the [customer-supplied encryption key]
-    (https://cloud.google.com/compute/docs/disks/customer-supplied-encryption) that protects this resource.
+    (<https://cloud.google.com/compute/docs/disks/customer-supplied-encryption>) that protects this resource.
 
 ---
 
@@ -147,9 +146,9 @@ The following arguments are supported:
 
 * `network` - The name or self_link of the network attached to this interface.
 
-*  `subnetwork` - The name or self_link of the subnetwork attached to this interface.
+* `subnetwork` - The name or self_link of the subnetwork attached to this interface.
 
-*  `subnetwork_project` - The project in which the subnetwork belongs.
+* `subnetwork_project` - The project in which the subnetwork belongs.
 
 * `network_ip` - The private IP address assigned to the instance.
 
@@ -191,6 +190,8 @@ The following arguments are supported:
 
 * `automatic_restart` - Specifies if the instance should be
     restarted if it was terminated by Compute Engine (not a user).
+
+* `provisioning_model` - (Beta) Describe the type of preemptible VM.
 
 <a name="nested_guest_accelerator"></a>The `guest_accelerator` block supports:
 
