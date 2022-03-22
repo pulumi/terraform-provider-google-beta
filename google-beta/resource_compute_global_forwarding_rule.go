@@ -478,7 +478,7 @@ func expandComputeGlobalForwardingRuleMetadataFilterArray(o interface{}) []compu
 	}
 
 	objs := o.([]interface{})
-	if len(objs) == 0 {
+	if len(objs) == 0 || objs[0] == nil {
 		return make([]compute.ForwardingRuleMetadataFilter, 0)
 	}
 
@@ -535,7 +535,7 @@ func expandComputeGlobalForwardingRuleMetadataFilterFilterLabelArray(o interface
 	}
 
 	objs := o.([]interface{})
-	if len(objs) == 0 {
+	if len(objs) == 0 || objs[0] == nil {
 		return make([]compute.ForwardingRuleMetadataFilterFilterLabel, 0)
 	}
 
