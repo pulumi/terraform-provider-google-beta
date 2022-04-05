@@ -1803,9 +1803,6 @@ func flattenOSConfigPatchDeploymentRecurringScheduleTimeOfDay(v interface{}, d *
 		return nil
 	}
 	original := v.(map[string]interface{})
-	if len(original) == 0 {
-		return nil
-	}
 	transformed := make(map[string]interface{})
 	transformed["hours"] =
 		flattenOSConfigPatchDeploymentRecurringScheduleTimeOfDayHours(original["hours"], d, config)
@@ -1817,6 +1814,7 @@ func flattenOSConfigPatchDeploymentRecurringScheduleTimeOfDay(v interface{}, d *
 		flattenOSConfigPatchDeploymentRecurringScheduleTimeOfDayNanos(original["nanos"], d, config)
 	return []interface{}{transformed}
 }
+
 func flattenOSConfigPatchDeploymentRecurringScheduleTimeOfDayHours(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
@@ -2965,7 +2963,7 @@ func expandOSConfigPatchDeploymentRecurringSchedule(v interface{}, d TerraformRe
 	transformedTimeOfDay, err := expandOSConfigPatchDeploymentRecurringScheduleTimeOfDay(original["time_of_day"], d, config)
 	if err != nil {
 		return nil, err
-	} else if val := reflect.ValueOf(transformedTimeOfDay); val.IsValid() && !isEmptyValue(val) {
+	} else {
 		transformed["timeOfDay"] = transformedTimeOfDay
 	}
 

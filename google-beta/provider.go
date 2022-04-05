@@ -789,6 +789,7 @@ func Provider() *schema.Provider {
 			AssuredWorkloadsEndpointEntryKey:             AssuredWorkloadsEndpointEntry,
 			CloudResourceManagerEndpointEntryKey:         CloudResourceManagerEndpointEntry,
 			EventarcEndpointEntryKey:                     EventarcEndpointEntry,
+			FirebaserulesEndpointEntryKey:                FirebaserulesEndpointEntry,
 			GkeHubFeatureCustomEndpointEntryKey:          GkeHubFeatureCustomEndpointEntry,
 			NetworkConnectivityEndpointEntryKey:          NetworkConnectivityEndpointEntry,
 			OrgPolicyEndpointEntryKey:                    OrgPolicyEndpointEntry,
@@ -802,6 +803,7 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
+			// ####### START datasources ###########
 			"google_active_folder":                                dataSourceGoogleActiveFolder(),
 			"google_app_engine_default_service_account":           dataSourceGoogleAppEngineDefaultServiceAccount(),
 			"google_billing_account":                              dataSourceGoogleBillingAccount(),
@@ -850,6 +852,7 @@ func Provider() *schema.Provider {
 			"google_container_engine_versions":                    dataSourceGoogleContainerEngineVersions(),
 			"google_container_registry_image":                     dataSourceGoogleContainerImage(),
 			"google_container_registry_repository":                dataSourceGoogleContainerRepo(),
+			"google_dataproc_metastore_service":                   dataSourceDataprocMetastoreService(),
 			"google_dns_keys":                                     dataSourceDNSKeys(),
 			"google_dns_managed_zone":                             dataSourceDnsManagedZone(),
 			"google_dns_record_set":                               dataSourceDnsRecordSet(),
@@ -906,8 +909,8 @@ func Provider() *schema.Provider {
 			"google_storage_transfer_project_service_account":     dataSourceGoogleStorageTransferProjectServiceAccount(),
 			"google_tpu_tensorflow_versions":                      dataSourceTpuTensorflowVersions(),
 			"google_redis_instance":                               dataSourceGoogleRedisInstance(),
+			// ####### END datasources ###########
 		},
-
 		ResourcesMap: ResourceMap(),
 	}
 
@@ -1306,6 +1309,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_workflows_workflow":                                    resourceWorkflowsWorkflow(),
 		},
 		map[string]*schema.Resource{
+			// ####### START handwritten resources ###########
 			"google_app_engine_application":                resourceAppEngineApplication(),
 			"google_bigquery_table":                        resourceBigQueryTable(),
 			"google_bigquery_reservation_assignment":       resourceBigqueryReservationAssignment(),
@@ -1381,9 +1385,10 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_storage_default_object_acl":            resourceStorageDefaultObjectAcl(),
 			"google_storage_notification":                  resourceStorageNotification(),
 			"google_storage_transfer_job":                  resourceStorageTransferJob(),
+			// ####### END handwritten resources ###########
 		},
-		// resources implemented within tpgtools
 		map[string]*schema.Resource{
+			// ####### START tpgtools resources ###########
 			"google_apikeys_key":                         resourceApikeysKey(),
 			"google_assured_workloads_workload":          resourceAssuredWorkloadsWorkload(),
 			"google_cloudbuild_worker_pool":              resourceCloudbuildWorkerPool(),
@@ -1397,6 +1402,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_container_azure_node_pool":           resourceContainerAzureNodePool(),
 			"google_dataproc_workflow_template":          resourceDataprocWorkflowTemplate(),
 			"google_eventarc_trigger":                    resourceEventarcTrigger(),
+			"google_firebaserules_release":               resourceFirebaserulesRelease(),
+			"google_firebaserules_ruleset":               resourceFirebaserulesRuleset(),
 			"google_gke_hub_feature":                     resourceGkeHubFeature(),
 			"google_gke_hub_feature_membership":          resourceGkeHubFeatureMembership(),
 			"google_logging_log_view":                    resourceLoggingLogView(),
@@ -1407,9 +1414,10 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_os_config_os_policy_assignment":      resourceOsConfigOsPolicyAssignment(),
 			"google_privateca_certificate_template":      resourcePrivatecaCertificateTemplate(),
 			"google_recaptcha_enterprise_key":            resourceRecaptchaEnterpriseKey(),
+			// ####### END tpgtools resources ###########
 		},
-		// ------------------------------------
 		map[string]*schema.Resource{
+			// ####### START non-generated IAM resources ###########
 			"google_bigtable_instance_iam_binding":       ResourceIamBinding(IamBigtableInstanceSchema, NewBigtableInstanceUpdater, BigtableInstanceIdParseFunc),
 			"google_bigtable_instance_iam_member":        ResourceIamMember(IamBigtableInstanceSchema, NewBigtableInstanceUpdater, BigtableInstanceIdParseFunc),
 			"google_bigtable_instance_iam_policy":        ResourceIamPolicy(IamBigtableInstanceSchema, NewBigtableInstanceUpdater, BigtableInstanceIdParseFunc),
@@ -1470,6 +1478,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_service_account_iam_binding":         ResourceIamBinding(IamServiceAccountSchema, NewServiceAccountIamUpdater, ServiceAccountIdParseFunc),
 			"google_service_account_iam_member":          ResourceIamMember(IamServiceAccountSchema, NewServiceAccountIamUpdater, ServiceAccountIdParseFunc),
 			"google_service_account_iam_policy":          ResourceIamPolicy(IamServiceAccountSchema, NewServiceAccountIamUpdater, ServiceAccountIdParseFunc),
+			// ####### END non-generated IAM resources ###########
 		},
 	)
 }
@@ -1666,6 +1675,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.AssuredWorkloadsBasePath = d.Get(AssuredWorkloadsEndpointEntryKey).(string)
 	config.CloudResourceManagerBasePath = d.Get(CloudResourceManagerEndpointEntryKey).(string)
 	config.EventarcBasePath = d.Get(EventarcEndpointEntryKey).(string)
+	config.FirebaserulesBasePath = d.Get(FirebaserulesEndpointEntryKey).(string)
 	config.GkeHubBasePath = d.Get(GkeHubFeatureCustomEndpointEntryKey).(string)
 	config.NetworkConnectivityBasePath = d.Get(NetworkConnectivityEndpointEntryKey).(string)
 	config.OrgPolicyBasePath = d.Get(OrgPolicyEndpointEntryKey).(string)
