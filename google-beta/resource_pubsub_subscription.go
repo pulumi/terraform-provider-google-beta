@@ -139,6 +139,20 @@ If this parameter is 0, a default value of 5 is used.`,
 					},
 				},
 			},
+			"enable_exactly_once_delivery": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Description: `If 'true', Pub/Sub provides the following guarantees for the delivery
+of a message with a given value of messageId on this Subscriptions':
+
+- The message sent to a subscriber is guaranteed not to be resent before the message's acknowledgement deadline expires.
+
+- An acknowledged message will not be resent to a subscriber.
+
+Note that subscribers may still receive multiple copies of a message when 'enable_exactly_once_delivery'
+is true if the message was published multiple times by a publisher client. These copies are considered distinct by Pub/Sub and have distinct messageId values`,
+			},
 			"enable_message_ordering": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -194,7 +208,7 @@ you can't modify the filter.`,
 				Optional: true,
 				Description: `How long to retain unacknowledged messages in the subscription's
 backlog, from the moment a message is published. If
-retainAckedMessages is true, then this also configures the retention
+retain_acked_messages is true, then this also configures the retention
 of acknowledged messages, and thus configures how far back in time a
 subscriptions.seek can be done. Defaults to 7 days. Cannot be more
 than 7 days ('"604800s"') or less than 10 minutes ('"600s"').
@@ -409,6 +423,12 @@ func resourcePubsubSubscriptionCreate(d *schema.ResourceData, meta interface{}) 
 	} else if v, ok := d.GetOkExists("enable_message_ordering"); !isEmptyValue(reflect.ValueOf(enableMessageOrderingProp)) && (ok || !reflect.DeepEqual(v, enableMessageOrderingProp)) {
 		obj["enableMessageOrdering"] = enableMessageOrderingProp
 	}
+	enableExactlyOnceDeliveryProp, err := expandPubsubSubscriptionEnableExactlyOnceDelivery(d.Get("enable_exactly_once_delivery"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("enable_exactly_once_delivery"); !isEmptyValue(reflect.ValueOf(enableExactlyOnceDeliveryProp)) && (ok || !reflect.DeepEqual(v, enableExactlyOnceDeliveryProp)) {
+		obj["enableExactlyOnceDelivery"] = enableExactlyOnceDeliveryProp
+	}
 
 	obj, err = resourcePubsubSubscriptionEncoder(d, meta, obj)
 	if err != nil {
@@ -560,6 +580,9 @@ func resourcePubsubSubscriptionRead(d *schema.ResourceData, meta interface{}) er
 		return fmt.Errorf("Error reading Subscription: %s", err)
 	}
 	if err := d.Set("enable_message_ordering", flattenPubsubSubscriptionEnableMessageOrdering(res["enableMessageOrdering"], d, config)); err != nil {
+		return fmt.Errorf("Error reading Subscription: %s", err)
+	}
+	if err := d.Set("enable_exactly_once_delivery", flattenPubsubSubscriptionEnableExactlyOnceDelivery(res["enableExactlyOnceDelivery"], d, config)); err != nil {
 		return fmt.Errorf("Error reading Subscription: %s", err)
 	}
 
@@ -929,6 +952,10 @@ func flattenPubsubSubscriptionEnableMessageOrdering(v interface{}, d *schema.Res
 	return v
 }
 
+func flattenPubsubSubscriptionEnableExactlyOnceDelivery(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
 func expandPubsubSubscriptionName(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return replaceVars(d, config, "projects/{{project}}/subscriptions/{{name}}")
 }
@@ -1161,6 +1188,10 @@ func expandPubsubSubscriptionRetryPolicyMaximumBackoff(v interface{}, d Terrafor
 }
 
 func expandPubsubSubscriptionEnableMessageOrdering(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandPubsubSubscriptionEnableExactlyOnceDelivery(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 

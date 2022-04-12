@@ -20,6 +20,102 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
+func TestAccCGCSnippet_flaskGoogleCloudQuickstartExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"random_suffix": randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCGCSnippet_flaskGoogleCloudQuickstartExample(context),
+			},
+			{
+				ResourceName:            "google_compute_instance.default",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"metadata", "metadata_startup_script"},
+			},
+		},
+	})
+}
+
+func testAccCGCSnippet_flaskGoogleCloudQuickstartExample(context map[string]interface{}) string {
+	return Nprintf(`
+# Create a single Compute Engine instance
+resource "google_compute_instance" "default" {
+  name         = "tf-test-flask-vm%{random_suffix}"
+  machine_type = "f1-micro"
+  zone         = "us-west1-a"
+  tags         = ["ssh"]
+
+  metadata = {
+    enable-oslogin = "TRUE"
+  }
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-9"
+    }
+  }
+
+  # Install Flask
+  metadata_startup_script = "sudo apt-get update; sudo apt-get install -yq build-essential python-pip rsync; pip install flask"
+
+  network_interface {
+    network = "default"
+
+    access_config {
+      # Include this section to give the VM an external IP address
+    }
+  }
+}
+
+resource "google_compute_firewall" "ssh" {
+  name = "tf-test-allow-ssh%{random_suffix}"
+  allow {
+    ports    = ["22"]
+    protocol = "tcp"
+  }
+  direction     = "INGRESS"
+  network       = "default"
+  priority      = 1000
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["ssh"]
+}
+
+
+# [START vpc_flask_quickstart_5000_fw]
+resource "google_compute_firewall" "flask" {
+  name    = "tf-test-flask-app-firewall%{random_suffix}"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["5000"]
+  }
+  source_ranges = ["0.0.0.0/0"]
+}
+# [END vpc_flask_quickstart_5000_fw]
+
+# Create new multi-region storage bucket in the US
+# with versioning enabled
+
+resource "google_storage_bucket" "default" {
+  name          = "tf-test-bucket-tfstate%{random_suffix}"
+  force_destroy = false
+  location      = "US"
+  storage_class = "STANDARD"
+  versioning {
+    enabled = true
+  }
+}
+`, context)
+}
+
 func TestAccCGCSnippet_sqlDatabaseInstanceSqlserverExample(t *testing.T) {
 	t.Parallel()
 
@@ -412,6 +508,184 @@ resource "google_sql_database_instance" "default" {
 `, context)
 }
 
+func TestAccCGCSnippet_sqlPostgresInstancePublicIpExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"deletion_protection": false,
+		"random_suffix":       randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCGCSnippet_sqlPostgresInstancePublicIpExample(context),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.postgres_public_ip_instance_name",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+		},
+	})
+}
+
+func testAccCGCSnippet_sqlPostgresInstancePublicIpExample(context map[string]interface{}) string {
+	return Nprintf(`
+# [START cloud_sql_postgres_instance_public_ip]  
+resource "google_sql_database_instance" "postgres_public_ip_instance_name" {
+  database_version = "POSTGRES_12"
+  name             = "tf-test-postgres-public-ip-instance-name%{random_suffix}"
+  region           = "asia-southeast2"
+  settings {
+    availability_type = "ZONAL"
+    ip_configuration {
+      # Add optional authorized networks
+      # Update to match the customer's networks
+      authorized_networks {
+        name  = "test-net-3"
+        value = "203.0.113.0/24"
+      }
+      # Enable public IP
+      ipv4_enabled = true
+    }
+    tier = "db-custom-2-7680"
+  }
+  deletion_protection =  "%{deletion_protection}"
+}
+`, context)
+}
+
+func TestAccCGCSnippet_sqlMysqlInstanceReplicaExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"deletion_protection": false,
+		"random_suffix":       randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCGCSnippet_sqlMysqlInstanceReplicaExample(context),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.read_replica",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+		},
+	})
+}
+
+func testAccCGCSnippet_sqlMysqlInstanceReplicaExample(context map[string]interface{}) string {
+	return Nprintf(`
+resource "google_sql_database_instance" "primary" {
+  name             = "tf-test-mysql-primary-instance-name%{random_suffix}"
+  region           = "europe-west4"
+  database_version = "MYSQL_8_0"
+  settings {
+    tier               = "db-n1-standard-2"
+    backup_configuration {
+      enabled            = "true"
+      binary_log_enabled = "true"
+    }
+  }
+  deletion_protection =  "%{deletion_protection}"
+}
+
+resource "google_sql_database_instance" "read_replica" {
+  name                 = "tf-test-mysql-replica-instance-name%{random_suffix}"
+  master_instance_name = google_sql_database_instance.primary.name
+  region               = "europe-west4"
+  database_version     = "MYSQL_8_0"
+
+  replica_configuration {
+    failover_target = false
+  }
+
+  settings {
+    tier              = "db-n1-standard-2"
+    availability_type = "ZONAL"
+    disk_size         = "100"
+  }
+  deletion_protection =  "%{deletion_protection}"
+}
+`, context)
+}
+
+func TestAccCGCSnippet_sqlSqlserverInstancePrivateIpExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"random_suffix": randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCGCSnippet_sqlSqlserverInstancePrivateIpExample(context),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"root_password", "deletion_protection"},
+			},
+		},
+	})
+}
+
+func testAccCGCSnippet_sqlSqlserverInstancePrivateIpExample(context map[string]interface{}) string {
+	return Nprintf(`
+
+resource "google_compute_network" "private_network" {
+  name                    = "tf-test-private-network%{random_suffix}"
+  auto_create_subnetworks = "false"
+}
+
+resource "google_compute_global_address" "private_ip_address" {
+  name          = "tf-test-private-ip-address%{random_suffix}"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.private_network.id
+}
+
+resource "google_service_networking_connection" "private_vpc_connection" {
+  network                 = google_compute_network.private_network.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
+}
+
+resource "google_sql_database_instance" "instance" {
+  name             = "tf-test-private-ip-sql-instance%{random_suffix}"
+  region           = "us-central1"
+  database_version = "SQLSERVER_2017_STANDARD"
+  root_password        = "INSERT-PASSWORD-HERE"
+
+  depends_on = [google_service_networking_connection.private_vpc_connection]
+
+  settings {
+    tier = "db-custom-2-7680"
+    ip_configuration {
+      ipv4_enabled    = "false"
+      private_network = google_compute_network.private_network.id
+    }
+  }
+  deletion_protection = "false"
+}
+`, context)
+}
+
 func TestAccCGCSnippet_storageNewBucketExample(t *testing.T) {
 	t.Parallel()
 
@@ -437,8 +711,7 @@ func TestAccCGCSnippet_storageNewBucketExample(t *testing.T) {
 
 func testAccCGCSnippet_storageNewBucketExample(context map[string]interface{}) string {
 	return Nprintf(`
-
-# Create new storage bucket in the US region
+# Create new storage bucket in the US multi-region
 # with coldline storage
 resource "google_storage_bucket" "static" {
   name          = "tf-test-new-bucket%{random_suffix}"
@@ -446,7 +719,20 @@ resource "google_storage_bucket" "static" {
   storage_class = "COLDLINE"
 
   uniform_bucket_level_access = true
-}
+} 
 
+# Upload files
+# Discussion about using tf to upload a large number of objects
+# https://stackoverflow.com/questions/68455132/terraform-copy-multiple-files-to-bucket-at-the-same-time-bucket-creation
+
+# The text object in Cloud Storage
+resource "google_storage_bucket_object" "default" {
+  name         = "tf-test-new-object%{random_suffix}"
+# Uncomment and add valid path to an object.
+#  source       = "/path/to/an/object"
+  content      = "Data as string to be uploaded"
+  content_type = "text/plain"
+  bucket       = google_storage_bucket.static.id
+}
 `, context)
 }
