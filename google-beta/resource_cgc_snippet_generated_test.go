@@ -116,6 +116,59 @@ resource "google_storage_bucket" "default" {
 `, context)
 }
 
+func TestAccCGCSnippet_spotInstanceBasicExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"random_suffix": randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCGCSnippet_spotInstanceBasicExample(context),
+			},
+			{
+				ResourceName:      "google_compute_instance.spot_vm_instance",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+func testAccCGCSnippet_spotInstanceBasicExample(context map[string]interface{}) string {
+	return Nprintf(`
+
+resource "google_compute_instance" "spot_vm_instance" {
+  name         = "tf-test-spot-instance-name%{random_suffix}"
+  machine_type = "f1-micro"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-9"
+    }
+  }
+  
+  scheduling {
+      preemptible = true
+      automatic_restart = false
+      provisioning_model = "SPOT"
+  }
+
+  network_interface {
+    # A default network is created for all GCP projects
+    network = "default"
+    access_config {
+    }
+  }
+}
+
+`, context)
+}
+
 func TestAccCGCSnippet_sqlDatabaseInstanceSqlserverExample(t *testing.T) {
 	t.Parallel()
 
@@ -622,6 +675,97 @@ resource "google_sql_database_instance" "instance" {
 `, context)
 }
 
+func TestAccCGCSnippet_sqlInstanceCmekExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"deletion_protection": false,
+		"random_suffix":       randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCGCSnippet_sqlInstanceCmekExample(context),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.default",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection", "root_password"},
+			},
+		},
+	})
+}
+
+func testAccCGCSnippet_sqlInstanceCmekExample(context map[string]interface{}) string {
+	return Nprintf(`
+resource "google_project_service_identity" "gcp_sa_cloud_sql" {
+  provider = google-beta
+  service  = "sqladmin.googleapis.com"
+}
+
+resource "google_kms_key_ring" "keyring" {
+  name     = "tf-test-keyring-name%{random_suffix}"
+  location = "us-central1"
+}
+
+resource "google_kms_crypto_key" "key" {
+  name     = "tf-test-crypto-key-name%{random_suffix}"
+  key_ring = google_kms_key_ring.keyring.id
+  purpose  = "ENCRYPT_DECRYPT"
+}
+
+resource "google_kms_crypto_key_iam_binding" "crypto_key" {
+  crypto_key_id = google_kms_crypto_key.key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  members = [
+    "serviceAccount:${google_project_service_identity.gcp_sa_cloud_sql.email}",
+  ]
+}
+
+resource "google_sql_database_instance" "mysql_instance_with_cmek" {
+  name                = "tf-test-mysql-instance-cmek%{random_suffix}"
+  provider            = google-beta
+  region              = "us-central1"
+  database_version    = "MYSQL_8_0"
+  encryption_key_name = google_kms_crypto_key.key.id
+  settings {
+    tier = "db-n1-standard-2"
+  }
+  deletion_protection =  "%{deletion_protection}"
+}
+
+resource "google_sql_database_instance" "postgres_instance_with_cmek" {
+  name                = "tf-test-postgres-instance-cmek%{random_suffix}"
+  provider            = google-beta
+  region              = "us-central1"
+  database_version    = "POSTGRES_14"
+  encryption_key_name = google_kms_crypto_key.key.id
+  settings {
+    tier = "db-custom-2-7680"
+  }
+  deletion_protection =  "%{deletion_protection}"
+}
+
+resource "google_sql_database_instance" "default" {
+  name                = "tf-test-sqlserver-instance-cmek%{random_suffix}"
+  provider            = google-beta
+  region              = "us-central1"
+  database_version    = "SQLSERVER_2019_STANDARD"
+  root_password       = "INSERT-PASSWORD-HERE "
+  encryption_key_name = google_kms_crypto_key.key.id
+  settings {
+    tier = "db-custom-2-7680"
+  }
+  deletion_protection =  "%{deletion_protection}"
+}
+`, context)
+}
+
 func TestAccCGCSnippet_storageNewBucketExample(t *testing.T) {
 	t.Parallel()
 
@@ -669,6 +813,16 @@ resource "google_storage_bucket_object" "default" {
   content      = "Data as string to be uploaded"
   content_type = "text/plain"
   bucket       = google_storage_bucket.static.id
+}
+
+# Get object metadata
+data "google_storage_bucket_object" "default" {
+  name         = google_storage_bucket_object.default.name
+  bucket       = google_storage_bucket.static.id
+}
+
+output "object_metadata" {
+  value        = data.google_storage_bucket_object.default
 }
 `, context)
 }

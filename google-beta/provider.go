@@ -832,6 +832,7 @@ func Provider() *schema.Provider {
 			"google_compute_backend_service":                      dataSourceGoogleComputeBackendService(),
 			"google_compute_backend_bucket":                       dataSourceGoogleComputeBackendBucket(),
 			"google_compute_default_service_account":              dataSourceGoogleComputeDefaultServiceAccount(),
+			"google_compute_disk":                                 dataSourceGoogleComputeDisk(),
 			"google_compute_forwarding_rule":                      dataSourceGoogleComputeForwardingRule(),
 			"google_compute_global_address":                       dataSourceGoogleComputeGlobalAddress(),
 			"google_compute_global_forwarding_rule":               dataSourceGoogleComputeGlobalForwardingRule(),
@@ -1728,7 +1729,7 @@ func validateCredentials(v interface{}, k string) (warnings []string, errors []e
 	}
 	if _, err := googleoauth.CredentialsFromJSON(context.Background(), []byte(creds)); err != nil {
 		errors = append(errors,
-			fmt.Errorf("JSON credentials in %q are not valid: %s", creds, err))
+			fmt.Errorf("JSON credentials are not valid: %s", err))
 	}
 
 	return
