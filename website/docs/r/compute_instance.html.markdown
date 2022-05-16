@@ -215,7 +215,7 @@ is desired, you will need to modify your state file.
 * `size` - (Optional) The size of the image in gigabytes. If not specified, it
     will inherit the size of its base image.
 
-* `type` - (Optional) The GCE disk type. May be set to pd-standard, pd-balanced or pd-ssd.
+* `type` - (Optional) The GCE disk type. Such as pd-standard, pd-balanced or pd-ssd.
 
 * `image` - (Optional) The image from which to initialize this disk. This can be
     one of: the image's `self_link`, `projects/{project}/global/images/{image}`,
