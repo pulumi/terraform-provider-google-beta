@@ -43,8 +43,8 @@ state as plain-text. [Read more about secrets in state](https://www.pulumi.com/d
 
 ```hcl
 resource "google_project" "project" {
-  project_id = "tf-test%{random_suffix}"
-  name       = "tf-test%{random_suffix}"
+  project_id = "tf-test"
+  name       = "tf-test"
   org_id     = "123456789"
 }
 
