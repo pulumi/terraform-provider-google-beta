@@ -1073,8 +1073,6 @@ func TestAccComputeInstanceTemplate_queueCount(t *testing.T) {
 	})
 }
 
-<<<<<<< HEAD
-=======
 func TestAccComputeInstanceTemplate_managedEnvoy(t *testing.T) {
 	t.Parallel()
 
@@ -1130,7 +1128,6 @@ func TestAccComputeInstanceTemplate_spot(t *testing.T) {
 	})
 }
 
->>>>>>> v4.20.0
 func testAccCheckComputeInstanceTemplateDestroyProducer(t *testing.T) func(s *terraform.State) error {
 	return func(s *terraform.State) error {
 		config := googleProviderConfig(t)
@@ -2736,8 +2733,6 @@ resource "google_compute_instance_template" "foobar" {
 }
 `, instanceTemplateName)
 }
-<<<<<<< HEAD
-=======
 
 func testAccComputeInstanceTemplate_managedEnvoy(suffix string) string {
 	return fmt.Sprintf(`
@@ -2858,4 +2853,3 @@ resource "google_compute_instance_template" "foobar" {
 }
 `, suffix)
 }
->>>>>>> v4.20.0
