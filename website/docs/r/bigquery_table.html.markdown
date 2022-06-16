@@ -151,6 +151,11 @@ in state, a `=destroy` or `=update` that would delete the instance will fail.
 * `compression` (Optional) - The compression type of the data source.
     Valid values are "NONE" or "GZIP".
 
+* `connection_id` (Optional) - The connection specifying the credentials to be used to read
+    external storage, such as Azure Blob, Cloud Storage, or S3. The `connection_id` can have
+    the form `{{project}}.{{location}}.{{connection_id}}`
+    or `projects/{{project}}/locations/{{location}}/connections/{{connection_id}}`.
+
 * `csv_options` (Optional) - Additional properties to set if
     `source_format` is set to "CSV". Structure is [documented below](#nested_csv_options).
 

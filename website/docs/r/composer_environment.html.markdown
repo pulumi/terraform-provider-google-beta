@@ -60,7 +60,7 @@ resource "google_composer_environment" "test" {
 resource "google_composer_environment" "test" {
   name   = "example-composer-env"
   region = "us-central1"
- 
+
  config {
     software_config {
       image_version = "composer-2-airflow-2"
@@ -321,7 +321,7 @@ The following arguments are supported:
   The configuration settings for Cloud Composer maintenance windows.
 
 * `master_authorized_networks_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Configuration options for the master authorized networks feature. Enabled
   master authorized networks will disallow all external traffic to access
   Kubernetes master through HTTPS except traffic from the given CIDR blocks,
@@ -682,7 +682,7 @@ The `config` block supports:
   and `ENVIRONMENT_SIZE_LARGE`.
 
 * `master_authorized_networks_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Configuration options for the master authorized networks feature. Enabled
   master authorized networks will disallow all external traffic to access
   Kubernetes master through HTTPS except traffic from the given CIDR blocks,
@@ -807,7 +807,7 @@ See [documentation](https://cloud.google.com/composer/docs/how-to/managing/confi
   (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
   When enabled, IPs from public (non-RFC1918) ranges can be used for
   `ip_allocation_policy.cluster_ipv4_cidr_block` and `ip_allocation_policy.service_ipv4_cidr_block`.
-  
+
 * `cloud_composer_connection_subnetwork"` -
   (Optional)
   When specified, the environment will use Private Service Connect instead of VPC peerings to connect
