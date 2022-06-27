@@ -450,6 +450,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_DNS_CUSTOM_ENDPOINT",
 				}, DefaultBasePaths[DNSBasePathKey]),
 			},
+			"document_ai_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_DOCUMENT_AI_CUSTOM_ENDPOINT",
+				}, DefaultBasePaths[DocumentAIBasePathKey]),
+			},
 			"essential_contacts_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -816,8 +824,7 @@ func Provider() *schema.Provider {
 			ContainerAwsCustomEndpointEntryKey:           ContainerAwsCustomEndpointEntry,
 			ContainerAzureCustomEndpointEntryKey:         ContainerAzureCustomEndpointEntry,
 			ApikeysEndpointEntryKey:                      ApikeysEndpointEntry,
-
-			CloudBuildWorkerPoolEndpointEntryKey: CloudBuildWorkerPoolEndpointEntry,
+			CloudBuildWorkerPoolEndpointEntryKey:         CloudBuildWorkerPoolEndpointEntry,
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -945,9 +952,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 249
-// Generated IAM resources: 138
-// Total generated resources: 387
+// Generated resources: 252
+// Generated IAM resources: 141
+// Total generated resources: 393
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1032,6 +1039,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_cloudfunctions_function_iam_member":                    ResourceIamMember(CloudFunctionsCloudFunctionIamSchema, CloudFunctionsCloudFunctionIamUpdaterProducer, CloudFunctionsCloudFunctionIdParseFunc),
 			"google_cloudfunctions_function_iam_policy":                    ResourceIamPolicy(CloudFunctionsCloudFunctionIamSchema, CloudFunctionsCloudFunctionIamUpdaterProducer, CloudFunctionsCloudFunctionIdParseFunc),
 			"google_cloudfunctions2_function":                              resourceCloudfunctions2function(),
+			"google_cloudfunctions2_function_iam_binding":                  ResourceIamBinding(Cloudfunctions2functionIamSchema, Cloudfunctions2functionIamUpdaterProducer, Cloudfunctions2functionIdParseFunc),
+			"google_cloudfunctions2_function_iam_member":                   ResourceIamMember(Cloudfunctions2functionIamSchema, Cloudfunctions2functionIamUpdaterProducer, Cloudfunctions2functionIdParseFunc),
+			"google_cloudfunctions2_function_iam_policy":                   ResourceIamPolicy(Cloudfunctions2functionIamSchema, Cloudfunctions2functionIamUpdaterProducer, Cloudfunctions2functionIdParseFunc),
 			"google_cloud_identity_group":                                  resourceCloudIdentityGroup(),
 			"google_cloud_identity_group_membership":                       resourceCloudIdentityGroupMembership(),
 			"google_cloudiot_registry":                                     resourceCloudIotDeviceRegistry(),
@@ -1116,6 +1126,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_compute_reservation":                                   resourceComputeReservation(),
 			"google_compute_service_attachment":                            resourceComputeServiceAttachment(),
 			"google_compute_ssl_policy":                                    resourceComputeSslPolicy(),
+			"google_compute_region_ssl_policy":                             resourceComputeRegionSslPolicy(),
 			"google_compute_subnetwork":                                    resourceComputeSubnetwork(),
 			"google_compute_subnetwork_iam_binding":                        ResourceIamBinding(ComputeSubnetworkIamSchema, ComputeSubnetworkIamUpdaterProducer, ComputeSubnetworkIdParseFunc),
 			"google_compute_subnetwork_iam_member":                         ResourceIamMember(ComputeSubnetworkIamSchema, ComputeSubnetworkIamUpdaterProducer, ComputeSubnetworkIdParseFunc),
@@ -1177,6 +1188,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_dns_policy":                                            resourceDNSPolicy(),
 			"google_dns_response_policy":                                   resourceDNSResponsePolicy(),
 			"google_dns_response_policy_rule":                              resourceDNSResponsePolicyRule(),
+			"google_document_ai_processor":                                 resourceDocumentAIProcessor(),
+			"google_document_ai_processor_default_version":                 resourceDocumentAIProcessorDefaultVersion(),
 			"google_essential_contacts_contact":                            resourceEssentialContactsContact(),
 			"google_filestore_instance":                                    resourceFilestoreInstance(),
 			"google_firebase_project":                                      resourceFirebaseProject(),
@@ -1654,6 +1667,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.DialogflowBasePath = d.Get("dialogflow_custom_endpoint").(string)
 	config.DialogflowCXBasePath = d.Get("dialogflow_cx_custom_endpoint").(string)
 	config.DNSBasePath = d.Get("dns_custom_endpoint").(string)
+	config.DocumentAIBasePath = d.Get("document_ai_custom_endpoint").(string)
 	config.EssentialContactsBasePath = d.Get("essential_contacts_custom_endpoint").(string)
 	config.FilestoreBasePath = d.Get("filestore_custom_endpoint").(string)
 	config.FirebaseBasePath = d.Get("firebase_custom_endpoint").(string)

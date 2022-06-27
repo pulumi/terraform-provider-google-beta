@@ -34,8 +34,10 @@ To get more information about HmacKey, see:
     * [Official Documentation](https://cloud.google.com/storage/docs/authentication/managing-hmackeys)
 
 ~> **Warning:** All arguments including the `secret` value will be stored in the raw
-state as plain-text. [Read more about secrets in state](https://www.pulumi.com/docs/intro/concepts/programming-model/#secrets).
-On import, the `secret` value will not be retrieved.
+state as plain-text. On import, the `secret` value will not be retrieved.
+
+~> **Warning:** All arguments including `secret` will be stored in the raw
+state as plain-text.
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=storage_hmac_key&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -51,7 +53,7 @@ resource "google_service_account" "service_account" {
   account_id = "my-svc-acc"
 }
 
-#Create the HMAC key for the associated service account 
+#Create the HMAC key for the associated service account
 resource "google_storage_hmac_key" "key" {
   service_account_email = google_service_account.service_account.email
 }

@@ -36,7 +36,7 @@ To get more information about Client, see:
     * [Setting up IAP Client](https://cloud.google.com/iap/docs/authentication-howto)
 
 ~> **Warning:** All arguments including `secret` will be stored in the raw
-state as plain-text. [Read more about secrets in state](https://www.pulumi.com/docs/intro/concepts/programming-model/#secrets).
+state as plain-text.
 
 ## Example Usage - Iap Client
 

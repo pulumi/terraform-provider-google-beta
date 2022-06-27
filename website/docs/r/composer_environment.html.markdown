@@ -41,7 +41,7 @@ will not be able to automatically find or manage many of these underlying resour
   cleaned up automatically** on environment deletion. [More about Composer's use of Cloud
 Storage](https://cloud.google.com/composer/docs/concepts/cloud-storage).* Please review the [known
   issues](https://cloud.google.com/composer/docs/known-issues) for Composer if you are having
-  problems.
+  problems.***
 
 ## Example Usage
 
@@ -60,7 +60,6 @@ resource "google_composer_environment" "test" {
 resource "google_composer_environment" "test" {
   name   = "example-composer-env"
   region = "us-central1"
-
  config {
     software_config {
       image_version = "composer-2-airflow-2"
@@ -82,7 +81,6 @@ Google Cloud infrastructure, including a Kubernetes Engine cluster, Cloud
 Storage, and Compute networking resources. Composer manages most of these
 resources fully and as a result, Terraform may not be able to automatically
 find or manage the underlying resources. In particular:
-
 * It can take up to 50 minutes to create or update an environment resource and
 some errors may be detected later in the process. Also, some error messages may
 not be clear at first sight because they involve issues with the underlying
@@ -402,6 +400,7 @@ The following arguments are supported:
 
 * `enable_ip_masq_agent` -
   (Optional)
+  Cloud Composer 1 only)
   Deploys 'ip-masq-agent' daemon set in the GKE cluster and defines
   nonMasqueradeCIDRs equals to pod IP range so IP masquerading is used for
   all destination addresses, except between pods traffic.
