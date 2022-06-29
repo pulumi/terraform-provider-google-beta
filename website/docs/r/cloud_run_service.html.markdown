@@ -48,10 +48,63 @@ To get more information about Service, see:
 a Cloud Run Service on Anthos(GKE/VMWare) then you will need to create it using the kubernetes alpha provider.
 Have a look at the Cloud Run Anthos example below.
 
+## Example Usage - Cloud Run Service Pubsub
 
-## Example Usage
 
-### Cloud Run Service Basic
+```hcl
+resource "google_cloud_run_service" "default" {
+    name     = "cloud_run_service_name"
+    location = "us-central1"
+    template {
+      spec {
+            containers {
+                image = "gcr.io/cloudrun/hello"
+            }
+      }
+    }
+    traffic {
+      percent         = 100
+      latest_revision = true
+    }
+}
+
+resource "google_service_account" "sa" {
+  account_id   = "cloud-run-pubsub-invoker"
+  display_name = "Cloud Run Pub/Sub Invoker"
+}
+
+resource "google_cloud_run_service_iam_binding" "binding" {
+  location = google_cloud_run_service.default.location
+  service = google_cloud_run_service.default.name
+  role = "roles/run.invoker"
+  members = ["serviceAccount:${google_service_account.sa.email}"]
+}
+
+resource "google_project_iam_binding" "project" {
+  role    = "roles/iam.serviceAccountTokenCreator"
+  members = ["serviceAccount:${google_service_account.sa.email}"]
+}
+
+resource "google_pubsub_topic" "topic" {
+  name = "pubsub_topic"
+}
+
+resource "google_pubsub_subscription" "subscription" {
+  name  = "pubsub_subscription"
+  topic = google_pubsub_topic.topic.name
+  push_config {
+    push_endpoint = google_cloud_run_service.default.status[0].url
+    oidc_token {
+      service_account_email = google_service_account.sa.email
+    }
+    attributes = {
+      x-goog-version = "v1"
+    }
+  }
+}
+```
+
+## Example Usage - Cloud Run Service Basic
 
 ```hcl
 resource "google_cloud_run_service" "default" {
@@ -78,7 +131,7 @@ resource "google_cloud_run_service" "default" {
   </a>
 </div>
 
-### Cloud Run Service Sql
+## Example Usage - Cloud Run Service Sql
 
 
 ```hcl
@@ -116,7 +169,7 @@ resource "google_sql_database_instance" "instance" {
 }
 ```
 
-### Cloud Run Service Noauth
+## Example Usage - Cloud Run Service Noauth
 
 
 ```hcl
@@ -151,7 +204,7 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 }
 ```
 
-### Cloud Run Anthos
+## Example Usage - Cloud Run Anthos
 
 
 ```hcl
@@ -195,7 +248,7 @@ resource "kubernetes_manifest" "test-configmap" {
 }
 ```
 
-### Cloud Run Service Multiple Environment Variables
+## Example Usage - Cloud Run Service Multiple Environment Variables
 
 
 ```hcl
@@ -239,7 +292,7 @@ resource "google_cloud_run_service" "default" {
 }
 ```
 
-### Cloud Run Service Traffic Split
+## Example Usage - Cloud Run Service Traffic Split
 
 
 ```hcl
@@ -271,7 +324,7 @@ resource "google_cloud_run_service" "default" {
 }
 ```
 
-### Cloud Run Service Secret Environment Variables
+## Example Usage - Cloud Run Service Secret Environment Variables
 
 
 ```hcl
@@ -340,7 +393,7 @@ resource "google_cloud_run_service" "default" {
 }
 ```
 
-### Cloud Run Service Secret Volumes
+## Example Usage - Cloud Run Service Secret Volumes
 
 
 ```hcl
@@ -428,14 +481,14 @@ resource "google_cloud_run_service" "default" {
 data "google_project" "project" {
   provider = google-beta
 }
-        
+
 # Enable Cloud Run API
 resource "google_project_service" "run" {
   provider = google-beta
   service            = "run.googleapis.com"
   disable_on_destroy = false
 }
-    
+
 # Enable Eventarc API
 resource "google_project_service" "eventarc" {
   provider = google-beta
@@ -444,7 +497,7 @@ resource "google_project_service" "eventarc" {
 }
 
 
-  
+
 # Deploy Cloud Run service
 resource "google_cloud_run_service" "default" {
   provider = google-beta
@@ -458,15 +511,15 @@ resource "google_cloud_run_service" "default" {
       }
     }
   }
-  
+
   traffic {
     percent         = 100
     latest_revision = true
   }
-  
+
   depends_on = [google_project_service.run]
 }
-      
+
 # Make Cloud Run service publicly accessible
 resource "google_cloud_run_service_iam_member" "allUsers" {
   provider = google-beta
@@ -477,8 +530,8 @@ resource "google_cloud_run_service_iam_member" "allUsers" {
 }
 
 
-  
-      
+
+
 # Create a Pub/Sub trigger
 resource "google_eventarc_trigger" "trigger-pubsub-tf" {
   provider = google-beta
@@ -509,7 +562,7 @@ resource "google_project_iam_binding" "project" {
     "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
   ]
 }
-    
+
 # Create an AuditLog for Cloud Storage trigger
 resource "google_eventarc_trigger" "trigger-auditlog-tf" {
   provider = google-beta
@@ -533,7 +586,7 @@ resource "google_eventarc_trigger" "trigger-auditlog-tf" {
       service = google_cloud_run_service.default.name
       region  = google_cloud_run_service.default.location
     }
-  } 
+  }
   service_account = "${data.google_project.project.number}-compute@developer.gserviceaccount.com"
 
   depends_on = [google_project_service.eventarc]
@@ -581,8 +634,8 @@ The following arguments are supported:
   false when RevisionName is non-empty.
 
 * `url` -
-  URL displays the URL for accessing tagged traffic targets. URL is displayed in status, 
-  and is disallowed on spec. URL must contain a scheme (e.g. http://) and a hostname, 
+  URL displays the URL for accessing tagged traffic targets. URL is displayed in status,
+  and is disallowed on spec. URL must contain a scheme (e.g. http://) and a hostname,
   but may not contain anything else (e.g. basic auth, url path, etc.)
 
 <a name="nested_template"></a>The `template` block supports:
@@ -868,10 +921,10 @@ The following arguments are supported:
 
 * `name` -
   (Required)
-  The name of the secret in Cloud Secret Manager. By default, the secret is assumed to be in the same project. 
-  If the secret is in another project, you must define an alias. 
-  An alias definition has the form: :projects/<project-id|project-number>/secrets/. 
-  If multiple alias definitions are needed, they must be separated by commas. 
+  The name of the secret in Cloud Secret Manager. By default, the secret is assumed to be in the same project.
+  If the secret is in another project, you must define an alias.
+  An alias definition has the form: :projects/<project-id|project-number>/secrets/.
+  If multiple alias definitions are needed, they must be separated by commas.
   The alias definitions must be set on the run.googleapis.com/secrets annotation.
 
 <a name="nested_ports"></a>The `ports` block supports:
