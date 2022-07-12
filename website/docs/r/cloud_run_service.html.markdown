@@ -324,8 +324,110 @@ resource "google_cloud_run_service" "default" {
 }
 ```
 
-## Example Usage - Cloud Run Service Secret Environment Variables
+## Example Usage - Cloud Run Service Scheduled
 
+
+```hcl
+resource "google_project_service" "run_api" {
+  project                    = "my-project-name"
+  service                    = "run.googleapis.com"
+  disable_dependent_services = true
+  disable_on_destroy         = false
+}
+
+resource "google_project_service" "iam_api" {
+  project                    = "my-project-name"
+  service                    = "iam.googleapis.com"
+  disable_on_destroy         = false
+}
+
+resource "google_project_service" "resource_manager_api" {
+  project                    = "my-project-name"
+  service                    = "cloudresourcemanager.googleapis.com"
+  disable_on_destroy         = false
+}
+
+resource "google_project_service" "scheduler_api" {
+  project                    = "my-project-name"
+  service                    = "cloudscheduler.googleapis.com"
+  disable_on_destroy         = false
+}
+
+resource "google_cloud_run_service" "default" {
+  project  = "my-project-name"
+  name     = "my-scheduled-service"
+  location = "us-central1"
+
+  template {
+    spec {
+      containers {
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.run_api
+  ]
+}
+
+resource "google_service_account" "default" {
+  project      = "my-project-name"
+  account_id   = "scheduler-sa"
+  description  = "Cloud Scheduler service account; used to trigger scheduled Cloud Run jobs."
+  display_name = "scheduler-sa"
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.iam_api
+  ]
+}
+
+resource "google_cloud_scheduler_job" "default" {
+  name             = "scheduled-cloud-run-job"
+  description      = "Invoke a Cloud Run container on a schedule."
+  schedule         = "*/8 * * * *"
+  time_zone        = "America/New_York"
+  attempt_deadline = "320s"
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "POST"
+
+    # WORKAROUND: ensure this ends with a slash to prevent state-checking issues.
+    # See https://github.com/hashicorp/terraform-provider-google/issues/11977
+    uri         = "${google_cloud_run_service.default.status[0].url}/"
+
+    oidc_token {
+      service_account_email = google_service_account.default.email
+    }
+  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.scheduler_api
+  ]
+}
+
+resource "google_cloud_run_service_iam_member" "default" {
+  project = "my-project-name"
+  location = google_cloud_run_service.default.location
+  service = google_cloud_run_service.default.name
+  role = "roles/run.invoker"
+  member = "serviceAccount:${google_service_account.default.email}"
+}
+```
+
+## Example Usage - Cloud Run Service Secret Environment Variables
 
 ```hcl
 data "google_project" "project" {
@@ -469,6 +571,39 @@ resource "google_cloud_run_service" "default" {
 }
 ```
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=cloud_run_service_ingress&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
+    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
+  </a>
+</div>
+## Example Usage - Cloud Run Service Ingress
+
+
+```hcl
+resource "google_cloud_run_service" "default" {
+    name     = "ingress-service"
+    location = "us-central1"
+
+    template {
+      spec {
+        containers {
+          image = "gcr.io/cloudrun/hello" #public image for your service
+        }
+      }
+    }
+    traffic {
+      percent         = 100
+      latest_revision = true
+    }
+    metadata {
+      annotations = {
+        # For valid annotation values and descriptions, see
+        # https://cloud.google.com/sdk/gcloud/reference/run/deploy#--ingress
+        "run.googleapis.com/ingress" = "internal"
+      }
+    }
+}
+```
+<div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=eventarc_basic_tf&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
@@ -592,6 +727,371 @@ resource "google_eventarc_trigger" "trigger-auditlog-tf" {
   depends_on = [google_project_service.eventarc]
 }
 
+```
+## Example Usage - Cloud Run Service Multiple Regions
+
+
+```hcl
+# Cloud Run service replicated across multiple GCP regions
+
+resource "google_project_service" "compute_api" {
+  project                    = "my-project-name"
+  service                    = "compute.googleapis.com"
+  disable_dependent_services = true
+  disable_on_destroy         = false
+}
+
+resource "google_project_service" "run_api" {
+  project                    = "my-project-name"
+  service                    = "run.googleapis.com"
+  disable_dependent_services = true
+  disable_on_destroy         = false
+}
+
+variable "domain_name" {
+  type    = string
+  default = "example.com"
+}
+
+variable "run_regions" {
+  type    = list(string)
+  default = ["us-central1", "europe-west1"]
+}
+
+resource "google_compute_global_address" "lb_default" {
+  name    = "myservice-service-ip"
+  project = "my-project-name"
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.compute_api
+  ]
+}
+
+resource "google_compute_backend_service" "lb_default" {
+  name                  = "myservice-backend"
+  project               = "my-project-name"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+
+  backend {
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 0.85
+    group           = google_compute_region_network_endpoint_group.lb_default[0].id
+  }
+
+  backend {
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 0.85
+    group           = google_compute_region_network_endpoint_group.lb_default[1].id
+  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.compute_api,
+  ]
+}
+
+
+resource "google_compute_url_map" "lb_default" {
+  name            = "myservice-lb-urlmap"
+  project         = "my-project-name"
+  default_service = google_compute_backend_service.lb_default.id
+
+  path_matcher {
+    name            = "allpaths"
+    default_service = google_compute_backend_service.lb_default.id
+    route_rules {
+      priority = 1
+      url_redirect {
+        https_redirect         = true
+        redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
+      }
+    }
+  }
+}
+
+resource "google_compute_managed_ssl_certificate" "lb_default" {
+  name    = "myservice-ssl-cert"
+  project = "my-project-name"
+
+  managed {
+    domains = [var.domain_name]
+  }
+}
+
+resource "google_compute_target_https_proxy" "lb_default" {
+  name    = "myservice-https-proxy"
+  project = "my-project-name"
+  url_map = google_compute_url_map.lb_default.id
+  ssl_certificates = [
+    google_compute_managed_ssl_certificate.lb_default.name
+  ]
+  depends_on = [
+    google_compute_managed_ssl_certificate.lb_default
+  ]
+}
+
+resource "google_compute_global_forwarding_rule" "lb_default" {
+  name                  = "myservice-lb-fr"
+  project               = "my-project-name"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  target                = google_compute_target_https_proxy.lb_default.id
+  ip_address            = google_compute_global_address.lb_default.id
+  port_range            = "443"
+  depends_on            = [google_compute_target_https_proxy.lb_default]
+}
+
+resource "google_compute_region_network_endpoint_group" "lb_default" {
+  count                 = length(var.run_regions)
+  project               = "my-project-name"
+  name                  = "myservice-neg"
+  network_endpoint_type = "SERVERLESS"
+  region                = var.run_regions[count.index]
+  cloud_run {
+    service = google_cloud_run_service.run_default[count.index].name
+  }
+}
+
+output "load_balancer_ip_addr" {
+  value = google_compute_global_address.lb_default.address
+}
+
+resource "google_cloud_run_service" "run_default" {
+  count    = length(var.run_regions)
+  project  = "my-project-name"
+  name     = "myservice-run-app-${var.run_regions[count.index]}"
+  location = var.run_regions[count.index]
+
+  template {
+    spec {
+      containers {
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.run_api
+  ]
+}
+
+resource "google_cloud_run_service_iam_member" "run_allow_unauthenticated" {
+  count    = length(var.run_regions)
+  project  = "my-project-name"
+  location = google_cloud_run_service.run_default[count.index].location
+  service  = google_cloud_run_service.run_default[count.index].name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+resource "google_compute_url_map" "https_default" {
+  name    = "myservice-https-urlmap"
+  project = "my-project-name"
+
+  default_url_redirect {
+    redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
+    https_redirect         = true
+    strip_query            = false
+  }
+}
+
+resource "google_compute_target_http_proxy" "https_default" {
+  name    = "myservice-http-proxy"
+  project = "my-project-name"
+  url_map = google_compute_url_map.https_default.id
+
+  depends_on = [
+    google_compute_url_map.https_default
+  ]
+}
+
+resource "google_compute_global_forwarding_rule" "https_default" {
+  name       = "myservice-https-fr"
+  project    = "my-project-name"
+  target     = google_compute_target_http_proxy.https_default.id
+  ip_address = google_compute_global_address.lb_default.id
+  port_range = "80"
+  depends_on = [google_compute_target_http_proxy.https_default]
+}
+```
+## Example Usage - Cloud Run Service Remove Tag
+
+
+```hcl
+resource "google_cloud_run_service" "default" {
+  name     = "cloudrun-srv"
+  location = "us-central1"
+
+  template {}
+
+  traffic {
+    percent       = 100
+    # This revision needs to already exist
+    revision_name = "cloudrun-srv-green"
+  
+  }
+  traffic {
+    # No tags for this revision
+    # Keep revision at 0% traffic
+    percent       = 0
+    # This revision needs to already exist
+    revision_name = "cloudrun-srv-blue"
+  }
+}
+```
+## Example Usage - Cloud Run Service Deploy Tag
+
+
+```hcl
+resource "google_cloud_run_service" "default" {
+  name     = "cloudrun-srv"
+  location = "us-central1"
+
+  template {
+    spec {
+      containers {
+        # image or tag must be different from previous revision
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+      }
+    }
+    metadata {
+      name = "cloudrun-srv-blue"
+    }
+  }
+
+  traffic {
+    percent       = 100
+    # This revision needs to already exist
+    revision_name = "cloudrun-srv-green"
+  }
+
+  traffic {
+    # Deploy new revision with 0% traffic
+    percent = 0
+    revision_name = "cloudrun-srv-blue"
+    tag = "tag-name"
+  }
+}
+```
+## Example Usage - Cloud Run Service Add Tag
+
+
+```hcl
+resource "google_cloud_run_service" "default" {
+  name     = "cloudrun-srv"
+  location = "us-central1"
+
+  template {}
+
+  traffic {
+    percent       = 100
+    # This revision needs to already exist
+    revision_name = "cloudrun-srv-green"
+  }
+
+  traffic {
+    # Deploy new revision with 0% traffic
+    percent       = 0
+    revision_name = "cloudrun-srv-blue"
+    tag           = "tag-name"
+  }
+}
+```
+## Example Usage - Cloud Run Service Traffic Gradual Rollout
+
+
+```hcl
+resource "google_cloud_run_service" "default" {
+  name     = "cloudrun-srv"
+  location = "us-central1"
+
+  template {
+    spec {
+      containers {
+        # Image or image tag must be different from previous revision
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+      }
+    }
+  }
+  autogenerate_revision_name = true
+
+  traffic {
+    percent       = 100
+    # This revision needs to already exist
+    revision_name = "cloudrun-srv-green"
+  
+  }
+
+  traffic {
+    # Deploy new revision with 0% traffic
+    percent         = 0
+    latest_revision = true
+  }
+}
+```
+## Example Usage - Cloud Run Service Traffic Latest Revision
+
+
+```hcl
+resource "google_cloud_run_service" "default" {
+  name     = "cloudrun-srv"
+  location = "us-central1"
+
+  template {}
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+}
+```
+## Example Usage - Cloud Run Service Traffic Rollback
+
+
+```hcl
+resource "google_cloud_run_service" "default" {
+  name     = "cloudrun-srv"
+  location = "us-central1"
+
+  template {}
+
+  traffic {
+    percent       = 100
+    # This revision needs to already exist
+    revision_name = "cloudrun-srv-green"
+  }
+}
+```
+## Example Usage - Cloud Run Service Traffic Split Tag
+
+
+```hcl
+resource "google_cloud_run_service" "default" {
+  name     = "cloudrun-srv"
+  location = "us-central1"
+
+  template {}
+
+  traffic {
+    # Update revision to 50% traffic
+    percent       = 50
+    # This revision needs to already exist
+    revision_name = "cloudrun-srv-green"  
+  }
+
+  traffic {
+    # Update tag to 50% traffic
+    percent = 50
+    # This tag needs to already exist
+    tag     = "tag-name"  
+  }
+}
 ```
 
 ## Argument Reference

@@ -263,6 +263,134 @@ resource "google_cloud_run_service" "default" {
 `, context)
 }
 
+func TestAccCloudRunService_cloudRunServiceScheduledExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"project":       getTestProjectFromEnv(),
+		"random_suffix": randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProvidersOiCS,
+		CheckDestroy: testAccCheckCloudRunServiceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCloudRunService_cloudRunServiceScheduledExample(context),
+			},
+			{
+				ResourceName:            "google_cloud_run_service.default",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"name", "location"},
+			},
+		},
+	})
+}
+
+func testAccCloudRunService_cloudRunServiceScheduledExample(context map[string]interface{}) string {
+	return Nprintf(`
+resource "google_project_service" "run_api" {
+  project                    = "%{project}"
+  service                    = "run.googleapis.com"
+  disable_dependent_services = true
+  disable_on_destroy         = false
+}
+
+resource "google_project_service" "iam_api" {
+  project                    = "%{project}"
+  service                    = "iam.googleapis.com"
+  disable_on_destroy         = false
+}
+
+resource "google_project_service" "resource_manager_api" {
+  project                    = "%{project}"
+  service                    = "cloudresourcemanager.googleapis.com"
+  disable_on_destroy         = false
+}
+
+resource "google_project_service" "scheduler_api" {
+  project                    = "%{project}"
+  service                    = "cloudscheduler.googleapis.com"
+  disable_on_destroy         = false
+}
+
+resource "google_cloud_run_service" "default" {
+  project  = "%{project}"
+  name     = "tf-test-my-scheduled-service%{random_suffix}"
+  location = "us-central1"
+
+  template {
+    spec {
+      containers {
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.run_api
+  ]
+}
+
+resource "google_service_account" "default" {
+  project      = "%{project}"
+  account_id   = "tf-test-scheduler-sa%{random_suffix}"
+  description  = "Cloud Scheduler service account; used to trigger scheduled Cloud Run jobs."
+  display_name = "scheduler-sa"
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.iam_api
+  ]
+}
+
+resource "google_cloud_scheduler_job" "default" {
+  name             = "tf-test-scheduled-cloud-run-job%{random_suffix}"
+  description      = "Invoke a Cloud Run container on a schedule."
+  schedule         = "*/8 * * * *"
+  time_zone        = "America/New_York"
+  attempt_deadline = "320s"
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "POST"
+
+    # WORKAROUND: ensure this ends with a slash to prevent state-checking issues.
+    # See https://github.com/hashicorp/terraform-provider-google/issues/11977
+    uri         = "${google_cloud_run_service.default.status[0].url}/"
+
+    oidc_token {
+      service_account_email = google_service_account.default.email
+    }
+  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.scheduler_api
+  ]
+}
+
+resource "google_cloud_run_service_iam_member" "default" {
+  project = "%{project}"
+  location = google_cloud_run_service.default.location
+  service = google_cloud_run_service.default.name
+  role = "roles/run.invoker"
+  member = "serviceAccount:${google_service_account.default.email}"
+}
+`, context)
+}
+
 func TestAccCloudRunService_cloudRunServiceSecretEnvironmentVariablesExample(t *testing.T) {
 	t.Parallel()
 
@@ -458,6 +586,59 @@ resource "google_cloud_run_service" "default" {
 `, context)
 }
 
+func TestAccCloudRunService_cloudRunServiceIngressExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"random_suffix": randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProvidersOiCS,
+		CheckDestroy: testAccCheckCloudRunServiceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCloudRunService_cloudRunServiceIngressExample(context),
+			},
+			{
+				ResourceName:            "google_cloud_run_service.default",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"name", "location"},
+			},
+		},
+	})
+}
+
+func testAccCloudRunService_cloudRunServiceIngressExample(context map[string]interface{}) string {
+	return Nprintf(`
+resource "google_cloud_run_service" "default" {
+    name     = "tf-test-ingress-service%{random_suffix}"
+    location = "us-central1"
+
+    template {
+      spec {
+        containers {
+          image = "gcr.io/cloudrun/hello" #public image for your service
+        }
+      }
+    }
+    traffic {
+      percent         = 100
+      latest_revision = true
+    }
+    metadata {
+      annotations = {
+        # For valid annotation values and descriptions, see
+        # https://cloud.google.com/sdk/gcloud/reference/run/deploy#--ingress
+        "run.googleapis.com/ingress" = "internal"
+      }
+    }
+}
+`, context)
+}
+
 func TestAccCloudRunService_eventarcBasicTfExample(t *testing.T) {
 	t.Parallel()
 
@@ -600,6 +781,218 @@ resource "google_eventarc_trigger" "tf-test-trigger-auditlog-tf%{random_suffix}"
   depends_on = [google_project_service.eventarc]
 }
 
+`, context)
+}
+
+func TestAccCloudRunService_cloudRunServiceMultipleRegionsExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"project":       getTestProjectFromEnv(),
+		"random_suffix": randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProvidersOiCS,
+		CheckDestroy: testAccCheckCloudRunServiceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCloudRunService_cloudRunServiceMultipleRegionsExample(context),
+			},
+		},
+	})
+}
+
+func testAccCloudRunService_cloudRunServiceMultipleRegionsExample(context map[string]interface{}) string {
+	return Nprintf(`
+# Cloud Run service replicated across multiple GCP regions
+
+resource "google_project_service" "compute_api" {
+  project                    = "%{project}"
+  service                    = "compute.googleapis.com"
+  disable_dependent_services = true
+  disable_on_destroy         = false
+}
+
+resource "google_project_service" "run_api" {
+  project                    = "%{project}"
+  service                    = "run.googleapis.com"
+  disable_dependent_services = true
+  disable_on_destroy         = false
+}
+
+variable "domain_name" {
+  type    = string
+  default = "example.com"
+}
+
+variable "run_regions" {
+  type    = list(string)
+  default = ["us-central1", "europe-west1"]
+}
+
+resource "google_compute_global_address" "lb_default" {
+  name    = "tf-test-myservice-service-ip%{random_suffix}"
+  project = "%{project}"
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.compute_api
+  ]
+}
+
+resource "google_compute_backend_service" "lb_default" {
+  name                  = "tf-test-myservice-backend%{random_suffix}"
+  project               = "%{project}"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+
+  backend {
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 0.85
+    group           = google_compute_region_network_endpoint_group.lb_default[0].id
+  }
+
+  backend {
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 0.85
+    group           = google_compute_region_network_endpoint_group.lb_default[1].id
+  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.compute_api,
+  ]
+}
+
+
+resource "google_compute_url_map" "lb_default" {
+  name            = "tf-test-myservice-lb-urlmap%{random_suffix}"
+  project         = "%{project}"
+  default_service = google_compute_backend_service.lb_default.id
+
+  path_matcher {
+    name            = "allpaths"
+    default_service = google_compute_backend_service.lb_default.id
+    route_rules {
+      priority = 1
+      url_redirect {
+        https_redirect         = true
+        redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
+      }
+    }
+  }
+}
+
+resource "google_compute_managed_ssl_certificate" "lb_default" {
+  name    = "tf-test-myservice-ssl-cert%{random_suffix}"
+  project = "%{project}"
+
+  managed {
+    domains = [var.domain_name]
+  }
+}
+
+resource "google_compute_target_https_proxy" "lb_default" {
+  name    = "tf-test-myservice-https-proxy%{random_suffix}"
+  project = "%{project}"
+  url_map = google_compute_url_map.lb_default.id
+  ssl_certificates = [
+    google_compute_managed_ssl_certificate.lb_default.name
+  ]
+  depends_on = [
+    google_compute_managed_ssl_certificate.lb_default
+  ]
+}
+
+resource "google_compute_global_forwarding_rule" "lb_default" {
+  name                  = "tf-test-myservice-lb-fr%{random_suffix}"
+  project               = "%{project}"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  target                = google_compute_target_https_proxy.lb_default.id
+  ip_address            = google_compute_global_address.lb_default.id
+  port_range            = "443"
+  depends_on            = [google_compute_target_https_proxy.lb_default]
+}
+
+resource "google_compute_region_network_endpoint_group" "lb_default" {
+  count                 = length(var.run_regions)
+  project               = "%{project}"
+  name                  = "tf-test-myservice-neg%{random_suffix}"
+  network_endpoint_type = "SERVERLESS"
+  region                = var.run_regions[count.index]
+  cloud_run {
+    service = google_cloud_run_service.run_default[count.index].name
+  }
+}
+
+output "load_balancer_ip_addr" {
+  value = google_compute_global_address.lb_default.address
+}
+
+resource "google_cloud_run_service" "run_default" {
+  count    = length(var.run_regions)
+  project  = "%{project}"
+  name     = "tf-test-myservice-run-app%{random_suffix}-${var.run_regions[count.index]}"
+  location = var.run_regions[count.index]
+
+  template {
+    spec {
+      containers {
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_project_service.run_api
+  ]
+}
+
+resource "google_cloud_run_service_iam_member" "run_allow_unauthenticated" {
+  count    = length(var.run_regions)
+  project  = "%{project}"
+  location = google_cloud_run_service.run_default[count.index].location
+  service  = google_cloud_run_service.run_default[count.index].name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+resource "google_compute_url_map" "https_default" {
+  name    = "tf-test-myservice-https-urlmap%{random_suffix}"
+  project = "%{project}"
+
+  default_url_redirect {
+    redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
+    https_redirect         = true
+    strip_query            = false
+  }
+}
+
+resource "google_compute_target_http_proxy" "https_default" {
+  name    = "tf-test-myservice-http-proxy%{random_suffix}"
+  project = "%{project}"
+  url_map = google_compute_url_map.https_default.id
+
+  depends_on = [
+    google_compute_url_map.https_default
+  ]
+}
+
+resource "google_compute_global_forwarding_rule" "https_default" {
+  name       = "tf-test-myservice-https-fr%{random_suffix}"
+  project    = "%{project}"
+  target     = google_compute_target_http_proxy.https_default.id
+  ip_address = google_compute_global_address.lb_default.id
+  port_range = "80"
+  depends_on = [google_compute_target_http_proxy.https_default]
+}
 `, context)
 }
 

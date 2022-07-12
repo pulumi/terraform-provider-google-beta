@@ -810,21 +810,15 @@ func Provider() *schema.Provider {
 			BigtableAdminCustomEndpointEntryKey:     BigtableAdminCustomEndpointEntry,
 
 			// dcl
-			AssuredWorkloadsEndpointEntryKey:             AssuredWorkloadsEndpointEntry,
-			ClouddeployEndpointEntryKey:                  ClouddeployEndpointEntry,
-			CloudResourceManagerEndpointEntryKey:         CloudResourceManagerEndpointEntry,
-			DataplexEndpointEntryKey:                     DataplexEndpointEntry,
-			EventarcEndpointEntryKey:                     EventarcEndpointEntry,
-			FirebaserulesEndpointEntryKey:                FirebaserulesEndpointEntry,
-			GkeHubFeatureCustomEndpointEntryKey:          GkeHubFeatureCustomEndpointEntry,
-			NetworkConnectivityEndpointEntryKey:          NetworkConnectivityEndpointEntry,
-			OrgPolicyEndpointEntryKey:                    OrgPolicyEndpointEntry,
-			PrivatecaCertificateTemplateEndpointEntryKey: PrivatecaCertificateTemplateCustomEndpointEntry,
-			RecaptchaEnterpriseEndpointEntryKey:          RecaptchaEnterpriseEndpointEntry,
-			ContainerAwsCustomEndpointEntryKey:           ContainerAwsCustomEndpointEntry,
-			ContainerAzureCustomEndpointEntryKey:         ContainerAzureCustomEndpointEntry,
-			ApikeysEndpointEntryKey:                      ApikeysEndpointEntry,
-			CloudBuildWorkerPoolEndpointEntryKey:         CloudBuildWorkerPoolEndpointEntry,
+			ContainerAwsCustomEndpointEntryKey:   ContainerAwsCustomEndpointEntry,
+			ContainerAzureCustomEndpointEntryKey: ContainerAzureCustomEndpointEntry,
+		},
+
+		ProviderMetaSchema: map[string]*schema.Schema{
+			"module_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -949,12 +943,14 @@ func Provider() *schema.Provider {
 		return providerConfigure(ctx, d, provider)
 	}
 
+	configureDCLProvider(provider)
+
 	return provider
 }
 
 // Generated resources: 252
-// Generated IAM resources: 141
-// Total generated resources: 393
+// Generated IAM resources: 153
+// Total generated resources: 405
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1020,6 +1016,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_bigquery_table_iam_policy":                             ResourceIamPolicy(BigQueryTableIamSchema, BigQueryTableIamUpdaterProducer, BigQueryTableIdParseFunc),
 			"google_bigquery_routine":                                      resourceBigQueryRoutine(),
 			"google_bigquery_connection":                                   resourceBigqueryConnectionConnection(),
+			"google_bigquery_connection_iam_binding":                       ResourceIamBinding(BigqueryConnectionConnectionIamSchema, BigqueryConnectionConnectionIamUpdaterProducer, BigqueryConnectionConnectionIdParseFunc),
+			"google_bigquery_connection_iam_member":                        ResourceIamMember(BigqueryConnectionConnectionIamSchema, BigqueryConnectionConnectionIamUpdaterProducer, BigqueryConnectionConnectionIdParseFunc),
+			"google_bigquery_connection_iam_policy":                        ResourceIamPolicy(BigqueryConnectionConnectionIamSchema, BigqueryConnectionConnectionIamUpdaterProducer, BigqueryConnectionConnectionIdParseFunc),
 			"google_bigquery_data_transfer_config":                         resourceBigqueryDataTransferConfig(),
 			"google_bigquery_reservation":                                  resourceBigqueryReservationReservation(),
 			"google_bigtable_app_profile":                                  resourceBigtableAppProfile(),
@@ -1053,6 +1052,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_cloud_run_service_iam_policy":                          ResourceIamPolicy(CloudRunServiceIamSchema, CloudRunServiceIamUpdaterProducer, CloudRunServiceIdParseFunc),
 			"google_cloud_scheduler_job":                                   resourceCloudSchedulerJob(),
 			"google_cloud_tasks_queue":                                     resourceCloudTasksQueue(),
+			"google_cloud_tasks_queue_iam_binding":                         ResourceIamBinding(CloudTasksQueueIamSchema, CloudTasksQueueIamUpdaterProducer, CloudTasksQueueIdParseFunc),
+			"google_cloud_tasks_queue_iam_member":                          ResourceIamMember(CloudTasksQueueIamSchema, CloudTasksQueueIamUpdaterProducer, CloudTasksQueueIdParseFunc),
+			"google_cloud_tasks_queue_iam_policy":                          ResourceIamPolicy(CloudTasksQueueIamSchema, CloudTasksQueueIamUpdaterProducer, CloudTasksQueueIdParseFunc),
 			"google_compute_address":                                       resourceComputeAddress(),
 			"google_compute_autoscaler":                                    resourceComputeAutoscaler(),
 			"google_compute_backend_bucket":                                resourceComputeBackendBucket(),
@@ -1170,7 +1172,13 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_data_loss_prevention_stored_info_type":                 resourceDataLossPreventionStoredInfoType(),
 			"google_data_loss_prevention_deidentify_template":              resourceDataLossPreventionDeidentifyTemplate(),
 			"google_dataproc_autoscaling_policy":                           resourceDataprocAutoscalingPolicy(),
+			"google_dataproc_autoscaling_policy_iam_binding":               ResourceIamBinding(DataprocAutoscalingPolicyIamSchema, DataprocAutoscalingPolicyIamUpdaterProducer, DataprocAutoscalingPolicyIdParseFunc),
+			"google_dataproc_autoscaling_policy_iam_member":                ResourceIamMember(DataprocAutoscalingPolicyIamSchema, DataprocAutoscalingPolicyIamUpdaterProducer, DataprocAutoscalingPolicyIdParseFunc),
+			"google_dataproc_autoscaling_policy_iam_policy":                ResourceIamPolicy(DataprocAutoscalingPolicyIamSchema, DataprocAutoscalingPolicyIamUpdaterProducer, DataprocAutoscalingPolicyIdParseFunc),
 			"google_dataproc_metastore_service":                            resourceDataprocMetastoreService(),
+			"google_dataproc_metastore_service_iam_binding":                ResourceIamBinding(DataprocMetastoreServiceIamSchema, DataprocMetastoreServiceIamUpdaterProducer, DataprocMetastoreServiceIdParseFunc),
+			"google_dataproc_metastore_service_iam_member":                 ResourceIamMember(DataprocMetastoreServiceIamSchema, DataprocMetastoreServiceIamUpdaterProducer, DataprocMetastoreServiceIdParseFunc),
+			"google_dataproc_metastore_service_iam_policy":                 ResourceIamPolicy(DataprocMetastoreServiceIamSchema, DataprocMetastoreServiceIamUpdaterProducer, DataprocMetastoreServiceIdParseFunc),
 			"google_datastore_index":                                       resourceDatastoreIndex(),
 			"google_deployment_manager_deployment":                         resourceDeploymentManagerDeployment(),
 			"google_dialogflow_agent":                                      resourceDialogflowAgent(),
@@ -1726,20 +1734,8 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.BigtableAdminBasePath = d.Get(BigtableAdminCustomEndpointEntryKey).(string)
 
 	// dcl
-	config.ApikeysBasePath = d.Get(ApikeysEndpointEntryKey).(string)
-	config.AssuredWorkloadsBasePath = d.Get(AssuredWorkloadsEndpointEntryKey).(string)
-	config.ClouddeployBasePath = d.Get(ClouddeployEndpointEntryKey).(string)
-	config.CloudResourceManagerBasePath = d.Get(CloudResourceManagerEndpointEntryKey).(string)
-	config.DataplexBasePath = d.Get(DataplexEndpointEntryKey).(string)
-	config.EventarcBasePath = d.Get(EventarcEndpointEntryKey).(string)
-	config.FirebaserulesBasePath = d.Get(FirebaserulesEndpointEntryKey).(string)
-	config.GkeHubBasePath = d.Get(GkeHubFeatureCustomEndpointEntryKey).(string)
-	config.NetworkConnectivityBasePath = d.Get(NetworkConnectivityEndpointEntryKey).(string)
-	config.OrgPolicyBasePath = d.Get(OrgPolicyEndpointEntryKey).(string)
-	config.PrivatecaBasePath = d.Get(PrivatecaCertificateTemplateEndpointEntryKey).(string)
 	config.ContainerAwsBasePath = d.Get(ContainerAwsCustomEndpointEntryKey).(string)
 	config.ContainerAzureBasePath = d.Get(ContainerAzureCustomEndpointEntryKey).(string)
-	config.CloudBuildWorkerPoolBasePath = d.Get(CloudBuildWorkerPoolEndpointEntryKey).(string)
 
 	stopCtx, ok := schema.StopContext(ctx)
 	if !ok {
@@ -1749,7 +1745,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 		return nil, diag.FromErr(err)
 	}
 
-	return &config, nil
+	return providerDCLConfigure(d, &config), nil
 }
 
 func validateCredentials(v interface{}, k string) (warnings []string, errors []error) {

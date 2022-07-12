@@ -259,6 +259,14 @@ The optional `settings.active_directory_config` subblock supports:
 * `domain` - (Required) The domain name for the active directory (e.g., mydomain.com).
     Can only be used with SQL Server.
 
+The optional `settings.sql_server_audit_config` subblock supports:
+
+* `bucket` - (Required) The name of the destination bucket (e.g., gs://mybucket).
+
+* `upload_interval` - (Optional) How often to upload generated audit files. A duration in seconds with up to nine fractional digits, terminated by 's'. Example: "3.5s".
+
+* `retention_interval` - (Optional) How long to keep generated audit files. A duration in seconds with up to nine fractional digits, terminated by 's'. Example: "3.5s". 
+
 The optional `settings.backup_configuration` subblock supports:
 
 * `binary_log_enabled` - (Optional) True if binary logging is enabled.
@@ -317,6 +325,8 @@ The optional `settings.location_preference` subblock supports:
 
 * `zone` - (Optional) The preferred compute engine
     [zone](https://cloud.google.com/compute/docs/zones?hl=en).
+
+* `secondary_zone` - (Optional) The preferred Compute Engine zone for the secondary/failover.
 
 The optional `settings.maintenance_window` subblock for instances declares a one-hour
 [maintenance window](https://cloud.google.com/sql/docs/instance-settings?hl=en#maintenance-window-2ndgen)

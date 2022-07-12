@@ -182,15 +182,16 @@ func TestAccContainerCluster_withAddons(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"min_master_version"},
 			},
-			{
-				Config: testAccContainerCluster_withInternalLoadBalancer(pid, clusterName),
-			},
-			{
-				ResourceName:            "google_container_cluster.primary",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"min_master_version"},
-			},
+			// Issue with cloudrun_config addon: https://github.com/hashicorp/terraform-provider-google/issues/11943
+			// {
+			// 	Config: testAccContainerCluster_withInternalLoadBalancer(pid, clusterName),
+			// },
+			// {
+			// 	ResourceName:            "google_container_cluster.primary",
+			// 	ImportState:             true,
+			// 	ImportStateVerify:       true,
+			// 	ImportStateVerifyIgnore: []string{"min_master_version"},
+			// },
 		},
 	})
 }
@@ -2816,15 +2817,15 @@ resource "google_container_cluster" "primary" {
     cloudrun_config {
       disabled = true
     }
-    istio_config {
-      disabled = true
-      auth     = "AUTH_MUTUAL_TLS"
-    }
     dns_cache_config {
       enabled = false
     }
     gce_persistent_disk_csi_driver_config {
       enabled = false
+    }
+    istio_config {
+      disabled = true
+      auth     = "AUTH_MUTUAL_TLS"
     }
     kalm_config {
 	  enabled = false
@@ -2871,18 +2872,20 @@ resource "google_container_cluster" "primary" {
       enabled = true
     }
     cloudrun_config {
-      disabled = false
-    }
-    istio_config {
-      disabled = false
-      auth     = "AUTH_NONE"
+	  # https://github.com/hashicorp/terraform-provider-google/issues/11943
+      # disabled = false
+      disabled = true
     }
     dns_cache_config {
       enabled = true
     }
     gce_persistent_disk_csi_driver_config {
       enabled = true
-	}
+    }
+    istio_config {
+      disabled = false
+      auth     = "AUTH_NONE"
+    }
 	kalm_config {
 	  enabled = true
 	}
@@ -2897,41 +2900,42 @@ resource "google_container_cluster" "primary" {
 `, projectID, clusterName)
 }
 
-func testAccContainerCluster_withInternalLoadBalancer(projectID string, clusterName string) string {
-	return fmt.Sprintf(`
-data "google_project" "project" {
-  project_id = "%s"
-}
+// Issue with cloudrun_config addon: https://github.com/hashicorp/terraform-provider-google/issues/11943/
+// func testAccContainerCluster_withInternalLoadBalancer(projectID string, clusterName string) string {
+// 	return fmt.Sprintf(`
+// data "google_project" "project" {
+//   project_id = "%s"
+// }
 
-resource "google_container_cluster" "primary" {
-  name               = "%s"
-  location           = "us-central1-a"
-  initial_node_count = 1
+// resource "google_container_cluster" "primary" {
+//   name               = "%s"
+//   location           = "us-central1-a"
+//   initial_node_count = 1
 
-  min_master_version = "latest"
+//   min_master_version = "latest"
 
-  workload_identity_config {
-    workload_pool = "${data.google_project.project.project_id}.svc.id.goog"
-  }
+//   workload_identity_config {
+//     workload_pool = "${data.google_project.project.project_id}.svc.id.goog"
+//   }
 
-  addons_config {
-    http_load_balancing {
-      disabled = false
-    }
-    horizontal_pod_autoscaling {
-      disabled = false
-    }
-    network_policy_config {
-      disabled = false
-    }
-    cloudrun_config {
-	  disabled = false
-	  load_balancer_type = "LOAD_BALANCER_TYPE_INTERNAL"
-    }
-  }
-}
-`, projectID, clusterName)
-}
+//   addons_config {
+//     http_load_balancing {
+//       disabled = false
+//     }
+//     horizontal_pod_autoscaling {
+//       disabled = false
+//     }
+//     network_policy_config {
+//       disabled = false
+//     }
+//     cloudrun_config {
+// 	  disabled = false
+// 	  load_balancer_type = "LOAD_BALANCER_TYPE_INTERNAL"
+//     }
+//   }
+// }
+// `, projectID, clusterName)
+// }
 
 func testAccContainerCluster_withNotificationConfig(clusterName string, topic string) string {
 	return fmt.Sprintf(`
