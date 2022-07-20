@@ -35,7 +35,6 @@ A managed metastore service that serves metadata queries.
 
 ```hcl
 resource "google_dataproc_metastore_service" "default" {
-  provider   = google-beta
   service_id = "metastore-srv"
   location   = "us-central1"
   port       = 9080
@@ -56,7 +55,6 @@ resource "google_dataproc_metastore_service" "default" {
 
 ```hcl
 resource "google_dataproc_metastore_service" "default" {
-  provider   = google-beta
   service_id = "example-service"
   location   = "us-central1"
 
@@ -121,6 +119,7 @@ The following arguments are supported:
   (Optional)
   The one hour maintenance window of the metastore service.
   This specifies when the service can be restarted for maintenance purposes in UTC time.
+  Maintenance window is not needed for services with the `SPANNER` database type.
   Structure is [documented below](#nested_maintenance_window).
 
 * `encryption_config` -
@@ -134,9 +133,21 @@ The following arguments are supported:
   Configuration information specific to running Hive metastore software as the metastore service.
   Structure is [documented below](#nested_hive_metastore_config).
 
+* `database_type` -
+  (Optional)
+  The database type that the Metastore service stores its data.
+  Default value is `MYSQL`.
+  Possible values are `MYSQL` and `SPANNER`.
+
+* `release_channel` -
+  (Optional)
+  The release channel of the service. If unspecified, defaults to `STABLE`.
+  Default value is `STABLE`.
+  Possible values are `CANARY` and `STABLE`.
+
 * `location` -
   (Optional)
-  The  location where the autoscaling policy should reside.
+  The location where the metastore service should reside.
   The default value is `global`.
 
 * `project` - (Optional) The ID of the project in which the resource belongs.
@@ -162,6 +173,12 @@ The following arguments are supported:
   Use the following format: `projects/([^/]+)/locations/([^/]+)/keyRings/([^/]+)/cryptoKeys/([^/]+)`
 
 <a name="nested_hive_metastore_config"></a>The `hive_metastore_config` block supports:
+
+* `endpoint_protocol` -
+  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  The protocol to use for the metastore service endpoint. If unspecified, defaults to `THRIFT`.
+  Default value is `THRIFT`.
+  Possible values are `THRIFT` and `GRPC`.
 
 * `version` -
   (Required)
@@ -221,6 +238,9 @@ In addition to the arguments listed above, the following computed attributes are
 
 * `artifact_gcs_uri` -
   A Cloud Storage URI (starting with gs://) that specifies where artifacts related to the metastore service are stored.
+
+* `uid` -
+  The globally unique resource identifier of the metastore service.
 
 
 ## Timeouts

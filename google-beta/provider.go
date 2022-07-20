@@ -949,8 +949,8 @@ func Provider() *schema.Provider {
 }
 
 // Generated resources: 252
-// Generated IAM resources: 153
-// Total generated resources: 405
+// Generated IAM resources: 159
+// Total generated resources: 411
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1044,6 +1044,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_cloud_identity_group":                                  resourceCloudIdentityGroup(),
 			"google_cloud_identity_group_membership":                       resourceCloudIdentityGroupMembership(),
 			"google_cloudiot_registry":                                     resourceCloudIotDeviceRegistry(),
+			"google_cloudiot_registry_iam_binding":                         ResourceIamBinding(CloudIotDeviceRegistryIamSchema, CloudIotDeviceRegistryIamUpdaterProducer, CloudIotDeviceRegistryIdParseFunc),
+			"google_cloudiot_registry_iam_member":                          ResourceIamMember(CloudIotDeviceRegistryIamSchema, CloudIotDeviceRegistryIamUpdaterProducer, CloudIotDeviceRegistryIdParseFunc),
+			"google_cloudiot_registry_iam_policy":                          ResourceIamPolicy(CloudIotDeviceRegistryIamSchema, CloudIotDeviceRegistryIamUpdaterProducer, CloudIotDeviceRegistryIdParseFunc),
 			"google_cloudiot_device":                                       resourceCloudIotDevice(),
 			"google_cloud_run_domain_mapping":                              resourceCloudRunDomainMapping(),
 			"google_cloud_run_service":                                     resourceCloudRunService(),
@@ -1122,6 +1125,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_compute_router_nat":                                    resourceComputeRouterNat(),
 			"google_compute_router_peer":                                   resourceComputeRouterBgpPeer(),
 			"google_compute_snapshot":                                      resourceComputeSnapshot(),
+			"google_compute_snapshot_iam_binding":                          ResourceIamBinding(ComputeSnapshotIamSchema, ComputeSnapshotIamUpdaterProducer, ComputeSnapshotIdParseFunc),
+			"google_compute_snapshot_iam_member":                           ResourceIamMember(ComputeSnapshotIamSchema, ComputeSnapshotIamUpdaterProducer, ComputeSnapshotIdParseFunc),
+			"google_compute_snapshot_iam_policy":                           ResourceIamPolicy(ComputeSnapshotIamSchema, ComputeSnapshotIamUpdaterProducer, ComputeSnapshotIdParseFunc),
 			"google_compute_ssl_certificate":                               resourceComputeSslCertificate(),
 			"google_compute_managed_ssl_certificate":                       resourceComputeManagedSslCertificate(),
 			"google_compute_region_ssl_certificate":                        resourceComputeRegionSslCertificate(),

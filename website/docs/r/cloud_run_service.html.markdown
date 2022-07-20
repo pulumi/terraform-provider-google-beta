@@ -173,6 +173,8 @@ resource "google_sql_database_instance" "instance" {
 
 
 ```hcl
+# Example of how to deploy a publicly-accessible Cloud Run application
+
 resource "google_cloud_run_service" "default" {
   name     = "cloudrun-srv"
   location = "us-central1"
@@ -329,6 +331,7 @@ resource "google_cloud_run_service" "default" {
 
 ```hcl
 resource "google_project_service" "run_api" {
+  provider = google-beta
   project                    = "my-project-name"
   service                    = "run.googleapis.com"
   disable_dependent_services = true
@@ -336,24 +339,28 @@ resource "google_project_service" "run_api" {
 }
 
 resource "google_project_service" "iam_api" {
+  provider = google-beta
   project                    = "my-project-name"
   service                    = "iam.googleapis.com"
   disable_on_destroy         = false
 }
 
 resource "google_project_service" "resource_manager_api" {
+  provider = google-beta
   project                    = "my-project-name"
   service                    = "cloudresourcemanager.googleapis.com"
   disable_on_destroy         = false
 }
 
 resource "google_project_service" "scheduler_api" {
+  provider = google-beta
   project                    = "my-project-name"
   service                    = "cloudscheduler.googleapis.com"
   disable_on_destroy         = false
 }
 
 resource "google_cloud_run_service" "default" {
+  provider = google-beta
   project  = "my-project-name"
   name     = "my-scheduled-service"
   location = "us-central1"
@@ -378,6 +385,7 @@ resource "google_cloud_run_service" "default" {
 }
 
 resource "google_service_account" "default" {
+  provider = google-beta
   project      = "my-project-name"
   account_id   = "scheduler-sa"
   description  = "Cloud Scheduler service account; used to trigger scheduled Cloud Run jobs."
@@ -390,6 +398,7 @@ resource "google_service_account" "default" {
 }
 
 resource "google_cloud_scheduler_job" "default" {
+  provider = google-beta
   name             = "scheduled-cloud-run-job"
   description      = "Invoke a Cloud Run container on a schedule."
   schedule         = "*/8 * * * *"
@@ -402,10 +411,7 @@ resource "google_cloud_scheduler_job" "default" {
 
   http_target {
     http_method = "POST"
-
-    # WORKAROUND: ensure this ends with a slash to prevent state-checking issues.
-    # See https://github.com/hashicorp/terraform-provider-google/issues/11977
-    uri         = "${google_cloud_run_service.default.status[0].url}/"
+    uri         = google_cloud_run_service.default.status[0].url
 
     oidc_token {
       service_account_email = google_service_account.default.email
@@ -580,7 +586,8 @@ resource "google_cloud_run_service" "default" {
 
 ```hcl
 resource "google_cloud_run_service" "default" {
-    name     = "ingress-service"
+  provider = google-beta
+  name     = "ingress-service"
     location = "us-central1"
 
     template {
@@ -735,6 +742,7 @@ resource "google_eventarc_trigger" "trigger-auditlog-tf" {
 # Cloud Run service replicated across multiple GCP regions
 
 resource "google_project_service" "compute_api" {
+  provider = google-beta
   project                    = "my-project-name"
   service                    = "compute.googleapis.com"
   disable_dependent_services = true
@@ -742,6 +750,7 @@ resource "google_project_service" "compute_api" {
 }
 
 resource "google_project_service" "run_api" {
+  provider = google-beta
   project                    = "my-project-name"
   service                    = "run.googleapis.com"
   disable_dependent_services = true
@@ -759,6 +768,7 @@ variable "run_regions" {
 }
 
 resource "google_compute_global_address" "lb_default" {
+  provider = google-beta
   name    = "myservice-service-ip"
   project = "my-project-name"
 
@@ -769,6 +779,7 @@ resource "google_compute_global_address" "lb_default" {
 }
 
 resource "google_compute_backend_service" "lb_default" {
+  provider = google-beta
   name                  = "myservice-backend"
   project               = "my-project-name"
   load_balancing_scheme = "EXTERNAL_MANAGED"
@@ -793,6 +804,7 @@ resource "google_compute_backend_service" "lb_default" {
 
 
 resource "google_compute_url_map" "lb_default" {
+  provider = google-beta
   name            = "myservice-lb-urlmap"
   project         = "my-project-name"
   default_service = google_compute_backend_service.lb_default.id
@@ -811,6 +823,7 @@ resource "google_compute_url_map" "lb_default" {
 }
 
 resource "google_compute_managed_ssl_certificate" "lb_default" {
+  provider = google-beta
   name    = "myservice-ssl-cert"
   project = "my-project-name"
 
@@ -820,6 +833,7 @@ resource "google_compute_managed_ssl_certificate" "lb_default" {
 }
 
 resource "google_compute_target_https_proxy" "lb_default" {
+  provider = google-beta
   name    = "myservice-https-proxy"
   project = "my-project-name"
   url_map = google_compute_url_map.lb_default.id
@@ -832,6 +846,7 @@ resource "google_compute_target_https_proxy" "lb_default" {
 }
 
 resource "google_compute_global_forwarding_rule" "lb_default" {
+  provider = google-beta
   name                  = "myservice-lb-fr"
   project               = "my-project-name"
   load_balancing_scheme = "EXTERNAL_MANAGED"
@@ -842,6 +857,7 @@ resource "google_compute_global_forwarding_rule" "lb_default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "lb_default" {
+  provider = google-beta
   count                 = length(var.run_regions)
   project               = "my-project-name"
   name                  = "myservice-neg"
@@ -857,6 +873,7 @@ output "load_balancer_ip_addr" {
 }
 
 resource "google_cloud_run_service" "run_default" {
+  provider = google-beta
   count    = length(var.run_regions)
   project  = "my-project-name"
   name     = "myservice-run-app-${var.run_regions[count.index]}"
@@ -882,6 +899,7 @@ resource "google_cloud_run_service" "run_default" {
 }
 
 resource "google_cloud_run_service_iam_member" "run_allow_unauthenticated" {
+  provider = google-beta
   count    = length(var.run_regions)
   project  = "my-project-name"
   location = google_cloud_run_service.run_default[count.index].location
@@ -891,6 +909,7 @@ resource "google_cloud_run_service_iam_member" "run_allow_unauthenticated" {
 }
 
 resource "google_compute_url_map" "https_default" {
+  provider = google-beta
   name    = "myservice-https-urlmap"
   project = "my-project-name"
 
@@ -902,6 +921,7 @@ resource "google_compute_url_map" "https_default" {
 }
 
 resource "google_compute_target_http_proxy" "https_default" {
+  provider = google-beta
   name    = "myservice-http-proxy"
   project = "my-project-name"
   url_map = google_compute_url_map.https_default.id
@@ -912,6 +932,7 @@ resource "google_compute_target_http_proxy" "https_default" {
 }
 
 resource "google_compute_global_forwarding_rule" "https_default" {
+  provider = google-beta
   name       = "myservice-https-fr"
   project    = "my-project-name"
   target     = google_compute_target_http_proxy.https_default.id
