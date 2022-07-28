@@ -81,6 +81,12 @@ func resourceApikeysKey() *schema.Resource {
 				Sensitive:   true,
 				Description: "Output only. An encrypted and signed value held by this key. This field can be accessed only through the `GetKeyString` method.",
 			},
+
+			"uid": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Output only. Unique id in UUID4 format.",
+			},
 		},
 	}
 }
@@ -233,7 +239,7 @@ func resourceApikeysKeyCreate(d *schema.ResourceData, meta interface{}) error {
 		Restrictions: expandApikeysKeyRestrictions(d.Get("restrictions")),
 	}
 
-	id, err := replaceVarsForId(d, config, "projects/{{project}}/locations/global/keys/{{name}}")
+	id, err := obj.ID()
 	if err != nil {
 		return fmt.Errorf("error constructing id: %s", err)
 	}
@@ -320,6 +326,9 @@ func resourceApikeysKeyRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	if err = d.Set("key_string", res.KeyString); err != nil {
 		return fmt.Errorf("error setting key_string in state: %s", err)
+	}
+	if err = d.Set("uid", res.Uid); err != nil {
+		return fmt.Errorf("error setting uid in state: %s", err)
 	}
 
 	return nil

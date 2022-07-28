@@ -917,6 +917,7 @@ func Provider() *schema.Provider {
 			"google_service_account":                              dataSourceGoogleServiceAccount(),
 			"google_service_account_access_token":                 dataSourceGoogleServiceAccountAccessToken(),
 			"google_service_account_id_token":                     dataSourceGoogleServiceAccountIdToken(),
+			"google_service_account_jwt":                          dataSourceGoogleServiceAccountJwt(),
 			"google_service_account_key":                          dataSourceGoogleServiceAccountKey(),
 			"google_sourcerepo_repository":                        dataSourceGoogleSourceRepoRepository(),
 			"google_spanner_instance":                             dataSourceSpannerInstance(),
@@ -948,9 +949,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 252
-// Generated IAM resources: 159
-// Total generated resources: 411
+// Generated resources: 255
+// Generated IAM resources: 165
+// Total generated resources: 420
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1030,6 +1031,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_binary_authorization_policy":                           resourceBinaryAuthorizationPolicy(),
 			"google_certificate_manager_dns_authorization":                 resourceCertificateManagerDnsAuthorization(),
 			"google_certificate_manager_certificate":                       resourceCertificateManagerCertificate(),
+			"google_certificate_manager_certificate_map":                   resourceCertificateManagerCertificateMap(),
+			"google_certificate_manager_certificate_map_entry":             resourceCertificateManagerCertificateMapEntry(),
 			"google_cloud_asset_project_feed":                              resourceCloudAssetProjectFeed(),
 			"google_cloud_asset_folder_feed":                               resourceCloudAssetFolderFeed(),
 			"google_cloud_asset_organization_feed":                         resourceCloudAssetOrganizationFeed(),
@@ -1061,6 +1064,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_compute_address":                                       resourceComputeAddress(),
 			"google_compute_autoscaler":                                    resourceComputeAutoscaler(),
 			"google_compute_backend_bucket":                                resourceComputeBackendBucket(),
+			"google_compute_backend_bucket_iam_binding":                    ResourceIamBinding(ComputeBackendBucketIamSchema, ComputeBackendBucketIamUpdaterProducer, ComputeBackendBucketIdParseFunc),
+			"google_compute_backend_bucket_iam_member":                     ResourceIamMember(ComputeBackendBucketIamSchema, ComputeBackendBucketIamUpdaterProducer, ComputeBackendBucketIdParseFunc),
+			"google_compute_backend_bucket_iam_policy":                     ResourceIamPolicy(ComputeBackendBucketIamSchema, ComputeBackendBucketIamUpdaterProducer, ComputeBackendBucketIdParseFunc),
 			"google_compute_backend_bucket_signed_url_key":                 resourceComputeBackendBucketSignedUrlKey(),
 			"google_compute_backend_service":                               resourceComputeBackendService(),
 			"google_compute_backend_service_iam_binding":                   ResourceIamBinding(ComputeBackendServiceIamSchema, ComputeBackendServiceIamUpdaterProducer, ComputeBackendServiceIdParseFunc),
@@ -1185,6 +1191,10 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_dataproc_metastore_service_iam_binding":                ResourceIamBinding(DataprocMetastoreServiceIamSchema, DataprocMetastoreServiceIamUpdaterProducer, DataprocMetastoreServiceIdParseFunc),
 			"google_dataproc_metastore_service_iam_member":                 ResourceIamMember(DataprocMetastoreServiceIamSchema, DataprocMetastoreServiceIamUpdaterProducer, DataprocMetastoreServiceIdParseFunc),
 			"google_dataproc_metastore_service_iam_policy":                 ResourceIamPolicy(DataprocMetastoreServiceIamSchema, DataprocMetastoreServiceIamUpdaterProducer, DataprocMetastoreServiceIdParseFunc),
+			"google_dataproc_metastore_federation":                         resourceDataprocMetastoreFederation(),
+			"google_dataproc_metastore_federation_iam_binding":             ResourceIamBinding(DataprocMetastoreFederationIamSchema, DataprocMetastoreFederationIamUpdaterProducer, DataprocMetastoreFederationIdParseFunc),
+			"google_dataproc_metastore_federation_iam_member":              ResourceIamMember(DataprocMetastoreFederationIamSchema, DataprocMetastoreFederationIamUpdaterProducer, DataprocMetastoreFederationIdParseFunc),
+			"google_dataproc_metastore_federation_iam_policy":              ResourceIamPolicy(DataprocMetastoreFederationIamSchema, DataprocMetastoreFederationIamUpdaterProducer, DataprocMetastoreFederationIdParseFunc),
 			"google_datastore_index":                                       resourceDatastoreIndex(),
 			"google_deployment_manager_deployment":                         resourceDeploymentManagerDeployment(),
 			"google_dialogflow_agent":                                      resourceDialogflowAgent(),

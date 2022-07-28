@@ -103,10 +103,10 @@ The following arguments are supported:
 * `preview` - (Optional) When set to true, the `action` specified above is not enforced.
     Stackdriver logs for requests that trigger a preview action are annotated as such.
 
-* `rate_limit_options` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `rate_limit_options` - (Optional)
     Must be specified if the `action` is "rate_based_bad" or "throttle". Cannot be specified for other actions. Structure is [documented below](#nested_rate_limit_options).
 
-* `redirect_options` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `redirect_options` - (Optional)
     Can be specified if the `action` is "redirect". Cannot be specified for other actions. Structure is [documented below](#nested_redirect_options).
 
 <a name="nested_match"></a>The `match` block supports:

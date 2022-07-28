@@ -512,6 +512,7 @@ func resourceBigtableInstanceClusterReorderTypeList(_ context.Context, diff *sch
 		for i, e := range orderedClusters {
 			if e == nil {
 				orderedClusters[i] = elem
+				break
 			}
 		}
 	}

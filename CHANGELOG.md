@@ -1,4 +1,55 @@
-## 4.29.0 (Unreleased)
+## 4.30.0 (Unreleased)
+
+FEATURES:
+* **New Data Source:** `google_service_account_jwt` ([#4489](https://github.com/hashicorp/terraform-provider-google-beta/pull/4489))
+* **New Resource:** `google_certificate_map_entry` ([#4501](https://github.com/hashicorp/terraform-provider-google-beta/pull/4501))
+* **New Resource:** `google_certificate_map` ([#4501](https://github.com/hashicorp/terraform-provider-google-beta/pull/4501))
+* **New Resource:** `google_compute_backend_bucket_iam_binding` ([#4484](https://github.com/hashicorp/terraform-provider-google-beta/pull/4484))
+* **New Resource:** `google_compute_backend_bucket_iam_member` ([#4484](https://github.com/hashicorp/terraform-provider-google-beta/pull/4484))
+* **New Resource:** `google_compute_backend_bucket_iam_policy` ([#4484](https://github.com/hashicorp/terraform-provider-google-beta/pull/4484))
+* **New Resource:** `google_dataproc_metastore_federation` ([#4482](https://github.com/hashicorp/terraform-provider-google-beta/pull/4482))
+* **New Resource:** `google_dataproc_metastore_federation_iam_binding` ([#4482](https://github.com/hashicorp/terraform-provider-google-beta/pull/4482))
+* **New Resource:** `google_dataproc_metastore_federation_iam_member` ([#4482](https://github.com/hashicorp/terraform-provider-google-beta/pull/4482))
+* **New Resource:** `google_dataproc_metastore_federation_iam_policy` ([#4482](https://github.com/hashicorp/terraform-provider-google-beta/pull/4482))
+
+IMPROVEMENTS:
+* billingbudget: made `thresholdRules` optional in `google_billing_budget` ([#4480](https://github.com/hashicorp/terraform-provider-google-beta/pull/4480))
+* compute: added `instance_termination_action` field to `google_compute_instance_template` resource to support Spot VM termination action ([#4488](https://github.com/hashicorp/terraform-provider-google-beta/pull/4488))
+* compute: added `instance_termination_action` field to `google_compute_instance` resource to support Spot VM termination action ([#4488](https://github.com/hashicorp/terraform-provider-google-beta/pull/4488))
+* compute: added `request_coalescing` and `bypass_cache_on_request_headers` fields to `compute_backend_bucket` ([#4484](https://github.com/hashicorp/terraform-provider-google-beta/pull/4484))
+* compute: added field `all_instances_config` to `google_compute_instance_group_manager` and `google_compute_region_instance_group_manager` ([#4506](https://github.com/hashicorp/terraform-provider-google-beta/pull/4506))
+* compute: added support for `esp` protocol in `google_compute_packet_mirroring.filters.ip_protocols` ([#4496](https://github.com/hashicorp/terraform-provider-google-beta/pull/4496))
+* monitoring: added `evaluation_missing_data` field to `google_monitoring_alert_policy` ([#4502](https://github.com/hashicorp/terraform-provider-google-beta/pull/4502))
+* notebooks: added field `reserved_ip_range` to `google_notebooks_runtime` ([#4492](https://github.com/hashicorp/terraform-provider-google-beta/pull/4492))
+
+BUG FIXES:
+* bigtable: fixed an incorrect diff when adding two or more clusters ([#4490](https://github.com/hashicorp/terraform-provider-google-beta/pull/4490))
+* compute: allowed properly updating `adaptive_protection_config` in `compute_security_policy` ([#4478](https://github.com/hashicorp/terraform-provider-google-beta/pull/4478))
+* notebooks: fixed a bug where`google_notebooks_runtime` can't be updated ([#4492](https://github.com/hashicorp/terraform-provider-google-beta/pull/4492))
+* sql: fixed an issue in `google_sql_database_instance` where updates would fail because of the `collation` field ([#4505](https://github.com/hashicorp/terraform-provider-google-beta/pull/4505))
+
+## 4.29.0 (July 18, 2022)
+
+FEATURES:
+* **New Resource:** `google_cloudiot_registry_iam_binding` ([#4452](https://github.com/hashicorp/terraform-provider-google-beta/pull/4452))
+* **New Resource:** `google_cloudiot_registry_iam_member` ([#4452](https://github.com/hashicorp/terraform-provider-google-beta/pull/4452))
+* **New Resource:** `google_cloudiot_registry_iam_policy` ([#4452](https://github.com/hashicorp/terraform-provider-google-beta/pull/4452))
+* **New Resource:** `google_compute_snapshot_iam_binding` ([#4445](https://github.com/hashicorp/terraform-provider-google-beta/pull/4445))
+* **New Resource:** `google_compute_snapshot_iam_member` ([#4445](https://github.com/hashicorp/terraform-provider-google-beta/pull/4445))
+* **New Resource:** `google_compute_snapshot_iam_policy` ([#4445](https://github.com/hashicorp/terraform-provider-google-beta/pull/4445))
+
+IMPROVEMENTS:
+* container: added `binauthz_evaluation_mode` field to `resource_container_cluster`. ([#4451](https://github.com/hashicorp/terraform-provider-google-beta/pull/4451))
+* kms: added support for MAC value in `google_kms_crypto_key.purpose` ([#4458](https://github.com/hashicorp/terraform-provider-google-beta/pull/4458))
+* metastore: added `databaseType`, `releaseChannel`, and `hiveMetastoreConfig.endpointProtocol` arguments ([#4443](https://github.com/hashicorp/terraform-provider-google-beta/pull/4443))
+
+BUG FIXES:
+* bigquery: fixed case-sensitivity for `user_by_email` and `group_by_email` on `google_bigquery_dataset_access` ([#4446](https://github.com/hashicorp/terraform-provider-google-beta/pull/4446))
+* cloudscheduler: fixed a diff on the last slash of uri on `google_cloud_scheduler_job` ([#4444](https://github.com/hashicorp/terraform-provider-google-beta/pull/4444))
+* compute: fixed force recreation on `provisioned_iops` of `google_compute_disk` ([#4464](https://github.com/hashicorp/terraform-provider-google-beta/pull/4464))
+* compute: fixed missing `network_interface.0.ipv6_access_config.0.external_ipv6` output on `google_compute_instance` ([#4470](https://github.com/hashicorp/terraform-provider-google-beta/pull/4470))
+* documentai: fixed a bug where eu region could not be utilized for documentai resources ([#4472](https://github.com/hashicorp/terraform-provider-google-beta/pull/4472))
+* gkehub: fixed a bug where `issuer` can't be updated on `google_gke_hub_membership` ([#4471](https://github.com/hashicorp/terraform-provider-google-beta/pull/4471))
 
 FEATURES:
 * **New Resource:** `google_cloudiot_registry_iam_binding` ([#4452](https://github.com/hashicorp/terraform-provider-google-beta/pull/4452))

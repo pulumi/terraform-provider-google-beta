@@ -23,6 +23,8 @@ var (
 		"scheduling.0.preemptible",
 		"scheduling.0.node_affinities",
 		"scheduling.0.min_node_cpus",
+		"scheduling.0.provisioning_model",
+		"scheduling.0.instance_termination_action",
 	}
 
 	shieldedInstanceTemplateConfigKeys = []string{
@@ -533,6 +535,12 @@ func resourceComputeInstanceTemplate() *schema.Resource {
 							ForceNew:     true,
 							AtLeastOneOf: schedulingInstTemplateKeys,
 							Description:  `Whether the instance is spot. If this is set as SPOT.`,
+						},
+						"instance_termination_action": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							AtLeastOneOf: schedulingInstTemplateKeys,
+							Description:  `Specifies the action GCE should take when SPOT VM is preempted.`,
 						},
 					},
 				},

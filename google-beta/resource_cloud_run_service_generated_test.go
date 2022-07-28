@@ -384,6 +384,116 @@ resource "google_cloud_run_service" "default" {
 `, context)
 }
 
+func TestAccCloudRunService_cloudRunServiceStaticOutboundExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"random_suffix": randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProvidersOiCS,
+		CheckDestroy: testAccCheckCloudRunServiceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCloudRunService_cloudRunServiceStaticOutboundExample(context),
+			},
+			{
+				ResourceName:            "google_cloud_run_service.default",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"name", "location"},
+			},
+		},
+	})
+}
+
+func testAccCloudRunService_cloudRunServiceStaticOutboundExample(context map[string]interface{}) string {
+	return Nprintf(`
+# Example of setting up a Cloud Run service with a static outbound IP
+
+resource "google_compute_network" "default" {
+  name = "tf-test-cr-static-ip-network%{random_suffix}"
+}
+
+resource "google_compute_subnetwork" "default" {
+  name          = "tf-test-cr-static-ip%{random_suffix}"
+  ip_cidr_range = "10.124.0.0/28"
+  network       = google_compute_network.default.id
+  region        = "us-central1"
+}
+
+resource "google_project_service" "vpc" {
+  service = "vpcaccess.googleapis.com"
+}
+
+resource "google_vpc_access_connector" "default" {
+  provider = google-beta
+  name     = "tf-test-cr-conn%{random_suffix}"
+
+  subnet {
+    name = google_compute_subnetwork.default.name
+  }
+
+  # Wait for VPC API enablement
+  # before creating this resource
+  depends_on = [
+    google_project_service.vpc
+  ]
+}
+
+resource "google_compute_router" "default" {
+  name    = "tf-test-cr-static-ip-router%{random_suffix}"
+  network = google_compute_network.default.name
+  region  = google_compute_subnetwork.default.region
+}
+
+resource "google_compute_address" "default" {
+  name   = "tf-test-cr-static-ip-addr%{random_suffix}"
+  region = google_compute_subnetwork.default.region
+}
+
+resource "google_compute_router_nat" "default" {
+  name   = "tf-test-cr-static-nat%{random_suffix}"
+  router = google_compute_router.default.name
+  region = google_compute_subnetwork.default.region
+
+  nat_ip_allocate_option = "MANUAL_ONLY"
+  nat_ips                = [google_compute_address.default.self_link]
+
+  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
+  subnetwork {
+    name                    = google_compute_subnetwork.default.id
+    source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
+  }
+}
+
+resource "google_cloud_run_service" "default" {
+  name     = "tf-test-cr-static-ip-service%{random_suffix}"
+  location = google_compute_subnetwork.default.region
+
+  template {
+    spec {
+      containers {
+        # Replace with the URL of your container
+        #   gcr.io/<YOUR_GCP_PROJECT_ID>/<YOUR_CONTAINER_NAME>
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+      }
+    }
+  }
+
+  metadata {
+    annotations = {
+      "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.default.name
+      "run.googleapis.com/vpc-access-egress"    = "all-traffic"
+      "run.googleapis.com/ingress"              = "all"
+    }
+  }
+}
+`, context)
+}
+
 func TestAccCloudRunService_cloudRunServiceScheduledExample(t *testing.T) {
 	t.Parallel()
 
@@ -765,6 +875,118 @@ resource "google_cloud_run_service" "default" {
 `, context)
 }
 
+func TestAccCloudRunService_cloudRunServiceInterserviceExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"random_suffix": randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckCloudRunServiceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCloudRunService_cloudRunServiceInterserviceExample(context),
+			},
+			{
+				ResourceName:            "google_cloud_run_service.default",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"name", "location"},
+			},
+		},
+	})
+}
+
+func testAccCloudRunService_cloudRunServiceInterserviceExample(context map[string]interface{}) string {
+	return Nprintf(`
+# Example of using a public Cloud Run service to call a private one
+
+resource "google_cloud_run_service" "default" {
+  name     = "tf-test-private-service%{random_suffix}"
+  location = "us-central1"
+
+  template {
+    spec {
+      containers {
+        # TODO<developer>: replace this with a public service container
+        # (This service can be invoked by anyone on the internet)
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+
+        # Include a reference to the private Cloud Run
+        # service's URL as an environment variable.
+        env {
+          name = "URL"
+          value = google_cloud_run_service.default_private.status[0].url
+        }
+      }
+
+      # Give the "public" Cloud Run service
+      # a service account's identity
+      service_account_name = google_service_account.default.email
+    }
+  }
+}
+
+data "google_iam_policy" "public" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers",
+    ]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "public" {
+  location    = google_cloud_run_service.default.location
+  project     = google_cloud_run_service.default.project
+  service     = google_cloud_run_service.default.name
+
+  policy_data = data.google_iam_policy.public.policy_data
+}
+
+resource "google_service_account" "default" {
+  account_id   = "cloud-run-interservice-id"
+  description  = "Identity used by a public Cloud Run service to call private Cloud Run services."
+  display_name = "cloud-run-interservice-id"
+}
+
+resource "google_cloud_run_service" "default_private" {
+  name     = "tf-test-private-service%{random_suffix}-private"
+  location = "us-central1"
+
+  template {
+    spec {
+      containers {
+        // TODO<developer>: replace this with a private service container
+        // (This service should only be invocable by the public service)
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+      }
+    }
+  }
+}
+
+data "google_iam_policy" "private" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "serviceAccount:${google_service_account.default.email}",
+    ]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "private" {
+  location    = google_cloud_run_service.default_private.location
+  project     = google_cloud_run_service.default_private.project
+  service     = google_cloud_run_service.default_private.name
+
+  policy_data = data.google_iam_policy.private.policy_data
+}
+`, context)
+}
+
 func TestAccCloudRunService_eventarcBasicTfExample(t *testing.T) {
 	t.Parallel()
 
@@ -994,7 +1216,6 @@ resource "google_compute_backend_service" "lb_default" {
     google_project_service.compute_api,
   ]
 }
-
 
 resource "google_compute_url_map" "lb_default" {
   provider = google-beta
@@ -1322,6 +1543,58 @@ resource "google_cloud_tasks_queue" "default" {
   name = "tf-test-cloud-tasks-queue-name%{random_suffix}"
   location = "us-central1"
   provider = google-beta
+}
+`, context)
+}
+
+func TestAccCloudRunService_cloudrunServiceIdentityExample(t *testing.T) {
+	t.Parallel()
+
+	context := map[string]interface{}{
+		"random_suffix": randString(t, 10),
+	}
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProvidersOiCS,
+		CheckDestroy: testAccCheckCloudRunServiceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCloudRunService_cloudrunServiceIdentityExample(context),
+			},
+			{
+				ResourceName:            "google_cloud_run_service.default",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"name", "location"},
+			},
+		},
+	})
+}
+
+func testAccCloudRunService_cloudrunServiceIdentityExample(context map[string]interface{}) string {
+	return Nprintf(`
+resource "google_service_account" "cloudrun_service_identity" {
+  account_id   = "my-service-account"
+}
+
+resource "google_cloud_run_service" "default" {
+  name     = "tf-test-cloud-run-srv%{random_suffix}"
+  location = "us-central1"
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/cloudrun/hello"
+      }
+      service_account_name = google_service_account.cloudrun_service_identity.email  
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
 }
 `, context)
 }
