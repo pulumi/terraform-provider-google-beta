@@ -13,9 +13,7 @@
 #
 # ----------------------------------------------------------------------------
 subcategory: "Cloud AI Notebooks"
-layout: "google"
 page_title: "Google: google_notebooks_instance"
-sidebar_current: "docs-google-notebooks-instance"
 description: |-
   A Cloud AI Platform Notebook instance.
 ---
@@ -230,7 +228,7 @@ The following arguments are supported:
 * `boot_disk_type` -
   (Optional)
   Possible disk types for notebook instances.
-  Possible values are `DISK_TYPE_UNSPECIFIED`, `PD_STANDARD`, `PD_SSD`, and `PD_BALANCED`.
+  Possible values are `DISK_TYPE_UNSPECIFIED`, `PD_STANDARD`, `PD_SSD`, `PD_BALANCED`, and `PD_EXTREME`.
 
 * `boot_disk_size_gb` -
   (Optional)
@@ -241,7 +239,7 @@ The following arguments are supported:
 * `data_disk_type` -
   (Optional)
   Possible disk types for notebook instances.
-  Possible values are `DISK_TYPE_UNSPECIFIED`, `PD_STANDARD`, `PD_SSD`, and `PD_BALANCED`.
+  Possible values are `DISK_TYPE_UNSPECIFIED`, `PD_STANDARD`, `PD_SSD`, `PD_BALANCED`, and `PD_EXTREME`.
 
 * `data_disk_size_gb` -
   (Optional)
