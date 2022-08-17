@@ -565,7 +565,8 @@ func resourceBillingBudgetUpdate(d *schema.ResourceData, meta interface{}) error
 		updateMask = append(updateMask, "budgetFilter.projects",
 			"budgetFilter.labels",
 			"budgetFilter.calendarPeriod",
-			"budgetFilter.customPeriod")
+			"budgetFilter.customPeriod",
+			"budgetFilter.services")
 	}
 
 	if d.HasChange("amount") {

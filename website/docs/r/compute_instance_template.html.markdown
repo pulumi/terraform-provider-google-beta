@@ -41,7 +41,7 @@ resource "google_compute_instance_template" "default" {
 
   // Create a new boot disk from an image
   disk {
-    source_image      = "debian-cloud/debian-9"
+    source_image      = "debian-cloud/debian-11"
     auto_delete       = true
     boot              = true
     // backup the disk every day
@@ -72,7 +72,7 @@ resource "google_compute_instance_template" "default" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -105,7 +105,7 @@ data "google_compute_default_service_account" "default" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -240,7 +240,7 @@ the template to use that specific image:
 
 ```tf
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -268,7 +268,7 @@ resource "google_compute_instance_template" "instance_template" {
 
   // boot disk
   disk {
-    source_image = "debian-cloud/debian-9"
+    source_image = "debian-cloud/debian-11"
   }
 }
 ```

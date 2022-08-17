@@ -1,4 +1,3 @@
-//
 package google
 
 import (
@@ -1502,7 +1501,7 @@ func testAccCheckComputeInstanceTemplateHasDiskResourcePolicy(instanceTemplate *
 func testAccComputeInstanceTemplate_basic(suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1599,7 +1598,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_preemptible(suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1642,7 +1641,7 @@ resource "google_compute_address" "foo" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1676,7 +1675,7 @@ resource "google_compute_address" "foo" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1725,7 +1724,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_networkTier(suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1750,7 +1749,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_networkIP(suffix, networkIP string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1778,7 +1777,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_networkIPAddress(suffix, ipAddress string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1806,7 +1805,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_disks(suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1852,7 +1851,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_disksInvalid(suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1924,7 +1923,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_regionDisks(suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -1967,7 +1966,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_subnet_auto(network, suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2013,7 +2012,7 @@ resource "google_compute_subnetwork" "subnetwork" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2090,7 +2089,7 @@ resource "google_compute_subnetwork" "subnetwork" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2122,7 +2121,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_startup_script(suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2153,7 +2152,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_primaryAliasIpRange(i string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2200,7 +2199,7 @@ resource "google_compute_subnetwork" "inst-test-subnetwork" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2239,7 +2238,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_guestAccelerator(i string, count uint8) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2274,7 +2273,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_minCpuPlatform(i string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2306,7 +2305,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_encryptionKMS(suffix, kmsLink string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2340,7 +2339,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_soleTenantInstanceTemplate(suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2380,7 +2379,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_reservationAffinityInstanceTemplate_nonSpecificReservation(templateName, consumeReservationType string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2409,7 +2408,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_reservationAffinityInstanceTemplate_specificReservation(templateName string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2601,7 +2600,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_imageResourceTest(diskName string, imageName string, imageDescription string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-	family  = "debian-9"
+	family  = "debian-11"
 	project = "debian-cloud"
 }
 
@@ -2634,7 +2633,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_resourcePolicies(suffix string, policyName string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 resource "google_compute_instance_template" "foobar" {
@@ -2732,7 +2731,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_queueCount(instanceTemplateName string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-	family  = "debian-9"
+	family  = "debian-11"
 	project = "debian-cloud"
 }
 
@@ -2759,7 +2758,7 @@ data "google_compute_default_service_account" "default" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -2836,7 +2835,7 @@ resource "google_compute_instance_template" "foobar" {
 func testAccComputeInstanceTemplate_spot(suffix string) string {
 	return fmt.Sprintf(`
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 

@@ -35,7 +35,7 @@ To get more information about RegionPerInstanceConfig, see:
 
 ```hcl
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
+  family  = "debian-11"
   project = "debian-cloud"
 }
 
@@ -84,7 +84,7 @@ resource "google_compute_disk" "default" {
   name  = "test-disk"
   type  = "pd-ssd"
   zone  = "us-central1-a"
-  image = "debian-8-jessie-v20170523"
+  image = "debian-11-bullseye-v20220719"
   physical_block_size_bytes = 4096
 }
 
