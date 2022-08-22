@@ -67,7 +67,6 @@ func resourceBigqueryDataTransferConfig() *schema.Resource {
 			"display_name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true,
 				Description: `The user specified display name for the transfer config.`,
 			},
 			"params": {
@@ -463,6 +462,12 @@ func resourceBigqueryDataTransferConfigUpdate(d *schema.ResourceData, meta inter
 	billingProject = project
 
 	obj := make(map[string]interface{})
+	displayNameProp, err := expandBigqueryDataTransferConfigDisplayName(d.Get("display_name"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("display_name"); !isEmptyValue(reflect.ValueOf(v)) && (ok || !reflect.DeepEqual(v, displayNameProp)) {
+		obj["displayName"] = displayNameProp
+	}
 	destinationDatasetIdProp, err := expandBigqueryDataTransferConfigDestinationDatasetId(d.Get("destination_dataset_id"), d, config)
 	if err != nil {
 		return err
@@ -524,6 +529,10 @@ func resourceBigqueryDataTransferConfigUpdate(d *schema.ResourceData, meta inter
 
 	log.Printf("[DEBUG] Updating Config %q: %#v", d.Id(), obj)
 	updateMask := []string{}
+
+	if d.HasChange("display_name") {
+		updateMask = append(updateMask, "displayName")
+	}
 
 	if d.HasChange("destination_dataset_id") {
 		updateMask = append(updateMask, "destinationDatasetId")
