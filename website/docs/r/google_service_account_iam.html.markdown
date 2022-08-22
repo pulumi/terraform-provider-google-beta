@@ -19,7 +19,9 @@ Three different resources help you manage your IAM policy for a service account.
 
 ~> **Note:** `google_service_account_iam_binding` resources **can be** used in conjunction with `google_service_account_iam_member` resources **only if** they do not grant privilege to the same role.
 
-## google\_service\_account\_iam\_policy
+## Example Usage
+
+### Service Account IAM Policy
 
 ```hcl
 data "google_iam_policy" "admin" {
@@ -43,7 +45,7 @@ resource "google_service_account_iam_policy" "admin-account-iam" {
 }
 ```
 
-## google\_service\_account\_iam\_binding
+### Service Account IAM Binging
 
 ```hcl
 resource "google_service_account" "sa" {
@@ -61,7 +63,7 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
 }
 ```
 
-With IAM Conditions:
+### Service Account IAM Binding With IAM Conditions:
 
 ```hcl
 resource "google_service_account" "sa" {
@@ -85,7 +87,7 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
 }
 ```
 
-## google\_service\_account\_iam\_member
+### Service Account IAM Member
 
 ```hcl
 data "google_compute_default_service_account" "default" {
@@ -110,7 +112,7 @@ resource "google_service_account_iam_member" "gce-default-account-iam" {
 }
 ```
 
-With IAM Conditions:
+### Service Account IAM Member With IAM Conditions:
 
 ```hcl
 resource "google_service_account" "sa" {
