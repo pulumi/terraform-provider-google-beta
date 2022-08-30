@@ -123,6 +123,11 @@ All files must be readable using the credentials supplied with this call.`,
 				DiffSuppressFunc: compareSelfLinkOrResourceName,
 				Description:      `AppEngine service resource`,
 			},
+			"app_engine_apis": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: `Allows App Engine second generation runtimes to access the legacy bundled services.`,
+			},
 			"automatic_scaling": {
 				Type:        schema.TypeList,
 				Optional:    true,
@@ -473,6 +478,12 @@ func resourceAppEngineStandardAppVersionCreate(d *schema.ResourceData, meta inte
 	} else if v, ok := d.GetOkExists("threadsafe"); !isEmptyValue(reflect.ValueOf(threadsafeProp)) && (ok || !reflect.DeepEqual(v, threadsafeProp)) {
 		obj["threadsafe"] = threadsafeProp
 	}
+	appEngineApisProp, err := expandAppEngineStandardAppVersionAppEngineApis(d.Get("app_engine_apis"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("app_engine_apis"); !isEmptyValue(reflect.ValueOf(appEngineApisProp)) && (ok || !reflect.DeepEqual(v, appEngineApisProp)) {
+		obj["appEngineApis"] = appEngineApisProp
+	}
 	runtimeApiVersionProp, err := expandAppEngineStandardAppVersionRuntimeApiVersion(d.Get("runtime_api_version"), d, config)
 	if err != nil {
 		return err
@@ -654,6 +665,9 @@ func resourceAppEngineStandardAppVersionRead(d *schema.ResourceData, meta interf
 	if err := d.Set("runtime", flattenAppEngineStandardAppVersionRuntime(res["runtime"], d, config)); err != nil {
 		return fmt.Errorf("Error reading StandardAppVersion: %s", err)
 	}
+	if err := d.Set("app_engine_apis", flattenAppEngineStandardAppVersionAppEngineApis(res["appEngineApis"], d, config)); err != nil {
+		return fmt.Errorf("Error reading StandardAppVersion: %s", err)
+	}
 	if err := d.Set("runtime_api_version", flattenAppEngineStandardAppVersionRuntimeApiVersion(res["runtimeApiVersion"], d, config)); err != nil {
 		return fmt.Errorf("Error reading StandardAppVersion: %s", err)
 	}
@@ -719,6 +733,12 @@ func resourceAppEngineStandardAppVersionUpdate(d *schema.ResourceData, meta inte
 		return err
 	} else if v, ok := d.GetOkExists("threadsafe"); !isEmptyValue(reflect.ValueOf(v)) && (ok || !reflect.DeepEqual(v, threadsafeProp)) {
 		obj["threadsafe"] = threadsafeProp
+	}
+	appEngineApisProp, err := expandAppEngineStandardAppVersionAppEngineApis(d.Get("app_engine_apis"), d, config)
+	if err != nil {
+		return err
+	} else if v, ok := d.GetOkExists("app_engine_apis"); !isEmptyValue(reflect.ValueOf(v)) && (ok || !reflect.DeepEqual(v, appEngineApisProp)) {
+		obj["appEngineApis"] = appEngineApisProp
 	}
 	runtimeApiVersionProp, err := expandAppEngineStandardAppVersionRuntimeApiVersion(d.Get("runtime_api_version"), d, config)
 	if err != nil {
@@ -937,6 +957,10 @@ func flattenAppEngineStandardAppVersionVersionId(v interface{}, d *schema.Resour
 }
 
 func flattenAppEngineStandardAppVersionRuntime(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
+func flattenAppEngineStandardAppVersionAppEngineApis(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	return v
 }
 
@@ -1331,6 +1355,10 @@ func expandAppEngineStandardAppVersionRuntime(v interface{}, d TerraformResource
 }
 
 func expandAppEngineStandardAppVersionThreadsafe(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandAppEngineStandardAppVersionAppEngineApis(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 
