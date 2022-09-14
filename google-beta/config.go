@@ -170,6 +170,7 @@ type Config struct {
 	AppEngineBasePath            string
 	ArtifactRegistryBasePath     string
 	BigQueryBasePath             string
+	BigqueryAnalyticsHubBasePath string
 	BigqueryConnectionBasePath   string
 	BigqueryDataTransferBasePath string
 	BigqueryReservationBasePath  string
@@ -194,6 +195,7 @@ type Config struct {
 	DataprocBasePath             string
 	DataprocMetastoreBasePath    string
 	DatastoreBasePath            string
+	DatastreamBasePath           string
 	DeploymentManagerBasePath    string
 	DialogflowBasePath           string
 	DialogflowCXBasePath         string
@@ -270,6 +272,7 @@ const ApigeeBasePathKey = "Apigee"
 const AppEngineBasePathKey = "AppEngine"
 const ArtifactRegistryBasePathKey = "ArtifactRegistry"
 const BigQueryBasePathKey = "BigQuery"
+const BigqueryAnalyticsHubBasePathKey = "BigqueryAnalyticsHub"
 const BigqueryConnectionBasePathKey = "BigqueryConnection"
 const BigqueryDataTransferBasePathKey = "BigqueryDataTransfer"
 const BigqueryReservationBasePathKey = "BigqueryReservation"
@@ -294,6 +297,7 @@ const DataLossPreventionBasePathKey = "DataLossPrevention"
 const DataprocBasePathKey = "Dataproc"
 const DataprocMetastoreBasePathKey = "DataprocMetastore"
 const DatastoreBasePathKey = "Datastore"
+const DatastreamBasePathKey = "Datastream"
 const DeploymentManagerBasePathKey = "DeploymentManager"
 const DialogflowBasePathKey = "Dialogflow"
 const DialogflowCXBasePathKey = "DialogflowCX"
@@ -364,6 +368,7 @@ var DefaultBasePaths = map[string]string{
 	AppEngineBasePathKey:            "https://appengine.googleapis.com/v1/",
 	ArtifactRegistryBasePathKey:     "https://artifactregistry.googleapis.com/v1beta2/",
 	BigQueryBasePathKey:             "https://bigquery.googleapis.com/bigquery/v2/",
+	BigqueryAnalyticsHubBasePathKey: "https://analyticshub.googleapis.com/v1beta1/",
 	BigqueryConnectionBasePathKey:   "https://bigqueryconnection.googleapis.com/v1/",
 	BigqueryDataTransferBasePathKey: "https://bigquerydatatransfer.googleapis.com/v1/",
 	BigqueryReservationBasePathKey:  "https://bigqueryreservation.googleapis.com/v1beta1/",
@@ -388,6 +393,7 @@ var DefaultBasePaths = map[string]string{
 	DataprocBasePathKey:             "https://dataproc.googleapis.com/v1beta2/",
 	DataprocMetastoreBasePathKey:    "https://metastore.googleapis.com/v1beta/",
 	DatastoreBasePathKey:            "https://datastore.googleapis.com/v1/",
+	DatastreamBasePathKey:           "https://datastream.googleapis.com/v1/",
 	DeploymentManagerBasePathKey:    "https://www.googleapis.com/deploymentmanager/v2/",
 	DialogflowBasePathKey:           "https://dialogflow.googleapis.com/v2/",
 	DialogflowCXBasePathKey:         "https://{{location}}-dialogflow.googleapis.com/v3/",
@@ -1234,6 +1240,7 @@ func ConfigureBasePaths(c *Config) {
 	c.AppEngineBasePath = DefaultBasePaths[AppEngineBasePathKey]
 	c.ArtifactRegistryBasePath = DefaultBasePaths[ArtifactRegistryBasePathKey]
 	c.BigQueryBasePath = DefaultBasePaths[BigQueryBasePathKey]
+	c.BigqueryAnalyticsHubBasePath = DefaultBasePaths[BigqueryAnalyticsHubBasePathKey]
 	c.BigqueryConnectionBasePath = DefaultBasePaths[BigqueryConnectionBasePathKey]
 	c.BigqueryDataTransferBasePath = DefaultBasePaths[BigqueryDataTransferBasePathKey]
 	c.BigqueryReservationBasePath = DefaultBasePaths[BigqueryReservationBasePathKey]
@@ -1258,6 +1265,7 @@ func ConfigureBasePaths(c *Config) {
 	c.DataprocBasePath = DefaultBasePaths[DataprocBasePathKey]
 	c.DataprocMetastoreBasePath = DefaultBasePaths[DataprocMetastoreBasePathKey]
 	c.DatastoreBasePath = DefaultBasePaths[DatastoreBasePathKey]
+	c.DatastreamBasePath = DefaultBasePaths[DatastreamBasePathKey]
 	c.DeploymentManagerBasePath = DefaultBasePaths[DeploymentManagerBasePathKey]
 	c.DialogflowBasePath = DefaultBasePaths[DialogflowBasePathKey]
 	c.DialogflowCXBasePath = DefaultBasePaths[DialogflowCXBasePathKey]
