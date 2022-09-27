@@ -451,6 +451,14 @@ CSV: Trailing columns
 JSON: Named values that don't match any column names`,
 							Default: false,
 						},
+						"json_extension": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+							Description: `If sourceFormat is set to newline-delimited JSON, indicates whether it should be processed as a JSON variant such as GeoJSON.
+For a sourceFormat other than JSON, omit this field. If the sourceFormat is newline-delimited JSON: - for newline-delimited
+GeoJSON: set to GEOJSON.`,
+						},
 						"max_bad_records": {
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -1448,6 +1456,8 @@ func flattenBigQueryJobConfigurationLoad(v interface{}, d *schema.ResourceData, 
 		flattenBigQueryJobConfigurationLoadAllowQuotedNewlines(original["allowQuotedNewlines"], d, config)
 	transformed["source_format"] =
 		flattenBigQueryJobConfigurationLoadSourceFormat(original["sourceFormat"], d, config)
+	transformed["json_extension"] =
+		flattenBigQueryJobConfigurationLoadJsonExtension(original["jsonExtension"], d, config)
 	transformed["allow_jagged_rows"] =
 		flattenBigQueryJobConfigurationLoadAllowJaggedRows(original["allowJaggedRows"], d, config)
 	transformed["ignore_unknown_values"] =
@@ -1551,6 +1561,10 @@ func flattenBigQueryJobConfigurationLoadAllowQuotedNewlines(v interface{}, d *sc
 }
 
 func flattenBigQueryJobConfigurationLoadSourceFormat(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
+func flattenBigQueryJobConfigurationLoadJsonExtension(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	return v
 }
 
@@ -2456,6 +2470,13 @@ func expandBigQueryJobConfigurationLoad(v interface{}, d TerraformResourceData, 
 		transformed["sourceFormat"] = transformedSourceFormat
 	}
 
+	transformedJsonExtension, err := expandBigQueryJobConfigurationLoadJsonExtension(original["json_extension"], d, config)
+	if err != nil {
+		return nil, err
+	} else if val := reflect.ValueOf(transformedJsonExtension); val.IsValid() && !isEmptyValue(val) {
+		transformed["jsonExtension"] = transformedJsonExtension
+	}
+
 	transformedAllowJaggedRows, err := expandBigQueryJobConfigurationLoadAllowJaggedRows(original["allow_jagged_rows"], d, config)
 	if err != nil {
 		return nil, err
@@ -2582,6 +2603,10 @@ func expandBigQueryJobConfigurationLoadAllowQuotedNewlines(v interface{}, d Terr
 }
 
 func expandBigQueryJobConfigurationLoadSourceFormat(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
+	return v, nil
+}
+
+func expandBigQueryJobConfigurationLoadJsonExtension(v interface{}, d TerraformResourceData, config *Config) (interface{}, error) {
 	return v, nil
 }
 

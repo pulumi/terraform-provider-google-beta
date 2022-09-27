@@ -4016,14 +4016,19 @@ func expandDnsConfig(configured interface{}) *container.DNSConfig {
 
 func expandContainerClusterLoggingConfig(configured interface{}) *container.LoggingConfig {
 	l := configured.([]interface{})
-	if len(l) == 0 || l[0] == nil {
+	if len(l) == 0 {
 		return nil
 	}
 
-	config := l[0].(map[string]interface{})
+	var components []string
+	if l[0] != nil {
+		config := l[0].(map[string]interface{})
+		components = convertStringArr(config["enable_components"].([]interface{}))
+	}
+
 	return &container.LoggingConfig{
 		ComponentConfig: &container.LoggingComponentConfig{
-			EnableComponents: convertStringArr(config["enable_components"].([]interface{})),
+			EnableComponents: components,
 		},
 	}
 }
@@ -4036,7 +4041,7 @@ func expandMonitoringConfig(configured interface{}) *container.MonitoringConfig 
 	mc := &container.MonitoringConfig{}
 	config := l[0].(map[string]interface{})
 
-	if v, ok := config["enable_components"]; ok && len(v.([]interface{})) > 0 {
+	if v, ok := config["enable_components"]; ok {
 		enable_components := v.([]interface{})
 		mc.ComponentConfig = &container.MonitoringComponentConfig{
 			EnableComponents: convertStringArr(enable_components),
