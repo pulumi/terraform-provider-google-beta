@@ -843,6 +843,7 @@ func Provider() *schema.Provider {
 			"google_access_approval_organization_service_account": dataSourceAccessApprovalOrganizationServiceAccount(),
 			"google_access_approval_project_service_account":      dataSourceAccessApprovalProjectServiceAccount(),
 			"google_active_folder":                                dataSourceGoogleActiveFolder(),
+			"google_artifact_registry_repository":                 dataSourceArtifactRegistryRepository(),
 			"google_app_engine_default_service_account":           dataSourceGoogleAppEngineDefaultServiceAccount(),
 			"google_billing_account":                              dataSourceGoogleBillingAccount(),
 			"google_bigquery_default_service_account":             dataSourceGoogleBigqueryDefaultServiceAccount(),
@@ -966,9 +967,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 262
+// Generated resources: 263
 // Generated IAM resources: 171
-// Total generated resources: 433
+// Total generated resources: 434
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1294,6 +1295,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_iap_tunnel_iam_policy":                                 ResourceIamPolicy(IapTunnelIamSchema, IapTunnelIamUpdaterProducer, IapTunnelIdParseFunc),
 			"google_iap_brand":                                             resourceIapBrand(),
 			"google_iap_client":                                            resourceIapClient(),
+			"google_identity_platform_config":                              resourceIdentityPlatformConfig(),
 			"google_identity_platform_default_supported_idp_config":        resourceIdentityPlatformDefaultSupportedIdpConfig(),
 			"google_identity_platform_tenant_default_supported_idp_config": resourceIdentityPlatformTenantDefaultSupportedIdpConfig(),
 			"google_identity_platform_inbound_saml_config":                 resourceIdentityPlatformInboundSamlConfig(),

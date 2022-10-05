@@ -29,6 +29,10 @@ Three different resources help you manage your IAM policy for BigQuery Table. Ea
 
 ~> **Note:** `google_bigquery_table_iam_binding` resources **can be** used in conjunction with `google_bigquery_table_iam_member` resources **only if** they do not grant privilege to the same role.
 
+~> **Note:**  This resource supports IAM Conditions but they have some known limitations which can be found [here](https://cloud.google.com/iam/docs/conditions-overview#limitations). Please review this article if you are having issues with IAM Conditions.
+
+
+
 ## google\_bigquery\_table\_iam\_policy
 
 ```hcl

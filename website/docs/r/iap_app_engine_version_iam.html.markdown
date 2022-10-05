@@ -29,7 +29,7 @@ Three different resources help you manage your IAM policy for Identity-Aware Pro
 
 ~> **Note:** `google_iap_app_engine_version_iam_binding` resources **can be** used in conjunction with `google_iap_app_engine_version_iam_member` resources **only if** they do not grant privilege to the same role.
 
-
+~> **Note:**  This resource supports IAM Conditions but they have some known limitations which can be found [here](https://cloud.google.com/iam/docs/conditions-overview#limitations). Please review this article if you are having issues with IAM Conditions.
 
 
 
