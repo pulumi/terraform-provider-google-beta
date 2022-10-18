@@ -680,7 +680,7 @@ func TestAccContainerNodePool_regionalAutoscaling(t *testing.T) {
 	})
 }
 
-//This test exists to validate a node pool with total size *and* and update to it.
+// This test exists to validate a node pool with total size *and* and update to it.
 func TestAccContainerNodePool_totalSize(t *testing.T) {
 	t.Parallel()
 
@@ -2246,6 +2246,10 @@ resource "google_container_node_pool" "np_with_gpu" {
       type  = "nvidia-tesla-a100"
       gpu_partition_size = "1g.5gb"
       count = 1
+      gpu_sharing_config {
+        gpu_sharing_strategy = "TIME_SHARING"
+        max_shared_clients_per_gpu = 2
+      }
     }
   }
 }
