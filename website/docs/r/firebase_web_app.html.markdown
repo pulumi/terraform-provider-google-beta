@@ -49,6 +49,7 @@ resource "google_firebase_web_app" "basic" {
 	provider = google-beta
 	project = google_project.default.project_id
 	display_name = "Display Name Basic"
+	deletion_policy = "DELETE"
 
 	depends_on = [google_firebase_project.default]
 }
@@ -97,6 +98,10 @@ The following arguments are supported:
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.
 
+* `deletion_policy` - (Optional) Set to `ABANDON` to allow the WebApp to be untracked from terraform state
+rather than deleted upon `terraform destroy`. This is useful becaue the WebApp may be
+serving traffic. Set to `DELETE` to delete the WebApp. Default to `ABANDON`
+
 
 ## Attributes Reference
 
@@ -111,6 +116,9 @@ In addition to the arguments listed above, the following computed attributes are
 * `app_id` -
   Immutable. The globally unique, Firebase-assigned identifier of the App.
   This identifier should be treated as an opaque token, as the data format is not specified.
+
+* `app_urls` -
+  The URLs where the `WebApp` is hosted.
 
 
 ## Timeouts
