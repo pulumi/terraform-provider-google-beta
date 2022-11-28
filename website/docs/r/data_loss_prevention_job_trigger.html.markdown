@@ -50,8 +50,8 @@ resource "google_data_loss_prevention_job_trigger" "basic" {
 			save_findings {
 				output_config {
 					table {
-						project_id = "asdf"
-						dataset_id = "asdf"
+						project_id = "project"
+						dataset_id = "dataset"
 					}
 				}
 			}
@@ -61,6 +61,90 @@ resource "google_data_loss_prevention_job_trigger" "basic" {
 				file_set {
 					url = "gs://mybucket/directory/"
 				}
+			}
+		}
+	}
+}
+```
+## Example Usage - Dlp Job Trigger Bigquery Row Limit
+
+
+```hcl
+resource "google_data_loss_prevention_job_trigger" "bigquery_row_limit" {
+	parent = "projects/my-project-name"
+	description = "Description"
+	display_name = "Displayname"
+
+	triggers {
+		schedule {
+			recurrence_period_duration = "86400s"
+		}
+	}
+
+	inspect_job {
+		inspect_template_name = "fake"
+		actions {
+			save_findings {
+				output_config {
+					table {
+						project_id = "project"
+						dataset_id = "dataset"
+					}
+				}
+			}
+		}
+		storage_config {
+			big_query_options {
+				table_reference {
+				    project_id = "project"
+				    dataset_id = "dataset"
+				    table_id = "table_to_scan"
+				}
+
+				rows_limit = 1000
+				sample_method = "RANDOM_START"
+			}
+		}
+	}
+}
+```
+## Example Usage - Dlp Job Trigger Bigquery Row Limit Percentage
+
+
+```hcl
+resource "google_data_loss_prevention_job_trigger" "bigquery_row_limit_percentage" {
+	parent = "projects/my-project-name"
+	description = "Description"
+	display_name = "Displayname"
+
+	triggers {
+		schedule {
+			recurrence_period_duration = "86400s"
+		}
+	}
+
+	inspect_job {
+		inspect_template_name = "fake"
+		actions {
+			save_findings {
+				output_config {
+					table {
+						project_id = "project"
+						dataset_id = "dataset"
+					}
+				}
+			}
+		}
+		storage_config {
+			big_query_options {
+				table_reference {
+				    project_id = "project"
+				    dataset_id = "dataset"
+				    table_id = "table_to_scan"
+				}
+
+				rows_limit_percent = 50
+				sample_method = "RANDOM_START"
 			}
 		}
 	}
@@ -303,6 +387,25 @@ The following arguments are supported:
   Set of files to scan.
   Structure is [documented below](#nested_table_reference).
 
+* `rows_limit` -
+  (Optional)
+  Max number of rows to scan. If the table has more rows than this value, the rest of the rows are omitted. 
+  If not set, or if set to 0, all rows will be scanned. Only one of rowsLimit and rowsLimitPercent can be 
+  specified. Cannot be used in conjunction with TimespanConfig.
+
+* `rows_limit_percent` -
+  (Optional)
+  Max percentage of rows to scan. The rest are omitted. The number of rows scanned is rounded down. 
+  Must be between 0 and 100, inclusively. Both 0 and 100 means no limit. Defaults to 0. Only one of 
+  rowsLimit and rowsLimitPercent can be specified. Cannot be used in conjunction with TimespanConfig.
+
+* `sample_method` -
+  (Optional)
+  How to sample rows if not all rows are scanned. Meaningful only when used in conjunction with either 
+  rowsLimit or rowsLimitPercent. If not specified, rows are scanned in the order BigQuery reads them.
+  Default value is `TOP`.
+  Possible values are `TOP` and `RANDOM_START`.
+
 
 <a name="nested_table_reference"></a>The `table_reference` block supports:
 
@@ -321,9 +424,14 @@ The following arguments are supported:
 <a name="nested_actions"></a>The `actions` block supports:
 
 * `save_findings` -
-  (Required)
+  (Optional)
   Schedule for triggered jobs
   Structure is [documented below](#nested_save_findings).
+
+* `pub_sub` -
+  (Optional)
+  Publish a message into a given Pub/Sub topic when the job completes.
+  Structure is [documented below](#nested_pub_sub).
 
 
 <a name="nested_save_findings"></a>The `save_findings` block supports:
@@ -367,6 +475,12 @@ The following arguments are supported:
   (Optional)
   Name of the table. If is not set a new one will be generated for you with the following format:
   `dlp_googleapis_yyyy_mm_dd_[dlp_job_id]`. Pacific timezone will be used for generating the date details.
+
+<a name="nested_pub_sub"></a>The `pub_sub` block supports:
+
+* `topic` -
+  (Required)
+  Cloud Pub/Sub topic to send notifications to.
 
 ## Attributes Reference
 

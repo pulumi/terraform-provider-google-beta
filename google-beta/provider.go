@@ -226,6 +226,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_ARTIFACT_REGISTRY_CUSTOM_ENDPOINT",
 				}, DefaultBasePaths[ArtifactRegistryBasePathKey]),
 			},
+			"beyondcorp_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_BEYONDCORP_CUSTOM_ENDPOINT",
+				}, DefaultBasePaths[BeyondcorpBasePathKey]),
+			},
 			"big_query_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -530,6 +538,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_FIREBASE_CUSTOM_ENDPOINT",
 				}, DefaultBasePaths[FirebaseBasePathKey]),
 			},
+			"firebase_hosting_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_FIREBASE_HOSTING_CUSTOM_ENDPOINT",
+				}, DefaultBasePaths[FirebaseHostingBasePathKey]),
+			},
 			"firestore_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -818,6 +834,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_STORAGE_CUSTOM_ENDPOINT",
 				}, DefaultBasePaths[StorageBasePathKey]),
 			},
+			"storage_transfer_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_STORAGE_TRANSFER_CUSTOM_ENDPOINT",
+				}, DefaultBasePaths[StorageTransferBasePathKey]),
+			},
 			"tags_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -870,7 +894,6 @@ func Provider() *schema.Provider {
 			IAMCustomEndpointEntryKey:               IAMCustomEndpointEntry,
 			ServiceNetworkingCustomEndpointEntryKey: ServiceNetworkingCustomEndpointEntry,
 			ServiceUsageCustomEndpointEntryKey:      ServiceUsageCustomEndpointEntry,
-			StorageTransferCustomEndpointEntryKey:   StorageTransferCustomEndpointEntry,
 			BigtableAdminCustomEndpointEntryKey:     BigtableAdminCustomEndpointEntry,
 
 			// dcl
@@ -899,6 +922,7 @@ func Provider() *schema.Provider {
 			"google_client_openid_userinfo":                       dataSourceGoogleClientOpenIDUserinfo(),
 			"google_cloudfunctions_function":                      dataSourceGoogleCloudFunctionsFunction(),
 			"google_cloudfunctions2_function":                     dataSourceGoogleCloudFunctions2Function(),
+			"google_cloud_asset_resources_search_all":             dataSourceGoogleCloudAssetResourcesSearchAll(),
 			"google_cloud_identity_groups":                        dataSourceGoogleCloudIdentityGroups(),
 			"google_cloud_identity_group_memberships":             dataSourceGoogleCloudIdentityGroupMemberships(),
 			"google_cloud_run_locations":                          dataSourceGoogleCloudRunLocations(),
@@ -1019,9 +1043,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 276
+// Generated resources: 282
 // Generated IAM resources: 183
-// Total generated resources: 459
+// Total generated resources: 465
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1048,6 +1072,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_active_directory_domain":                               resourceActiveDirectoryDomain(),
 			"google_active_directory_domain_trust":                         resourceActiveDirectoryDomainTrust(),
 			"google_alloydb_cluster":                                       resourceAlloydbCluster(),
+			"google_alloydb_instance":                                      resourceAlloydbInstance(),
 			"google_api_gateway_api":                                       resourceApiGatewayApi(),
 			"google_api_gateway_api_iam_binding":                           ResourceIamBinding(ApiGatewayApiIamSchema, ApiGatewayApiIamUpdaterProducer, ApiGatewayApiIdParseFunc),
 			"google_api_gateway_api_iam_member":                            ResourceIamMember(ApiGatewayApiIamSchema, ApiGatewayApiIamUpdaterProducer, ApiGatewayApiIdParseFunc),
@@ -1082,6 +1107,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_artifact_registry_repository_iam_binding":              ResourceIamBinding(ArtifactRegistryRepositoryIamSchema, ArtifactRegistryRepositoryIamUpdaterProducer, ArtifactRegistryRepositoryIdParseFunc),
 			"google_artifact_registry_repository_iam_member":               ResourceIamMember(ArtifactRegistryRepositoryIamSchema, ArtifactRegistryRepositoryIamUpdaterProducer, ArtifactRegistryRepositoryIdParseFunc),
 			"google_artifact_registry_repository_iam_policy":               ResourceIamPolicy(ArtifactRegistryRepositoryIamSchema, ArtifactRegistryRepositoryIamUpdaterProducer, ArtifactRegistryRepositoryIdParseFunc),
+			"google_beyondcorp_app_connector":                              resourceBeyondcorpAppConnector(),
+			"google_beyondcorp_app_gateway":                                resourceBeyondcorpAppGateway(),
 			"google_bigquery_dataset":                                      resourceBigQueryDataset(),
 			"google_bigquery_dataset_access":                               resourceBigQueryDatasetAccess(),
 			"google_bigquery_job":                                          resourceBigQueryJob(),
@@ -1294,10 +1321,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_dialogflow_cx_agent":                                   resourceDialogflowCXAgent(),
 			"google_dialogflow_cx_intent":                                  resourceDialogflowCXIntent(),
 			"google_dialogflow_cx_flow":                                    resourceDialogflowCXFlow(),
-			"google_dialogflow_cx_version":                                 resourceDialogflowCXVersion(),
 			"google_dialogflow_cx_page":                                    resourceDialogflowCXPage(),
 			"google_dialogflow_cx_entity_type":                             resourceDialogflowCXEntityType(),
-			"google_dialogflow_cx_environment":                             resourceDialogflowCXEnvironment(),
 			"google_dialogflow_cx_webhook":                                 resourceDialogflowCXWebhook(),
 			"google_dns_managed_zone":                                      resourceDNSManagedZone(),
 			"google_dns_policy":                                            resourceDNSPolicy(),
@@ -1312,6 +1337,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_firebase_project_location":                             resourceFirebaseProjectLocation(),
 			"google_firebase_web_app":                                      resourceFirebaseWebApp(),
 			"google_firebase_android_app":                                  resourceFirebaseAndroidApp(),
+			"google_firebase_apple_app":                                    resourceFirebaseAppleApp(),
+			"google_firebase_hosting_site":                                 resourceFirebaseHostingSite(),
+			"google_firebase_hosting_channel":                              resourceFirebaseHostingChannel(),
 			"google_firestore_index":                                       resourceFirestoreIndex(),
 			"google_firestore_document":                                    resourceFirestoreDocument(),
 			"google_game_services_realm":                                   resourceGameServicesRealm(),
@@ -1369,6 +1397,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_identity_platform_oauth_idp_config":                    resourceIdentityPlatformOauthIdpConfig(),
 			"google_identity_platform_tenant_oauth_idp_config":             resourceIdentityPlatformTenantOauthIdpConfig(),
 			"google_identity_platform_tenant":                              resourceIdentityPlatformTenant(),
+			"google_identity_platform_project_default_config":              resourceIdentityPlatformProjectDefaultConfig(),
 			"google_kms_key_ring":                                          resourceKMSKeyRing(),
 			"google_kms_crypto_key":                                        resourceKMSCryptoKey(),
 			"google_kms_crypto_key_version":                                resourceKMSCryptoKeyVersion(),
@@ -1468,6 +1497,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_storage_object_access_control":                         resourceStorageObjectAccessControl(),
 			"google_storage_default_object_access_control":                 resourceStorageDefaultObjectAccessControl(),
 			"google_storage_hmac_key":                                      resourceStorageHmacKey(),
+			"google_storage_transfer_agent_pool":                           resourceStorageTransferAgentPool(),
 			"google_tags_tag_key":                                          resourceTagsTagKey(),
 			"google_tags_tag_key_iam_binding":                              ResourceIamBinding(TagsTagKeyIamSchema, TagsTagKeyIamUpdaterProducer, TagsTagKeyIdParseFunc),
 			"google_tags_tag_key_iam_member":                               ResourceIamMember(TagsTagKeyIamSchema, TagsTagKeyIamUpdaterProducer, TagsTagKeyIdParseFunc),
@@ -1524,6 +1554,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_dataflow_flex_template_job":            resourceDataflowFlexTemplateJob(),
 			"google_dataproc_cluster":                      resourceDataprocCluster(),
 			"google_dataproc_job":                          resourceDataprocJob(),
+			"google_dialogflow_cx_version":                 resourceDialogflowCXVersion(),
+			"google_dialogflow_cx_environment":             resourceDialogflowCXEnvironment(),
 			"google_dns_record_set":                        resourceDnsRecordSet(),
 			"google_endpoints_service":                     resourceEndpointsService(),
 			"google_folder":                                resourceGoogleFolder(),
@@ -1740,6 +1772,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.ApigeeBasePath = d.Get("apigee_custom_endpoint").(string)
 	config.AppEngineBasePath = d.Get("app_engine_custom_endpoint").(string)
 	config.ArtifactRegistryBasePath = d.Get("artifact_registry_custom_endpoint").(string)
+	config.BeyondcorpBasePath = d.Get("beyondcorp_custom_endpoint").(string)
 	config.BigQueryBasePath = d.Get("big_query_custom_endpoint").(string)
 	config.BigqueryAnalyticsHubBasePath = d.Get("bigquery_analytics_hub_custom_endpoint").(string)
 	config.BigqueryConnectionBasePath = d.Get("bigquery_connection_custom_endpoint").(string)
@@ -1778,6 +1811,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.EssentialContactsBasePath = d.Get("essential_contacts_custom_endpoint").(string)
 	config.FilestoreBasePath = d.Get("filestore_custom_endpoint").(string)
 	config.FirebaseBasePath = d.Get("firebase_custom_endpoint").(string)
+	config.FirebaseHostingBasePath = d.Get("firebase_hosting_custom_endpoint").(string)
 	config.FirestoreBasePath = d.Get("firestore_custom_endpoint").(string)
 	config.GameServicesBasePath = d.Get("game_services_custom_endpoint").(string)
 	config.GKEHubBasePath = d.Get("gke_hub_custom_endpoint").(string)
@@ -1814,6 +1848,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.SpannerBasePath = d.Get("spanner_custom_endpoint").(string)
 	config.SQLBasePath = d.Get("sql_custom_endpoint").(string)
 	config.StorageBasePath = d.Get("storage_custom_endpoint").(string)
+	config.StorageTransferBasePath = d.Get("storage_transfer_custom_endpoint").(string)
 	config.TagsBasePath = d.Get("tags_custom_endpoint").(string)
 	config.TPUBasePath = d.Get("tpu_custom_endpoint").(string)
 	config.VertexAIBasePath = d.Get("vertex_ai_custom_endpoint").(string)
@@ -1831,7 +1866,6 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.IAMBasePath = d.Get(IAMCustomEndpointEntryKey).(string)
 	config.ServiceNetworkingBasePath = d.Get(ServiceNetworkingCustomEndpointEntryKey).(string)
 	config.ServiceUsageBasePath = d.Get(ServiceUsageCustomEndpointEntryKey).(string)
-	config.StorageTransferBasePath = d.Get(StorageTransferCustomEndpointEntryKey).(string)
 	config.BigtableAdminBasePath = d.Get(BigtableAdminCustomEndpointEntryKey).(string)
 
 	// dcl

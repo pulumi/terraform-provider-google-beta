@@ -798,6 +798,8 @@ func TestAccSqlDatabaseInstance_withPrivateNetwork_withoutAllocatedIpRange(t *te
 }
 
 func TestAccSqlDatabaseInstance_withPrivateNetwork_withAllocatedIpRange(t *testing.T) {
+	// Service Networking
+	skipIfVcr(t)
 	t.Parallel()
 
 	databaseName := "tf-test-" + randString(t, 10)
@@ -1233,6 +1235,8 @@ func TestAccSqlDatabaseInstance_ActiveDirectory(t *testing.T) {
 }
 
 func TestAccSqlDatabaseInstance_SqlServerAuditConfig(t *testing.T) {
+	// Service Networking
+	skipIfVcr(t)
 	t.Parallel()
 	databaseName := "tf-test-" + randString(t, 10)
 	rootPassword := randString(t, 15)
@@ -1887,6 +1891,7 @@ resource "google_sql_database_instance" "instance" {
     }
 
     activation_policy = "ALWAYS"
+    connector_enforcement = "REQUIRED"
   }
 }
 `
@@ -2212,6 +2217,7 @@ resource "google_sql_database_instance" "instance" {
       query_string_length     = 256
       record_application_tags = true
       record_client_address   = true
+      query_plans_per_minute  = 10
     }
   }
 }

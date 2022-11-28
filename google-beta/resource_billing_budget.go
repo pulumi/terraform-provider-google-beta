@@ -566,7 +566,8 @@ func resourceBillingBudgetUpdate(d *schema.ResourceData, meta interface{}) error
 			"budgetFilter.labels",
 			"budgetFilter.calendarPeriod",
 			"budgetFilter.customPeriod",
-			"budgetFilter.services")
+			"budgetFilter.services",
+			"budgetFilter.creditTypesTreatment")
 	}
 
 	if d.HasChange("amount") {

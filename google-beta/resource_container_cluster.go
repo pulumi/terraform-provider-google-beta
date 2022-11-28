@@ -71,6 +71,13 @@ var (
 	forceNewClusterNodeConfigFields = []string{
 		"workload_metadata_config",
 	}
+
+	suppressDiffForAutopilot = schema.SchemaDiffSuppressFunc(func(k, oldValue, newValue string, d *schema.ResourceData) bool {
+		if v, _ := d.Get("enable_autopilot").(bool); v {
+			return true
+		}
+		return false
+	})
 )
 
 // This uses the node pool nodeConfig schema but sets
@@ -104,7 +111,8 @@ func clusterSchemaNodePoolDefaults() *schema.Schema {
 					MaxItems:    1,
 					Elem: &schema.Resource{
 						Schema: map[string]*schema.Schema{
-							"gcfs_config": schemaGcfsConfig(false),
+							"gcfs_config":     schemaGcfsConfig(false),
+							"logging_variant": schemaLoggingVariant(),
 						},
 					},
 				},
@@ -430,21 +438,24 @@ func resourceContainerCluster() *schema.Resource {
 				MaxItems: 1,
 				// This field is Optional + Computed because we automatically set the
 				// enabled value to false if the block is not returned in API responses.
-				Optional:      true,
-				Computed:      true,
-				Description:   `Per-cluster configuration of Node Auto-Provisioning with Cluster Autoscaler to automatically adjust the size of the cluster and create/delete node pools based on the current needs of the cluster's workload. See the guide to using Node Auto-Provisioning for more details.`,
-				ConflictsWith: []string{"enable_autopilot"},
+				Optional:    true,
+				Computed:    true,
+				Description: `Per-cluster configuration of Node Auto-Provisioning with Cluster Autoscaler to automatically adjust the size of the cluster and create/delete node pools based on the current needs of the cluster's workload. See the guide to using Node Auto-Provisioning for more details.`,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
-							Type:        schema.TypeBool,
-							Required:    true,
-							Description: `Whether node auto-provisioning is enabled. Resource limits for cpu and memory must be defined to enable node auto-provisioning.`,
+							Type:          schema.TypeBool,
+							Optional:      true,
+							Computed:      true,
+							ConflictsWith: []string{"enable_autopilot"},
+							Description:   `Whether node auto-provisioning is enabled. Resource limits for cpu and memory must be defined to enable node auto-provisioning.`,
 						},
 						"resource_limits": {
-							Type:        schema.TypeList,
-							Optional:    true,
-							Description: `Global constraints for machine resources in the cluster. Configuring the cpu and memory types is required if node auto-provisioning is enabled. These limits will apply to node pool autoscaling in addition to node auto-provisioning.`,
+							Type:             schema.TypeList,
+							Optional:         true,
+							ConflictsWith:    []string{"enable_autopilot"},
+							DiffSuppressFunc: suppressDiffForAutopilot,
+							Description:      `Global constraints for machine resources in the cluster. Configuring the cpu and memory types is required if node auto-provisioning is enabled. These limits will apply to node pool autoscaling in addition to node auto-provisioning.`,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"resource_type": {
@@ -488,25 +499,28 @@ func resourceContainerCluster() *schema.Resource {
 										Description: `The Google Cloud Platform Service Account to be used by the node VMs.`,
 									},
 									"disk_size": {
-										Type:         schema.TypeInt,
-										Optional:     true,
-										Default:      100,
-										Description:  `Size of the disk attached to each node, specified in GB. The smallest allowed disk size is 10GB.`,
-										ValidateFunc: validation.IntAtLeast(10),
+										Type:             schema.TypeInt,
+										Optional:         true,
+										Default:          100,
+										Description:      `Size of the disk attached to each node, specified in GB. The smallest allowed disk size is 10GB.`,
+										DiffSuppressFunc: suppressDiffForAutopilot,
+										ValidateFunc:     validation.IntAtLeast(10),
 									},
 									"disk_type": {
-										Type:         schema.TypeString,
-										Optional:     true,
-										Default:      "pd-standard",
-										Description:  `Type of the disk attached to each node.`,
-										ValidateFunc: validation.StringInSlice([]string{"pd-standard", "pd-ssd", "pd-balanced"}, false),
+										Type:             schema.TypeString,
+										Optional:         true,
+										Default:          "pd-standard",
+										Description:      `Type of the disk attached to each node.`,
+										DiffSuppressFunc: suppressDiffForAutopilot,
+										ValidateFunc:     validation.StringInSlice([]string{"pd-standard", "pd-ssd", "pd-balanced"}, false),
 									},
 									"image_type": {
-										Type:         schema.TypeString,
-										Optional:     true,
-										Default:      "COS_CONTAINERD",
-										Description:  `The default image type used by NAP once a new node pool is being created.`,
-										ValidateFunc: validation.StringInSlice([]string{"COS_CONTAINERD", "COS", "UBUNTU_CONTAINERD", "UBUNTU"}, false),
+										Type:             schema.TypeString,
+										Optional:         true,
+										Default:          "COS_CONTAINERD",
+										Description:      `The default image type used by NAP once a new node pool is being created.`,
+										DiffSuppressFunc: suppressDiffForAutopilot,
+										ValidateFunc:     validation.StringInSlice([]string{"COS_CONTAINERD", "COS", "UBUNTU_CONTAINERD", "UBUNTU"}, false),
 									},
 									"min_cpu_platform": {
 										Type:             schema.TypeString,
@@ -520,15 +534,88 @@ func resourceContainerCluster() *schema.Resource {
 										ForceNew:    true,
 										Description: `The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool.`,
 									},
+									"shielded_instance_config": {
+										Type:        schema.TypeList,
+										Optional:    true,
+										Description: `Shielded Instance options.`,
+										MaxItems:    1,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"enable_secure_boot": {
+													Type:        schema.TypeBool,
+													Optional:    true,
+													Default:     false,
+													Description: `Defines whether the instance has Secure Boot enabled.`,
+													AtLeastOneOf: []string{
+														"cluster_autoscaling.0.auto_provisioning_defaults.0.shielded_instance_config.0.enable_secure_boot",
+														"cluster_autoscaling.0.auto_provisioning_defaults.0.shielded_instance_config.0.enable_integrity_monitoring",
+													},
+												},
+												"enable_integrity_monitoring": {
+													Type:        schema.TypeBool,
+													Optional:    true,
+													Default:     true,
+													Description: `Defines whether the instance has integrity monitoring enabled.`,
+													AtLeastOneOf: []string{
+														"cluster_autoscaling.0.auto_provisioning_defaults.0.shielded_instance_config.0.enable_secure_boot",
+														"cluster_autoscaling.0.auto_provisioning_defaults.0.shielded_instance_config.0.enable_integrity_monitoring",
+													},
+												},
+											},
+										},
+									},
+									"management": {
+										Type:        schema.TypeList,
+										Optional:    true,
+										Computed:    true,
+										MaxItems:    1,
+										Description: `NodeManagement configuration for this NodePool.`,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"auto_upgrade": {
+													Type:        schema.TypeBool,
+													Optional:    true,
+													Computed:    true,
+													Description: `Specifies whether node auto-upgrade is enabled for the node pool. If enabled, node auto-upgrade helps keep the nodes in your node pool up to date with the latest release version of Kubernetes.`,
+												},
+												"auto_repair": {
+													Type:        schema.TypeBool,
+													Optional:    true,
+													Computed:    true,
+													Description: `Specifies whether the node auto-repair is enabled for the node pool. If enabled, the nodes in this node pool will be monitored and, if they fail health checks too many times, an automatic repair action will be triggered.`,
+												},
+												"upgrade_options": {
+													Type:        schema.TypeList,
+													Computed:    true,
+													Description: `Specifies the Auto Upgrade knobs for the node pool.`,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+															"auto_upgrade_start_time": {
+																Type:        schema.TypeString,
+																Computed:    true,
+																Description: `This field is set when upgrades are about to commence with the approximate start time for the upgrades, in RFC3339 text format.`,
+															},
+															"description": {
+																Type:        schema.TypeString,
+																Computed:    true,
+																Description: `This field is set when upgrades are about to commence with the description of the upgrade.`,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
 								},
 							},
 						},
 						"autoscaling_profile": {
-							Type:         schema.TypeString,
-							Default:      "BALANCED",
-							Optional:     true,
-							ValidateFunc: validation.StringInSlice([]string{"BALANCED", "OPTIMIZE_UTILIZATION"}, false),
-							Description:  `Configuration options for the Autoscaling profile feature, which lets you choose whether the cluster autoscaler should optimize for resource utilization or resource availability when deciding to remove nodes from a cluster. Can be BALANCED or OPTIMIZE_UTILIZATION. Defaults to BALANCED.`,
+							Type:             schema.TypeString,
+							Default:          "BALANCED",
+							Optional:         true,
+							DiffSuppressFunc: suppressDiffForAutopilot,
+							ValidateFunc:     validation.StringInSlice([]string{"BALANCED", "OPTIMIZE_UTILIZATION"}, false),
+							Description:      `Configuration options for the Autoscaling profile feature, which lets you choose whether the cluster autoscaler should optimize for resource utilization or resource availability when deciding to remove nodes from a cluster. Can be BALANCED or OPTIMIZE_UTILIZATION. Defaults to BALANCED.`,
 						},
 					},
 				},
@@ -692,10 +779,10 @@ func resourceContainerCluster() *schema.Resource {
 						"enable_components": {
 							Type:        schema.TypeList,
 							Required:    true,
-							Description: `GKE components exposing logs. Valid values include SYSTEM_COMPONENTS and WORKLOADS.`,
+							Description: `GKE components exposing logs. Valid values include SYSTEM_COMPONENTS, APISERVER, CONTROLLER_MANAGER, SCHEDULER, and WORKLOADS.`,
 							Elem: &schema.Schema{
 								Type:         schema.TypeString,
-								ValidateFunc: validation.StringInSlice([]string{"SYSTEM_COMPONENTS", "WORKLOADS"}, false),
+								ValidateFunc: validation.StringInSlice([]string{"SYSTEM_COMPONENTS", "APISERVER", "CONTROLLER_MANAGER", "SCHEDULER", "WORKLOADS"}, false),
 							},
 						},
 					},
@@ -3165,6 +3252,29 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		log.Printf("[INFO] GKE cluster %s resource usage export config has been updated", d.Id())
 	}
 
+	if d.HasChange("node_pool_defaults") && d.HasChange("node_pool_defaults.0.node_config_defaults.0.logging_variant") {
+		if v, ok := d.GetOk("node_pool_defaults.0.node_config_defaults.0.logging_variant"); ok {
+			loggingVariant := v.(string)
+			req := &container.UpdateClusterRequest{
+				Update: &container.ClusterUpdate{
+					DesiredNodePoolLoggingConfig: &container.NodePoolLoggingConfig{
+						VariantConfig: &container.LoggingVariantConfig{
+							Variant: loggingVariant,
+						},
+					},
+				},
+			}
+
+			updateF := updateFunc(req, "updating GKE cluster desired node pool logging configuration defaults.")
+			// Call update serially.
+			if err := lockedCall(lockKey, updateF); err != nil {
+				return err
+			}
+
+			log.Printf("[INFO] GKE cluster %s node pool logging configuration defaults have been updated", d.Id())
+		}
+	}
+
 	if d.HasChange("node_pool_defaults") && d.HasChange("node_pool_defaults.0.node_config_defaults.0.gcfs_config") {
 		if v, ok := d.GetOk("node_pool_defaults.0.node_config_defaults.0.gcfs_config"); ok {
 			gcfsConfig := v.([]interface{})[0].(map[string]interface{})
@@ -3631,8 +3741,12 @@ func expandMaintenancePolicy(d *schema.ResourceData, meta interface{}) *containe
 
 func expandClusterAutoscaling(configured interface{}, d *schema.ResourceData) *container.ClusterAutoscaling {
 	l, ok := configured.([]interface{})
+	enableAutopilot := false
+	if v, ok := d.GetOk("enable_autopilot"); ok && v == true {
+		enableAutopilot = true
+	}
 	if !ok || l == nil || len(l) == 0 || l[0] == nil {
-		if v, ok := d.GetOk("enable_autopilot"); ok && v == true {
+		if enableAutopilot {
 			return nil
 		}
 		return &container.ClusterAutoscaling{
@@ -3687,6 +3801,15 @@ func expandAutoProvisioningDefaults(configured interface{}, d *schema.ResourceDa
 		DiskType:       config["disk_type"].(string),
 		ImageType:      config["image_type"].(string),
 		BootDiskKmsKey: config["boot_disk_kms_key"].(string),
+		Management:     expandManagement(config["management"]),
+	}
+
+	if v, ok := config["shielded_instance_config"]; ok && len(v.([]interface{})) > 0 {
+		conf := v.([]interface{})[0].(map[string]interface{})
+		npd.ShieldedInstanceConfig = &container.ShieldedInstanceConfig{
+			EnableSecureBoot:          conf["enable_secure_boot"].(bool),
+			EnableIntegrityMonitoring: conf["enable_integrity_monitoring"].(bool),
+		}
 	}
 
 	cpu := config["min_cpu_platform"].(string)
@@ -3696,6 +3819,37 @@ func expandAutoProvisioningDefaults(configured interface{}, d *schema.ResourceDa
 	}
 	npd.MinCpuPlatform = cpu
 	return npd
+}
+
+func expandManagement(configured interface{}) *container.NodeManagement {
+	l, ok := configured.([]interface{})
+	if !ok || l == nil || len(l) == 0 || l[0] == nil {
+		return &container.NodeManagement{}
+	}
+	config := l[0].(map[string]interface{})
+
+	mng := &container.NodeManagement{
+		AutoUpgrade:    config["auto_upgrade"].(bool),
+		AutoRepair:     config["auto_repair"].(bool),
+		UpgradeOptions: expandUpgradeOptions(config["upgrade_options"]),
+	}
+
+	return mng
+}
+
+func expandUpgradeOptions(configured interface{}) *container.AutoUpgradeOptions {
+	l, ok := configured.([]interface{})
+	if !ok || l == nil || len(l) == 0 || l[0] == nil {
+		return &container.AutoUpgradeOptions{}
+	}
+	config := l[0].(map[string]interface{})
+
+	upgradeOptions := &container.AutoUpgradeOptions{
+		AutoUpgradeStartTime: config["auto_upgrade_start_time"].(string),
+		Description:          config["description"].(string),
+	}
+
+	return upgradeOptions
 }
 
 func expandAuthenticatorGroupsConfig(configured interface{}) *container.AuthenticatorGroupsConfig {
@@ -4145,7 +4299,7 @@ func flattenNodePoolDefaults(c *container.NodePoolDefaults) []map[string]interfa
 	}
 
 	result := make(map[string]interface{})
-	if c.NodeConfigDefaults != nil && c.NodeConfigDefaults.GcfsConfig != nil {
+	if c.NodeConfigDefaults != nil {
 		result["node_config_defaults"] = flattenNodeConfigDefaults(c.NodeConfigDefaults)
 	}
 
@@ -4620,6 +4774,32 @@ func flattenAutoProvisioningDefaults(a *container.AutoprovisioningNodePoolDefaul
 	r["image_type"] = a.ImageType
 	r["min_cpu_platform"] = a.MinCpuPlatform
 	r["boot_disk_kms_key"] = a.BootDiskKmsKey
+	r["shielded_instance_config"] = flattenShieldedInstanceConfig(a.ShieldedInstanceConfig)
+	r["management"] = flattenManagement(a.Management)
+
+	return []map[string]interface{}{r}
+}
+
+func flattenManagement(a *container.NodeManagement) []map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	r := make(map[string]interface{})
+	r["auto_upgrade"] = a.AutoUpgrade
+	r["auto_repair"] = a.AutoRepair
+	r["upgrade_options"] = flattenUpgradeOptions(a.UpgradeOptions)
+
+	return []map[string]interface{}{r}
+}
+
+func flattenUpgradeOptions(a *container.AutoUpgradeOptions) []map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+
+	r := make(map[string]interface{})
+	r["auto_upgrade_start_time"] = a.AutoUpgradeStartTime
+	r["description"] = a.Description
 
 	return []map[string]interface{}{r}
 }

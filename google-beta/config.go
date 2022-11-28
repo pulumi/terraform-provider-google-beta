@@ -180,6 +180,7 @@ type Config struct {
 	ApigeeBasePath               string
 	AppEngineBasePath            string
 	ArtifactRegistryBasePath     string
+	BeyondcorpBasePath           string
 	BigQueryBasePath             string
 	BigqueryAnalyticsHubBasePath string
 	BigqueryConnectionBasePath   string
@@ -218,6 +219,7 @@ type Config struct {
 	EssentialContactsBasePath    string
 	FilestoreBasePath            string
 	FirebaseBasePath             string
+	FirebaseHostingBasePath      string
 	FirestoreBasePath            string
 	GameServicesBasePath         string
 	GKEHubBasePath               string
@@ -254,6 +256,7 @@ type Config struct {
 	SpannerBasePath              string
 	SQLBasePath                  string
 	StorageBasePath              string
+	StorageTransferBasePath      string
 	TagsBasePath                 string
 	TPUBasePath                  string
 	VertexAIBasePath             string
@@ -269,7 +272,6 @@ type Config struct {
 	IAMBasePath               string
 	CloudIoTBasePath          string
 	ServiceNetworkingBasePath string
-	StorageTransferBasePath   string
 	BigtableAdminBasePath     string
 
 	// dcl
@@ -288,6 +290,7 @@ const ApiGatewayBasePathKey = "ApiGateway"
 const ApigeeBasePathKey = "Apigee"
 const AppEngineBasePathKey = "AppEngine"
 const ArtifactRegistryBasePathKey = "ArtifactRegistry"
+const BeyondcorpBasePathKey = "Beyondcorp"
 const BigQueryBasePathKey = "BigQuery"
 const BigqueryAnalyticsHubBasePathKey = "BigqueryAnalyticsHub"
 const BigqueryConnectionBasePathKey = "BigqueryConnection"
@@ -326,6 +329,7 @@ const DocumentAIBasePathKey = "DocumentAI"
 const EssentialContactsBasePathKey = "EssentialContacts"
 const FilestoreBasePathKey = "Filestore"
 const FirebaseBasePathKey = "Firebase"
+const FirebaseHostingBasePathKey = "FirebaseHosting"
 const FirestoreBasePathKey = "Firestore"
 const GameServicesBasePathKey = "GameServices"
 const GKEHubBasePathKey = "GKEHub"
@@ -362,6 +366,7 @@ const SourceRepoBasePathKey = "SourceRepo"
 const SpannerBasePathKey = "Spanner"
 const SQLBasePathKey = "SQL"
 const StorageBasePathKey = "Storage"
+const StorageTransferBasePathKey = "StorageTransfer"
 const TagsBasePathKey = "Tags"
 const TPUBasePathKey = "TPU"
 const VertexAIBasePathKey = "VertexAI"
@@ -375,7 +380,6 @@ const IAMBasePathKey = "IAM"
 const IamCredentialsBasePathKey = "IamCredentials"
 const ResourceManagerV3BasePathKey = "ResourceManagerV3"
 const ServiceNetworkingBasePathKey = "ServiceNetworking"
-const StorageTransferBasePathKey = "StorageTransfer"
 const BigtableAdminBasePathKey = "BigtableAdmin"
 const ContainerAwsBasePathKey = "ContainerAws"
 const ContainerAzureBasePathKey = "ContainerAzure"
@@ -390,6 +394,7 @@ var DefaultBasePaths = map[string]string{
 	ApigeeBasePathKey:               "https://apigee.googleapis.com/v1/",
 	AppEngineBasePathKey:            "https://appengine.googleapis.com/v1/",
 	ArtifactRegistryBasePathKey:     "https://artifactregistry.googleapis.com/v1beta2/",
+	BeyondcorpBasePathKey:           "https://beyondcorp.googleapis.com/v1/",
 	BigQueryBasePathKey:             "https://bigquery.googleapis.com/bigquery/v2/",
 	BigqueryAnalyticsHubBasePathKey: "https://analyticshub.googleapis.com/v1beta1/",
 	BigqueryConnectionBasePathKey:   "https://bigqueryconnection.googleapis.com/v1/",
@@ -428,6 +433,7 @@ var DefaultBasePaths = map[string]string{
 	EssentialContactsBasePathKey:    "https://essentialcontacts.googleapis.com/v1/",
 	FilestoreBasePathKey:            "https://file.googleapis.com/v1beta1/",
 	FirebaseBasePathKey:             "https://firebase.googleapis.com/v1beta1/",
+	FirebaseHostingBasePathKey:      "https://firebasehosting.googleapis.com/v1beta1/",
 	FirestoreBasePathKey:            "https://firestore.googleapis.com/v1/",
 	GameServicesBasePathKey:         "https://gameservices.googleapis.com/v1beta/",
 	GKEHubBasePathKey:               "https://gkehub.googleapis.com/v1beta1/",
@@ -464,6 +470,7 @@ var DefaultBasePaths = map[string]string{
 	SpannerBasePathKey:              "https://spanner.googleapis.com/v1/",
 	SQLBasePathKey:                  "https://sqladmin.googleapis.com/sql/v1beta4/",
 	StorageBasePathKey:              "https://storage.googleapis.com/storage/v1/",
+	StorageTransferBasePathKey:      "https://storagetransfer.googleapis.com/v1/",
 	TagsBasePathKey:                 "https://cloudresourcemanager.googleapis.com/v3/",
 	TPUBasePathKey:                  "https://tpu.googleapis.com/v1/",
 	VertexAIBasePathKey:             "https://{{region}}-aiplatform.googleapis.com/v1beta1/",
@@ -477,7 +484,6 @@ var DefaultBasePaths = map[string]string{
 	IamCredentialsBasePathKey:       "https://iamcredentials.googleapis.com/v1/",
 	ResourceManagerV3BasePathKey:    "https://cloudresourcemanager.googleapis.com/v3/",
 	ServiceNetworkingBasePathKey:    "https://servicenetworking.googleapis.com/v1/",
-	StorageTransferBasePathKey:      "https://storagetransfer.googleapis.com/v1/",
 	BigtableAdminBasePathKey:        "https://bigtableadmin.googleapis.com/v2/",
 	ContainerAwsBasePathKey:         "https://{{location}}-gkemulticloud.googleapis.com/v1/",
 	ContainerAzureBasePathKey:       "https://{{location}}-gkemulticloud.googleapis.com/v1/",
@@ -1268,6 +1274,7 @@ func ConfigureBasePaths(c *Config) {
 	c.ApigeeBasePath = DefaultBasePaths[ApigeeBasePathKey]
 	c.AppEngineBasePath = DefaultBasePaths[AppEngineBasePathKey]
 	c.ArtifactRegistryBasePath = DefaultBasePaths[ArtifactRegistryBasePathKey]
+	c.BeyondcorpBasePath = DefaultBasePaths[BeyondcorpBasePathKey]
 	c.BigQueryBasePath = DefaultBasePaths[BigQueryBasePathKey]
 	c.BigqueryAnalyticsHubBasePath = DefaultBasePaths[BigqueryAnalyticsHubBasePathKey]
 	c.BigqueryConnectionBasePath = DefaultBasePaths[BigqueryConnectionBasePathKey]
@@ -1306,6 +1313,7 @@ func ConfigureBasePaths(c *Config) {
 	c.EssentialContactsBasePath = DefaultBasePaths[EssentialContactsBasePathKey]
 	c.FilestoreBasePath = DefaultBasePaths[FilestoreBasePathKey]
 	c.FirebaseBasePath = DefaultBasePaths[FirebaseBasePathKey]
+	c.FirebaseHostingBasePath = DefaultBasePaths[FirebaseHostingBasePathKey]
 	c.FirestoreBasePath = DefaultBasePaths[FirestoreBasePathKey]
 	c.GameServicesBasePath = DefaultBasePaths[GameServicesBasePathKey]
 	c.GKEHubBasePath = DefaultBasePaths[GKEHubBasePathKey]
@@ -1342,6 +1350,7 @@ func ConfigureBasePaths(c *Config) {
 	c.SpannerBasePath = DefaultBasePaths[SpannerBasePathKey]
 	c.SQLBasePath = DefaultBasePaths[SQLBasePathKey]
 	c.StorageBasePath = DefaultBasePaths[StorageBasePathKey]
+	c.StorageTransferBasePath = DefaultBasePaths[StorageTransferBasePathKey]
 	c.TagsBasePath = DefaultBasePaths[TagsBasePathKey]
 	c.TPUBasePath = DefaultBasePaths[TPUBasePathKey]
 	c.VertexAIBasePath = DefaultBasePaths[VertexAIBasePathKey]
@@ -1359,6 +1368,5 @@ func ConfigureBasePaths(c *Config) {
 	c.IAMBasePath = DefaultBasePaths[IAMBasePathKey]
 	c.ServiceNetworkingBasePath = DefaultBasePaths[ServiceNetworkingBasePathKey]
 	c.BigQueryBasePath = DefaultBasePaths[BigQueryBasePathKey]
-	c.StorageTransferBasePath = DefaultBasePaths[StorageTransferBasePathKey]
 	c.BigtableAdminBasePath = DefaultBasePaths[BigtableAdminBasePathKey]
 }
