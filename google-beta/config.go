@@ -199,6 +199,7 @@ type Config struct {
 	CloudIdsBasePath             string
 	CloudIotBasePath             string
 	CloudRunBasePath             string
+	CloudRunV2BasePath           string
 	CloudSchedulerBasePath       string
 	CloudTasksBasePath           string
 	ComputeBasePath              string
@@ -220,8 +221,10 @@ type Config struct {
 	FilestoreBasePath            string
 	FirebaseBasePath             string
 	FirebaseHostingBasePath      string
+	FirebaseStorageBasePath      string
 	FirestoreBasePath            string
 	GameServicesBasePath         string
+	GKEBackupBasePath            string
 	GKEHubBasePath               string
 	HealthcareBasePath           string
 	IAM2BasePath                 string
@@ -309,6 +312,7 @@ const CloudIdentityBasePathKey = "CloudIdentity"
 const CloudIdsBasePathKey = "CloudIds"
 const CloudIotBasePathKey = "CloudIot"
 const CloudRunBasePathKey = "CloudRun"
+const CloudRunV2BasePathKey = "CloudRunV2"
 const CloudSchedulerBasePathKey = "CloudScheduler"
 const CloudTasksBasePathKey = "CloudTasks"
 const ComputeBasePathKey = "Compute"
@@ -330,8 +334,10 @@ const EssentialContactsBasePathKey = "EssentialContacts"
 const FilestoreBasePathKey = "Filestore"
 const FirebaseBasePathKey = "Firebase"
 const FirebaseHostingBasePathKey = "FirebaseHosting"
+const FirebaseStorageBasePathKey = "FirebaseStorage"
 const FirestoreBasePathKey = "Firestore"
 const GameServicesBasePathKey = "GameServices"
+const GKEBackupBasePathKey = "GKEBackup"
 const GKEHubBasePathKey = "GKEHub"
 const HealthcareBasePathKey = "Healthcare"
 const IAM2BasePathKey = "IAM2"
@@ -413,6 +419,7 @@ var DefaultBasePaths = map[string]string{
 	CloudIdsBasePathKey:             "https://ids.googleapis.com/v1/",
 	CloudIotBasePathKey:             "https://cloudiot.googleapis.com/v1/",
 	CloudRunBasePathKey:             "https://{{location}}-run.googleapis.com/",
+	CloudRunV2BasePathKey:           "https://run.googleapis.com/v2/",
 	CloudSchedulerBasePathKey:       "https://cloudscheduler.googleapis.com/v1/",
 	CloudTasksBasePathKey:           "https://cloudtasks.googleapis.com/v2/",
 	ComputeBasePathKey:              "https://compute.googleapis.com/compute/beta/",
@@ -434,8 +441,10 @@ var DefaultBasePaths = map[string]string{
 	FilestoreBasePathKey:            "https://file.googleapis.com/v1beta1/",
 	FirebaseBasePathKey:             "https://firebase.googleapis.com/v1beta1/",
 	FirebaseHostingBasePathKey:      "https://firebasehosting.googleapis.com/v1beta1/",
+	FirebaseStorageBasePathKey:      "https://firebasestorage.googleapis.com/v1beta/",
 	FirestoreBasePathKey:            "https://firestore.googleapis.com/v1/",
 	GameServicesBasePathKey:         "https://gameservices.googleapis.com/v1beta/",
+	GKEBackupBasePathKey:            "https://gkebackup.googleapis.com/v1/",
 	GKEHubBasePathKey:               "https://gkehub.googleapis.com/v1beta1/",
 	HealthcareBasePathKey:           "https://healthcare.googleapis.com/v1beta1/",
 	IAM2BasePathKey:                 "https://iam.googleapis.com/v2beta/",
@@ -1293,6 +1302,7 @@ func ConfigureBasePaths(c *Config) {
 	c.CloudIdsBasePath = DefaultBasePaths[CloudIdsBasePathKey]
 	c.CloudIotBasePath = DefaultBasePaths[CloudIotBasePathKey]
 	c.CloudRunBasePath = DefaultBasePaths[CloudRunBasePathKey]
+	c.CloudRunV2BasePath = DefaultBasePaths[CloudRunV2BasePathKey]
 	c.CloudSchedulerBasePath = DefaultBasePaths[CloudSchedulerBasePathKey]
 	c.CloudTasksBasePath = DefaultBasePaths[CloudTasksBasePathKey]
 	c.ComputeBasePath = DefaultBasePaths[ComputeBasePathKey]
@@ -1314,8 +1324,10 @@ func ConfigureBasePaths(c *Config) {
 	c.FilestoreBasePath = DefaultBasePaths[FilestoreBasePathKey]
 	c.FirebaseBasePath = DefaultBasePaths[FirebaseBasePathKey]
 	c.FirebaseHostingBasePath = DefaultBasePaths[FirebaseHostingBasePathKey]
+	c.FirebaseStorageBasePath = DefaultBasePaths[FirebaseStorageBasePathKey]
 	c.FirestoreBasePath = DefaultBasePaths[FirestoreBasePathKey]
 	c.GameServicesBasePath = DefaultBasePaths[GameServicesBasePathKey]
+	c.GKEBackupBasePath = DefaultBasePaths[GKEBackupBasePathKey]
 	c.GKEHubBasePath = DefaultBasePaths[GKEHubBasePathKey]
 	c.HealthcareBasePath = DefaultBasePaths[HealthcareBasePathKey]
 	c.IAM2BasePath = DefaultBasePaths[IAM2BasePathKey]

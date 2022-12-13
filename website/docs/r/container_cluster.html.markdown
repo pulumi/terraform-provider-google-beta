@@ -697,6 +697,9 @@ This block also contains several computed attributes, documented below.
 * `cidr_blocks` - (Optional) External networks that can access the
     Kubernetes cluster master through HTTPS.
 
+* `gcp_public_cidrs_access_enabled` - (Optional) Whether Kubernetes master is
+    accessible via Google Compute Engine Public IPs.
+
 The `master_authorized_networks_config.cidr_blocks` block supports:
 
 * `cidr_block` - (Optional) External network that can access Kubernetes master through HTTPS.
@@ -761,6 +764,9 @@ gvnic {
 
 * `labels` - (Optional) The Kubernetes labels (key/value pairs) to be applied to each node. The kubernetes.io/ and k8s.io/ prefixes are
     reserved by Kubernetes Core components and cannot be specified.
+
+* `resource_labels` - (Optional) The GCP labels (key/value pairs) to be applied to each node. Refer [here](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-managing-labels)
+    for how these labels are applied to clusters, node pools and nodes.
 
 * `local_ssd_count` - (Optional) The amount of local SSD disks that will be
     attached to each cluster node. Defaults to 0.
@@ -984,6 +990,8 @@ In addition, the `private_cluster_config` allows access to the following read-on
 
 * `private_endpoint` - The internal IP address of this cluster's master endpoint.
 
+* `private_endpoint_subnetwork` - Subnetwork in cluster's network where master's endpoint will be provisioned.
+
 * `public_endpoint` - The external IP address of this cluster's master endpoint.
 
 !> The Google provider is unable to validate certain configurations of
@@ -1190,4 +1198,4 @@ For example, the following fields will show diffs if set in config:
 
 ## User Project Overrides
 
-This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/guides/provider_reference.html#user_project_override).
+This resource supports [User Project Overrides](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override).

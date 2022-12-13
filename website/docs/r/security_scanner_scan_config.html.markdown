@@ -50,11 +50,6 @@ resource "google_security_scanner_scan_config" "scan-config" {
   starting_urls    = ["http://${google_compute_address.scanner_static_ip.address}"]
   target_platforms = ["COMPUTE"]
 }
-
-provider "google-beta" {
-  region = "us-central1"
-  zone   = "us-central1-a"
-}
 ```
 
 ## Argument Reference
@@ -202,4 +197,4 @@ $ terraform import google_security_scanner_scan_config.default {{name}}
 
 ## User Project Overrides
 
-This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/guides/provider_reference.html#user_project_override).
+This resource supports [User Project Overrides](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override).

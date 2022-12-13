@@ -331,10 +331,15 @@ var schemaNodePool = map[string]*schema.Schema{
 					ForceNew:    true,
 					Description: `Whether to create a new range for pod IPs in this node pool. Defaults are provided for pod_range and pod_ipv4_cidr_block if they are not specified.`,
 				},
-
+				"enable_private_nodes": {
+					Type:        schema.TypeBool,
+					Optional:    true,
+					Computed:    true,
+					Description: `Whether nodes have internal IP addresses only.`,
+				},
 				"pod_range": {
 					Type:        schema.TypeString,
-					Required:    true,
+					Optional:    true,
 					ForceNew:    true,
 					Description: `The ID of the secondary range for pod IPs. If create_pod_range is true, this ID is used for the new range. If create_pod_range is false, uses an existing secondary range with this ID.`,
 				},
@@ -376,9 +381,19 @@ func (nodePoolInformation *NodePoolInformation) parent() string {
 	)
 }
 
-func (nodePoolInformation *NodePoolInformation) lockKey() string {
+func (nodePoolInformation *NodePoolInformation) clusterLockKey() string {
 	return containerClusterMutexKey(nodePoolInformation.project,
 		nodePoolInformation.location, nodePoolInformation.cluster)
+}
+
+func (nodePoolInformation *NodePoolInformation) nodePoolLockKey(nodePoolName string) string {
+	return fmt.Sprintf(
+		"projects/%s/locations/%s/clusters/%s/nodePools/%s",
+		nodePoolInformation.project,
+		nodePoolInformation.location,
+		nodePoolInformation.cluster,
+		nodePoolName,
+	)
 }
 
 func extractNodePoolInformation(d *schema.ResourceData, config *Config) (*NodePoolInformation, error) {
@@ -429,8 +444,15 @@ func resourceContainerNodePoolCreate(d *schema.ResourceData, meta interface{}) e
 		return err
 	}
 
-	mutexKV.Lock(nodePoolInfo.lockKey())
-	defer mutexKV.Unlock(nodePoolInfo.lockKey())
+	// Acquire read-lock on cluster.
+	clusterLockKey := nodePoolInfo.clusterLockKey()
+	mutexKV.RLock(clusterLockKey)
+	defer mutexKV.RUnlock(clusterLockKey)
+
+	// Acquire write-lock on nodepool.
+	npLockKey := nodePoolInfo.nodePoolLockKey(nodePool.Name)
+	mutexKV.Lock(npLockKey)
+	defer mutexKV.Unlock(npLockKey)
 
 	req := &container.CreateNodePoolRequest{
 		NodePool: nodePool,
@@ -511,12 +533,6 @@ func resourceContainerNodePoolCreate(d *schema.ResourceData, meta interface{}) e
 	log.Printf("[INFO] GKE NodePool %s has been created", nodePool.Name)
 
 	if err = resourceContainerNodePoolRead(d, meta); err != nil {
-		return err
-	}
-
-	//Check cluster is in running state
-	_, err = containerClusterAwaitRestingState(config, nodePoolInfo.project, nodePoolInfo.location, nodePoolInfo.cluster, userAgent, d.Timeout(schema.TimeoutCreate))
-	if err != nil {
 		return err
 	}
 
@@ -604,12 +620,6 @@ func resourceContainerNodePoolUpdate(d *schema.ResourceData, meta interface{}) e
 	}
 	name := getNodePoolName(d.Id())
 
-	//Check cluster is in running state
-	_, err = containerClusterAwaitRestingState(config, nodePoolInfo.project, nodePoolInfo.location, nodePoolInfo.cluster, userAgent, d.Timeout(schema.TimeoutCreate))
-	if err != nil {
-		return err
-	}
-
 	_, err = containerNodePoolAwaitRestingState(config, nodePoolInfo.fullyQualifiedName(name), nodePoolInfo.project, userAgent, d.Timeout(schema.TimeoutUpdate))
 	if err != nil {
 		return err
@@ -648,16 +658,6 @@ func resourceContainerNodePoolDelete(d *schema.ResourceData, meta interface{}) e
 
 	name := getNodePoolName(d.Id())
 
-	//Check cluster is in running state
-	_, err = containerClusterAwaitRestingState(config, nodePoolInfo.project, nodePoolInfo.location, nodePoolInfo.cluster, userAgent, d.Timeout(schema.TimeoutCreate))
-	if err != nil {
-		if isGoogleApiErrorWithCode(err, 404) {
-			log.Printf("[INFO] GKE cluster %s doesn't exist, skipping node pool %s deletion", nodePoolInfo.cluster, d.Id())
-			return nil
-		}
-		return err
-	}
-
 	_, err = containerNodePoolAwaitRestingState(config, nodePoolInfo.fullyQualifiedName(name), nodePoolInfo.project, userAgent, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		// If the node pool doesn't get created and then we try to delete it, we get an error,
@@ -670,8 +670,15 @@ func resourceContainerNodePoolDelete(d *schema.ResourceData, meta interface{}) e
 		}
 	}
 
-	mutexKV.Lock(nodePoolInfo.lockKey())
-	defer mutexKV.Unlock(nodePoolInfo.lockKey())
+	// Acquire read-lock on cluster.
+	clusterLockKey := nodePoolInfo.clusterLockKey()
+	mutexKV.RLock(clusterLockKey)
+	defer mutexKV.RUnlock(clusterLockKey)
+
+	// Acquire write-lock on nodepool.
+	npLockKey := nodePoolInfo.nodePoolLockKey(name)
+	mutexKV.Lock(npLockKey)
+	defer mutexKV.Unlock(npLockKey)
 
 	timeout := d.Timeout(schema.TimeoutDelete)
 	startTime := time.Now()
@@ -1059,9 +1066,10 @@ func flattenNodeNetworkConfig(c *container.NodeNetworkConfig, d *schema.Resource
 	result := []map[string]interface{}{}
 	if c != nil {
 		result = append(result, map[string]interface{}{
-			"create_pod_range":    d.Get(prefix + "network_config.0.create_pod_range"), // API doesn't return this value so we set the old one. Field is ForceNew + Required
-			"pod_ipv4_cidr_block": c.PodIpv4CidrBlock,
-			"pod_range":           c.PodRange,
+			"create_pod_range":     d.Get(prefix + "network_config.0.create_pod_range"), // API doesn't return this value so we set the old one. Field is ForceNew + Required
+			"pod_ipv4_cidr_block":  c.PodIpv4CidrBlock,
+			"pod_range":            c.PodRange,
+			"enable_private_nodes": c.EnablePrivateNodes,
 		})
 	}
 	return result
@@ -1090,6 +1098,11 @@ func expandNodeNetworkConfig(v interface{}) *container.NodeNetworkConfig {
 		nnc.PodIpv4CidrBlock = v.(string)
 	}
 
+	if v, ok := networkNodeConfig["enable_private_nodes"]; ok {
+		nnc.EnablePrivateNodes = v.(bool)
+		nnc.ForceSendFields = []string{"EnablePrivateNodes"}
+	}
+
 	return nnc
 }
 
@@ -1097,12 +1110,18 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 	config := meta.(*Config)
 	name := d.Get(prefix + "name").(string)
 
-	lockKey := nodePoolInfo.lockKey()
-
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
 	}
+
+	// Acquire read-lock on cluster.
+	clusterLockKey := nodePoolInfo.clusterLockKey()
+	mutexKV.RLock(clusterLockKey)
+	defer mutexKV.RUnlock(clusterLockKey)
+
+	// Nodepool write-lock will be acquired when update function is called.
+	npLockKey := nodePoolInfo.nodePoolLockKey(name)
 
 	if d.HasChange(prefix + "autoscaling") {
 		update := &container.ClusterUpdate{
@@ -1146,11 +1165,9 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 				timeout)
 		}
 
-		// Call update serially.
-		if err := lockedCall(lockKey, updateF); err != nil {
+		if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 			return err
 		}
-
 		log.Printf("[INFO] Updated autoscaling in Node Pool %s", d.Id())
 	}
 
@@ -1186,8 +1203,7 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 						timeout)
 				}
 
-				// Call update serially.
-				if err := lockedCall(lockKey, updateF); err != nil {
+				if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 					return err
 				}
 
@@ -1241,12 +1257,48 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 					timeout)
 			}
 
+			if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
+				return err
+			}
+			log.Printf("[INFO] Updated tags for node pool %s", name)
+		}
+
+		if d.HasChange(prefix + "node_config.0.resource_labels") {
+			req := &container.UpdateNodePoolRequest{
+				Name: name,
+			}
+
+			if v, ok := d.GetOk(prefix + "node_config.0.resource_labels"); ok {
+				resourceLabels := v.(map[string]interface{})
+				req.ResourceLabels = &container.ResourceLabels{
+					Labels: convertStringMap(resourceLabels),
+				}
+			}
+
+			updateF := func() error {
+				clusterNodePoolsUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
+				if config.UserProjectOverride {
+					clusterNodePoolsUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
+				}
+				op, err := clusterNodePoolsUpdateCall.Do()
+				if err != nil {
+					return err
+				}
+
+				// Wait until it's updated
+				return containerOperationWait(config, op,
+					nodePoolInfo.project,
+					nodePoolInfo.location,
+					"updating GKE node pool resource labels", userAgent,
+					timeout)
+			}
+
 			// Call update serially.
-			if err := lockedCall(lockKey, updateF); err != nil {
+			if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 				return err
 			}
 
-			log.Printf("[INFO] Updated tags for node pool %s", name)
+			log.Printf("[INFO] Updated resource labels for node pool %s", name)
 		}
 
 		if d.HasChange(prefix + "node_config.0.image_type") {
@@ -1274,11 +1326,9 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 					timeout)
 			}
 
-			// Call update serially.
-			if err := lockedCall(lockKey, updateF); err != nil {
+			if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 				return err
 			}
-
 			log.Printf("[INFO] Updated image type in Node Pool %s", d.Id())
 		}
 
@@ -1310,11 +1360,9 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 					timeout)
 			}
 
-			// Call update serially.
-			if err := lockedCall(lockKey, updateF); err != nil {
+			if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 				return err
 			}
-
 			log.Printf("[INFO] Updated workload_metadata_config for node pool %s", name)
 		}
 
@@ -1345,8 +1393,7 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 					timeout)
 			}
 
-			// Call update serially.
-			if err := lockedCall(lockKey, updateF); err != nil {
+			if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 				return err
 			}
 
@@ -1379,8 +1426,7 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 					timeout)
 			}
 
-			// Call update serially.
-			if err := lockedCall(lockKey, updateF); err != nil {
+			if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 				return err
 			}
 
@@ -1411,12 +1457,9 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 				nodePoolInfo.location, "updating GKE node pool size", userAgent,
 				timeout)
 		}
-
-		// Call update serially.
-		if err := lockedCall(lockKey, updateF); err != nil {
+		if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 			return err
 		}
-
 		log.Printf("[INFO] GKE node pool %s size has been updated to %d", name, newSize)
 	}
 
@@ -1449,11 +1492,9 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 				nodePoolInfo.location, "updating GKE node pool management", userAgent, timeout)
 		}
 
-		// Call update serially.
-		if err := lockedCall(lockKey, updateF); err != nil {
+		if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 			return err
 		}
-
 		log.Printf("[INFO] Updated management in Node Pool %s", name)
 	}
 
@@ -1478,12 +1519,9 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 				nodePoolInfo.project,
 				nodePoolInfo.location, "updating GKE node pool version", userAgent, timeout)
 		}
-
-		// Call update serially.
-		if err := lockedCall(lockKey, updateF); err != nil {
+		if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 			return err
 		}
-
 		log.Printf("[INFO] Updated version in Node Pool %s", name)
 	}
 
@@ -1506,11 +1544,9 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 			return containerOperationWait(config, op, nodePoolInfo.project, nodePoolInfo.location, "updating GKE node pool node locations", userAgent, timeout)
 		}
 
-		// Call update serially.
-		if err := lockedCall(lockKey, updateF); err != nil {
+		if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 			return err
 		}
-
 		log.Printf("[INFO] Updated node locations in Node Pool %s", name)
 	}
 
@@ -1527,6 +1563,10 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 				if v, ok := upgradeSettingsConfig["max_surge"]; ok {
 					upgradeSettings.MaxSurge = int64(v.(int))
 				}
+				// max_unavailable not be preserved if only max_surge is updated
+				if v, ok := upgradeSettingsConfig["max_unavailable"]; ok {
+					upgradeSettings.MaxUnavailable = int64(v.(int))
+				}
 			}
 
 			if d.HasChange(prefix + "upgrade_settings.0.max_unavailable") {
@@ -1535,6 +1575,10 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 				}
 				if v, ok := upgradeSettingsConfig["max_unavailable"]; ok {
 					upgradeSettings.MaxUnavailable = int64(v.(int))
+				}
+				// max_surge not be preserved if only max_unavailable is updated
+				if v, ok := upgradeSettingsConfig["max_surge"]; ok {
+					upgradeSettings.MaxSurge = int64(v.(int))
 				}
 			}
 
@@ -1579,13 +1623,43 @@ func nodePoolUpdate(d *schema.ResourceData, meta interface{}, nodePoolInfo *Node
 			// Wait until it's updated
 			return containerOperationWait(config, op, nodePoolInfo.project, nodePoolInfo.location, "updating GKE node pool upgrade settings", userAgent, timeout)
 		}
-
-		// Call update serially.
-		if err := lockedCall(lockKey, updateF); err != nil {
+		if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
 			return err
 		}
-
 		log.Printf("[INFO] Updated upgrade settings in Node Pool %s", name)
+	}
+
+	if d.HasChange(prefix + "network_config") {
+		if d.HasChange(prefix + "network_config.0.enable_private_nodes") {
+			req := &container.UpdateNodePoolRequest{
+				NodePoolId:        name,
+				NodeNetworkConfig: expandNodeNetworkConfig(d.Get(prefix + "network_config")),
+			}
+			updateF := func() error {
+				clusterNodePoolsUpdateCall := config.NewContainerClient(userAgent).Projects.Locations.Clusters.NodePools.Update(nodePoolInfo.fullyQualifiedName(name), req)
+				if config.UserProjectOverride {
+					clusterNodePoolsUpdateCall.Header().Add("X-Goog-User-Project", nodePoolInfo.project)
+				}
+				op, err := clusterNodePoolsUpdateCall.Do()
+
+				if err != nil {
+					return err
+				}
+
+				// Wait until it's updated
+				return containerOperationWait(config, op,
+					nodePoolInfo.project,
+					nodePoolInfo.location,
+					"updating GKE node pool workload_metadata_config", userAgent,
+					timeout)
+			}
+
+			if err := retryWhileIncompatibleOperation(timeout, npLockKey, updateF); err != nil {
+				return err
+			}
+
+			log.Printf("[INFO] Updated workload_metadata_config for node pool %s", name)
+		}
 	}
 
 	return nil

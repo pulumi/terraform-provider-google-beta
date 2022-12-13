@@ -42,7 +42,7 @@ func TestAccAlloydbInstance_alloydbInstanceBasicExample(t *testing.T) {
 				ResourceName:            "google_alloydb_instance.default",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"cluster", "instance_id", "reconciling", "update_time"},
+				ImportStateVerifyIgnore: []string{"display_name", "cluster", "instance_id", "reconciling", "update_time"},
 			},
 		},
 	})
@@ -55,6 +55,10 @@ resource "google_alloydb_instance" "default" {
   cluster       = google_alloydb_cluster.default.name
   instance_id   = "tf-test-alloydb-instance%{random_suffix}"
   instance_type = "PRIMARY"
+
+  machine_config {
+    cpu_count = 2
+  }
 
   depends_on = [google_service_networking_connection.vpc_connection]
 }

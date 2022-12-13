@@ -184,6 +184,7 @@ resource "google_compute_route" "route1" {
 provider "google-beta" {
   region = "us-central1"
   zone   = "us-central1-a"
+  
 }
 ```
 
@@ -334,4 +335,4 @@ $ terraform import google_compute_vpn_tunnel.default {{name}}
 
 ## User Project Overrides
 
-This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/guides/provider_reference.html#user_project_override).
+This resource supports [User Project Overrides](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override).

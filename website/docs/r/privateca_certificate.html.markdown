@@ -36,8 +36,6 @@ resource "google_privateca_certificate_authority" "test-ca" {
   certificate_authority_id = "my-certificate-authority"
   location = "us-central1"
   pool = ""
-  ignore_active_certificates_on_deletion = true
-  deletion_protection = false
   config {
     subject_config {
       subject {
@@ -66,6 +64,11 @@ resource "google_privateca_certificate_authority" "test-ca" {
   key_spec {
     algorithm = "RSA_PKCS1_4096_SHA256"
   }
+
+  // Disable CA deletion related safe checks for easier cleanup.
+  deletion_protection                    = false
+  skip_grace_period                      = true
+  ignore_active_certificates_on_deletion = true
 }
 
 resource "google_privateca_certificate" "default" {
@@ -195,7 +198,6 @@ resource "google_privateca_certificate_authority" "test-ca" {
   pool = ""
   certificate_authority_id = "my-certificate-authority"
   location = "us-central1"
-  deletion_protection = false
   config {
     subject_config {
       subject {
@@ -226,6 +228,11 @@ resource "google_privateca_certificate_authority" "test-ca" {
   key_spec {
     algorithm = "RSA_PKCS1_4096_SHA256"
   }
+
+  // Disable CA deletion related safe checks for easier cleanup.
+  deletion_protection                    = false
+  skip_grace_period                      = true
+  ignore_active_certificates_on_deletion = true
 }
 
 
@@ -247,7 +254,6 @@ resource "google_privateca_certificate_authority" "test-ca" {
   pool = ""
   certificate_authority_id = "my-certificate-authority"
   location = "us-central1"
-  deletion_protection = false
   config {
     subject_config {
       subject {
@@ -278,6 +284,11 @@ resource "google_privateca_certificate_authority" "test-ca" {
   key_spec {
     algorithm = "RSA_PKCS1_4096_SHA256"
   }
+
+  // Disable CA deletion related safe checks for easier cleanup.
+  deletion_protection                    = false
+  skip_grace_period                      = true
+  ignore_active_certificates_on_deletion = true
 }
 
 
@@ -300,7 +311,6 @@ resource "google_privateca_certificate_authority" "authority" {
   pool = ""
   certificate_authority_id = "my-authority"
   location = "us-central1"
-  deletion_protection = false
   config {
     subject_config {
       subject {
@@ -331,6 +341,11 @@ resource "google_privateca_certificate_authority" "authority" {
   key_spec {
     algorithm = "RSA_PKCS1_4096_SHA256"
   }
+
+  // Disable CA deletion related safe checks for easier cleanup.
+  deletion_protection                    = false
+  skip_grace_period                      = true
+  ignore_active_certificates_on_deletion = true
 }
 
 
@@ -1127,4 +1142,4 @@ $ terraform import google_privateca_certificate.default {{location}}/{{pool}}/{{
 
 ## User Project Overrides
 
-This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/guides/provider_reference.html#user_project_override).
+This resource supports [User Project Overrides](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override).

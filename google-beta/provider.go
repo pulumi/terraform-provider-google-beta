@@ -378,6 +378,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_CLOUD_RUN_CUSTOM_ENDPOINT",
 				}, DefaultBasePaths[CloudRunBasePathKey]),
 			},
+			"cloud_run_v2_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_CLOUD_RUN_V2_CUSTOM_ENDPOINT",
+				}, DefaultBasePaths[CloudRunV2BasePathKey]),
+			},
 			"cloud_scheduler_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -546,6 +554,14 @@ func Provider() *schema.Provider {
 					"GOOGLE_FIREBASE_HOSTING_CUSTOM_ENDPOINT",
 				}, DefaultBasePaths[FirebaseHostingBasePathKey]),
 			},
+			"firebase_storage_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_FIREBASE_STORAGE_CUSTOM_ENDPOINT",
+				}, DefaultBasePaths[FirebaseStorageBasePathKey]),
+			},
 			"firestore_custom_endpoint": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -561,6 +577,14 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
 					"GOOGLE_GAME_SERVICES_CUSTOM_ENDPOINT",
 				}, DefaultBasePaths[GameServicesBasePathKey]),
+			},
+			"gke_backup_custom_endpoint": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateCustomEndpoint,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_GKE_BACKUP_CUSTOM_ENDPOINT",
+				}, DefaultBasePaths[GKEBackupBasePathKey]),
 			},
 			"gke_hub_custom_endpoint": {
 				Type:         schema.TypeString,
@@ -985,11 +1009,13 @@ func Provider() *schema.Provider {
 			"google_kms_secret":                                   dataSourceGoogleKmsSecret(),
 			"google_kms_secret_ciphertext":                        dataSourceGoogleKmsSecretCiphertext(),
 			"google_kms_secret_asymmetric":                        dataSourceGoogleKmsSecretAsymmetric(),
+			"google_firebase_android_app":                         dataSourceGoogleFirebaseAndroidApp(),
 			"google_firebase_web_app":                             dataSourceGoogleFirebaseWebApp(),
 			"google_firebase_web_app_config":                      dataSourceGoogleFirebaseWebappConfig(),
 			"google_folder":                                       dataSourceGoogleFolder(),
 			"google_folders":                                      dataSourceGoogleFolders(),
 			"google_folder_organization_policy":                   dataSourceGoogleFolderOrganizationPolicy(),
+			"google_logging_project_cmek_settings":                dataSourceGoogleLoggingProjectCmekSettings(),
 			"google_monitoring_notification_channel":              dataSourceMonitoringNotificationChannel(),
 			"google_monitoring_cluster_istio_service":             dataSourceMonitoringServiceClusterIstio(),
 			"google_monitoring_istio_canonical_service":           dataSourceMonitoringIstioCanonicalService(),
@@ -1043,9 +1069,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 282
-// Generated IAM resources: 183
-// Total generated resources: 465
+// Generated resources: 289
+// Generated IAM resources: 189
+// Total generated resources: 478
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1169,6 +1195,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_cloud_run_service_iam_binding":                         ResourceIamBinding(CloudRunServiceIamSchema, CloudRunServiceIamUpdaterProducer, CloudRunServiceIdParseFunc),
 			"google_cloud_run_service_iam_member":                          ResourceIamMember(CloudRunServiceIamSchema, CloudRunServiceIamUpdaterProducer, CloudRunServiceIdParseFunc),
 			"google_cloud_run_service_iam_policy":                          ResourceIamPolicy(CloudRunServiceIamSchema, CloudRunServiceIamUpdaterProducer, CloudRunServiceIdParseFunc),
+			"google_cloud_run_v2_job":                                      resourceCloudRunV2Job(),
+			"google_cloud_run_v2_service":                                  resourceCloudRunV2Service(),
 			"google_cloud_scheduler_job":                                   resourceCloudSchedulerJob(),
 			"google_cloud_tasks_queue":                                     resourceCloudTasksQueue(),
 			"google_cloud_tasks_queue_iam_binding":                         ResourceIamBinding(CloudTasksQueueIamSchema, CloudTasksQueueIamUpdaterProducer, CloudTasksQueueIdParseFunc),
@@ -1294,6 +1322,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_data_catalog_policy_tag_iam_policy":                    ResourceIamPolicy(DataCatalogPolicyTagIamSchema, DataCatalogPolicyTagIamUpdaterProducer, DataCatalogPolicyTagIdParseFunc),
 			"google_dataform_repository":                                   resourceDataformRepository(),
 			"google_data_fusion_instance":                                  resourceDataFusionInstance(),
+			"google_data_fusion_instance_iam_binding":                      ResourceIamBinding(DataFusionInstanceIamSchema, DataFusionInstanceIamUpdaterProducer, DataFusionInstanceIdParseFunc),
+			"google_data_fusion_instance_iam_member":                       ResourceIamMember(DataFusionInstanceIamSchema, DataFusionInstanceIamUpdaterProducer, DataFusionInstanceIdParseFunc),
+			"google_data_fusion_instance_iam_policy":                       ResourceIamPolicy(DataFusionInstanceIamSchema, DataFusionInstanceIamUpdaterProducer, DataFusionInstanceIdParseFunc),
 			"google_data_loss_prevention_job_trigger":                      resourceDataLossPreventionJobTrigger(),
 			"google_data_loss_prevention_inspect_template":                 resourceDataLossPreventionInspectTemplate(),
 			"google_data_loss_prevention_stored_info_type":                 resourceDataLossPreventionStoredInfoType(),
@@ -1340,6 +1371,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_firebase_apple_app":                                    resourceFirebaseAppleApp(),
 			"google_firebase_hosting_site":                                 resourceFirebaseHostingSite(),
 			"google_firebase_hosting_channel":                              resourceFirebaseHostingChannel(),
+			"google_firebase_storage_bucket":                               resourceFirebaseStorageBucket(),
 			"google_firestore_index":                                       resourceFirestoreIndex(),
 			"google_firestore_document":                                    resourceFirestoreDocument(),
 			"google_game_services_realm":                                   resourceGameServicesRealm(),
@@ -1347,6 +1379,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_game_services_game_server_deployment":                  resourceGameServicesGameServerDeployment(),
 			"google_game_services_game_server_config":                      resourceGameServicesGameServerConfig(),
 			"google_game_services_game_server_deployment_rollout":          resourceGameServicesGameServerDeploymentRollout(),
+			"google_gke_backup_backup_plan":                                resourceGKEBackupBackupPlan(),
 			"google_gke_hub_membership":                                    resourceGKEHubMembership(),
 			"google_gke_hub_membership_iam_binding":                        ResourceIamBinding(GKEHubMembershipIamSchema, GKEHubMembershipIamUpdaterProducer, GKEHubMembershipIdParseFunc),
 			"google_gke_hub_membership_iam_member":                         ResourceIamMember(GKEHubMembershipIamSchema, GKEHubMembershipIamUpdaterProducer, GKEHubMembershipIdParseFunc),
@@ -1363,6 +1396,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_iam_workload_identity_pool":                            resourceIAMBetaWorkloadIdentityPool(),
 			"google_iam_workload_identity_pool_provider":                   resourceIAMBetaWorkloadIdentityPoolProvider(),
 			"google_iam_workforce_pool":                                    resourceIAMWorkforcePoolWorkforcePool(),
+			"google_iam_workforce_pool_provider":                           resourceIAMWorkforcePoolWorkforcePoolProvider(),
 			"google_iap_web_iam_binding":                                   ResourceIamBinding(IapWebIamSchema, IapWebIamUpdaterProducer, IapWebIdParseFunc),
 			"google_iap_web_iam_member":                                    ResourceIamMember(IapWebIamSchema, IapWebIamUpdaterProducer, IapWebIdParseFunc),
 			"google_iap_web_iam_policy":                                    ResourceIamPolicy(IapWebIamSchema, IapWebIamUpdaterProducer, IapWebIdParseFunc),
@@ -1508,6 +1542,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_tags_tag_value_iam_policy":                             ResourceIamPolicy(TagsTagValueIamSchema, TagsTagValueIamUpdaterProducer, TagsTagValueIdParseFunc),
 			"google_tags_tag_binding":                                      resourceTagsTagBinding(),
 			"google_tpu_node":                                              resourceTPUNode(),
+			"google_vertex_ai_tensorboard":                                 resourceVertexAITensorboard(),
 			"google_vertex_ai_dataset":                                     resourceVertexAIDataset(),
 			"google_vertex_ai_endpoint":                                    resourceVertexAIEndpoint(),
 			"google_vertex_ai_featurestore":                                resourceVertexAIFeaturestore(),
@@ -1515,8 +1550,12 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_vertex_ai_featurestore_iam_member":                     ResourceIamMember(VertexAIFeaturestoreIamSchema, VertexAIFeaturestoreIamUpdaterProducer, VertexAIFeaturestoreIdParseFunc),
 			"google_vertex_ai_featurestore_iam_policy":                     ResourceIamPolicy(VertexAIFeaturestoreIamSchema, VertexAIFeaturestoreIamUpdaterProducer, VertexAIFeaturestoreIdParseFunc),
 			"google_vertex_ai_featurestore_entitytype":                     resourceVertexAIFeaturestoreEntitytype(),
+			"google_vertex_ai_featurestore_entitytype_iam_binding":         ResourceIamBinding(VertexAIFeaturestoreEntitytypeIamSchema, VertexAIFeaturestoreEntitytypeIamUpdaterProducer, VertexAIFeaturestoreEntitytypeIdParseFunc),
+			"google_vertex_ai_featurestore_entitytype_iam_member":          ResourceIamMember(VertexAIFeaturestoreEntitytypeIamSchema, VertexAIFeaturestoreEntitytypeIamUpdaterProducer, VertexAIFeaturestoreEntitytypeIdParseFunc),
+			"google_vertex_ai_featurestore_entitytype_iam_policy":          ResourceIamPolicy(VertexAIFeaturestoreEntitytypeIamSchema, VertexAIFeaturestoreEntitytypeIamUpdaterProducer, VertexAIFeaturestoreEntitytypeIdParseFunc),
 			"google_vertex_ai_featurestore_entitytype_feature":             resourceVertexAIFeaturestoreEntitytypeFeature(),
 			"google_vertex_ai_metadata_store":                              resourceVertexAIMetadataStore(),
+			"google_vertex_ai_index":                                       resourceVertexAIIndex(),
 			"google_vpc_access_connector":                                  resourceVPCAccessConnector(),
 			"google_workflows_workflow":                                    resourceWorkflowsWorkflow(),
 		},
@@ -1791,6 +1830,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.CloudIdsBasePath = d.Get("cloud_ids_custom_endpoint").(string)
 	config.CloudIotBasePath = d.Get("cloud_iot_custom_endpoint").(string)
 	config.CloudRunBasePath = d.Get("cloud_run_custom_endpoint").(string)
+	config.CloudRunV2BasePath = d.Get("cloud_run_v2_custom_endpoint").(string)
 	config.CloudSchedulerBasePath = d.Get("cloud_scheduler_custom_endpoint").(string)
 	config.CloudTasksBasePath = d.Get("cloud_tasks_custom_endpoint").(string)
 	config.ComputeBasePath = d.Get("compute_custom_endpoint").(string)
@@ -1812,8 +1852,10 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	config.FilestoreBasePath = d.Get("filestore_custom_endpoint").(string)
 	config.FirebaseBasePath = d.Get("firebase_custom_endpoint").(string)
 	config.FirebaseHostingBasePath = d.Get("firebase_hosting_custom_endpoint").(string)
+	config.FirebaseStorageBasePath = d.Get("firebase_storage_custom_endpoint").(string)
 	config.FirestoreBasePath = d.Get("firestore_custom_endpoint").(string)
 	config.GameServicesBasePath = d.Get("game_services_custom_endpoint").(string)
+	config.GKEBackupBasePath = d.Get("gke_backup_custom_endpoint").(string)
 	config.GKEHubBasePath = d.Get("gke_hub_custom_endpoint").(string)
 	config.HealthcareBasePath = d.Get("healthcare_custom_endpoint").(string)
 	config.IAM2BasePath = d.Get("iam2_custom_endpoint").(string)

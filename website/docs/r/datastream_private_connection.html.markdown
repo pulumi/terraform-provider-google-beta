@@ -113,6 +113,23 @@ In addition to the arguments listed above, the following computed attributes are
 * `name` -
   The resource's name.
 
+* `state` -
+  State of the PrivateConnection.
+
+* `error` -
+  The PrivateConnection error in case of failure.
+  Structure is [documented below](#nested_error).
+
+
+<a name="nested_error"></a>The `error` block contains:
+
+* `message` -
+  (Optional)
+  A message containing more information about the error that occurred.
+
+* `details` -
+  (Optional)
+  A list of messages that carry the error details.
 
 ## Timeouts
 
@@ -135,4 +152,4 @@ $ terraform import google_datastream_private_connection.default {{location}}/{{p
 
 ## User Project Overrides
 
-This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/guides/provider_reference.html#user_project_override).
+This resource supports [User Project Overrides](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override).

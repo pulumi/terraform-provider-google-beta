@@ -604,7 +604,7 @@ The following arguments are supported:
 
 * `name` -
   (Optional)
-  If specified, used to specify which protocol to use. Allowed values are "http1" and "h2c".
+  If specified, used to specify which protocol to use. Allowed values are "http1" (HTTP/1) and "h2c" (HTTP/2 end-to-end). Defaults to "http1".
 
 * `protocol` -
   (Optional)
@@ -612,7 +612,7 @@ The following arguments are supported:
 
 * `container_port` -
   (Optional)
-  Port number the container listens on. This must be a valid port number, 0 < x < 65536.
+  Port number the container listens on. This must be a valid port number (between 1 and 65535). Defaults to "8080".
 
 <a name="nested_resources"></a>The `resources` block supports:
 
@@ -1015,4 +1015,4 @@ $ terraform import google_cloud_run_service.default {{location}}/{{name}}
 
 ## User Project Overrides
 
-This resource supports [User Project Overrides](https://www.terraform.io/docs/providers/google/guides/provider_reference.html#user_project_override).
+This resource supports [User Project Overrides](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override).

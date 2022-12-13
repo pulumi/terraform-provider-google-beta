@@ -36,9 +36,9 @@ func resourceAlloydbInstance() *schema.Resource {
 		},
 
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(10 * time.Minute),
-			Update: schema.DefaultTimeout(10 * time.Minute),
-			Delete: schema.DefaultTimeout(10 * time.Minute),
+			Create: schema.DefaultTimeout(20 * time.Minute),
+			Update: schema.DefaultTimeout(20 * time.Minute),
+			Delete: schema.DefaultTimeout(20 * time.Minute),
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -110,7 +110,6 @@ func resourceAlloydbInstance() *schema.Resource {
 							Type:        schema.TypeInt,
 							Computed:    true,
 							Optional:    true,
-							ForceNew:    true,
 							Description: `The number of CPU's in the VM instance.`,
 						},
 					},
@@ -318,9 +317,6 @@ func resourceAlloydbInstanceRead(d *schema.ResourceData, meta interface{}) error
 		return fmt.Errorf("Error reading Instance: %s", err)
 	}
 	if err := d.Set("state", flattenAlloydbInstanceState(res["state"], d, config)); err != nil {
-		return fmt.Errorf("Error reading Instance: %s", err)
-	}
-	if err := d.Set("display_name", flattenAlloydbInstanceDisplayName(res["displayName"], d, config)); err != nil {
 		return fmt.Errorf("Error reading Instance: %s", err)
 	}
 	if err := d.Set("gce_zone", flattenAlloydbInstanceGceZone(res["gceZone"], d, config)); err != nil {
@@ -566,10 +562,6 @@ func flattenAlloydbInstanceAnnotations(v interface{}, d *schema.ResourceData, co
 }
 
 func flattenAlloydbInstanceState(v interface{}, d *schema.ResourceData, config *Config) interface{} {
-	return v
-}
-
-func flattenAlloydbInstanceDisplayName(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	return v
 }
 

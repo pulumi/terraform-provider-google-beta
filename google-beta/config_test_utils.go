@@ -45,6 +45,7 @@ func configureTestBasePaths(c *Config, url string) {
 	c.CloudIdsBasePath = url
 	c.CloudIotBasePath = url
 	c.CloudRunBasePath = url
+	c.CloudRunV2BasePath = url
 	c.CloudSchedulerBasePath = url
 	c.CloudTasksBasePath = url
 	c.ComputeBasePath = url
@@ -66,8 +67,10 @@ func configureTestBasePaths(c *Config, url string) {
 	c.FilestoreBasePath = url
 	c.FirebaseBasePath = url
 	c.FirebaseHostingBasePath = url
+	c.FirebaseStorageBasePath = url
 	c.FirestoreBasePath = url
 	c.GameServicesBasePath = url
+	c.GKEBackupBasePath = url
 	c.GKEHubBasePath = url
 	c.HealthcareBasePath = url
 	c.IAM2BasePath = url
