@@ -68,10 +68,10 @@ var (
 		"addons_config.0.gcp_filestore_csi_driver_config",
 		"addons_config.0.dns_cache_config",
 		"addons_config.0.gce_persistent_disk_csi_driver_config",
+		"addons_config.0.gke_backup_agent_config",
 		"addons_config.0.istio_config",
 		"addons_config.0.kalm_config",
 		"addons_config.0.config_connector_config",
-		"addons_config.0.gke_backup_agent_config",
 	}
 
 	privateClusterConfigKeys = []string{
@@ -176,6 +176,7 @@ func resourceContainerCluster() *schema.Resource {
 			containerClusterAutopilotCustomizeDiff,
 			containerClusterNodeVersionRemoveDefaultCustomizeDiff,
 			containerClusterNetworkPolicyEmptyCustomizeDiff,
+			containerClusterSurgeSettingsCustomizeDiff,
 		),
 
 		Timeouts: &schema.ResourceTimeout{
@@ -370,6 +371,22 @@ func resourceContainerCluster() *schema.Resource {
 								},
 							},
 						},
+						"gke_backup_agent_config": {
+							Type:         schema.TypeList,
+							Optional:     true,
+							Computed:     true,
+							AtLeastOneOf: addonsConfigKeys,
+							MaxItems:     1,
+							Description:  `The status of the Backup for GKE Agent addon. It is disabled by default. Set enabled = true to enable.`,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"enabled": {
+										Type:     schema.TypeBool,
+										Required: true,
+									},
+								},
+							},
+						},
 						"istio_config": {
 							Type:         schema.TypeList,
 							Optional:     true,
@@ -418,22 +435,6 @@ func resourceContainerCluster() *schema.Resource {
 							AtLeastOneOf: addonsConfigKeys,
 							MaxItems:     1,
 							Description:  `The of the Config Connector addon.`,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"enabled": {
-										Type:     schema.TypeBool,
-										Required: true,
-									},
-								},
-							},
-						},
-						"gke_backup_agent_config": {
-							Type:         schema.TypeList,
-							Optional:     true,
-							Computed:     true,
-							AtLeastOneOf: addonsConfigKeys,
-							MaxItems:     1,
-							Description:  `The status of the Backup for GKE Agent addon. It is disabled by default. Set enabled = true to enable.`,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"enabled": {
@@ -613,6 +614,93 @@ func resourceContainerCluster() *schema.Resource {
 																Type:        schema.TypeString,
 																Computed:    true,
 																Description: `This field is set when upgrades are about to commence with the description of the upgrade.`,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+									"upgrade_settings": {
+										Type:        schema.TypeList,
+										Optional:    true,
+										Description: `Specifies the upgrade settings for NAP created node pools`,
+										Computed:    true,
+										MaxItems:    1,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"max_surge": {
+													Type:        schema.TypeInt,
+													Optional:    true,
+													Description: `The maximum number of nodes that can be created beyond the current size of the node pool during the upgrade process.`,
+												},
+												"max_unavailable": {
+													Type:        schema.TypeInt,
+													Optional:    true,
+													Description: `The maximum number of nodes that can be simultaneously unavailable during the upgrade process.`,
+												},
+												"strategy": {
+													Type:         schema.TypeString,
+													Optional:     true,
+													Computed:     true,
+													Description:  `Update strategy of the node pool.`,
+													ValidateFunc: validation.StringInSlice([]string{"NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED", "BLUE_GREEN", "SURGE"}, false),
+												},
+												"blue_green_settings": {
+													Type:        schema.TypeList,
+													Optional:    true,
+													Computed:    true,
+													MaxItems:    1,
+													Description: `Settings for blue-green upgrade strategy.`,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+															"node_pool_soak_duration": {
+																Type:     schema.TypeString,
+																Optional: true,
+																Computed: true,
+																Description: `Time needed after draining entire blue pool. After this period, blue pool will be cleaned up.
+
+																A duration in seconds with up to nine fractional digits, ending with 's'. Example: "3.5s".`,
+															},
+															"standard_rollout_policy": {
+																Type:        schema.TypeList,
+																Optional:    true,
+																Computed:    true,
+																MaxItems:    1,
+																Description: `Standard policy for the blue-green upgrade.`,
+																Elem: &schema.Resource{
+																	Schema: map[string]*schema.Schema{
+																		"batch_percentage": {
+																			Type:         schema.TypeFloat,
+																			Optional:     true,
+																			Computed:     true,
+																			ValidateFunc: validation.FloatBetween(0.0, 1.0),
+																			ExactlyOneOf: []string{
+																				"cluster_autoscaling.0.auto_provisioning_defaults.0.upgrade_settings.0.blue_green_settings.0.standard_rollout_policy.0.batch_percentage",
+																				"cluster_autoscaling.0.auto_provisioning_defaults.0.upgrade_settings.0.blue_green_settings.0.standard_rollout_policy.0.batch_node_count",
+																			},
+																			Description: `Percentage of the bool pool nodes to drain in a batch. The range of this field should be (0.0, 1.0].`,
+																		},
+																		"batch_node_count": {
+																			Type:     schema.TypeInt,
+																			Optional: true,
+																			Computed: true,
+																			ExactlyOneOf: []string{
+																				"cluster_autoscaling.0.auto_provisioning_defaults.0.upgrade_settings.0.blue_green_settings.0.standard_rollout_policy.0.batch_percentage",
+																				"cluster_autoscaling.0.auto_provisioning_defaults.0.upgrade_settings.0.blue_green_settings.0.standard_rollout_policy.0.batch_node_count",
+																			},
+																			Description: `Number of blue nodes to drain in a batch.`,
+																		},
+																		"batch_soak_duration": {
+																			Type:     schema.TypeString,
+																			Optional: true,
+																			Default:  "0s",
+																			Description: `Soak time after each batch gets drained.
+
+																			A duration in seconds with up to nine fractional digits, ending with 's'. Example: "3.5s".`,
+																		},
+																	},
+																},
 															},
 														},
 													},
@@ -1701,6 +1789,22 @@ func resourceContainerCluster() *schema.Resource {
 					},
 				},
 			},
+			"gateway_api_config": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Description: `Configuration for GKE Gateway API controller.`,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"channel": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"CHANNEL_DISABLED", "CHANNEL_STANDARD"}, false),
+							Description:  `The Gateway API release channel to use for Gateway API.`,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -1822,6 +1926,7 @@ func resourceContainerClusterCreate(d *schema.ResourceData, meta interface{}) er
 			PrivateIpv6GoogleAccess:   d.Get("private_ipv6_google_access").(string),
 			EnableL4ilbSubsetting:     d.Get("enable_l4_ilb_subsetting").(bool),
 			DnsConfig:                 expandDnsConfig(d.Get("dns_config")),
+			GatewayApiConfig:          expandGatewayApiConfig(d.Get("gateway_api_config")),
 		},
 		MasterAuth:           expandMasterAuth(d.Get("master_auth")),
 		NotificationConfig:   expandNotificationConfig(d.Get("notification_config")),
@@ -2314,6 +2419,9 @@ func resourceContainerClusterRead(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 	if err := d.Set("dns_config", flattenDnsConfig(cluster.NetworkConfig.DnsConfig)); err != nil {
+		return err
+	}
+	if err := d.Set("gateway_api_config", flattenGatewayApiConfig(cluster.NetworkConfig.GatewayApiConfig)); err != nil {
 		return err
 	}
 	if err := d.Set("logging_config", flattenContainerClusterLoggingConfig(cluster.LoggingConfig)); err != nil {
@@ -3301,6 +3409,24 @@ func resourceContainerClusterUpdate(d *schema.ResourceData, meta interface{}) er
 		log.Printf("[INFO] GKE cluster %s resource usage export config has been updated", d.Id())
 	}
 
+	if d.HasChange("gateway_api_config") {
+		if gac, ok := d.GetOk("gateway_api_config"); ok {
+			req := &container.UpdateClusterRequest{
+				Update: &container.ClusterUpdate{
+					DesiredGatewayApiConfig: expandGatewayApiConfig(gac),
+				},
+			}
+
+			updateF := updateFunc(req, "updating GKE Gateway API")
+			// Call update serially.
+			if err := lockedCall(lockKey, updateF); err != nil {
+				return err
+			}
+
+			log.Printf("[INFO] GKE cluster %s Gateway API has been updated", d.Id())
+		}
+	}
+
 	if d.HasChange("node_pool_defaults") && d.HasChange("node_pool_defaults.0.node_config_defaults.0.logging_variant") {
 		if v, ok := d.GetOk("node_pool_defaults.0.node_config_defaults.0.logging_variant"); ok {
 			loggingVariant := v.(string)
@@ -3627,6 +3753,13 @@ func expandClusterAddonsConfig(configured interface{}) *container.AddonsConfig {
 			ForceSendFields: []string{"Enabled"},
 		}
 	}
+	if v, ok := config["gke_backup_agent_config"]; ok && len(v.([]interface{})) > 0 {
+		addon := v.([]interface{})[0].(map[string]interface{})
+		ac.GkeBackupAgentConfig = &container.GkeBackupAgentConfig{
+			Enabled:         addon["enabled"].(bool),
+			ForceSendFields: []string{"Enabled"},
+		}
+	}
 
 	if v, ok := config["istio_config"]; ok && len(v.([]interface{})) > 0 {
 		addon := v.([]interface{})[0].(map[string]interface{})
@@ -3647,13 +3780,6 @@ func expandClusterAddonsConfig(configured interface{}) *container.AddonsConfig {
 	if v, ok := config["config_connector_config"]; ok && len(v.([]interface{})) > 0 {
 		addon := v.([]interface{})[0].(map[string]interface{})
 		ac.ConfigConnectorConfig = &container.ConfigConnectorConfig{
-			Enabled:         addon["enabled"].(bool),
-			ForceSendFields: []string{"Enabled"},
-		}
-	}
-	if v, ok := config["gke_backup_agent_config"]; ok && len(v.([]interface{})) > 0 {
-		addon := v.([]interface{})[0].(map[string]interface{})
-		ac.GkeBackupAgentConfig = &container.GkeBackupAgentConfig{
 			Enabled:         addon["enabled"].(bool),
 			ForceSendFields: []string{"Enabled"},
 		}
@@ -3844,13 +3970,14 @@ func expandAutoProvisioningDefaults(configured interface{}, d *schema.ResourceDa
 	config := l[0].(map[string]interface{})
 
 	npd := &container.AutoprovisioningNodePoolDefaults{
-		OauthScopes:    convertStringArr(config["oauth_scopes"].([]interface{})),
-		ServiceAccount: config["service_account"].(string),
-		DiskSizeGb:     int64(config["disk_size"].(int)),
-		DiskType:       config["disk_type"].(string),
-		ImageType:      config["image_type"].(string),
-		BootDiskKmsKey: config["boot_disk_kms_key"].(string),
-		Management:     expandManagement(config["management"]),
+		OauthScopes:     convertStringArr(config["oauth_scopes"].([]interface{})),
+		ServiceAccount:  config["service_account"].(string),
+		DiskSizeGb:      int64(config["disk_size"].(int)),
+		DiskType:        config["disk_type"].(string),
+		ImageType:       config["image_type"].(string),
+		BootDiskKmsKey:  config["boot_disk_kms_key"].(string),
+		Management:      expandManagement(config["management"]),
+		UpgradeSettings: expandUpgradeSettings(config["upgrade_settings"]),
 	}
 
 	if v, ok := config["shielded_instance_config"]; ok && len(v.([]interface{})) > 0 {
@@ -3867,7 +3994,56 @@ func expandAutoProvisioningDefaults(configured interface{}, d *schema.ResourceDa
 		cpu = "automatic"
 	}
 	npd.MinCpuPlatform = cpu
+
 	return npd
+}
+
+func expandUpgradeSettings(configured interface{}) *container.UpgradeSettings {
+	l, ok := configured.([]interface{})
+	if !ok || l == nil || len(l) == 0 || l[0] == nil {
+		return &container.UpgradeSettings{}
+	}
+	config := l[0].(map[string]interface{})
+
+	upgradeSettings := &container.UpgradeSettings{
+		MaxSurge:          int64(config["max_surge"].(int)),
+		MaxUnavailable:    int64(config["max_unavailable"].(int)),
+		Strategy:          config["strategy"].(string),
+		BlueGreenSettings: expandBlueGreenSettings(config["blue_green_settings"]),
+	}
+
+	return upgradeSettings
+}
+
+func expandBlueGreenSettings(configured interface{}) *container.BlueGreenSettings {
+	l, ok := configured.([]interface{})
+	if !ok || l == nil || len(l) == 0 || l[0] == nil {
+		return &container.BlueGreenSettings{}
+	}
+	config := l[0].(map[string]interface{})
+
+	blueGreenSettings := &container.BlueGreenSettings{
+		NodePoolSoakDuration:  config["node_pool_soak_duration"].(string),
+		StandardRolloutPolicy: expandStandardRolloutPolicy(config["standard_rollout_policy"]),
+	}
+
+	return blueGreenSettings
+}
+
+func expandStandardRolloutPolicy(configured interface{}) *container.StandardRolloutPolicy {
+	l, ok := configured.([]interface{})
+	if !ok || l == nil || len(l) == 0 || l[0] == nil {
+		return &container.StandardRolloutPolicy{}
+	}
+
+	config := l[0].(map[string]interface{})
+	standardRolloutPolicy := &container.StandardRolloutPolicy{
+		BatchPercentage:   config["batch_percentage"].(float64),
+		BatchNodeCount:    int64(config["batch_node_count"].(int)),
+		BatchSoakDuration: config["batch_soak_duration"].(string),
+	}
+
+	return standardRolloutPolicy
 }
 
 func expandManagement(configured interface{}) *container.NodeManagement {
@@ -4267,6 +4443,18 @@ func expandDnsConfig(configured interface{}) *container.DNSConfig {
 	}
 }
 
+func expandGatewayApiConfig(configured interface{}) *container.GatewayAPIConfig {
+	l := configured.([]interface{})
+	if len(l) == 0 || l[0] == nil {
+		return nil
+	}
+
+	config := l[0].(map[string]interface{})
+	return &container.GatewayAPIConfig{
+		Channel: config["channel"].(string),
+	}
+}
+
 func expandContainerClusterLoggingConfig(configured interface{}) *container.LoggingConfig {
 	l := configured.([]interface{})
 	if len(l) == 0 {
@@ -4532,6 +4720,13 @@ func flattenClusterAddonsConfig(c *container.AddonsConfig) []map[string]interfac
 			},
 		}
 	}
+	if c.GkeBackupAgentConfig != nil {
+		result["gke_backup_agent_config"] = []map[string]interface{}{
+			{
+				"enabled": c.GkeBackupAgentConfig.Enabled,
+			},
+		}
+	}
 
 	if c.IstioConfig != nil {
 		result["istio_config"] = []map[string]interface{}{
@@ -4553,13 +4748,6 @@ func flattenClusterAddonsConfig(c *container.AddonsConfig) []map[string]interfac
 		result["config_connector_config"] = []map[string]interface{}{
 			{
 				"enabled": c.ConfigConnectorConfig.Enabled,
-			},
-		}
-	}
-	if c.GkeBackupAgentConfig != nil {
-		result["gke_backup_agent_config"] = []map[string]interface{}{
-			{
-				"enabled": c.GkeBackupAgentConfig.Enabled,
 			},
 		}
 	}
@@ -4838,6 +5026,45 @@ func flattenAutoProvisioningDefaults(a *container.AutoprovisioningNodePoolDefaul
 	r["boot_disk_kms_key"] = a.BootDiskKmsKey
 	r["shielded_instance_config"] = flattenShieldedInstanceConfig(a.ShieldedInstanceConfig)
 	r["management"] = flattenManagement(a.Management)
+	r["upgrade_settings"] = flattenUpgradeSettings(a.UpgradeSettings)
+
+	return []map[string]interface{}{r}
+}
+
+func flattenUpgradeSettings(a *container.UpgradeSettings) []map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	r := make(map[string]interface{})
+	r["max_surge"] = a.MaxSurge
+	r["max_unavailable"] = a.MaxUnavailable
+	r["strategy"] = a.Strategy
+	r["blue_green_settings"] = flattenBlueGreenSettings(a.BlueGreenSettings)
+
+	return []map[string]interface{}{r}
+}
+
+func flattenBlueGreenSettings(a *container.BlueGreenSettings) []map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+
+	r := make(map[string]interface{})
+	r["node_pool_soak_duration"] = a.NodePoolSoakDuration
+	r["standard_rollout_policy"] = flattenStandardRolloutPolicy(a.StandardRolloutPolicy)
+
+	return []map[string]interface{}{r}
+}
+
+func flattenStandardRolloutPolicy(a *container.StandardRolloutPolicy) []map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+
+	r := make(map[string]interface{})
+	r["batch_percentage"] = a.BatchPercentage
+	r["batch_node_count"] = a.BatchNodeCount
+	r["batch_soak_duration"] = a.BatchSoakDuration
 
 	return []map[string]interface{}{r}
 }
@@ -4973,6 +5200,17 @@ func flattenDnsConfig(c *container.DNSConfig) []map[string]interface{} {
 			"cluster_dns":        c.ClusterDns,
 			"cluster_dns_scope":  c.ClusterDnsScope,
 			"cluster_dns_domain": c.ClusterDnsDomain,
+		},
+	}
+}
+
+func flattenGatewayApiConfig(c *container.GatewayAPIConfig) []map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return []map[string]interface{}{
+		{
+			"channel": c.Channel,
 		},
 	}
 }
@@ -5260,6 +5498,23 @@ func validateNodePoolAutoConfig(cluster *container.Cluster) error {
 	if cluster.NodePoolAutoConfig != nil && cluster.NodePoolAutoConfig.NetworkTags != nil && len(cluster.NodePoolAutoConfig.NetworkTags.Tags) > 0 {
 		if (cluster.Autopilot == nil || !cluster.Autopilot.Enabled) && (cluster.Autoscaling == nil || !cluster.Autoscaling.EnableNodeAutoprovisioning) {
 			return fmt.Errorf("node_pool_auto_config network tags can only be set if enable_autopilot or cluster_autoscaling is enabled")
+		}
+	}
+
+	return nil
+}
+
+func containerClusterSurgeSettingsCustomizeDiff(_ context.Context, d *schema.ResourceDiff, meta interface{}) error {
+	if v, ok := d.GetOk("cluster_autoscaling.0.auto_provisioning_defaults.0.upgrade_settings.0.strategy"); ok {
+		if v != "SURGE" {
+			if _, maxSurgeIsPresent := d.GetOk("cluster_autoscaling.0.auto_provisioning_defaults.0.upgrade_settings.0.max_surge"); maxSurgeIsPresent {
+				return fmt.Errorf("Surge upgrade settings max_surge/max_unavailable can only be used when strategy is set to SURGE")
+			}
+		}
+		if v != "SURGE" {
+			if _, maxSurgeIsPresent := d.GetOk("cluster_autoscaling.0.auto_provisioning_defaults.0.upgrade_settings.0.max_unavailable"); maxSurgeIsPresent {
+				return fmt.Errorf("Surge upgrade settings max_surge/max_unavailable can only be used when strategy is set to SURGE")
+			}
 		}
 	}
 

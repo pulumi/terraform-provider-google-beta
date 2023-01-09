@@ -1069,9 +1069,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 289
+// Generated resources: 291
 // Generated IAM resources: 189
-// Total generated resources: 478
+// Total generated resources: 480
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1099,6 +1099,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_active_directory_domain_trust":                         resourceActiveDirectoryDomainTrust(),
 			"google_alloydb_cluster":                                       resourceAlloydbCluster(),
 			"google_alloydb_instance":                                      resourceAlloydbInstance(),
+			"google_alloydb_backup":                                        resourceAlloydbBackup(),
 			"google_api_gateway_api":                                       resourceApiGatewayApi(),
 			"google_api_gateway_api_iam_binding":                           ResourceIamBinding(ApiGatewayApiIamSchema, ApiGatewayApiIamUpdaterProducer, ApiGatewayApiIdParseFunc),
 			"google_api_gateway_api_iam_member":                            ResourceIamMember(ApiGatewayApiIamSchema, ApiGatewayApiIamUpdaterProducer, ApiGatewayApiIdParseFunc),
@@ -1364,6 +1365,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_essential_contacts_contact":                            resourceEssentialContactsContact(),
 			"google_filestore_instance":                                    resourceFilestoreInstance(),
 			"google_filestore_snapshot":                                    resourceFilestoreSnapshot(),
+			"google_filestore_backup":                                      resourceFilestoreBackup(),
 			"google_firebase_project":                                      resourceFirebaseProject(),
 			"google_firebase_project_location":                             resourceFirebaseProjectLocation(),
 			"google_firebase_web_app":                                      resourceFirebaseWebApp(),

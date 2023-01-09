@@ -2164,6 +2164,7 @@ func TestAccContainerCluster_nodeAutoprovisioningDefaults(t *testing.T) {
 	t.Parallel()
 
 	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
+	includeMinCpuPlatform := true
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -2187,6 +2188,58 @@ func TestAccContainerCluster_nodeAutoprovisioningDefaults(t *testing.T) {
 				Config:             testAccContainerCluster_autoprovisioningDefaults(clusterName, true),
 				PlanOnly:           true,
 				ExpectNonEmptyPlan: false,
+			},
+			{
+				Config: testAccContainerCluster_autoprovisioningDefaultsMinCpuPlatform(clusterName, includeMinCpuPlatform),
+			},
+			{
+				ResourceName:            "google_container_cluster.with_autoprovisioning",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
+			},
+			{
+				Config: testAccContainerCluster_autoprovisioningDefaultsMinCpuPlatform(clusterName, !includeMinCpuPlatform),
+			},
+			{
+				ResourceName:            "google_container_cluster.with_autoprovisioning",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
+			},
+		},
+	})
+}
+
+func TestAccContainerCluster_autoprovisioningDefaultsUpgradeSettings(t *testing.T) {
+	t.Parallel()
+
+	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckContainerClusterDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccContainerCluster_autoprovisioningDefaultsUpgradeSettings(clusterName, 2, 1, "SURGE"),
+			},
+			{
+				ResourceName:      "google_container_cluster.with_autoprovisioning_upgrade_settings",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				Config:      testAccContainerCluster_autoprovisioningDefaultsUpgradeSettings(clusterName, 2, 1, "BLUE_GREEN"),
+				ExpectError: regexp.MustCompile(`Surge upgrade settings max_surge/max_unavailable can only be used when strategy is set to SURGE`),
+			},
+			{
+				Config: testAccContainerCluster_autoprovisioningDefaultsUpgradeSettingsWithBlueGreenStrategy(clusterName, "3.500s", "BLUE_GREEN"),
+			},
+			{
+				ResourceName:      "google_container_cluster.with_autoprovisioning_upgrade_settings",
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
@@ -2603,38 +2656,6 @@ func TestAccContainerCluster_withSoleTenantGroup(t *testing.T) {
 
 // consider merging this test with TestAccContainerCluster_nodeAutoprovisioningDefaults
 // once the feature is GA
-func TestAccContainerCluster_nodeAutoprovisioningDefaultsMinCpuPlatform(t *testing.T) {
-	t.Parallel()
-
-	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
-	includeMinCpuPlatform := true
-
-	vcrTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckContainerClusterDestroyProducer(t),
-		Steps: []resource.TestStep{
-			{
-				Config: testAccContainerCluster_autoprovisioningDefaultsMinCpuPlatform(clusterName, includeMinCpuPlatform),
-			},
-			{
-				ResourceName:            "google_container_cluster.with_autoprovisioning",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"min_master_version"},
-			},
-			{
-				Config: testAccContainerCluster_autoprovisioningDefaultsMinCpuPlatform(clusterName, !includeMinCpuPlatform),
-			},
-			{
-				ResourceName:            "google_container_cluster.with_autoprovisioning",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"min_master_version"},
-			},
-		},
-	})
-}
 
 func TestAccContainerCluster_withAutoscalingProfile(t *testing.T) {
 	t.Parallel()
@@ -3382,6 +3403,52 @@ func TestAccContainerCluster_withDNSConfig(t *testing.T) {
 	})
 }
 
+func TestAccContainerCluster_withGatewayApiConfig(t *testing.T) {
+	t.Parallel()
+	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckContainerClusterDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccContainerCluster_withGatewayApiConfig(clusterName, "CHANNEL_DISABLED"),
+			},
+			{
+				ResourceName:            "google_container_cluster.primary",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
+			},
+			{
+				Config: testAccContainerCluster_withGatewayApiConfig(clusterName, "CHANNEL_STANDARD"),
+			},
+			{
+				ResourceName:            "google_container_cluster.primary",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"min_master_version"},
+			},
+		},
+	})
+}
+
+func TestAccContainerCluster_withInvalidGatewayApiConfigChannel(t *testing.T) {
+	t.Parallel()
+	clusterName := fmt.Sprintf("tf-test-cluster-%s", randString(t, 10))
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckContainerClusterDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config:      testAccContainerCluster_withGatewayApiConfig(clusterName, "CANARY"),
+				ExpectError: regexp.MustCompile(`expected gateway_api_config\.0\.channel to be one of \[CHANNEL_DISABLED CHANNEL_STANDARD\], got CANARY`),
+			},
+		},
+	})
+}
+
 func TestAccContainerCluster_withTPUConfig(t *testing.T) {
 	t.Parallel()
 
@@ -3681,6 +3748,9 @@ resource "google_container_cluster" "primary" {
     gce_persistent_disk_csi_driver_config {
       enabled = false
     }
+	gke_backup_agent_config {
+	  enabled = false
+	}
     istio_config {
       disabled = true
       auth     = "AUTH_MUTUAL_TLS"
@@ -3689,9 +3759,6 @@ resource "google_container_cluster" "primary" {
 	  enabled = false
 	}
 	config_connector_config {
-	  enabled = false
-	}
-    gke_backup_agent_config {
 	  enabled = false
 	}
   }
@@ -3740,6 +3807,9 @@ resource "google_container_cluster" "primary" {
     gce_persistent_disk_csi_driver_config {
       enabled = true
     }
+	gke_backup_agent_config {
+	  enabled = true
+	}
     istio_config {
       disabled = false
       auth     = "AUTH_NONE"
@@ -3748,9 +3818,6 @@ resource "google_container_cluster" "primary" {
 	  enabled = true
 	}
 	config_connector_config {
-	  enabled = true
-	}
-	gke_backup_agent_config {
 	  enabled = true
 	}
   }
@@ -5314,6 +5381,89 @@ resource "google_container_cluster" "with_autoprovisioning" {
 }`, cluster, minCpuPlatformCfg)
 }
 
+func testAccContainerCluster_autoprovisioningDefaultsUpgradeSettings(clusterName string, maxSurge, maxUnavailable int, strategy string) string {
+	blueGreenSettings := ""
+	if strategy == "BLUE_GREEN" {
+		blueGreenSettings = `
+      blue_green_settings {
+        node_pool_soak_duration = "3.500s"
+        standard_rollout_policy {
+        batch_percentage    = 0.5
+        batch_soak_duration = "3.500s"
+        }
+      }
+    `
+	}
+
+	return fmt.Sprintf(`
+    resource "google_container_cluster" "with_autoprovisioning_upgrade_settings" {
+      name               = "%s"
+      location           = "us-central1-f"
+      initial_node_count = 1
+
+      cluster_autoscaling {
+        enabled = true
+
+        resource_limits {
+          resource_type = "cpu"
+          maximum       = 2
+        }
+
+        resource_limits {
+          resource_type = "memory"
+          maximum       = 2048
+        }
+
+        auto_provisioning_defaults {
+          upgrade_settings {
+            max_surge       = %d
+            max_unavailable = %d
+            strategy        = "%s"
+            %s
+          }
+        }
+      }
+    }
+  `, clusterName, maxSurge, maxUnavailable, strategy, blueGreenSettings)
+}
+
+func testAccContainerCluster_autoprovisioningDefaultsUpgradeSettingsWithBlueGreenStrategy(clusterName string, duration, strategy string) string {
+	return fmt.Sprintf(`
+      resource "google_container_cluster" "with_autoprovisioning_upgrade_settings" {
+        name               = "%s"
+        location           = "us-central1-f"
+        initial_node_count = 1
+
+        cluster_autoscaling {
+          enabled = true
+
+          resource_limits {
+            resource_type = "cpu"
+            maximum       = 2
+          }
+
+          resource_limits {
+            resource_type = "memory"
+            maximum       = 2048
+          }
+
+          auto_provisioning_defaults {
+            upgrade_settings {
+              strategy        = "%s"
+              blue_green_settings {
+                node_pool_soak_duration = "%s"
+                standard_rollout_policy {
+                  batch_percentage    = 0.5
+                  batch_soak_duration = "%s"
+                }
+              }
+            }
+          }
+        }
+      }
+    `, clusterName, strategy, duration, duration)
+}
+
 func testAccContainerCluster_autoprovisioningDefaultsDiskSizeGb(cluster string, includeDiskSizeGb bool) string {
 	DiskSizeGbCfg := ""
 	if includeDiskSizeGb {
@@ -6757,6 +6907,20 @@ resource "google_container_cluster" "with_dns_config" {
 	}
 }
 `, clusterName, clusterDns, clusterDnsDomain, clusterDnsScope)
+}
+
+func testAccContainerCluster_withGatewayApiConfig(clusterName string, gatewayApiChannel string) string {
+	return fmt.Sprintf(`
+resource "google_container_cluster" "primary" {
+	name               = "%s"
+	location           = "us-central1-f"
+	initial_node_count = 1
+	min_master_version = "1.24"
+	gateway_api_config {
+		channel = "%s"
+	}
+}
+`, clusterName, gatewayApiChannel)
 }
 
 func testAccContainerCluster_withIdentityServiceConfigEnabled(name string) string {
