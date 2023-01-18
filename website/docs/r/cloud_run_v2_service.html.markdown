@@ -12,7 +12,7 @@
 #     .github/CONTRIBUTING.md.
 #
 # ----------------------------------------------------------------------------
-subcategory: "Cloud Run (2nd gen)"
+subcategory: "Cloud Run (v2 API)"
 page_title: "Google: google_cloud_run_v2_service"
 description: |-
   Service acts as a top-level container that manages a set of configurations and revision templates which implement a network service.
@@ -43,10 +43,6 @@ resource "google_cloud_run_v2_service" "default" {
   location = "us-central1"
   ingress = "INGRESS_TRAFFIC_ALL"
   
-  binary_authorization {
-    use_default = true
-    breakglass_justification = "Some justification"
-  }
   template {
     containers {
       image = "us-docker.pkg.dev/cloudrun/container/hello"

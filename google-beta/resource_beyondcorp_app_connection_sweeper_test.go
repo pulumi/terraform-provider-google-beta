@@ -24,15 +24,15 @@ import (
 )
 
 func init() {
-	resource.AddTestSweepers("CloudIdsEndpoint", &resource.Sweeper{
-		Name: "CloudIdsEndpoint",
-		F:    testSweepCloudIdsEndpoint,
+	resource.AddTestSweepers("BeyondcorpAppConnection", &resource.Sweeper{
+		Name: "BeyondcorpAppConnection",
+		F:    testSweepBeyondcorpAppConnection,
 	})
 }
 
 // At the time of writing, the CI only passes us-central1 as the region
-func testSweepCloudIdsEndpoint(region string) error {
-	resourceName := "CloudIdsEndpoint"
+func testSweepBeyondcorpAppConnection(region string) error {
+	resourceName := "BeyondcorpAppConnection"
 	log.Printf("[INFO][SWEEPER_LOG] Starting sweeper for %s", resourceName)
 
 	config, err := sharedConfigForRegion(region)
@@ -61,7 +61,7 @@ func testSweepCloudIdsEndpoint(region string) error {
 		},
 	}
 
-	listTemplate := strings.Split("https://ids.googleapis.com/v1/projects/{{project}}/locations/{{location}}/endpoints", "?")[0]
+	listTemplate := strings.Split("https://beyondcorp.googleapis.com/v1/projects/{{project}}/locations/{{region}}/appConnections", "?")[0]
 	listUrl, err := replaceVars(d, config, listTemplate)
 	if err != nil {
 		log.Printf("[INFO][SWEEPER_LOG] error preparing sweeper list url: %s", err)
@@ -74,7 +74,7 @@ func testSweepCloudIdsEndpoint(region string) error {
 		return nil
 	}
 
-	resourceList, ok := res["endpoints"]
+	resourceList, ok := res["appConnections"]
 	if !ok {
 		log.Printf("[INFO][SWEEPER_LOG] Nothing found in response.")
 		return nil
@@ -99,7 +99,7 @@ func testSweepCloudIdsEndpoint(region string) error {
 			continue
 		}
 
-		deleteTemplate := "https://ids.googleapis.com/v1/projects/{{project}}/locations/{{location}}/endpoints/{{name}}"
+		deleteTemplate := "https://beyondcorp.googleapis.com/v1/projects/{{project}}/locations/{{region}}/appConnections/{{name}}"
 		deleteUrl, err := replaceVars(d, config, deleteTemplate)
 		if err != nil {
 			log.Printf("[INFO][SWEEPER_LOG] error preparing delete url: %s", err)

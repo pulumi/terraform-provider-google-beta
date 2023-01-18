@@ -86,7 +86,7 @@ locals {
 }
 
 resource "google_service_account" "account" {
-  account_id = "sa"
+  account_id = "gcf-sa"
   display_name = "Test Service Account"
 }
 
@@ -107,7 +107,7 @@ resource "google_storage_bucket_object" "object" {
 }
  
 resource "google_cloudfunctions2_function" "function" {
-  name = "function"
+  name = "gcf-function"
   location = "us-central1"
   description = "a new function"
  
@@ -128,8 +128,10 @@ resource "google_cloudfunctions2_function" "function" {
   service_config {
     max_instance_count  = 3
     min_instance_count = 1
-    available_memory    = "256M"
+    available_memory    = "4Gi"
     timeout_seconds     = 60
+    max_instance_request_concurrency = 80
+    available_cpu = "4"
     environment_variables = {
         SERVICE_CONFIG_TEST = "config_test"
     }
@@ -183,7 +185,7 @@ resource "google_project_iam_member" "gcs-pubsub-publishing" {
 }
 
 resource "google_service_account" "account" {
-  account_id   = "sa"
+  account_id   = "gcf-sa"
   display_name = "Test Service Account - used for both the cloud function and eventarc trigger in the test"
 }
 
@@ -214,7 +216,7 @@ resource "google_cloudfunctions2_function" "function" {
     google_project_iam_member.event-receiving,
     google_project_iam_member.artifactregistry-reader,
   ]
-  name = "function"
+  name = "gcf-function"
   location = "us-central1"
   description = "a new function"
  
@@ -674,6 +676,14 @@ The following arguments are supported:
   The amount of memory available for a function.
   Defaults to 256M. Supported units are k, M, G, Mi, Gi. If no unit is
   supplied the value is interpreted as bytes.
+
+* `max_instance_request_concurrency` -
+  (Optional)
+  Sets the maximum number of concurrent requests that each instance can receive. Defaults to 1.
+
+* `available_cpu` -
+  (Optional)
+  The number of CPUs used in a single container instance. Default value is calculated from available memory.
 
 * `environment_variables` -
   (Optional)

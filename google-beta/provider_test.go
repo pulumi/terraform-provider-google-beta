@@ -651,8 +651,21 @@ provider "google" {
 
 resource "google_compute_address" "default" {
   provider = google.compute_custom_endpoint
-  name     = "address-test-%s"
+  name     = "tf-test-address-%s"
 }`, endpoint, name)
+}
+
+func testAccProviderMeta_setModuleName(key, name string) string {
+	return fmt.Sprintf(`
+terraform {
+  provider_meta "google" {
+    module_name = "%s"
+  }
+}
+
+resource "google_compute_address" "default" {
+	name = "tf-test-address-%s"
+}`, key, name)
 }
 
 // Set up two projects. Project 1 has a service account that is used to create a
