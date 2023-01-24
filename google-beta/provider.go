@@ -993,6 +993,7 @@ func Provider() *schema.Provider {
 			"google_compute_lb_ip_ranges":                         dataSourceGoogleComputeLbIpRanges(),
 			"google_compute_network":                              dataSourceGoogleComputeNetwork(),
 			"google_compute_network_endpoint_group":               dataSourceGoogleComputeNetworkEndpointGroup(),
+			"google_compute_network_peering":                      dataSourceComputeNetworkPeering(),
 			"google_compute_node_types":                           dataSourceGoogleComputeNodeTypes(),
 			"google_compute_regions":                              dataSourceGoogleComputeRegions(),
 			"google_compute_region_network_endpoint_group":        dataSourceGoogleComputeRegionNetworkEndpointGroup(),
@@ -1000,6 +1001,7 @@ func Provider() *schema.Provider {
 			"google_compute_region_ssl_certificate":               dataSourceGoogleRegionComputeSslCertificate(),
 			"google_compute_resource_policy":                      dataSourceGoogleComputeResourcePolicy(),
 			"google_compute_router":                               dataSourceGoogleComputeRouter(),
+			"google_compute_router_nat":                           dataSourceGoogleComputeRouterNat(),
 			"google_compute_router_status":                        dataSourceGoogleComputeRouterStatus(),
 			"google_compute_snapshot":                             dataSourceGoogleComputeSnapshot(),
 			"google_compute_ssl_certificate":                      dataSourceGoogleComputeSslCertificate(),
@@ -1099,8 +1101,8 @@ func Provider() *schema.Provider {
 }
 
 // Generated resources: 296
-// Generated IAM resources: 192
-// Total generated resources: 488
+// Generated IAM resources: 201
+// Total generated resources: 497
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1228,7 +1230,13 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_cloud_run_service_iam_member":                          ResourceIamMember(CloudRunServiceIamSchema, CloudRunServiceIamUpdaterProducer, CloudRunServiceIdParseFunc),
 			"google_cloud_run_service_iam_policy":                          ResourceIamPolicy(CloudRunServiceIamSchema, CloudRunServiceIamUpdaterProducer, CloudRunServiceIdParseFunc),
 			"google_cloud_run_v2_job":                                      resourceCloudRunV2Job(),
+			"google_cloud_run_v2_job_iam_binding":                          ResourceIamBinding(CloudRunV2JobIamSchema, CloudRunV2JobIamUpdaterProducer, CloudRunV2JobIdParseFunc),
+			"google_cloud_run_v2_job_iam_member":                           ResourceIamMember(CloudRunV2JobIamSchema, CloudRunV2JobIamUpdaterProducer, CloudRunV2JobIdParseFunc),
+			"google_cloud_run_v2_job_iam_policy":                           ResourceIamPolicy(CloudRunV2JobIamSchema, CloudRunV2JobIamUpdaterProducer, CloudRunV2JobIdParseFunc),
 			"google_cloud_run_v2_service":                                  resourceCloudRunV2Service(),
+			"google_cloud_run_v2_service_iam_binding":                      ResourceIamBinding(CloudRunV2ServiceIamSchema, CloudRunV2ServiceIamUpdaterProducer, CloudRunV2ServiceIdParseFunc),
+			"google_cloud_run_v2_service_iam_member":                       ResourceIamMember(CloudRunV2ServiceIamSchema, CloudRunV2ServiceIamUpdaterProducer, CloudRunV2ServiceIdParseFunc),
+			"google_cloud_run_v2_service_iam_policy":                       ResourceIamPolicy(CloudRunV2ServiceIamSchema, CloudRunV2ServiceIamUpdaterProducer, CloudRunV2ServiceIdParseFunc),
 			"google_cloud_scheduler_job":                                   resourceCloudSchedulerJob(),
 			"google_cloud_tasks_queue":                                     resourceCloudTasksQueue(),
 			"google_cloud_tasks_queue_iam_binding":                         ResourceIamBinding(CloudTasksQueueIamSchema, CloudTasksQueueIamUpdaterProducer, CloudTasksQueueIdParseFunc),
@@ -1419,6 +1427,9 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_game_services_game_server_config":                      resourceGameServicesGameServerConfig(),
 			"google_game_services_game_server_deployment_rollout":          resourceGameServicesGameServerDeploymentRollout(),
 			"google_gke_backup_backup_plan":                                resourceGKEBackupBackupPlan(),
+			"google_gke_backup_backup_plan_iam_binding":                    ResourceIamBinding(GKEBackupBackupPlanIamSchema, GKEBackupBackupPlanIamUpdaterProducer, GKEBackupBackupPlanIdParseFunc),
+			"google_gke_backup_backup_plan_iam_member":                     ResourceIamMember(GKEBackupBackupPlanIamSchema, GKEBackupBackupPlanIamUpdaterProducer, GKEBackupBackupPlanIdParseFunc),
+			"google_gke_backup_backup_plan_iam_policy":                     ResourceIamPolicy(GKEBackupBackupPlanIamSchema, GKEBackupBackupPlanIamUpdaterProducer, GKEBackupBackupPlanIdParseFunc),
 			"google_gke_hub_membership":                                    resourceGKEHubMembership(),
 			"google_gke_hub_membership_iam_binding":                        ResourceIamBinding(GKEHubMembershipIamSchema, GKEHubMembershipIamUpdaterProducer, GKEHubMembershipIdParseFunc),
 			"google_gke_hub_membership_iam_member":                         ResourceIamMember(GKEHubMembershipIamSchema, GKEHubMembershipIamUpdaterProducer, GKEHubMembershipIdParseFunc),
