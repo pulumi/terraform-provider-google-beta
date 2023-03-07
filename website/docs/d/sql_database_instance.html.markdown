@@ -27,4 +27,4 @@ The following arguments are supported:
 * `project` - (optional) The ID of the project in which the resource belongs.
 
 ## Attributes Reference
-See [google_sql_database_instance](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance) resource for details of all the available attributes.
+See google_sql_database_instance resource for details of all the available attributes.
