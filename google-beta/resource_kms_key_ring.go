@@ -65,6 +65,7 @@ A full list of valid locations can be found by running 'gcloud kms locations lis
 
 func resourceKMSKeyRingCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -127,6 +128,7 @@ func resourceKMSKeyRingCreate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceKMSKeyRingRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -101,6 +101,7 @@ this target proxy has a loadBalancingScheme set to INTERNAL_SELF_MANAGED.`,
 
 func resourceComputeTargetHttpProxyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -180,6 +181,7 @@ func resourceComputeTargetHttpProxyCreate(d *schema.ResourceData, meta interface
 
 func resourceComputeTargetHttpProxyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -239,6 +241,7 @@ func resourceComputeTargetHttpProxyRead(d *schema.ResourceData, meta interface{}
 
 func resourceComputeTargetHttpProxyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -296,6 +299,7 @@ func resourceComputeTargetHttpProxyUpdate(d *schema.ResourceData, meta interface
 
 func resourceComputeTargetHttpProxyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

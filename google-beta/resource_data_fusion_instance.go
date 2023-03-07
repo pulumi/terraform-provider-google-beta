@@ -274,6 +274,7 @@ able to access the public internet.`,
 
 func resourceDataFusionInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -439,6 +440,7 @@ func resourceDataFusionInstanceCreate(d *schema.ResourceData, meta interface{}) 
 
 func resourceDataFusionInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -563,6 +565,7 @@ func resourceDataFusionInstanceRead(d *schema.ResourceData, meta interface{}) er
 
 func resourceDataFusionInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -662,6 +665,7 @@ func resourceDataFusionInstanceUpdate(d *schema.ResourceData, meta interface{}) 
 
 func resourceDataFusionInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

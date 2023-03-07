@@ -74,6 +74,7 @@ creation. Do not specify the self link.`,
 
 func resourceComputeDiskResourcePolicyAttachmentCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -140,6 +141,7 @@ func resourceComputeDiskResourcePolicyAttachmentCreate(d *schema.ResourceData, m
 
 func resourceComputeDiskResourcePolicyAttachmentRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -205,6 +207,7 @@ func resourceComputeDiskResourcePolicyAttachmentRead(d *schema.ResourceData, met
 
 func resourceComputeDiskResourcePolicyAttachmentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

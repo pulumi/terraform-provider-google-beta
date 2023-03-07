@@ -2759,6 +2759,7 @@ the resource.`,
 
 func resourceComputeUrlMapCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -2874,6 +2875,7 @@ func resourceComputeUrlMapCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceComputeUrlMapRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -2951,6 +2953,7 @@ func resourceComputeUrlMapRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceComputeUrlMapUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -3059,6 +3062,7 @@ func resourceComputeUrlMapUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceComputeUrlMapDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

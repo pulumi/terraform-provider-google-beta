@@ -82,6 +82,7 @@ brand can be created per project.`,
 
 func resourceIapBrandCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -200,6 +201,7 @@ func resourceIapBrandPollRead(d *schema.ResourceData, meta interface{}) PollRead
 
 func resourceIapBrandRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

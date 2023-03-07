@@ -205,6 +205,7 @@ in Terraform state, a 'terraform destroy' or 'terraform apply' that would delete
 
 func resourceSpannerDatabaseCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -391,6 +392,7 @@ func resourceSpannerDatabaseCreate(d *schema.ResourceData, meta interface{}) err
 
 func resourceSpannerDatabaseRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -465,6 +467,7 @@ func resourceSpannerDatabaseRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceSpannerDatabaseUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -539,6 +542,7 @@ func resourceSpannerDatabaseUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceSpannerDatabaseDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

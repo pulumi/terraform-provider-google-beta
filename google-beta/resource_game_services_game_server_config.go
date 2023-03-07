@@ -211,6 +211,7 @@ any of the selector entries.`,
 
 func resourceGameServicesGameServerConfigCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -304,6 +305,7 @@ func resourceGameServicesGameServerConfigCreate(d *schema.ResourceData, meta int
 
 func resourceGameServicesGameServerConfigRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -357,6 +359,7 @@ func resourceGameServicesGameServerConfigRead(d *schema.ResourceData, meta inter
 
 func resourceGameServicesGameServerConfigDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

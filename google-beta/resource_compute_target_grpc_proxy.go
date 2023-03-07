@@ -120,6 +120,7 @@ request to retrieve the TargetGrpcProxy. A base64-encoded string.`,
 
 func resourceComputeTargetGrpcProxyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -205,6 +206,7 @@ func resourceComputeTargetGrpcProxyCreate(d *schema.ResourceData, meta interface
 
 func resourceComputeTargetGrpcProxyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -267,6 +269,7 @@ func resourceComputeTargetGrpcProxyRead(d *schema.ResourceData, meta interface{}
 
 func resourceComputeTargetGrpcProxyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -327,6 +330,7 @@ func resourceComputeTargetGrpcProxyUpdate(d *schema.ResourceData, meta interface
 
 func resourceComputeTargetGrpcProxyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -262,6 +262,7 @@ an empty list as an intent to stream all the supported resource types in this FH
 
 func resourceHealthcareFhirStoreCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -361,6 +362,7 @@ func resourceHealthcareFhirStoreCreate(d *schema.ResourceData, meta interface{})
 
 func resourceHealthcareFhirStoreRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -431,6 +433,7 @@ func resourceHealthcareFhirStoreRead(d *schema.ResourceData, meta interface{}) e
 
 func resourceHealthcareFhirStoreUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -522,6 +525,7 @@ func resourceHealthcareFhirStoreUpdate(d *schema.ResourceData, meta interface{})
 
 func resourceHealthcareFhirStoreDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

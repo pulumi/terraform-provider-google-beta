@@ -228,6 +228,7 @@ permissions to that data.`,
 
 func resourceTPUNodeCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -351,6 +352,7 @@ func resourceTPUNodeCreate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceTPUNodeRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -422,6 +424,7 @@ func resourceTPUNodeRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceTPUNodeUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -479,6 +482,7 @@ func resourceTPUNodeUpdate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceTPUNodeDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

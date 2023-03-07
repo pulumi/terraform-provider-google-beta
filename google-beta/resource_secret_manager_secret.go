@@ -209,6 +209,7 @@ A duration in seconds with up to nine fractional digits, terminated by 's'. Exam
 
 func resourceSecretManagerSecretCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -293,6 +294,7 @@ func resourceSecretManagerSecretCreate(d *schema.ResourceData, meta interface{})
 
 func resourceSecretManagerSecretRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -352,6 +354,7 @@ func resourceSecretManagerSecretRead(d *schema.ResourceData, meta interface{}) e
 
 func resourceSecretManagerSecretUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -439,6 +442,7 @@ func resourceSecretManagerSecretUpdate(d *schema.ResourceData, meta interface{})
 
 func resourceSecretManagerSecretDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

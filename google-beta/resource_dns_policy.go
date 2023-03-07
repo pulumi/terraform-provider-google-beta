@@ -161,6 +161,7 @@ This should be formatted like 'projects/{project}/global/networks/{network}' or
 
 func resourceDNSPolicyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -242,6 +243,7 @@ func resourceDNSPolicyCreate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceDNSPolicyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -298,6 +300,7 @@ func resourceDNSPolicyRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceDNSPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -373,6 +376,7 @@ func resourceDNSPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceDNSPolicyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

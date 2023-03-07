@@ -148,6 +148,7 @@ func resourceGoogleProjectOrganizationPolicyDelete(d *schema.ResourceData, meta 
 
 func setProjectOrganizationPolicy(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

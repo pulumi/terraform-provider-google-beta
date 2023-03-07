@@ -248,6 +248,7 @@ reservations that are tied to a commitment.`,
 
 func resourceComputeReservationCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -339,6 +340,7 @@ func resourceComputeReservationCreate(d *schema.ResourceData, meta interface{}) 
 
 func resourceComputeReservationRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -404,6 +406,7 @@ func resourceComputeReservationRead(d *schema.ResourceData, meta interface{}) er
 
 func resourceComputeReservationUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -543,6 +546,7 @@ func resourceComputeReservationUpdate(d *schema.ResourceData, meta interface{}) 
 
 func resourceComputeReservationDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

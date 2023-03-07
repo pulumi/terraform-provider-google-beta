@@ -240,6 +240,7 @@ default and means that no operations are logged.`,
 
 func resourceCloudTasksQueueCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -315,6 +316,7 @@ func resourceCloudTasksQueueCreate(d *schema.ResourceData, meta interface{}) err
 
 func resourceCloudTasksQueueRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -368,6 +370,7 @@ func resourceCloudTasksQueueRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceCloudTasksQueueUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -455,6 +458,7 @@ func resourceCloudTasksQueueUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceCloudTasksQueueDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

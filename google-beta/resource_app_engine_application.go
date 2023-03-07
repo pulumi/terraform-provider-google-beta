@@ -200,6 +200,7 @@ func appEngineApplicationLocationIDCustomizeDiff(_ context.Context, d *schema.Re
 
 func resourceAppEngineApplicationCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

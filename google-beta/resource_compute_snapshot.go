@@ -238,6 +238,7 @@ creation/deletion.`,
 
 func resourceComputeSnapshotCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -354,6 +355,7 @@ func resourceComputeSnapshotCreate(d *schema.ResourceData, meta interface{}) err
 
 func resourceComputeSnapshotRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -446,6 +448,7 @@ func resourceComputeSnapshotRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceComputeSnapshotUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -509,6 +512,7 @@ func resourceComputeSnapshotUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceComputeSnapshotDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

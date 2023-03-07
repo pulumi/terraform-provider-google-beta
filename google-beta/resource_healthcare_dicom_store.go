@@ -132,6 +132,7 @@ streamConfigs is an array, so you can specify multiple BigQuery destinations. Yo
 
 func resourceHealthcareDicomStoreCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -195,6 +196,7 @@ func resourceHealthcareDicomStoreCreate(d *schema.ResourceData, meta interface{}
 
 func resourceHealthcareDicomStoreRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -247,6 +249,7 @@ func resourceHealthcareDicomStoreRead(d *schema.ResourceData, meta interface{}) 
 
 func resourceHealthcareDicomStoreUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -318,6 +321,7 @@ func resourceHealthcareDicomStoreUpdate(d *schema.ResourceData, meta interface{}
 
 func resourceHealthcareDicomStoreDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

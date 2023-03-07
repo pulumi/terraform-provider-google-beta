@@ -178,6 +178,7 @@ Format: projects/<Project ID>/agent/intents/<Intent ID>.`,
 
 func resourceDialogflowIntentCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -310,6 +311,7 @@ func resourceDialogflowIntentCreate(d *schema.ResourceData, meta interface{}) er
 
 func resourceDialogflowIntentRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -390,6 +392,7 @@ func resourceDialogflowIntentRead(d *schema.ResourceData, meta interface{}) erro
 
 func resourceDialogflowIntentUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -490,6 +493,7 @@ func resourceDialogflowIntentUpdate(d *schema.ResourceData, meta interface{}) er
 
 func resourceDialogflowIntentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

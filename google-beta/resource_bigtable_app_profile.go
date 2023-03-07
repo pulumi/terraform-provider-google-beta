@@ -124,6 +124,7 @@ It is unsafe to send these requests to the same table/row/column in multiple clu
 
 func resourceBigtableAppProfileCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -195,6 +196,7 @@ func resourceBigtableAppProfileCreate(d *schema.ResourceData, meta interface{}) 
 
 func resourceBigtableAppProfileRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -245,6 +247,7 @@ func resourceBigtableAppProfileRead(d *schema.ResourceData, meta interface{}) er
 
 func resourceBigtableAppProfileUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -353,6 +356,7 @@ func resourceBigtableAppProfileUpdate(d *schema.ResourceData, meta interface{}) 
 
 func resourceBigtableAppProfileDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

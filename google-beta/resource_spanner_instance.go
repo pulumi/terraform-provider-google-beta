@@ -158,6 +158,7 @@ This must be set to true if you created a backup manually in the console.`,
 
 func resourceSpannerInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -281,6 +282,7 @@ func resourceSpannerInstanceCreate(d *schema.ResourceData, meta interface{}) err
 
 func resourceSpannerInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -358,6 +360,7 @@ func resourceSpannerInstanceRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceSpannerInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -435,6 +438,7 @@ func resourceSpannerInstanceUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceSpannerInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

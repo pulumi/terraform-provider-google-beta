@@ -393,6 +393,7 @@ billingAccounts/{billingAccountId}/budgets/{budgetId}.`,
 
 func resourceBillingBudgetCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -465,6 +466,7 @@ func resourceBillingBudgetCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceBillingBudgetRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -511,6 +513,7 @@ func resourceBillingBudgetRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceBillingBudgetUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -614,6 +617,7 @@ func resourceBillingBudgetUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceBillingBudgetDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

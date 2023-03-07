@@ -29,6 +29,7 @@ func resourceLoggingBillingAccountSink() *schema.Resource {
 
 func resourceLoggingBillingAccountSinkCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -38,6 +39,7 @@ func resourceLoggingBillingAccountSinkCreate(d *schema.ResourceData, meta interf
 
 	// The API will reject any requests that don't explicitly set 'uniqueWriterIdentity' to true.
 	_, err = config.NewLoggingClient(userAgent).BillingAccounts.Sinks.Create(id.parent(), sink).UniqueWriterIdentity(true).Do()
+
 	if err != nil {
 		return err
 	}

@@ -98,6 +98,7 @@ range of [0, 65535]. If unspecified, the default is 0.`,
 
 func resourceServiceDirectoryEndpointCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -164,6 +165,7 @@ func resourceServiceDirectoryEndpointCreate(d *schema.ResourceData, meta interfa
 
 func resourceServiceDirectoryEndpointRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -207,6 +209,7 @@ func resourceServiceDirectoryEndpointRead(d *schema.ResourceData, meta interface
 
 func resourceServiceDirectoryEndpointUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -278,6 +281,7 @@ func resourceServiceDirectoryEndpointUpdate(d *schema.ResourceData, meta interfa
 
 func resourceServiceDirectoryEndpointDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

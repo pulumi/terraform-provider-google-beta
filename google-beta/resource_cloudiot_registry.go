@@ -384,6 +384,7 @@ If it is not provided, the provider region is used.`,
 
 func resourceCloudIotDeviceRegistryCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -452,6 +453,7 @@ func resourceCloudIotDeviceRegistryCreate(d *schema.ResourceData, meta interface
 
 func resourceCloudIotDeviceRegistryRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -519,6 +521,7 @@ func resourceCloudIotDeviceRegistryRead(d *schema.ResourceData, meta interface{}
 
 func resourceCloudIotDeviceRegistryUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -626,6 +629,7 @@ func resourceCloudIotDeviceRegistryUpdate(d *schema.ResourceData, meta interface
 
 func resourceCloudIotDeviceRegistryDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

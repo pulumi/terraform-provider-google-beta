@@ -114,6 +114,7 @@ Similar to what would be chosen for an Active Directory set up on an internal ne
 
 func resourceActiveDirectoryDomainCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -213,6 +214,7 @@ func resourceActiveDirectoryDomainCreate(d *schema.ResourceData, meta interface{
 
 func resourceActiveDirectoryDomainRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -272,6 +274,7 @@ func resourceActiveDirectoryDomainRead(d *schema.ResourceData, meta interface{})
 
 func resourceActiveDirectoryDomainUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -357,6 +360,7 @@ func resourceActiveDirectoryDomainUpdate(d *schema.ResourceData, meta interface{
 
 func resourceActiveDirectoryDomainDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

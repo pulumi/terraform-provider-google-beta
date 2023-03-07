@@ -88,6 +88,7 @@ serving traffic. Set to 'DELETE' to delete the WebApp. Default to 'ABANDON'`,
 
 func resourceFirebaseWebAppCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -163,6 +164,7 @@ func resourceFirebaseWebAppCreate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceFirebaseWebAppRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -219,6 +221,7 @@ func resourceFirebaseWebAppRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceFirebaseWebAppUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

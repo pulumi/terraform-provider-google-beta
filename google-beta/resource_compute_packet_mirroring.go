@@ -205,6 +205,7 @@ If it is not provided, the provider region is used.`,
 
 func resourceComputePacketMirroringCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -308,6 +309,7 @@ func resourceComputePacketMirroringCreate(d *schema.ResourceData, meta interface
 
 func resourceComputePacketMirroringRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -370,6 +372,7 @@ func resourceComputePacketMirroringRead(d *schema.ResourceData, meta interface{}
 
 func resourceComputePacketMirroringUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -454,6 +457,7 @@ func resourceComputePacketMirroringUpdate(d *schema.ResourceData, meta interface
 
 func resourceComputePacketMirroringDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

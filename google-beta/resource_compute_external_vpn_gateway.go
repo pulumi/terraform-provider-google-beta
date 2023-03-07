@@ -110,6 +110,7 @@ it cannot be an IP address from Google Compute Engine.`,
 
 func resourceComputeExternalVpnGatewayCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -189,6 +190,7 @@ func resourceComputeExternalVpnGatewayCreate(d *schema.ResourceData, meta interf
 
 func resourceComputeExternalVpnGatewayRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -242,6 +244,7 @@ func resourceComputeExternalVpnGatewayRead(d *schema.ResourceData, meta interfac
 
 func resourceComputeExternalVpnGatewayDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

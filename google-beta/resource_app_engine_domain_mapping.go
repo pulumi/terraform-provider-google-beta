@@ -152,6 +152,7 @@ configuration in order to serve the application via this domain mapping.`,
 
 func resourceAppEngineDomainMappingCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -240,6 +241,7 @@ func resourceAppEngineDomainMappingCreate(d *schema.ResourceData, meta interface
 
 func resourceAppEngineDomainMappingRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -290,6 +292,7 @@ func resourceAppEngineDomainMappingRead(d *schema.ResourceData, meta interface{}
 
 func resourceAppEngineDomainMappingUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -363,6 +366,7 @@ func resourceAppEngineDomainMappingUpdate(d *schema.ResourceData, meta interface
 
 func resourceAppEngineDomainMappingDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

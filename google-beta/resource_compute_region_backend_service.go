@@ -412,7 +412,6 @@ Defaults to 3.`,
 connections, but still work to finish started).`,
 				Default: 0,
 			},
-
 			"connection_tracking_policy": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -1126,6 +1125,7 @@ Cannot be set for INTERNAL backend services.`,
 
 func resourceComputeRegionBackendServiceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1336,6 +1336,7 @@ func resourceComputeRegionBackendServiceCreate(d *schema.ResourceData, meta inte
 
 func resourceComputeRegionBackendServiceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1479,6 +1480,7 @@ func resourceComputeRegionBackendServiceRead(d *schema.ResourceData, meta interf
 
 func resourceComputeRegionBackendServiceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1682,6 +1684,7 @@ func resourceComputeRegionBackendServiceUpdate(d *schema.ResourceData, meta inte
 
 func resourceComputeRegionBackendServiceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

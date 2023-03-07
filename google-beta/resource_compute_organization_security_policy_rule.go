@@ -196,6 +196,7 @@ instances that are applied with this rule.`,
 
 func resourceComputeOrganizationSecurityPolicyRuleCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -314,6 +315,7 @@ func resourceComputeOrganizationSecurityPolicyRuleCreate(d *schema.ResourceData,
 
 func resourceComputeOrganizationSecurityPolicyRuleRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -369,6 +371,7 @@ func resourceComputeOrganizationSecurityPolicyRuleRead(d *schema.ResourceData, m
 
 func resourceComputeOrganizationSecurityPolicyRuleUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -481,6 +484,7 @@ func resourceComputeOrganizationSecurityPolicyRuleUpdate(d *schema.ResourceData,
 
 func resourceComputeOrganizationSecurityPolicyRuleDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -82,6 +82,7 @@ are not able to manage its users.`,
 
 func resourceIdentityPlatformTenantCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -169,6 +170,7 @@ func resourceIdentityPlatformTenantCreate(d *schema.ResourceData, meta interface
 
 func resourceIdentityPlatformTenantRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -222,6 +224,7 @@ func resourceIdentityPlatformTenantRead(d *schema.ResourceData, meta interface{}
 
 func resourceIdentityPlatformTenantUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -309,6 +312,7 @@ func resourceIdentityPlatformTenantUpdate(d *schema.ResourceData, meta interface
 
 func resourceIdentityPlatformTenantDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

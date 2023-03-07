@@ -277,6 +277,7 @@ was last processed by the controller.`,
 
 func resourceCloudRunDomainMappingCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -387,6 +388,7 @@ func resourceCloudRunDomainMappingPollRead(d *schema.ResourceData, meta interfac
 
 func resourceCloudRunDomainMappingRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -446,6 +448,7 @@ func resourceCloudRunDomainMappingRead(d *schema.ResourceData, meta interface{})
 
 func resourceCloudRunDomainMappingDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

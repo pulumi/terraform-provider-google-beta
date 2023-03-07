@@ -69,6 +69,7 @@ func resourceComputeOrganizationSecurityPolicyAssociation() *schema.Resource {
 
 func resourceComputeOrganizationSecurityPolicyAssociationCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -145,6 +146,7 @@ func resourceComputeOrganizationSecurityPolicyAssociationCreate(d *schema.Resour
 
 func resourceComputeOrganizationSecurityPolicyAssociationRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -182,6 +184,7 @@ func resourceComputeOrganizationSecurityPolicyAssociationRead(d *schema.Resource
 
 func resourceComputeOrganizationSecurityPolicyAssociationDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

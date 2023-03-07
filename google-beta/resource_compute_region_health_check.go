@@ -584,6 +584,7 @@ consecutive failures. The default value is 2.`,
 
 func resourceComputeRegionHealthCheckCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -728,6 +729,7 @@ func resourceComputeRegionHealthCheckCreate(d *schema.ResourceData, meta interfa
 
 func resourceComputeRegionHealthCheckRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -817,6 +819,7 @@ func resourceComputeRegionHealthCheckRead(d *schema.ResourceData, meta interface
 
 func resourceComputeRegionHealthCheckUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -954,6 +957,7 @@ func resourceComputeRegionHealthCheckUpdate(d *schema.ResourceData, meta interfa
 
 func resourceComputeRegionHealthCheckDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

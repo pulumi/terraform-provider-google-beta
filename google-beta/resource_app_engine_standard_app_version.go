@@ -466,6 +466,7 @@ Substitute '<language>' with 'python', 'java', 'php', 'ruby', 'go' or 'nodejs'.`
 
 func resourceAppEngineStandardAppVersionCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -630,6 +631,7 @@ func resourceAppEngineStandardAppVersionCreate(d *schema.ResourceData, meta inte
 
 func resourceAppEngineStandardAppVersionRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -721,6 +723,7 @@ func resourceAppEngineStandardAppVersionRead(d *schema.ResourceData, meta interf
 
 func resourceAppEngineStandardAppVersionUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -877,6 +880,7 @@ func resourceAppEngineStandardAppVersionUpdate(d *schema.ResourceData, meta inte
 }
 
 func resourceAppEngineStandardAppVersionDelete(d *schema.ResourceData, meta interface{}) error {
+
 	config := meta.(*Config)
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {

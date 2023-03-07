@@ -149,6 +149,7 @@ is the unique ID assigned to the Group.`,
 
 func resourceCloudIdentityGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -273,6 +274,7 @@ func resourceCloudIdentityGroupPollRead(d *schema.ResourceData, meta interface{}
 
 func resourceCloudIdentityGroupRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -325,6 +327,7 @@ func resourceCloudIdentityGroupRead(d *schema.ResourceData, meta interface{}) er
 
 func resourceCloudIdentityGroupUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -401,6 +404,7 @@ func resourceCloudIdentityGroupUpdate(d *schema.ResourceData, meta interface{}) 
 
 func resourceCloudIdentityGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

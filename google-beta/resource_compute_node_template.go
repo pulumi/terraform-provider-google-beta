@@ -171,6 +171,7 @@ nodes will experience outages while maintenance is applied. Possible values: ["R
 
 func resourceComputeNodeTemplateCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -274,6 +275,7 @@ func resourceComputeNodeTemplateCreate(d *schema.ResourceData, meta interface{})
 
 func resourceComputeNodeTemplateRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -342,6 +344,7 @@ func resourceComputeNodeTemplateRead(d *schema.ResourceData, meta interface{}) e
 
 func resourceComputeNodeTemplateDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

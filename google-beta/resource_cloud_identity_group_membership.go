@@ -177,6 +177,7 @@ func cloudidentityGroupMembershipRolesSchema() *schema.Resource {
 
 func resourceCloudIdentityGroupMembershipCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -255,6 +256,7 @@ func resourceCloudIdentityGroupMembershipCreate(d *schema.ResourceData, meta int
 
 func resourceCloudIdentityGroupMembershipRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -304,6 +306,7 @@ func resourceCloudIdentityGroupMembershipRead(d *schema.ResourceData, meta inter
 
 func resourceCloudIdentityGroupMembershipUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -354,6 +357,7 @@ func resourceCloudIdentityGroupMembershipUpdate(d *schema.ResourceData, meta int
 
 func resourceCloudIdentityGroupMembershipDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -544,6 +544,7 @@ office using the hotword regex '(xxx)', where 'xxx' is the area code in question
 
 func resourceDataLossPreventionInspectTemplateCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -609,6 +610,7 @@ func resourceDataLossPreventionInspectTemplateCreate(d *schema.ResourceData, met
 
 func resourceDataLossPreventionInspectTemplateRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -649,6 +651,7 @@ func resourceDataLossPreventionInspectTemplateRead(d *schema.ResourceData, meta 
 
 func resourceDataLossPreventionInspectTemplateUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -725,6 +728,7 @@ func resourceDataLossPreventionInspectTemplateUpdate(d *schema.ResourceData, met
 
 func resourceDataLossPreventionInspectTemplateDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

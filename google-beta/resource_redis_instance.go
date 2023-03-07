@@ -554,6 +554,7 @@ Write requests should target 'port'.`,
 
 func resourceRedisInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -762,6 +763,7 @@ func resourceRedisInstanceCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceRedisInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -910,6 +912,7 @@ func resourceRedisInstanceRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceRedisInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1121,6 +1124,7 @@ func resourceRedisInstanceUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceRedisInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

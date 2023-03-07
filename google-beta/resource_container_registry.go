@@ -45,6 +45,7 @@ func resourceContainerRegistry() *schema.Resource {
 
 func resourceContainerRegistryCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

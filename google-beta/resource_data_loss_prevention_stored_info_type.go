@@ -245,6 +245,7 @@ Its syntax (https://github.com/google/re2/wiki/Syntax) can be found under the go
 
 func resourceDataLossPreventionStoredInfoTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -364,6 +365,7 @@ func resourceDataLossPreventionStoredInfoTypePollRead(d *schema.ResourceData, me
 
 func resourceDataLossPreventionStoredInfoTypeRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -422,6 +424,7 @@ func resourceDataLossPreventionStoredInfoTypeRead(d *schema.ResourceData, meta i
 
 func resourceDataLossPreventionStoredInfoTypeUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -488,6 +491,7 @@ func resourceDataLossPreventionStoredInfoTypeUpdate(d *schema.ResourceData, meta
 
 func resourceDataLossPreventionStoredInfoTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

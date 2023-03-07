@@ -380,6 +380,7 @@ It must be in format "HH:MM", where HH : [00-23] and MM : [00-00] GMT.`,
 
 func resourceComputeResourcePolicyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -471,6 +472,7 @@ func resourceComputeResourcePolicyCreate(d *schema.ResourceData, meta interface{
 
 func resourceComputeResourcePolicyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -530,6 +532,7 @@ func resourceComputeResourcePolicyRead(d *schema.ResourceData, meta interface{})
 
 func resourceComputeResourcePolicyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

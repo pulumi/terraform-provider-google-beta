@@ -87,6 +87,7 @@ updates of this resource.`,
 
 func resourceComputeOrganizationSecurityPolicyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -183,6 +184,7 @@ func resourceComputeOrganizationSecurityPolicyCreate(d *schema.ResourceData, met
 
 func resourceComputeOrganizationSecurityPolicyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -229,6 +231,7 @@ func resourceComputeOrganizationSecurityPolicyRead(d *schema.ResourceData, meta 
 
 func resourceComputeOrganizationSecurityPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -285,6 +288,7 @@ func resourceComputeOrganizationSecurityPolicyUpdate(d *schema.ResourceData, met
 
 func resourceComputeOrganizationSecurityPolicyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -153,6 +153,7 @@ internally during updates.`,
 
 func resourceComputeGlobalAddressCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -304,6 +305,7 @@ func resourceComputeGlobalAddressCreate(d *schema.ResourceData, meta interface{}
 
 func resourceComputeGlobalAddressRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -378,6 +380,7 @@ func resourceComputeGlobalAddressRead(d *schema.ResourceData, meta interface{}) 
 
 func resourceComputeGlobalAddressUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -441,6 +444,7 @@ func resourceComputeGlobalAddressUpdate(d *schema.ResourceData, meta interface{}
 
 func resourceComputeGlobalAddressDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

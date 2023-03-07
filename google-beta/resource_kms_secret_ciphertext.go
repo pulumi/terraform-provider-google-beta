@@ -70,6 +70,7 @@ Format: ''projects/{{project}}/locations/{{location}}/keyRings/{{keyRing}}/crypt
 
 func resourceKMSSecretCiphertextCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -140,6 +141,7 @@ func resourceKMSSecretCiphertextCreate(d *schema.ResourceData, meta interface{})
 
 func resourceKMSSecretCiphertextRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

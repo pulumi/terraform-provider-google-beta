@@ -794,6 +794,7 @@ bet set to True if any of the fields in the spec are set to non-default values.`
 
 func resourceAccessContextManagerServicePerimeterCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -917,6 +918,7 @@ func resourceAccessContextManagerServicePerimeterCreate(d *schema.ResourceData, 
 
 func resourceAccessContextManagerServicePerimeterRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -972,6 +974,7 @@ func resourceAccessContextManagerServicePerimeterRead(d *schema.ResourceData, me
 
 func resourceAccessContextManagerServicePerimeterUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1083,6 +1086,7 @@ func resourceAccessContextManagerServicePerimeterUpdate(d *schema.ResourceData, 
 
 func resourceAccessContextManagerServicePerimeterDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

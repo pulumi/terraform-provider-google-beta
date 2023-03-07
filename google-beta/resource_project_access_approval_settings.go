@@ -144,6 +144,7 @@ func accessapprovalProjectSettingsEnrolledServicesSchema() *schema.Resource {
 
 func resourceAccessApprovalProjectSettingsCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -233,6 +234,7 @@ func resourceAccessApprovalProjectSettingsCreate(d *schema.ResourceData, meta in
 
 func resourceAccessApprovalProjectSettingsRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -285,6 +287,7 @@ func resourceAccessApprovalProjectSettingsRead(d *schema.ResourceData, meta inte
 
 func resourceAccessApprovalProjectSettingsUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -366,6 +369,7 @@ func resourceAccessApprovalProjectSettingsUpdate(d *schema.ResourceData, meta in
 
 func resourceAccessApprovalProjectSettingsDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

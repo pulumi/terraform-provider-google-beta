@@ -156,6 +156,7 @@ Only one of 'order' and 'arrayConfig' can be specified. Possible values: ["ASCEN
 
 func resourceFirestoreIndexCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -264,6 +265,7 @@ func resourceFirestoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceFirestoreIndexRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -311,6 +313,7 @@ func resourceFirestoreIndexRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceFirestoreIndexDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

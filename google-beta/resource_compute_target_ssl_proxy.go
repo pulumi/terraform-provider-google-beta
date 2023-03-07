@@ -128,6 +128,7 @@ resource will not have any SSL policy configured.`,
 
 func resourceComputeTargetSslProxyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -225,6 +226,7 @@ func resourceComputeTargetSslProxyCreate(d *schema.ResourceData, meta interface{
 
 func resourceComputeTargetSslProxyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -293,6 +295,7 @@ func resourceComputeTargetSslProxyRead(d *schema.ResourceData, meta interface{})
 
 func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -486,6 +489,7 @@ func resourceComputeTargetSslProxyUpdate(d *schema.ResourceData, meta interface{
 
 func resourceComputeTargetSslProxyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

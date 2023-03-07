@@ -248,6 +248,7 @@ client when the resource is created.`,
 
 func resourceComputeBackendBucketCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -371,6 +372,7 @@ func resourceComputeBackendBucketCreate(d *schema.ResourceData, meta interface{}
 
 func resourceComputeBackendBucketRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -439,6 +441,7 @@ func resourceComputeBackendBucketRead(d *schema.ResourceData, meta interface{}) 
 
 func resourceComputeBackendBucketUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -554,6 +557,7 @@ func resourceComputeBackendBucketUpdate(d *schema.ResourceData, meta interface{}
 
 func resourceComputeBackendBucketDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

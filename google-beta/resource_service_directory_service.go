@@ -77,6 +77,7 @@ format 'projects/*/locations/*/namespaces/*/services/*'.`,
 
 func resourceServiceDirectoryServiceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -125,6 +126,7 @@ func resourceServiceDirectoryServiceCreate(d *schema.ResourceData, meta interfac
 
 func resourceServiceDirectoryServiceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -159,6 +161,7 @@ func resourceServiceDirectoryServiceRead(d *schema.ResourceData, meta interface{
 
 func resourceServiceDirectoryServiceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -210,6 +213,7 @@ func resourceServiceDirectoryServiceUpdate(d *schema.ResourceData, meta interfac
 
 func resourceServiceDirectoryServiceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -733,10 +733,9 @@ resource "google_storage_bucket" "temp" {
   location      = "US"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
- 
+
   zone    = "%s"
 
   machine_type      = "e2-standard-2"
@@ -784,18 +783,15 @@ resource "google_storage_bucket" "temp" {
   location      = "US"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
   region  = "us-central1"
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
     inputFile = "%s"
     output    = "${google_storage_bucket.temp.url}/output"
   }
-
   on_delete = "cancel"
 }
 `, bucket, job, testDataflowJobTemplateWordCountUrl, testDataflowJobSampleFileUrl)
@@ -808,17 +804,13 @@ resource "google_storage_bucket" "temp" {
   location      = "US"
   force_destroy = true
 }
-
 resource "google_compute_network" "net" {
   name                    = "%s"
   auto_create_subnetworks = true
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
-
   network           = google_compute_network.net.name
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
@@ -837,23 +829,18 @@ resource "google_storage_bucket" "temp" {
   location      = "US"
   force_destroy = true
 }
-
 resource "google_compute_network" "net" {
   name                    = "%s"
   auto_create_subnetworks = false
 }
-
 resource "google_compute_subnetwork" "subnet" {
   name          = "%s"
   ip_cidr_range = "10.2.0.0/16"
   network       = google_compute_network.net.self_link
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
-
   subnetwork        = google_compute_subnetwork.subnet.self_link
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
@@ -874,38 +861,32 @@ resource "google_storage_bucket" "temp" {
   location      = "US"
   force_destroy = true
 }
-
 resource "google_service_account" "dataflow-sa" {
   account_id   = "%s"
   display_name = "DataFlow Service Account"
 }
-
 resource "google_storage_bucket_iam_member" "dataflow-gcs" {
   bucket = google_storage_bucket.temp.name
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.dataflow-sa.email}"
 }
-
 resource "google_project_iam_member" "dataflow-worker" {
   project = data.google_project.project.project_id
   role   = "roles/dataflow.worker"
   member = "serviceAccount:${google_service_account.dataflow-sa.email}"
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
   depends_on = [
-    google_storage_bucket_iam_member.dataflow-gcs, 
+    google_storage_bucket_iam_member.dataflow-gcs,
     google_project_iam_member.dataflow-worker
   ]
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
     inputFile = "%s"
     output    = "${google_storage_bucket.temp.url}/output"
   }
-
   service_account_email = google_service_account.dataflow-sa.email
 }
 `, bucket, accountId, job, testDataflowJobTemplateWordCountUrl, testDataflowJobSampleFileUrl)
@@ -918,12 +899,9 @@ resource "google_storage_bucket" "temp" {
   location      = "US"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "big_data" {
   name = "%s"
-
   ip_configuration = "WORKER_IP_PRIVATE"
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
@@ -942,14 +920,11 @@ resource "google_storage_bucket" "temp" {
   location      = "US"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "with_labels" {
   name = "%s"
-
   labels = {
     "%s" = "%s"
   }
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {
@@ -1021,12 +996,9 @@ resource "google_storage_bucket" "temp" {
   location      = "US"
   force_destroy = true
 }
-
 resource "google_dataflow_job" "with_additional_experiments" {
   name = "%s"
-
   additional_experiments = ["%s"]
-
   template_gcs_path = "%s"
   temp_gcs_location = google_storage_bucket.temp.url
   parameters = {

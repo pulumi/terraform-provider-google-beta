@@ -150,6 +150,7 @@ For example,
 
 func resourceGameServicesGameServerClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -237,6 +238,7 @@ func resourceGameServicesGameServerClusterCreate(d *schema.ResourceData, meta in
 
 func resourceGameServicesGameServerClusterRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -287,6 +289,7 @@ func resourceGameServicesGameServerClusterRead(d *schema.ResourceData, meta inte
 
 func resourceGameServicesGameServerClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -362,6 +365,7 @@ func resourceGameServicesGameServerClusterUpdate(d *schema.ResourceData, meta in
 
 func resourceGameServicesGameServerClusterDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

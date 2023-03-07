@@ -171,6 +171,7 @@ than or equal to max-nodes. The default value is 0.`,
 
 func resourceComputeNodeGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -282,6 +283,7 @@ func resourceComputeNodeGroupCreate(d *schema.ResourceData, meta interface{}) er
 
 func resourceComputeNodeGroupRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -350,6 +352,7 @@ func resourceComputeNodeGroupRead(d *schema.ResourceData, meta interface{}) erro
 
 func resourceComputeNodeGroupUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -407,6 +410,7 @@ func resourceComputeNodeGroupUpdate(d *schema.ResourceData, meta interface{}) er
 
 func resourceComputeNodeGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

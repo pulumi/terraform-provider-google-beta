@@ -142,6 +142,7 @@ immediately after network creation. Defaults to 'false'.`,
 
 func resourceComputeNetworkCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -271,6 +272,7 @@ func resourceComputeNetworkCreate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceComputeNetworkRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -354,6 +356,7 @@ func resourceComputeNetworkRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceComputeNetworkUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -411,6 +414,7 @@ func resourceComputeNetworkUpdate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceComputeNetworkDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -155,6 +155,7 @@ https://compute.googleapis.com/compute/v1/projects/{project}/regions/{region}/su
 
 func resourceVPCAccessConnectorCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -296,6 +297,7 @@ func resourceVPCAccessConnectorCreate(d *schema.ResourceData, meta interface{}) 
 
 func resourceVPCAccessConnectorRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -376,6 +378,7 @@ func resourceVPCAccessConnectorRead(d *schema.ResourceData, meta interface{}) er
 
 func resourceVPCAccessConnectorDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

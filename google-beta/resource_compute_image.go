@@ -258,6 +258,7 @@ func computeImageGuestOsFeaturesSchema() *schema.Resource {
 
 func resourceComputeImageCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -391,6 +392,7 @@ func resourceComputeImageCreate(d *schema.ResourceData, meta interface{}) error 
 
 func resourceComputeImageRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -474,6 +476,7 @@ func resourceComputeImageRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceComputeImageUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -537,6 +540,7 @@ func resourceComputeImageUpdate(d *schema.ResourceData, meta interface{}) error 
 
 func resourceComputeImageDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

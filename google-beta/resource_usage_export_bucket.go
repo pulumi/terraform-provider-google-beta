@@ -86,6 +86,7 @@ func resourceProjectUsageBucketRead(d *schema.ResourceData, meta interface{}) er
 
 func resourceProjectUsageBucketCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

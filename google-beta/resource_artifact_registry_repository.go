@@ -146,6 +146,7 @@ snapshot versions.`,
 
 func resourceArtifactRegistryRepositoryCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -245,6 +246,7 @@ func resourceArtifactRegistryRepositoryCreate(d *schema.ResourceData, meta inter
 
 func resourceArtifactRegistryRepositoryRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -307,6 +309,7 @@ func resourceArtifactRegistryRepositoryRead(d *schema.ResourceData, meta interfa
 
 func resourceArtifactRegistryRepositoryUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -384,6 +387,7 @@ func resourceArtifactRegistryRepositoryUpdate(d *schema.ResourceData, meta inter
 
 func resourceArtifactRegistryRepositoryDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

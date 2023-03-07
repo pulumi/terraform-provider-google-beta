@@ -442,6 +442,7 @@ Example inputs include: ["22"], ["80","443"], and
 
 func resourceComputeFirewallCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -587,6 +588,7 @@ func resourceComputeFirewallCreate(d *schema.ResourceData, meta interface{}) err
 
 func resourceComputeFirewallRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -676,6 +678,7 @@ func resourceComputeFirewallRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceComputeFirewallUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -802,6 +805,7 @@ func resourceComputeFirewallUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceComputeFirewallDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

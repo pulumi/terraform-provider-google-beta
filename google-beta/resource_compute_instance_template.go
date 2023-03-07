@@ -1122,6 +1122,7 @@ func expandInstanceTemplateGuestAccelerators(d TerraformResourceData, config *Co
 
 func resourceComputeInstanceTemplateCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

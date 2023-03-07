@@ -139,6 +139,7 @@ If it is not provided, the provider region is used.`,
 
 func resourceComputeRegionSslCertificateCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -224,6 +225,7 @@ func resourceComputeRegionSslCertificateCreate(d *schema.ResourceData, meta inte
 
 func resourceComputeRegionSslCertificateRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -286,6 +288,7 @@ func resourceComputeRegionSslCertificateRead(d *schema.ResourceData, meta interf
 
 func resourceComputeRegionSslCertificateDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

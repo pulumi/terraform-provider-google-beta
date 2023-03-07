@@ -139,6 +139,7 @@ where tag_id is a system-generated identifier. Note that this Tag may not actual
 
 func resourceDataCatalogTagCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -204,6 +205,7 @@ func resourceDataCatalogTagCreate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceDataCatalogTagRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -259,6 +261,7 @@ func resourceDataCatalogTagRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceDataCatalogTagUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -325,6 +328,7 @@ func resourceDataCatalogTagUpdate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceDataCatalogTagDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

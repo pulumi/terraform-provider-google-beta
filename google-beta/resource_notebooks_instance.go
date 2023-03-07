@@ -443,6 +443,7 @@ Format: projects/{project_id}`,
 
 func resourceNotebooksInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -670,6 +671,7 @@ func resourceNotebooksInstanceCreate(d *schema.ResourceData, meta interface{}) e
 
 func resourceNotebooksInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -774,6 +776,7 @@ func resourceNotebooksInstanceRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceNotebooksInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -831,6 +834,7 @@ func resourceNotebooksInstanceUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceNotebooksInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -41,6 +41,7 @@ func resourceLoggingFolderSink() *schema.Resource {
 
 func resourceLoggingFolderSinkCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -52,6 +53,7 @@ func resourceLoggingFolderSinkCreate(d *schema.ResourceData, meta interface{}) e
 
 	// The API will reject any requests that don't explicitly set 'uniqueWriterIdentity' to true.
 	_, err = config.NewLoggingClient(userAgent).Folders.Sinks.Create(id.parent(), sink).UniqueWriterIdentity(true).Do()
+
 	if err != nil {
 		return err
 	}

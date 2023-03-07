@@ -111,6 +111,7 @@ Format: projects/<Project ID>/agent/entityTypes/<Entity type ID>.`,
 
 func resourceDialogflowEntityTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -201,6 +202,7 @@ func resourceDialogflowEntityTypeCreate(d *schema.ResourceData, meta interface{}
 
 func resourceDialogflowEntityTypeRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -254,6 +256,7 @@ func resourceDialogflowEntityTypeRead(d *schema.ResourceData, meta interface{}) 
 
 func resourceDialogflowEntityTypeUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -318,6 +321,7 @@ func resourceDialogflowEntityTypeUpdate(d *schema.ResourceData, meta interface{}
 
 func resourceDialogflowEntityTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

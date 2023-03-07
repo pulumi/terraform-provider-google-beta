@@ -90,6 +90,7 @@ func recurseOnSchema(s map[string]*schema.Schema, f func(*schema.Schema)) {
 
 func resourceComputeInstanceFromTemplateCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

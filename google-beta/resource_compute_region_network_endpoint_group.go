@@ -281,6 +281,7 @@ Optional URL of the subnetwork to which all network endpoints in the NEG belong.
 
 func resourceComputeRegionNetworkEndpointGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -402,6 +403,7 @@ func resourceComputeRegionNetworkEndpointGroupCreate(d *schema.ResourceData, met
 
 func resourceComputeRegionNetworkEndpointGroupRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -476,6 +478,7 @@ func resourceComputeRegionNetworkEndpointGroupRead(d *schema.ResourceData, meta 
 
 func resourceComputeRegionNetworkEndpointGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

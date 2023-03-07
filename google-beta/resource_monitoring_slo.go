@@ -743,6 +743,7 @@ projects/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]/serviceLevelObjectives/[SL
 
 func resourceMonitoringSloCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -845,6 +846,7 @@ func resourceMonitoringSloCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceMonitoringSloRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -919,6 +921,7 @@ func resourceMonitoringSloRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceMonitoringSloUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1062,6 +1065,7 @@ func resourceMonitoringSloUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceMonitoringSloDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

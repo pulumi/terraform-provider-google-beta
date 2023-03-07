@@ -103,6 +103,7 @@ projects/[PROJECT_ID]/services/[SERVICE_ID].`,
 
 func resourceMonitoringServiceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -180,6 +181,7 @@ func resourceMonitoringServiceCreate(d *schema.ResourceData, meta interface{}) e
 
 func resourceMonitoringServiceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -233,6 +235,7 @@ func resourceMonitoringServiceRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceMonitoringServiceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -315,6 +318,7 @@ func resourceMonitoringServiceUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceMonitoringServiceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

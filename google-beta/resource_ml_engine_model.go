@@ -112,6 +112,7 @@ Currently only one region per model is supported`,
 
 func resourceMLEngineModelCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -199,6 +200,7 @@ func resourceMLEngineModelCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceMLEngineModelRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -258,6 +260,7 @@ func resourceMLEngineModelRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceMLEngineModelDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

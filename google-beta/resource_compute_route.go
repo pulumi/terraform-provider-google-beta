@@ -191,6 +191,7 @@ Default value is 1000. Valid range is 0 through 65535.`,
 
 func resourceComputeRouteCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -319,6 +320,7 @@ func resourceComputeRouteCreate(d *schema.ResourceData, meta interface{}) error 
 
 func resourceComputeRouteRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -408,6 +410,7 @@ func resourceComputeRouteRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceComputeRouteDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -272,6 +272,7 @@ func loggingMetricMetricDescriptorLabelsSchema() *schema.Resource {
 
 func resourceLoggingMetricCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -390,6 +391,7 @@ func resourceLoggingMetricCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceLoggingMetricRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -452,6 +454,7 @@ func resourceLoggingMetricRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceLoggingMetricUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -547,6 +550,7 @@ func resourceLoggingMetricUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceLoggingMetricDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

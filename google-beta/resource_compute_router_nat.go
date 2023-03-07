@@ -456,6 +456,7 @@ This field is used for public NAT.`,
 
 func resourceComputeRouterNatCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -619,6 +620,7 @@ func resourceComputeRouterNatCreate(d *schema.ResourceData, meta interface{}) er
 
 func resourceComputeRouterNatRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -717,6 +719,7 @@ func resourceComputeRouterNatRead(d *schema.ResourceData, meta interface{}) erro
 
 func resourceComputeRouterNatUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -867,6 +870,7 @@ func resourceComputeRouterNatUpdate(d *schema.ResourceData, meta interface{}) er
 
 func resourceComputeRouterNatDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

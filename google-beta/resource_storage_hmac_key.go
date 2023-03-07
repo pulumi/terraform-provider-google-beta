@@ -88,6 +88,7 @@ func resourceStorageHmacKey() *schema.Resource {
 
 func resourceStorageHmacKeyCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -221,6 +222,7 @@ func resourceStorageHmacKeyPollRead(d *schema.ResourceData, meta interface{}) Po
 
 func resourceStorageHmacKeyRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -286,6 +288,7 @@ func resourceStorageHmacKeyRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceStorageHmacKeyUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -354,6 +357,7 @@ func resourceStorageHmacKeyUpdate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceStorageHmacKeyDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

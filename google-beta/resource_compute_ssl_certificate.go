@@ -130,6 +130,7 @@ These are in the same namespace as the managed SSL certificates.`,
 
 func resourceComputeSslCertificateCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -209,6 +210,7 @@ func resourceComputeSslCertificateCreate(d *schema.ResourceData, meta interface{
 
 func resourceComputeSslCertificateRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -268,6 +270,7 @@ func resourceComputeSslCertificateRead(d *schema.ResourceData, meta interface{})
 
 func resourceComputeSslCertificateDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

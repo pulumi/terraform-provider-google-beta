@@ -134,6 +134,7 @@ which type this is. Default value: "MANAGED" Possible values: ["MANAGED"]`,
 
 func resourceComputeManagedSslCertificateCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -213,6 +214,7 @@ func resourceComputeManagedSslCertificateCreate(d *schema.ResourceData, meta int
 
 func resourceComputeManagedSslCertificateRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -278,6 +280,7 @@ func resourceComputeManagedSslCertificateRead(d *schema.ResourceData, meta inter
 
 func resourceComputeManagedSslCertificateDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

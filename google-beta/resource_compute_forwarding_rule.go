@@ -339,6 +339,7 @@ func resourceComputeForwardingRuleCreate(d *schema.ResourceData, meta interface{
 
 func resourceComputeForwardingRuleRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
@@ -476,6 +477,7 @@ func resourceComputeForwardingRuleRead(d *schema.ResourceData, meta interface{})
 }
 func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
@@ -542,6 +544,7 @@ func resourceComputeForwardingRuleUpdate(d *schema.ResourceData, meta interface{
 
 func resourceComputeForwardingRuleDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err

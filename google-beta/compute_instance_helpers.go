@@ -117,6 +117,7 @@ func expandScheduling(v interface{}) (*compute.Scheduling, error) {
 	if v, ok := original["min_node_cpus"]; ok {
 		scheduling.MinNodeCpus = int64(v.(int))
 	}
+
 	if v, ok := original["provisioning_model"]; ok {
 		scheduling.ProvisioningModel = v.(string)
 		scheduling.ForceSendFields = append(scheduling.ForceSendFields, "ProvisioningModel")

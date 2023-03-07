@@ -948,6 +948,7 @@ not necessarily mean that the job has not completed or was unsuccessful.`,
 
 func resourceBigQueryJobCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1050,6 +1051,7 @@ func resourceBigQueryJobPollRead(d *schema.ResourceData, meta interface{}) PollR
 
 func resourceBigQueryJobRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

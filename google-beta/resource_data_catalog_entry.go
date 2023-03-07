@@ -257,6 +257,7 @@ Note that this Entry and its child resources may not actually be stored in the l
 
 func resourceDataCatalogEntryCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -351,6 +352,7 @@ func resourceDataCatalogEntryCreate(d *schema.ResourceData, meta interface{}) er
 
 func resourceDataCatalogEntryRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -419,6 +421,7 @@ func resourceDataCatalogEntryRead(d *schema.ResourceData, meta interface{}) erro
 
 func resourceDataCatalogEntryUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -533,6 +536,7 @@ func resourceDataCatalogEntryUpdate(d *schema.ResourceData, meta interface{}) er
 
 func resourceDataCatalogEntryDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

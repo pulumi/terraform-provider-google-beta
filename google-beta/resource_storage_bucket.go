@@ -454,6 +454,7 @@ func isPolicyLocked(_ context.Context, old, new, _ interface{}) bool {
 
 func resourceStorageBucketCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

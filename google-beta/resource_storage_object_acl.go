@@ -115,6 +115,7 @@ func getObjectAclId(object string) string {
 
 func resourceStorageObjectAclCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

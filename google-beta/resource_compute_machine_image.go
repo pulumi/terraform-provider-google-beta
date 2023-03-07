@@ -132,6 +132,7 @@ customer-supplied encryption key that protects this resource.`,
 
 func resourceComputeMachineImageCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -217,6 +218,7 @@ func resourceComputeMachineImageCreate(d *schema.ResourceData, meta interface{})
 
 func resourceComputeMachineImageRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -276,6 +278,7 @@ func resourceComputeMachineImageRead(d *schema.ResourceData, meta interface{}) e
 
 func resourceComputeMachineImageDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

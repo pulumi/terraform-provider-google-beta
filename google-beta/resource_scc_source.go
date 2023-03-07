@@ -79,6 +79,7 @@ lives in.`,
 
 func resourceSecurityCenterSourceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -151,6 +152,7 @@ func resourceSecurityCenterSourceCreate(d *schema.ResourceData, meta interface{}
 
 func resourceSecurityCenterSourceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -188,6 +190,7 @@ func resourceSecurityCenterSourceRead(d *schema.ResourceData, meta interface{}) 
 
 func resourceSecurityCenterSourceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

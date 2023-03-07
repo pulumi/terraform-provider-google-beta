@@ -294,6 +294,7 @@ func isOrganizationPolicyUnset(d *schema.ResourceData) bool {
 
 func setOrganizationPolicy(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

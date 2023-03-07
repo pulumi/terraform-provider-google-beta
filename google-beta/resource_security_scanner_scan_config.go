@@ -201,6 +201,7 @@ which means the scan will be scheduled to start immediately.`,
 
 func resourceSecurityScannerScanConfigCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -321,6 +322,7 @@ func resourceSecurityScannerScanConfigCreate(d *schema.ResourceData, meta interf
 
 func resourceSecurityScannerScanConfigRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -389,6 +391,7 @@ func resourceSecurityScannerScanConfigRead(d *schema.ResourceData, meta interfac
 
 func resourceSecurityScannerScanConfigUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -526,6 +529,7 @@ func resourceSecurityScannerScanConfigUpdate(d *schema.ResourceData, meta interf
 
 func resourceSecurityScannerScanConfigDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

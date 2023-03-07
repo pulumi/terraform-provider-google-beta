@@ -84,6 +84,7 @@ in the format 'projects/*/locations/*/namespaces/*'.`,
 
 func resourceServiceDirectoryNamespaceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -138,6 +139,7 @@ func resourceServiceDirectoryNamespaceCreate(d *schema.ResourceData, meta interf
 
 func resourceServiceDirectoryNamespaceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -182,6 +184,7 @@ func resourceServiceDirectoryNamespaceRead(d *schema.ResourceData, meta interfac
 
 func resourceServiceDirectoryNamespaceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -239,6 +242,7 @@ func resourceServiceDirectoryNamespaceUpdate(d *schema.ResourceData, meta interf
 
 func resourceServiceDirectoryNamespaceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

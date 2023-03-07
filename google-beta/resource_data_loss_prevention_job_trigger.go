@@ -495,6 +495,7 @@ be based on the time of the execution of the last run of the JobTrigger.`,
 
 func resourceDataLossPreventionJobTriggerCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -572,6 +573,7 @@ func resourceDataLossPreventionJobTriggerCreate(d *schema.ResourceData, meta int
 
 func resourceDataLossPreventionJobTriggerRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -621,6 +623,7 @@ func resourceDataLossPreventionJobTriggerRead(d *schema.ResourceData, meta inter
 
 func resourceDataLossPreventionJobTriggerUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -717,6 +720,7 @@ func resourceDataLossPreventionJobTriggerUpdate(d *schema.ResourceData, meta int
 
 func resourceDataLossPreventionJobTriggerDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -95,6 +95,7 @@ func resourceDatastoreIndex() *schema.Resource {
 
 func resourceDatastoreIndexCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -182,6 +183,7 @@ func resourceDatastoreIndexCreate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceDatastoreIndexRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -232,6 +234,7 @@ func resourceDatastoreIndexRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceDatastoreIndexDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

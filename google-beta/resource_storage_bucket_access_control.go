@@ -91,6 +91,7 @@ Examples:
 
 func resourceStorageBucketAccessControlCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -155,6 +156,7 @@ func resourceStorageBucketAccessControlCreate(d *schema.ResourceData, meta inter
 
 func resourceStorageBucketAccessControlRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -198,6 +200,7 @@ func resourceStorageBucketAccessControlRead(d *schema.ResourceData, meta interfa
 
 func resourceStorageBucketAccessControlUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -257,6 +260,7 @@ func resourceStorageBucketAccessControlUpdate(d *schema.ResourceData, meta inter
 
 func resourceStorageBucketAccessControlDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

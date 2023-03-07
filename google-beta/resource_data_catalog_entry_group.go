@@ -86,6 +86,7 @@ contain only English letters, numbers and underscores, and be at most 64 charact
 
 func resourceDataCatalogEntryGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -146,6 +147,7 @@ func resourceDataCatalogEntryGroupCreate(d *schema.ResourceData, meta interface{
 
 func resourceDataCatalogEntryGroupRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -201,6 +203,7 @@ func resourceDataCatalogEntryGroupRead(d *schema.ResourceData, meta interface{})
 
 func resourceDataCatalogEntryGroupUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -268,6 +271,7 @@ func resourceDataCatalogEntryGroupUpdate(d *schema.ResourceData, meta interface{
 
 func resourceDataCatalogEntryGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

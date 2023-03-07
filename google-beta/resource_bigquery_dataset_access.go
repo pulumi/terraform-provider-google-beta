@@ -361,6 +361,7 @@ is 1,024 characters.`,
 
 func resourceBigQueryDatasetAccessCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -506,6 +507,7 @@ func resourceBigQueryDatasetAccessCreate(d *schema.ResourceData, meta interface{
 
 func resourceBigQueryDatasetAccessRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -583,6 +585,7 @@ func resourceBigQueryDatasetAccessRead(d *schema.ResourceData, meta interface{})
 
 func resourceBigQueryDatasetAccessDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

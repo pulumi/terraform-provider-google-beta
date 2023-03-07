@@ -148,6 +148,7 @@ the [avatarUri] field can be used.`,
 
 func resourceDialogflowAgentCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -259,6 +260,7 @@ func resourceDialogflowAgentCreate(d *schema.ResourceData, meta interface{}) err
 
 func resourceDialogflowAgentRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -327,6 +329,7 @@ func resourceDialogflowAgentRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceDialogflowAgentUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -433,6 +436,7 @@ func resourceDialogflowAgentUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceDialogflowAgentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -87,6 +87,7 @@ groups with no parent, parentName is the empty string, "".`,
 
 func resourceMonitoringGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -184,6 +185,7 @@ func resourceMonitoringGroupCreate(d *schema.ResourceData, meta interface{}) err
 
 func resourceMonitoringGroupRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -237,6 +239,7 @@ func resourceMonitoringGroupRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceMonitoringGroupUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -308,6 +311,7 @@ func resourceMonitoringGroupUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceMonitoringGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -115,6 +115,7 @@ Currently only NO_NAT (default value) is supported. Default value: "NO_NAT" Poss
 
 func resourceComputeTargetInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -206,6 +207,7 @@ func resourceComputeTargetInstanceCreate(d *schema.ResourceData, meta interface{
 
 func resourceComputeTargetInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -268,6 +270,7 @@ func resourceComputeTargetInstanceRead(d *schema.ResourceData, meta interface{})
 
 func resourceComputeTargetInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

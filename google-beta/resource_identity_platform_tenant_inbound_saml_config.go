@@ -153,6 +153,7 @@ and accept an authentication assertion issued by a SAML identity provider.`,
 
 func resourceIdentityPlatformTenantInboundSamlConfigCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -228,6 +229,7 @@ func resourceIdentityPlatformTenantInboundSamlConfigCreate(d *schema.ResourceDat
 
 func resourceIdentityPlatformTenantInboundSamlConfigRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -281,6 +283,7 @@ func resourceIdentityPlatformTenantInboundSamlConfigRead(d *schema.ResourceData,
 
 func resourceIdentityPlatformTenantInboundSamlConfigUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -368,6 +371,7 @@ func resourceIdentityPlatformTenantInboundSamlConfigUpdate(d *schema.ResourceDat
 
 func resourceIdentityPlatformTenantInboundSamlConfigDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

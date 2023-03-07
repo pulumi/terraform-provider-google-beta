@@ -199,6 +199,7 @@ Not currently available publicly.`,
 
 func resourceComputeRouterCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -297,6 +298,7 @@ func resourceComputeRouterCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceComputeRouterRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -359,6 +361,7 @@ func resourceComputeRouterRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceComputeRouterUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -426,6 +429,7 @@ func resourceComputeRouterUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceComputeRouterDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -61,6 +61,7 @@ func resourceFirebaseProject() *schema.Resource {
 
 func resourceFirebaseProjectCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -116,6 +117,7 @@ func resourceFirebaseProjectCreate(d *schema.ResourceData, meta interface{}) err
 
 func resourceFirebaseProjectRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

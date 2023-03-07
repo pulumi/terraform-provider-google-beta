@@ -137,6 +137,7 @@ Format: projects/{project_id}`,
 
 func resourceNotebooksEnvironmentCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -232,6 +233,7 @@ func resourceNotebooksEnvironmentCreate(d *schema.ResourceData, meta interface{}
 
 func resourceNotebooksEnvironmentRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -288,6 +290,7 @@ func resourceNotebooksEnvironmentRead(d *schema.ResourceData, meta interface{}) 
 
 func resourceNotebooksEnvironmentUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -366,6 +369,7 @@ func resourceNotebooksEnvironmentUpdate(d *schema.ResourceData, meta interface{}
 
 func resourceNotebooksEnvironmentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

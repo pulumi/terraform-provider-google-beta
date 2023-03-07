@@ -102,6 +102,7 @@ values are: "ABANDON", "DELETE". Defaults to "DELETE".`,
 
 func resourceSQLDatabaseCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -188,6 +189,7 @@ func resourceSQLDatabaseCreate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceSQLDatabaseRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -247,6 +249,7 @@ func resourceSQLDatabaseRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceSQLDatabaseUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -326,6 +329,7 @@ func resourceSQLDatabaseUpdate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceSQLDatabaseDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

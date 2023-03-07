@@ -94,6 +94,7 @@ e.g. ['resourcemanager.projects.delete']`,
 
 func resourceResourceManagerLienCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -172,6 +173,7 @@ func resourceResourceManagerLienCreate(d *schema.ResourceData, meta interface{})
 
 func resourceResourceManagerLienRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -242,6 +244,7 @@ func resourceResourceManagerLienRead(d *schema.ResourceData, meta interface{}) e
 
 func resourceResourceManagerLienDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

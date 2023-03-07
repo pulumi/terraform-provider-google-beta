@@ -118,6 +118,7 @@ func resourceStorageDefaultObjectAccessControl() *schema.Resource {
 
 func resourceStorageDefaultObjectAccessControlCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -188,6 +189,7 @@ func resourceStorageDefaultObjectAccessControlCreate(d *schema.ResourceData, met
 
 func resourceStorageDefaultObjectAccessControlRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -240,6 +242,7 @@ func resourceStorageDefaultObjectAccessControlRead(d *schema.ResourceData, meta 
 
 func resourceStorageDefaultObjectAccessControlUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -305,6 +308,7 @@ func resourceStorageDefaultObjectAccessControlUpdate(d *schema.ResourceData, met
 
 func resourceStorageDefaultObjectAccessControlDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

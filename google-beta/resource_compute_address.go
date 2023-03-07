@@ -188,6 +188,7 @@ internally during updates.`,
 
 func resourceComputeAddressCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -351,6 +352,7 @@ func resourceComputeAddressCreate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceComputeAddressRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -434,6 +436,7 @@ func resourceComputeAddressRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceComputeAddressUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -497,6 +500,7 @@ func resourceComputeAddressUpdate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceComputeAddressDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

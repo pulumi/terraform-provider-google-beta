@@ -338,6 +338,7 @@ resolution and up to nine fractional digits.`,
 
 func resourceMemcacheInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -457,6 +458,7 @@ func resourceMemcacheInstanceCreate(d *schema.ResourceData, meta interface{}) er
 
 func resourceMemcacheInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -537,6 +539,7 @@ func resourceMemcacheInstanceRead(d *schema.ResourceData, meta interface{}) erro
 
 func resourceMemcacheInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -642,6 +645,7 @@ func resourceMemcacheInstanceUpdate(d *schema.ResourceData, meta interface{}) er
 
 func resourceMemcacheInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

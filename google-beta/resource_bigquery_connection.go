@@ -247,6 +247,7 @@ Azure allowed regions are azure-eastus2`,
 
 func resourceBigqueryConnectionConnectionCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -363,6 +364,7 @@ func resourceBigqueryConnectionConnectionCreate(d *schema.ResourceData, meta int
 
 func resourceBigqueryConnectionConnectionRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -431,6 +433,7 @@ func resourceBigqueryConnectionConnectionRead(d *schema.ResourceData, meta inter
 
 func resourceBigqueryConnectionConnectionUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -553,6 +556,7 @@ func resourceBigqueryConnectionConnectionUpdate(d *schema.ResourceData, meta int
 
 func resourceBigqueryConnectionConnectionDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

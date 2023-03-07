@@ -95,6 +95,7 @@ If set to true, this reservation is placed in the organization's secondary regio
 
 func resourceBigqueryReservationReservationCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -164,6 +165,7 @@ func resourceBigqueryReservationReservationCreate(d *schema.ResourceData, meta i
 
 func resourceBigqueryReservationReservationRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -214,6 +216,7 @@ func resourceBigqueryReservationReservationRead(d *schema.ResourceData, meta int
 
 func resourceBigqueryReservationReservationUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -301,6 +304,7 @@ func resourceBigqueryReservationReservationUpdate(d *schema.ResourceData, meta i
 
 func resourceBigqueryReservationReservationDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

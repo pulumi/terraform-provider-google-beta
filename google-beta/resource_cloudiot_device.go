@@ -261,6 +261,7 @@ This is a more compact way to identify devices, and it is globally unique.`,
 
 func resourceCloudIotDeviceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -336,6 +337,7 @@ func resourceCloudIotDeviceCreate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceCloudIotDeviceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -412,6 +414,7 @@ func resourceCloudIotDeviceRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceCloudIotDeviceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -503,6 +506,7 @@ func resourceCloudIotDeviceUpdate(d *schema.ResourceData, meta interface{}) erro
 
 func resourceCloudIotDeviceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

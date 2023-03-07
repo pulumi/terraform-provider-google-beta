@@ -72,6 +72,7 @@ is attached to. The format is
 
 func resourceIapClientCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -125,6 +126,7 @@ func resourceIapClientCreate(d *schema.ResourceData, meta interface{}) error {
 
 func resourceIapClientRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -162,6 +164,7 @@ func resourceIapClientRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceIapClientDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

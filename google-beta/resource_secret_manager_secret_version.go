@@ -105,6 +105,7 @@ func resourceSecretManagerSecretVersion() *schema.Resource {
 
 func resourceSecretManagerSecretVersionCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -174,6 +175,7 @@ func resourceSecretManagerSecretVersionCreate(d *schema.ResourceData, meta inter
 
 func resourceSecretManagerSecretVersionRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -244,6 +246,7 @@ func resourceSecretManagerSecretVersionRead(d *schema.ResourceData, meta interfa
 
 func resourceSecretManagerSecretVersionDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

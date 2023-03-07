@@ -59,6 +59,7 @@ resource locations.`,
 
 func resourceFirebaseProjectLocationCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -120,6 +121,7 @@ func resourceFirebaseProjectLocationCreate(d *schema.ResourceData, meta interfac
 
 func resourceFirebaseProjectLocationRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

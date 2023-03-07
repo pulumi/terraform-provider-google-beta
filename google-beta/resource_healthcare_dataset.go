@@ -80,6 +80,7 @@ func resourceHealthcareDataset() *schema.Resource {
 
 func resourceHealthcareDatasetCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -137,6 +138,7 @@ func resourceHealthcareDatasetCreate(d *schema.ResourceData, meta interface{}) e
 
 func resourceHealthcareDatasetRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -193,6 +195,7 @@ func resourceHealthcareDatasetRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceHealthcareDatasetUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -250,6 +253,7 @@ func resourceHealthcareDatasetUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceHealthcareDatasetDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

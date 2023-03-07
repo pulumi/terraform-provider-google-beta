@@ -163,6 +163,7 @@ deleted from the instance group. Default value: "NEVER" Possible values: ["NEVER
 
 func resourceComputePerInstanceConfigCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -242,6 +243,7 @@ func resourceComputePerInstanceConfigCreate(d *schema.ResourceData, meta interfa
 
 func resourceComputePerInstanceConfigRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -314,6 +316,7 @@ func resourceComputePerInstanceConfigRead(d *schema.ResourceData, meta interface
 
 func resourceComputePerInstanceConfigUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -426,6 +429,7 @@ func resourceComputePerInstanceConfigUpdate(d *schema.ResourceData, meta interfa
 
 func resourceComputePerInstanceConfigDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

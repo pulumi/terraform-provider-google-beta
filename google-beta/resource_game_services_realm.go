@@ -97,6 +97,7 @@ example, 'projects/my-project/locations/{location}/realms/my-realm'.`,
 
 func resourceGameServicesRealmCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -184,6 +185,7 @@ func resourceGameServicesRealmCreate(d *schema.ResourceData, meta interface{}) e
 
 func resourceGameServicesRealmRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -237,6 +239,7 @@ func resourceGameServicesRealmRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceGameServicesRealmUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -322,6 +325,7 @@ func resourceGameServicesRealmUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceGameServicesRealmDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

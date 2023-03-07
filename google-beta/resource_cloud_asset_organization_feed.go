@@ -166,6 +166,7 @@ This can be used e.g. in UIs which allow to enter the expression.`,
 
 func resourceCloudAssetOrganizationFeedCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -253,6 +254,7 @@ func resourceCloudAssetOrganizationFeedCreate(d *schema.ResourceData, meta inter
 
 func resourceCloudAssetOrganizationFeedRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -303,6 +305,7 @@ func resourceCloudAssetOrganizationFeedRead(d *schema.ResourceData, meta interfa
 
 func resourceCloudAssetOrganizationFeedUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -402,6 +405,7 @@ func resourceCloudAssetOrganizationFeedUpdate(d *schema.ResourceData, meta inter
 
 func resourceCloudAssetOrganizationFeedDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -1087,6 +1087,7 @@ The alias definitions must be set on the run.googleapis.com/secrets annotation.`
 
 func resourceCloudRunServiceCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1197,6 +1198,7 @@ func resourceCloudRunServicePollRead(d *schema.ResourceData, meta interface{}) P
 
 func resourceCloudRunServiceRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1274,6 +1276,7 @@ func resourceCloudRunServiceRead(d *schema.ResourceData, meta interface{}) error
 
 func resourceCloudRunServiceUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1336,6 +1339,7 @@ func resourceCloudRunServiceUpdate(d *schema.ResourceData, meta interface{}) err
 
 func resourceCloudRunServiceDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

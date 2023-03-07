@@ -801,6 +801,7 @@ bet set to True if any of the fields in the spec are set to non-default values.`
 
 func resourceAccessContextManagerServicePerimetersCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -862,6 +863,7 @@ func resourceAccessContextManagerServicePerimetersCreate(d *schema.ResourceData,
 
 func resourceAccessContextManagerServicePerimetersRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -893,6 +895,7 @@ func resourceAccessContextManagerServicePerimetersRead(d *schema.ResourceData, m
 
 func resourceAccessContextManagerServicePerimetersUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -947,6 +950,7 @@ func resourceAccessContextManagerServicePerimetersUpdate(d *schema.ResourceData,
 
 func resourceAccessContextManagerServicePerimetersDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

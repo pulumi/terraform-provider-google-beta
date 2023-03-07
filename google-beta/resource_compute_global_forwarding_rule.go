@@ -271,6 +271,7 @@ func resourceComputeGlobalForwardingRuleCreate(d *schema.ResourceData, meta inte
 
 func resourceComputeGlobalForwardingRuleRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
@@ -366,6 +367,7 @@ func resourceComputeGlobalForwardingRuleRead(d *schema.ResourceData, meta interf
 }
 func resourceComputeGlobalForwardingRuleUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err
@@ -386,6 +388,7 @@ func resourceComputeGlobalForwardingRuleUpdate(d *schema.ResourceData, meta inte
 		Project:             dcl.String(project),
 	}
 	directive := UpdateDirective
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -420,6 +423,7 @@ func resourceComputeGlobalForwardingRuleUpdate(d *schema.ResourceData, meta inte
 
 func resourceComputeGlobalForwardingRuleDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	project, err := getProject(d, config)
 	if err != nil {
 		return err

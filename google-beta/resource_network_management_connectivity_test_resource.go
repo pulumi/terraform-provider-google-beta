@@ -226,6 +226,7 @@ boundaries.`,
 
 func resourceNetworkManagementConnectivityTestCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -337,6 +338,7 @@ func resourceNetworkManagementConnectivityTestCreate(d *schema.ResourceData, met
 
 func resourceNetworkManagementConnectivityTestRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -396,6 +398,7 @@ func resourceNetworkManagementConnectivityTestRead(d *schema.ResourceData, meta 
 
 func resourceNetworkManagementConnectivityTestUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -520,6 +523,7 @@ func resourceNetworkManagementConnectivityTestUpdate(d *schema.ResourceData, met
 
 func resourceNetworkManagementConnectivityTestDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

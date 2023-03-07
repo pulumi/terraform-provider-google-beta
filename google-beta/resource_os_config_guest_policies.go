@@ -875,6 +875,7 @@ Example: "2014-10-02T15:01:23.045123456Z".`,
 
 func resourceOSConfigGuestPoliciesCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -974,6 +975,7 @@ func resourceOSConfigGuestPoliciesCreate(d *schema.ResourceData, meta interface{
 
 func resourceOSConfigGuestPoliciesRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1039,6 +1041,7 @@ func resourceOSConfigGuestPoliciesRead(d *schema.ResourceData, meta interface{})
 
 func resourceOSConfigGuestPoliciesUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -1115,6 +1118,7 @@ func resourceOSConfigGuestPoliciesUpdate(d *schema.ResourceData, meta interface{
 
 func resourceOSConfigGuestPoliciesDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err

@@ -63,6 +63,7 @@ func resourceNotebooksLocation() *schema.Resource {
 
 func resourceNotebooksLocationCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -138,6 +139,7 @@ func resourceNotebooksLocationCreate(d *schema.ResourceData, meta interface{}) e
 
 func resourceNotebooksLocationRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -182,6 +184,7 @@ func resourceNotebooksLocationRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceNotebooksLocationUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
@@ -236,6 +239,7 @@ func resourceNotebooksLocationUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceNotebooksLocationDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
+
 	userAgent, err := generateUserAgentString(d, config.userAgent)
 	if err != nil {
 		return err
