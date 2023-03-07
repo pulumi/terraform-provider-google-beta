@@ -48,7 +48,7 @@ The following arguments are supported:
 
 One of the following is required:
 
-* `content` - (Optional, Sensitive) Data as `string` to be uploaded. Must be defined if `source` is not. **Note**: The `content` field is marked as sensitive. To view the raw contents of the object, please define an [output](/docs/configuration/outputs.html).
+* `content` - (Optional, Sensitive) Data as `string` to be uploaded. Must be defined if `source` is not. **Note**: The `content` field is marked as sensitive.
 
 * `source` - (Optional) A path to the data you want to upload. Must be defined
     if `content` is not.

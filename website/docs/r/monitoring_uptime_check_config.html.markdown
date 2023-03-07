@@ -28,9 +28,8 @@ To get more information about UptimeCheckConfig, see:
 * How-to Guides
     * [Official Documentation](https://cloud.google.com/monitoring/uptime-checks/)
 
-~> **Warning:** All arguments including the following potentially sensitive
-values will be stored in the raw state as plain text: `http_check.auth_info.password`.
-[Read more about sensitive data in state](https://www.terraform.io/language/state/sensitive-data).
+~> **Warning:** All arguments including `http_check.auth_info.password` will be stored in the raw
+state as plain-text.
 
 ## Example Usage - Uptime Check Config Http
 
