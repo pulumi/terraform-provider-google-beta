@@ -31,4 +31,4 @@ The following arguments are supported:
 
 ## Attributes Reference
 
-See [google_iap_client](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/iap_client) resource for details of the available attributes.
+See google_iap_client resource for details of the available attributes.
