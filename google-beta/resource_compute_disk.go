@@ -1356,8 +1356,6 @@ func flattenComputeDiskSourceImageEncryptionKey(v interface{}, d *schema.Resourc
 		flattenComputeDiskSourceImageEncryptionKeySha256(original["sha256"], d, config)
 	transformed["kms_key_self_link"] =
 		flattenComputeDiskSourceImageEncryptionKeyKmsKeySelfLink(original["kmsKeyName"], d, config)
-	transformed["kms_key_service_account"] =
-		flattenComputeDiskSourceImageEncryptionKeyKmsKeyServiceAccount(original["kmsKeyServiceAccount"], d, config)
 	return []interface{}{transformed}
 }
 func flattenComputeDiskSourceImageEncryptionKeyRawKey(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
@@ -1369,10 +1367,6 @@ func flattenComputeDiskSourceImageEncryptionKeySha256(v interface{}, d *schema.R
 }
 
 func flattenComputeDiskSourceImageEncryptionKeyKmsKeySelfLink(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
-	return v
-}
-
-func flattenComputeDiskSourceImageEncryptionKeyKmsKeyServiceAccount(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
 	return v
 }
 
@@ -1397,8 +1391,6 @@ func flattenComputeDiskDiskEncryptionKey(v interface{}, d *schema.ResourceData, 
 		flattenComputeDiskDiskEncryptionKeySha256(original["sha256"], d, config)
 	transformed["kms_key_self_link"] =
 		flattenComputeDiskDiskEncryptionKeyKmsKeySelfLink(original["kmsKeyName"], d, config)
-	transformed["kms_key_service_account"] =
-		flattenComputeDiskDiskEncryptionKeyKmsKeyServiceAccount(original["kmsKeyServiceAccount"], d, config)
 	return []interface{}{transformed}
 }
 func flattenComputeDiskDiskEncryptionKeyRawKey(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
@@ -1414,10 +1406,6 @@ func flattenComputeDiskDiskEncryptionKeySha256(v interface{}, d *schema.Resource
 }
 
 func flattenComputeDiskDiskEncryptionKeyKmsKeySelfLink(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
-	return v
-}
-
-func flattenComputeDiskDiskEncryptionKeyKmsKeyServiceAccount(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
 	return v
 }
 
@@ -1443,8 +1431,6 @@ func flattenComputeDiskSourceSnapshotEncryptionKey(v interface{}, d *schema.Reso
 		flattenComputeDiskSourceSnapshotEncryptionKeyKmsKeySelfLink(original["kmsKeyName"], d, config)
 	transformed["sha256"] =
 		flattenComputeDiskSourceSnapshotEncryptionKeySha256(original["sha256"], d, config)
-	transformed["kms_key_service_account"] =
-		flattenComputeDiskSourceSnapshotEncryptionKeyKmsKeyServiceAccount(original["kmsKeyServiceAccount"], d, config)
 	return []interface{}{transformed}
 }
 func flattenComputeDiskSourceSnapshotEncryptionKeyRawKey(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
@@ -1456,10 +1442,6 @@ func flattenComputeDiskSourceSnapshotEncryptionKeyKmsKeySelfLink(v interface{}, 
 }
 
 func flattenComputeDiskSourceSnapshotEncryptionKeySha256(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
-	return v
-}
-
-func flattenComputeDiskSourceSnapshotEncryptionKeyKmsKeyServiceAccount(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
 	return v
 }
 
@@ -1599,13 +1581,6 @@ func expandComputeDiskSourceImageEncryptionKey(v interface{}, d tpgresource.Terr
 		transformed["kmsKeyName"] = transformedKmsKeySelfLink
 	}
 
-	transformedKmsKeyServiceAccount, err := expandComputeDiskSourceImageEncryptionKeyKmsKeyServiceAccount(original["kms_key_service_account"], d, config)
-	if err != nil {
-		return nil, err
-	} else if val := reflect.ValueOf(transformedKmsKeyServiceAccount); val.IsValid() && !tpgresource.IsEmptyValue(val) {
-		transformed["kmsKeyServiceAccount"] = transformedKmsKeyServiceAccount
-	}
-
 	return transformed, nil
 }
 
@@ -1618,10 +1593,6 @@ func expandComputeDiskSourceImageEncryptionKeySha256(v interface{}, d tpgresourc
 }
 
 func expandComputeDiskSourceImageEncryptionKeyKmsKeySelfLink(v interface{}, d tpgresource.TerraformResourceData, config *transport_tpg.Config) (interface{}, error) {
-	return v, nil
-}
-
-func expandComputeDiskSourceImageEncryptionKeyKmsKeyServiceAccount(v interface{}, d tpgresource.TerraformResourceData, config *transport_tpg.Config) (interface{}, error) {
 	return v, nil
 }
 
@@ -1662,13 +1633,6 @@ func expandComputeDiskDiskEncryptionKey(v interface{}, d tpgresource.TerraformRe
 		transformed["kmsKeyName"] = transformedKmsKeySelfLink
 	}
 
-	transformedKmsKeyServiceAccount, err := expandComputeDiskDiskEncryptionKeyKmsKeyServiceAccount(original["kms_key_service_account"], d, config)
-	if err != nil {
-		return nil, err
-	} else if val := reflect.ValueOf(transformedKmsKeyServiceAccount); val.IsValid() && !tpgresource.IsEmptyValue(val) {
-		transformed["kmsKeyServiceAccount"] = transformedKmsKeyServiceAccount
-	}
-
 	return transformed, nil
 }
 
@@ -1688,12 +1652,8 @@ func expandComputeDiskDiskEncryptionKeyKmsKeySelfLink(v interface{}, d tpgresour
 	return v, nil
 }
 
-func expandComputeDiskDiskEncryptionKeyKmsKeyServiceAccount(v interface{}, d tpgresource.TerraformResourceData, config *transport_tpg.Config) (interface{}, error) {
-	return v, nil
-}
-
 func expandComputeDiskSnapshot(v interface{}, d tpgresource.TerraformResourceData, config *transport_tpg.Config) (interface{}, error) {
-	f, err := tpgresource.ParseGlobalFieldValue("snapshots", v.(string), "project", d, config, true)
+	f, err := parseGlobalFieldValue("snapshots", v.(string), "project", d, config, true)
 	if err != nil {
 		return nil, fmt.Errorf("Invalid value for snapshot: %s", err)
 	}
@@ -1730,13 +1690,6 @@ func expandComputeDiskSourceSnapshotEncryptionKey(v interface{}, d tpgresource.T
 		transformed["sha256"] = transformedSha256
 	}
 
-	transformedKmsKeyServiceAccount, err := expandComputeDiskSourceSnapshotEncryptionKeyKmsKeyServiceAccount(original["kms_key_service_account"], d, config)
-	if err != nil {
-		return nil, err
-	} else if val := reflect.ValueOf(transformedKmsKeyServiceAccount); val.IsValid() && !tpgresource.IsEmptyValue(val) {
-		transformed["kmsKeyServiceAccount"] = transformedKmsKeyServiceAccount
-	}
-
 	return transformed, nil
 }
 
@@ -1749,10 +1702,6 @@ func expandComputeDiskSourceSnapshotEncryptionKeyKmsKeySelfLink(v interface{}, d
 }
 
 func expandComputeDiskSourceSnapshotEncryptionKeySha256(v interface{}, d tpgresource.TerraformResourceData, config *transport_tpg.Config) (interface{}, error) {
-	return v, nil
-}
-
-func expandComputeDiskSourceSnapshotEncryptionKeyKmsKeyServiceAccount(v interface{}, d tpgresource.TerraformResourceData, config *transport_tpg.Config) (interface{}, error) {
 	return v, nil
 }
 
