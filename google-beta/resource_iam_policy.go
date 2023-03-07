@@ -70,7 +70,7 @@ func ResourceIamPolicyCreate(newUpdaterFunc newResourceIamUpdaterFunc) schema.Cr
 			return err
 		}
 
-		if err = setIamPolicyData(d, updater); err != nil {
+		if err := setIamPolicyData(d, updater); err != nil {
 			return err
 		}
 

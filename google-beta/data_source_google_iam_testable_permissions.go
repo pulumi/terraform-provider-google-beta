@@ -100,7 +100,7 @@ func dataSourceGoogleIamTestablePermissionsRead(d *schema.ResourceData, meta int
 		}
 	}
 
-	if err = d.Set("permissions", permissions); err != nil {
+	if err := d.Set("permissions", permissions); err != nil {
 		return fmt.Errorf("Error retrieving permissions: %s", err)
 	}
 

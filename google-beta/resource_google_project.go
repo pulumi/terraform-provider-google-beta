@@ -127,7 +127,7 @@ func resourceGoogleProjectCreate(d *schema.ResourceData, meta interface{}) error
 		Name:      d.Get("name").(string),
 	}
 
-	if err = getParentResourceId(d, project); err != nil {
+	if err := getParentResourceId(d, project); err != nil {
 		return err
 	}
 
