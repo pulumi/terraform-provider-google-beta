@@ -10,7 +10,7 @@ A Security Policy defines an IP blacklist or whitelist that protects load balanc
 see the [official documentation](https://cloud.google.com/armor/docs/configure-security-policies)
 and the [API](https://cloud.google.com/compute/docs/reference/rest/beta/securityPolicies).
 
-Security Policy is used by [`google_compute_backend_service`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_backend_service#security_policy).
+Security Policy is used by google_compute_backend_service.
 
 ## Example Usage
 
@@ -414,14 +414,4 @@ exported:
 
 * `fingerprint` - Fingerprint of this resource.
 
-* `self_link` - The URI of the created resource.
-
-## Import
-
-Security policies can be imported using any of the following formats
-
-```
-$ terraform import google_compute_security_policy.policy projects/{{project}}/global/securityPolicies/{{name}}
-$ terraform import google_compute_security_policy.policy {{project}}/{{name}}
-$ terraform import google_compute_security_policy.policy {{name}}
-```
+* `self_link` - The URI of the created resourc

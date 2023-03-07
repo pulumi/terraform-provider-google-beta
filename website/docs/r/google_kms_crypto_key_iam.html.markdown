@@ -48,7 +48,7 @@ resource "google_kms_crypto_key_iam_policy" "crypto_key" {
 }
 ```
 
-With IAM Conditions ([beta](https://terraform.io/docs/providers/google/provider_versions.html)):
+With IAM Conditions:
 
 ```hcl
 data "google_iam_policy" "admin" {
@@ -81,7 +81,7 @@ resource "google_kms_crypto_key_iam_binding" "crypto_key" {
 }
 ```
 
-With IAM Conditions ([beta](https://terraform.io/docs/providers/google/provider_versions.html)):
+With IAM Conditions:
 
 ```hcl
 resource "google_kms_crypto_key_iam_binding" "crypto_key" {
@@ -110,7 +110,7 @@ resource "google_kms_crypto_key_iam_member" "crypto_key" {
 }
 ```
 
-With IAM Conditions ([beta](https://terraform.io/docs/providers/google/provider_versions.html)):
+With IAM Conditions:
 
 ```hcl
 resource "google_kms_crypto_key_iam_member" "crypto_key" {
@@ -163,8 +163,8 @@ The following arguments are supported:
 
 * `description` - (Optional) An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.
 
-~> **Warning:** Terraform considers the `role` and condition contents (`title`+`description`+`expression`) as the
-  identifier for the binding. This means that if any part of the condition is changed out-of-band, Terraform will
+~> **Warning:** The provider considers the `role` and condition contents (`title`+`description`+`expression`) as the
+  identifier for the binding. This means that if any part of the condition is changed out-of-band, the provider will
   consider it to be an entirely different resource and will treat it as such.
 
 ## Attributes Reference

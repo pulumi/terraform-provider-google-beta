@@ -966,7 +966,7 @@ The following arguments are supported:
   The forwarded traffic must be of a type appropriate to the target object.
   For INTERNAL_SELF_MANAGED load balancing, only HTTP and HTTPS targets
   are valid.
-  ([Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html) only) For global address with a purpose of PRIVATE_SERVICE_CONNECT and
+  For global address with a purpose of PRIVATE_SERVICE_CONNECT and
   addressType of INTERNAL, only "all-apis" and "vpc-sc" are valid.
 
 
@@ -1008,7 +1008,7 @@ The following arguments are supported:
   Possible values are `IPV4` and `IPV6`.
 
 * `labels` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Labels to apply to this forwarding rule.  A list of key->value pairs.
 
 * `load_balancing_scheme` -
@@ -1017,9 +1017,11 @@ The following arguments are supported:
   The value of INTERNAL_SELF_MANAGED means that this will be used for
   Internal Global HTTP(S) LB. The value of EXTERNAL means that this
   will be used for External Global Load Balancing (HTTP(S) LB,
+  External TCP/UDP LB, SSL Proxy)
+  Note: This field must be set "" if the global address is
   External TCP/UDP LB, SSL Proxy). The value of EXTERNAL_MANAGED means
   that this will be used for Global external HTTP(S) load balancers.
-  ([Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html) only) Note: This field must be set "" if the global address is
+  Note: This field must be set "" if the global address is
   configured as a purpose of PRIVATE_SERVICE_CONNECT and addressType of INTERNAL.
   Default value is `EXTERNAL`.
   Possible values are `EXTERNAL`, `EXTERNAL_MANAGED`, and `INTERNAL_SELF_MANAGED`.
@@ -1043,7 +1045,7 @@ The following arguments are supported:
   Structure is [documented below](#nested_metadata_filters).
 
 * `network` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   This field is not used for external load balancing.
   For INTERNAL_SELF_MANAGED load balancing, this field
   identifies the network that the load balanced IP should belong to

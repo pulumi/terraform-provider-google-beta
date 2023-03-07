@@ -74,21 +74,9 @@ In addition to these, all arguments from `google_compute_instance` are supported
 as a way to override the properties in the template. All exported attributes
 from `google_compute_instance` are likewise exported here.
 
-To support removal of Optional/Computed fields in Terraform 0.12 the following fields
-are marked [Attributes as Blocks](/docs/configuration/attr-as-blocks.html):
-
-* `attached_disk`
-* `guest_accelerator`
-* `service_account`
-* `scratch_disk`
-* `network_interface.alias_ip_range`
-* `network_interface.access_config`
-
 ## Attributes Reference
 
 All exported attributes from `google_compute_instance` are exported here.
-See https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#attributes-reference
-for details.
 
 ## Import
 

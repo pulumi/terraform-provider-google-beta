@@ -28,10 +28,10 @@ To get more information about NodeGroup, see:
 * How-to Guides
     * [Sole-Tenant Nodes](https://cloud.google.com/compute/docs/nodes/)
 
-~> **Warning:** Due to limitations of the API, Terraform cannot update the
+~> **Warning:** Due to limitations of the API, this provider cannot update the
 number of nodes in a node group and changes to node group size either
-through Terraform config or through external changes will cause
-Terraform to delete and recreate the node group.
+through provider config or through external changes will cause
+the provider to delete and recreate the node group.
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=node_group_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -50,8 +50,8 @@ resource "google_compute_node_template" "soletenant-tmpl" {
 
 resource "google_compute_node_group" "nodes" {
   name        = "soletenant-group"
-  zone        = "us-central1-f"
-  description = "example google_compute_node_group for Terraform Google Provider"
+  zone        = "us-central1-a"
+  description = "example google_compute_node_group for the Google Provider"
 
   size          = 1
   node_template = google_compute_node_template.soletenant-tmpl.id
@@ -74,8 +74,8 @@ resource "google_compute_node_template" "soletenant-tmpl" {
 
 resource "google_compute_node_group" "nodes" {
   name        = "soletenant-group"
-  zone        = "us-central1-f"
-  description = "example google_compute_node_group for Terraform Google Provider"
+  zone        = "us-central1-a"
+  description = "example google_compute_node_group for Google Provider"
   maintenance_policy = "RESTART_IN_PLACE"
   maintenance_window {
     start_time = "08:00"

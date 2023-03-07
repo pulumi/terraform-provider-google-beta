@@ -45,8 +45,63 @@ To get more information about Service, see:
 a Cloud Run Service on Anthos(GKE/VMWare) then you will need to create it using the kubernetes alpha provider.
 Have a look at the Cloud Run Anthos example below.
 
-## Example Usage - Cloud Run Service Basic
+## Example Usage - Cloud Run Service Pubsub
 
+
+```hcl
+resource "google_cloud_run_service" "default" {
+    name     = "cloud_run_service_name"
+    location = "us-central1"
+    template {
+      spec {
+            containers {
+                image = "gcr.io/cloudrun/hello"
+            }
+      }
+    }
+    traffic {
+      percent         = 100
+      latest_revision = true
+    }
+}
+
+resource "google_service_account" "sa" {
+  account_id   = "cloud-run-pubsub-invoker"
+  display_name = "Cloud Run Pub/Sub Invoker"
+}
+
+resource "google_cloud_run_service_iam_binding" "binding" {
+  location = google_cloud_run_service.default.location
+  service = google_cloud_run_service.default.name
+  role = "roles/run.invoker"
+  members = ["serviceAccount:${google_service_account.sa.email}"]
+}
+
+resource "google_project_iam_binding" "project" {
+  role    = "roles/iam.serviceAccountTokenCreator"
+  members = ["serviceAccount:${google_service_account.sa.email}"]
+}
+
+resource "google_pubsub_topic" "topic" {
+  name = "pubsub_topic"
+}
+
+resource "google_pubsub_subscription" "subscription" {
+  name  = "pubsub_subscription"
+  topic = google_pubsub_topic.topic.name
+  push_config {
+    push_endpoint = google_cloud_run_service.default.status[0].url
+    oidc_token {
+      service_account_email = google_service_account.sa.email
+    }
+    attributes = {
+      x-goog-version = "v1"
+    }
+  }
+}
+```
+
+## Example Usage - Cloud Run Service Basic
 
 ```hcl
 resource "google_cloud_run_service" "default" {
@@ -91,7 +146,7 @@ resource "google_cloud_run_service" "default" {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "1000"
         "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.instance.connection_name
-        "run.googleapis.com/client-name"        = "terraform"
+        "run.googleapis.com/client-name"        = "demo"
       }
     }
   }
@@ -302,7 +357,7 @@ The following arguments are supported:
   may be set by external tools to store and retrieve arbitrary metadata. More
   info: http://kubernetes.io/docs/user-guide/annotations
   **Note**: The Cloud Run API may add additional annotations that were not provided in your config.
-  If terraform plan shows a diff where a server-side annotation is added, you can add it to your config
+  If the provider plan shows a diff where a server-side annotation is added, you can add it to your config
   or apply the lifecycle.ignore_changes rule to the metadata.0.annotations field.
 
 * `name` -
@@ -438,7 +493,7 @@ The following arguments are supported:
   Structure is [documented below](#nested_startup_probe).
 
 * `liveness_probe` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Periodic probe of container liveness. Container will be restarted if the probe fails. More info:
   https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
   Structure is [documented below](#nested_liveness_probe).
@@ -544,7 +599,7 @@ The following arguments are supported:
   The name of the secret in Cloud Secret Manager. By default, the secret is assumed to be in the same project. 
   If the secret is in another project, you must define an alias. 
   An alias definition has the form: :projects/{project-id|project-number}/secrets/. 
-  If multiple alias definitions are needed, they must be separated by commas. 
+  If multiple alias definitions are needed, they must be separated by commas.
   The alias definitions must be set on the run.googleapis.com/secrets annotation.
 
 <a name="nested_ports"></a>The `ports` block supports:
@@ -885,7 +940,7 @@ this field is set to false, the revision name will still autogenerate.)
   may be set by external tools to store and retrieve arbitrary metadata. More
   info: http://kubernetes.io/docs/user-guide/annotations
   **Note**: The Cloud Run API may add additional annotations that were not provided in your config.
-  If terraform plan shows a diff where a server-side annotation is added, you can add it to your config
+  If the provider plan shows a diff where a server-side annotation is added, you can add it to your config
   or apply the lifecycle.ignore_changes rule to the metadata.0.annotations field.
   Cloud Run (fully managed) uses the following annotation keys to configure features on a Service:
   - `run.googleapis.com/ingress` sets the [ingress settings](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--ingress)

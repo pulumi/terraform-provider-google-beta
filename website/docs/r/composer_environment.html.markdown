@@ -27,17 +27,18 @@ To get more information about Environments, see:
 ~> **Warning:** We **STRONGLY** recommend you read the [GCP
 guides](https://cloud.google.com/composer/docs/how-to) as the Environment resource requires a long
 deployment process and involves several layers of GCP infrastructure, including a Kubernetes Engine
-cluster, Cloud Storage, and Compute networking resources. Due to limitations of the API, Terraform
+cluster, Cloud Storage, and Compute networking resources. Due to limitations of the API, this provider
 will not be able to automatically find or manage many of these underlying resources. In particular:
+
 * It can take up to one hour to create or update an environment resource. In addition, GCP may only
   detect some errors in configuration when they are used (e.g. ~40-50 minutes into the creation
   process), and is prone to limited error reporting. If you encounter confusing or uninformative
   errors, please verify your configuration is valid against GCP Cloud Composer before filing bugs
-  against the Terraform provider. * **Environments create Google Cloud Storage buckets that do not get
+  against the provider. ***Environments create Google Cloud Storage buckets that do not get
   cleaned up automatically** on environment deletion. [More about Composer's use of Cloud
-  Storage](https://cloud.google.com/composer/docs/concepts/cloud-storage). * Please review the [known
+Storage](https://cloud.google.com/composer/docs/concepts/cloud-storage).* Please review the [known
   issues](https://cloud.google.com/composer/docs/known-issues) for Composer if you are having
-  problems.
+  problems.***
 
 ## Example Usage
 
@@ -312,7 +313,7 @@ The following arguments are supported:
   dependencies.
 
 * `maintenance_window` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The configuration settings for Cloud Composer maintenance windows.
 
 * `master_authorized_networks_config` -
@@ -388,8 +389,7 @@ The following arguments are supported:
   Cannot be updated.
 
 * `max_pods_per_node` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html),
-  Cloud Composer 1 only)
+  (Optional)
   The maximum pods per node in the GKE cluster allocated during environment
   creation. Lowering this value reduces IP address consumption by the Cloud
   Composer Kubernetes cluster. This value can only be set if the environment is VPC-Native.
@@ -588,7 +588,7 @@ The `web_server_network_access_control` supports:
 
 * `recurrence` -
   (Required)
-  Maintenance window recurrence. Format is a subset of RFC-5545 (https://tools.ietf.org/html/rfc5545) 'RRULE'.
+  Maintenance window recurrence. Format is a subset of RFC-5545 (<https://tools.ietf.org/html/rfc5545>) 'RRULE'.
   The only allowed values for 'FREQ' field are 'FREQ=DAILY' and 'FREQ=WEEKLY;BYDAY=...'.
   Example values: 'FREQ=WEEKLY;BYDAY=TU,WE', 'FREQ=DAILY'.
 
@@ -598,7 +598,7 @@ The `web_server_network_access_control` supports:
   Whether or not master authorized networks is enabled.
 
 * `cidr_blocks` -
-  `cidr_blocks `define up to 50 external networks that could access Kubernetes master through HTTPS. Structure is [documented below](#nested_cidr_blocks).
+  `cidr_blocks`define up to 50 external networks that could access Kubernetes master through HTTPS. Structure is [documented below](#nested_cidr_blocks).
 
 <a name="nested_cidr_blocks"></a>The `cidr_blocks` supports:
 
@@ -885,7 +885,7 @@ The `ip_allocation_policy` block supports:
 
 * `recurrence` -
   (Required)
-  Maintenance window recurrence. Format is a subset of RFC-5545 (https://tools.ietf.org/html/rfc5545) 'RRULE'.
+  Maintenance window recurrence. Format is a subset of RFC-5545 (<https://tools.ietf.org/html/rfc5545>) 'RRULE'.
   The only allowed values for 'FREQ' field are 'FREQ=DAILY' and 'FREQ=WEEKLY;BYDAY=...'.
   Example values: 'FREQ=WEEKLY;BYDAY=TU,WE', 'FREQ=DAILY'.
 

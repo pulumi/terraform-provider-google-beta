@@ -276,11 +276,7 @@ resource "google_compute_subnetwork" "default" {
   network       = google_compute_network.default.id
 }
 ```
-<div class = "oics-button" style="float: right; margin: 0 0 -15px">
-  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=region_backend_service_connection_tracking&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
-    <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
-  </a>
-</div>
+
 ## Example Usage - Region Backend Service Connection Tracking
 
 
@@ -476,7 +472,7 @@ The following arguments are supported:
   Possible values are `NONE`, `CLIENT_IP`, `CLIENT_IP_PORT_PROTO`, `CLIENT_IP_PROTO`, `GENERATED_COOKIE`, `HEADER_FIELD`, `HTTP_COOKIE`, and `CLIENT_IP_NO_DESTINATION`.
 
 * `connection_tracking_policy` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Connection Tracking configuration for this BackendService.
   This is available only for Layer 4 Internal Load Balancing and
   Network Load Balancing.
@@ -625,7 +621,7 @@ The following arguments are supported:
 <a name="nested_circuit_breakers"></a>The `circuit_breakers` block supports:
 
 * `connect_timeout` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The timeout for new network connections to hosts.
   Structure is [documented below](#nested_connect_timeout).
 
@@ -826,7 +822,7 @@ The following arguments are supported:
   can be specified as values, and you cannot specify a status code more than once.
 
 * `ttl` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The TTL (in seconds) for which to cache responses with the corresponding status code. The maximum allowed value is 1800s
   (30 minutes), noting that infrequently accessed objects may be evicted from the cache before the defined TTL.
 

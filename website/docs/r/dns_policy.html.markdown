@@ -96,7 +96,7 @@ The following arguments are supported:
 
 * `description` -
   (Optional)
-  A textual description field. Defaults to 'Managed by Terraform'.
+  A textual description field. Defaults to 'Managed by Pulumi'.
 
 * `enable_inbound_forwarding` -
   (Optional)

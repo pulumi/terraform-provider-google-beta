@@ -22,9 +22,6 @@ description: |-
 A container for `services`. Namespaces allow administrators to group services
 together and define permissions for a collection of services.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about Namespace, see:
 
 * [API documentation](https://cloud.google.com/service-directory/docs/reference/rest/v1beta1/projects.locations.namespaces)
