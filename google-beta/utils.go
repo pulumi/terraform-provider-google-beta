@@ -428,17 +428,8 @@ func changeFieldSchemaToForceNew(sch *schema.Schema) {
 }
 
 func generateUserAgentString(d TerraformResourceData, currentUserAgent string) (string, error) {
-	var m ProviderMeta
-
-	err := d.GetProviderMeta(&m)
-	if err != nil {
-		return currentUserAgent, err
-	}
-
-	if m.ModuleName != "" {
-		return strings.Join([]string{currentUserAgent, m.ModuleName}, " "), nil
-	}
-
+	// we don't want to append the name of the module here as it doesn't make any sense to
+	// do this with the pulumi provider
 	return currentUserAgent, nil
 }
 
