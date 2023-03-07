@@ -360,6 +360,9 @@ func resourceCertificateManagerCertificateRead(d *schema.ResourceData, meta inte
 	if err := d.Set("scope", flattenCertificateManagerCertificateScope(res["scope"], d, config)); err != nil {
 		return fmt.Errorf("Error reading Certificate: %s", err)
 	}
+	if err := d.Set("self_managed", flattenCertificateManagerCertificateSelfManaged(res["selfManaged"], d, config)); err != nil {
+		return fmt.Errorf("Error reading Certificate: %s", err)
+	}
 	if err := d.Set("managed", flattenCertificateManagerCertificateManaged(res["managed"], d, config)); err != nil {
 		return fmt.Errorf("Error reading Certificate: %s", err)
 	}
@@ -516,6 +519,29 @@ func flattenCertificateManagerCertificateLabels(v interface{}, d *schema.Resourc
 }
 
 func flattenCertificateManagerCertificateScope(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
+func flattenCertificateManagerCertificateSelfManaged(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	if v == nil {
+		return nil
+	}
+	original := v.(map[string]interface{})
+	if len(original) == 0 {
+		return nil
+	}
+	transformed := make(map[string]interface{})
+	transformed["certificate_pem"] =
+		flattenCertificateManagerCertificateSelfManagedCertificatePem(original["certificatePem"], d, config)
+	transformed["private_key_pem"] =
+		flattenCertificateManagerCertificateSelfManagedPrivateKeyPem(original["privateKeyPem"], d, config)
+	return []interface{}{transformed}
+}
+func flattenCertificateManagerCertificateSelfManagedCertificatePem(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+	return v
+}
+
+func flattenCertificateManagerCertificateSelfManagedPrivateKeyPem(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	return v
 }
 
