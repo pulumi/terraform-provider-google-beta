@@ -21,9 +21,6 @@ description: |-
 
 A Google Cloud Firebase web application instance
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about WebApp, see:
 
 * [API documentation](https://firebase.google.com/docs/reference/firebase-management/rest/v1beta1/projects.webApps)
@@ -37,8 +34,8 @@ To get more information about WebApp, see:
 resource "google_project" "default" {
 	provider = google-beta
 
-	project_id = "tf-test%{random_suffix}"
-	name       = "tf-test%{random_suffix}"
+	project_id = "tf-test"
+	name       = "tf-test"
 	org_id     = "123456789"
 
 	labels = {

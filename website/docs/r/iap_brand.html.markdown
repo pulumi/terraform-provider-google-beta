@@ -29,7 +29,6 @@ project and the underlying Google API doesn't not support DELETE or PATCH method
 Destroying a Terraform-managed Brand will remove it from state
 but *will not delete it from Google Cloud.*
 
-
 To get more information about Brand, see:
 
 * [API documentation](https://cloud.google.com/iap/docs/reference/rest/v1/projects.brands)

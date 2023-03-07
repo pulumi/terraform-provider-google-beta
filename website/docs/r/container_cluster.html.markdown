@@ -6,19 +6,13 @@ description: |-
 
 # google\_container\_cluster
 
--> Visit the [Provision a GKE Cluster (Google Cloud)](https://learn.hashicorp.com/tutorials/terraform/gke?in=terraform/kubernetes&utm_source=WEBSITE&utm_medium=WEB_IO&utm_offer=ARTICLE_PAGE&utm_content=DOCS) Learn tutorial to learn how to provision and interact
-with a GKE cluster.
-
--> See the [Using GKE with Terraform](/docs/providers/google/guides/using_gke_with_terraform.html)
-guide for more information about using GKE with Terraform.
-
 Manages a Google Kubernetes Engine (GKE) cluster. For more information see
 [the official documentation](https://cloud.google.com/container-engine/docs/clusters)
 and [the API reference](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters).
 
 ~> **Warning:** All arguments and attributes, including basic auth username and
 passwords as well as certificate outputs will be stored in the raw state as
-plaintext. [Read more about sensitive data in state](https://www.terraform.io/language/state/sensitive-data).
+plaintext. [Read more about secrets in state](https://www.pulumi.com/docs/intro/concepts/programming-model/#secrets).
 
 ## Example Usage - with a separately managed node pool (recommended)
 
@@ -85,6 +79,25 @@ resource "google_container_cluster" "primary" {
     }
     tags = ["foo", "bar"]
   }
+  timeouts {
+    create = "30m"
+    update = "40m"
+  }
+}
+```
+
+## Example Usage - autopilot
+
+```hcl
+resource "google_service_account" "default" {
+  account_id   = "service-account-id"
+  display_name = "Service Account"
+}
+
+resource "google_container_cluster" "primary" {
+  name             = "marcellus-wallace"
+  location         = "us-central1-a"
+  enable_autopilot = true
   timeouts {
     create = "30m"
     update = "40m"
@@ -220,8 +233,7 @@ Structure is [documented below](#nested_master_auth).
     If unset, the cluster's version will be set by GKE to the version of the most recent
     official release (which is not necessarily the latest version).  Most users will find
     the `google_container_engine_versions` data source useful - it indicates which versions
-    are available, and can be use to approximate fuzzy versions in a
-    Terraform-compatible way. If you intend to specify versions manually,
+    are available. If you intend to specify versions manually,
     [the docs](https://cloud.google.com/kubernetes-engine/versioning-and-upgrades#specifying_cluster_version)
     describe the various acceptable formats for this field.
 
@@ -251,8 +263,11 @@ region are guaranteed to support the same version.
 * `node_config` -  (Optional) Parameters used in creating the default node pool.
     Generally, this field should not be used at the same time as a
     `google_container_node_pool` or a `node_pool` block; this configuration
-    manages the default node pool, which isn't recommended to be used with
-    Terraform. Structure is [documented below](#nested_node_config).
+    manages the default node pool, which isn't recommended to be used.
+    Structure is [documented below](#nested_node_config).
+
+* `network_config` -  (Optional) Configuration for
+   [Adding Pod IP address ranges](https://cloud.google.com/kubernetes-engine/docs/how-to/multi-pod-cidr)) to the node pool. Structure is [documented below](#nested_network_config)
 
 * `node_pool` - (Optional) List of node pools associated with this cluster.
     See [google_container_node_pool](container_node_pool.html) for schema.
@@ -271,9 +286,9 @@ region are guaranteed to support the same version.
     or set to the same value as `min_master_version` on create. Defaults to the default
     version set by GKE which is not necessarily the latest version. This only affects
     nodes in the default node pool. While a fuzzy version can be specified, it's
-    recommended that you specify explicit versions as Terraform will see spurious diffs
+    recommended that you specify explicit versions as the provider will see spurious diffs
     when fuzzy versions are used. See the `google_container_engine_versions` data source's
-    `version_prefix` field to approximate fuzzy versions in a Terraform-compatible way.
+    `version_prefix` field to approximate fuzzy versions.
     To update nodes in other node pools, use the `version` attribute on the node pool.
 
 * `notification_config` - (Optional) Configuration for the [cluster upgrade notifications](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-upgrade-notifications) feature. Structure is [documented below](#nested_notification_config).
@@ -291,7 +306,7 @@ region are guaranteed to support the same version.
 * `private_cluster_config` - (Optional) Configuration for [private clusters](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters),
 clusters with private nodes. Structure is [documented below](#nested_private_cluster_config).
 
-* `cluster_telemetry` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Configuration for
+* `cluster_telemetry` - (Optional) Configuration for
    [ClusterTelemetry](https://cloud.google.com/monitoring/kubernetes-engine/installing#controlling_the_collection_of_application_logs) feature,
    Structure is [documented below](#nested_cluster_telemetry).
 
@@ -305,7 +320,7 @@ When updating this field, GKE imposes specific version requirements. See
 [Selecting a new release channel](https://cloud.google.com/kubernetes-engine/docs/concepts/release-channels#selecting_a_new_release_channel)
 for more details; the `google_container_engine_versions` datasource can provide
 the default version for a channel. Note that removing the `release_channel`
-field from your config will cause Terraform to stop managing your cluster's
+field from your config will cause the provider to stop managing your cluster's
 release channel, but will not unenroll it. Instead, use the `"UNSPECIFIED"`
 channel. Structure is [documented below](#nested_release_channel).
 
@@ -339,7 +354,7 @@ subnetwork in which the cluster's instances are launched.
 * `enable_intranode_visibility` - (Optional)
     Whether Intra-node visibility is enabled for this cluster. This makes same node pod to pod traffic visible for VPC network.
 
-* `enable_l4_ilb_subsetting` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `enable_l4_ilb_subsetting` - (Optional)
     Whether L4ILB Subsetting is enabled for this cluster.
 
 * `private_ipv6_google_access` - (Optional)
@@ -397,10 +412,10 @@ subnetwork in which the cluster's instances are launched.
 
 * `cloudrun_config` - (Optional). Structure is [documented below](#nested_cloudrun_config).
 
-* `istio_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)).
+* `istio_config` - (Optional).
     Structure is [documented below](#nested_istio_config).
 
-* `identity_service_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)). Structure is [documented below](#nested_identity_service_config).
+* `identity_service_config` - (Optional). Structure is [documented below](#nested_identity_service_config).
 
 * `dns_cache_config` - (Optional).
     The status of the NodeLocal DNSCache addon. It is disabled by default.
@@ -415,7 +430,7 @@ subnetwork in which the cluster's instances are launched.
 *  `gke_backup_agent_config` -  (Optional).
     The status of the Backup for GKE agent addon. It is disabled by default; Set `enabled = true` to enable.
 
-* `kalm_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)).
+* `kalm_config` - (Optional).
     Configuration for the KALM addon, which manages the lifecycle of k8s. It is disabled by default; Set `enabled = true` to enable.
 
 *  `config_connector_config` -  (Optional).
@@ -489,7 +504,7 @@ in addition to node auto-provisioning. Structure is [documented below](#nested_r
 GKE Autopilot clusters.
 Structure is [documented below](#nested_auto_provisioning_defaults).
 
-* `autoscaling_profile` - (Optional, [Beta](https://terraform.io/docs/providers/google/provider_versions.html)) Configuration
+* `autoscaling_profile` - (Optional)) Configuration
 options for the [Autoscaling profile](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-autoscaler#autoscaling_profiles)
 feature, which lets you choose whether the cluster autoscaler should optimize for resource utilization or resource availability
 when deciding to remove nodes from a cluster. Can be `BALANCED` or `OPTIMIZE_UTILIZATION`. Defaults to `BALANCED`.
@@ -506,7 +521,7 @@ for a list of types.
 
 <a name="nested_auto_provisioning_defaults"></a>The `auto_provisioning_defaults` block supports:
 
-* `min_cpu_platform` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+* `min_cpu_platform` - (Optional)
 Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the
 specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such
 as "Intel Haswell" or "Intel Sandy Bridge".
@@ -790,8 +805,6 @@ gvnic {
 
 * `guest_accelerator` - (Optional) List of the type and count of accelerator cards attached to the instance.
     Structure [documented below](#nested_guest_accelerator).
-    To support removal of guest_accelerators in Terraform 0.12 this field is an
-    [Attribute as Block](/docs/configuration/attr-as-blocks.html)
 
 * `image_type` - (Optional) The image type to use for this node. Note that changing the image type
     will delete and recreate all nodes in the node pool.
@@ -812,7 +825,7 @@ gvnic {
 * `metadata` - (Optional) The metadata key/value pairs assigned to instances in
     the cluster. From GKE `1.12` onwards, `disable-legacy-endpoints` is set to
     `true` by the API; if `metadata` is set but that default value is not
-    included, Terraform will attempt to unset the value. To avoid this, set the
+    included, the provider will attempt to unset the value. To avoid this, set the
     value in your config.
 
 * `min_cpu_platform` - (Optional) Minimum CPU platform to be used by this instance.
@@ -837,10 +850,7 @@ gvnic {
     See the [official documentation](https://cloud.google.com/kubernetes-engine/docs/concepts/spot-vms)
     for more information. Defaults to false.
 
-* `sandbox_config` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) [GKE Sandbox](https://cloud.google.com/kubernetes-engine/docs/how-to/sandbox-pods) configuration. When enabling this feature you must specify `image_type = "COS_CONTAINERD"` and `node_version = "1.12.7-gke.17"` or later to use it.
-    Structure is [documented below](#nested_sandbox_config).
-
-* `boot_disk_kms_key` - (Optional) The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https://cloud.google.com/compute/docs/disks/customer-managed-encryption
+* `boot_disk_kms_key` - (Optional) The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: <https://cloud.google.com/compute/docs/disks/customer-managed-encryption>
 
 * `service_account` - (Optional) The service account to be used by the Node VMs.
     If not specified, the "default" service account is used.
@@ -853,7 +863,7 @@ gvnic {
 * `taint` - (Optional) A list of [Kubernetes taints](https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/)
 to apply to nodes. GKE's API can only set this field on cluster creation.
 However, GKE will add taints to your nodes if you enable certain features such
-as GPUs. If this field is set, any diffs on this field will cause Terraform to
+as GPUs. If this field is set, any diffs on this field will cause the provider to
 recreate the underlying resource. Taint values can be updated safely in
 Kubernetes (eg. through `kubectl`), and it's recommended that you do not use
 this field to manage taints. If you do, `lifecycle.ignore_changes` is
@@ -897,6 +907,14 @@ linux_node_config {
 <a name="nested_advanced_machine_features"></a>The `advanced_machine_features` block supports:
 
 * `threads_per_core` - (Required) The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.
+
+<a name="nested_network_config"></a>The `network_config` block supports:
+
+* `create_pod_range` - (Optional) Whether to create a new range for pod IPs in this node pool. Defaults are provided for `pod_range` and `pod_ipv4_cidr_block` if they are not specified.
+
+* `pod_ipv4_cidr_block` - (Optional) The IP address range for pod IPs in this node pool. Only applicable if createPodRange is true. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0/14) to pick a specific range to use.
+
+* `pod_range` - (Optional) The ID of the secondary range for pod IPs. If `create_pod_range` is true, this ID is used for the new range. If `create_pod_range` is false, uses an existing secondary range with this ID.
 
 <a name="nested_ephemeral_storage_config"></a>The `ephemeral_storage_config` block supports:
 
@@ -1027,7 +1045,7 @@ for more details. This field only applies to private clusters, when
 `enable_private_nodes` is `true`.
 
 * `master_global_access_config` (Optional) - Controls cluster master global
-access settings. If unset, Terraform will no longer manage this field and will
+access settings. If unset, the provider will no longer manage this field and will
 not modify the previously-set value. Structure is [documented below](#nested_master_global_access_config).
 
 In addition, the `private_cluster_config` allows access to the following read-only fields:
@@ -1130,9 +1148,9 @@ Enables monitoring and attestation of the boot integrity of the instance. The at
 
 * `mode` (Required) How to expose the node metadata to the workload running on the node.
     Accepted values are:
-    * MODE_UNSPECIFIED: Not Set
-    * GCE_METADATA: Expose all Compute Engine metadata to pods.
-    * GKE_METADATA: Run the GKE Metadata Server on this node. The GKE Metadata Server exposes a metadata API to workloads that is compatible with the V1 Compute Metadata APIs exposed by the Compute Engine and App Engine Metadata Servers. This feature can only be enabled if [workload identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity) is enabled at the cluster level.
+  * UNSPECIFIED: Not Set
+  * GCE_METADATA: Expose all Compute Engine metadata to pods.
+  * GKE_METADATA: Run the GKE Metadata Server on this node. The GKE Metadata Server exposes a metadata API to workloads that is compatible with the V1 Compute Metadata APIs exposed by the Compute Engine and App Engine Metadata Servers. This feature can only be enabled if [workload identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity) is enabled at the cluster level.
 
 <a name="nested_kubelet_config"></a>The `kubelet_config` block supports:
 

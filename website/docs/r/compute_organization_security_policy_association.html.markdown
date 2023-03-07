@@ -21,9 +21,6 @@ description: |-
 
 An association for the OrganizationSecurityPolicy.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about OrganizationSecurityPolicyAssociation, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/beta/organizationSecurityPolicies/addAssociation)
@@ -36,13 +33,13 @@ To get more information about OrganizationSecurityPolicyAssociation, see:
 ```hcl
 resource "google_folder" "security_policy_target" {
   provider     = google-beta
-  display_name = "tf-test-secpol-%{random_suffix}"
+  display_name = "tf-test-secpol"
   parent       = "organizations/123456789"
 }
 
 resource "google_compute_organization_security_policy" "policy" {
   provider = google-beta
-  display_name = "tf-test%{random_suffix}"
+  display_name = "tf-test"
   parent       = google_folder.security_policy_target.name
 }
 
@@ -70,7 +67,7 @@ resource "google_compute_organization_security_policy_rule" "policy" {
 
 resource "google_compute_organization_security_policy_association" "policy" {
   provider = google-beta
-  name          = "tf-test%{random_suffix}"
+  name          = "tf-test"
   attachment_id = google_compute_organization_security_policy.policy.parent
   policy_id     = google_compute_organization_security_policy.policy.id
 }
