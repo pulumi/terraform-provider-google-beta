@@ -282,10 +282,10 @@ func changeFieldSchemaToForceNew(sch *schema.Schema) {
 	tpgresource.ChangeFieldSchemaToForceNew(sch)
 }
 
-// Deprecated: For backward compatibility generateUserAgentString is still working,
-// but all new code should use GenerateUserAgentString in the tpgresource package instead.
 func generateUserAgentString(d tpgresource.TerraformResourceData, currentUserAgent string) (string, error) {
-	return tpgresource.GenerateUserAgentString(d, currentUserAgent)
+	// we don't want to append the name of the module here as it doesn't make any sense to
+	// do this with the pulumi provider
+	return currentUserAgent, nil
 }
 
 // Deprecated: For backward compatibility snakeToPascalCase is still working,

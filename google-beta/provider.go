@@ -117,6 +117,19 @@ func Provider() *schema.Provider {
 				Optional: true,
 			},
 
+			"google_partner_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+
+			"disable_google_partner_name": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOOGLE_DISABLE_PARTNER_NAME",
+				}, nil),
+			},
+
 			"request_reason": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -1548,6 +1561,21 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 		BillingProject:      d.Get("billing_project").(string),
 		UserAgent:           p.UserAgent("terraform-provider-google-beta", version.ProviderVersion),
 	}
+
+	disablePartnerName := d.Get("disable_google_partner_name").(bool)
+	userSpecifiedPartnerName := d.Get("google_partner_name")
+
+	partnerString := ""
+	if !disablePartnerName {
+		if userSpecifiedPartnerName != "" {
+			partnerString = fmt.Sprintf("GPN:%s; ", userSpecifiedPartnerName)
+		} else {
+			partnerString = "GPN:Pulumi; "
+		}
+	}
+	userAgent := fmt.Sprintf("Pulumi/3.0 (%shttps://www.pulumi.com) pulumi-gcp/%s", partnerString, version.ProviderVersion)
+
+	config.UserAgent = userAgent
 
 	// opt in extension for adding to the User-Agent header
 	if ext := os.Getenv("GOOGLE_TERRAFORM_USERAGENT_EXTENSION"); ext != "" {
