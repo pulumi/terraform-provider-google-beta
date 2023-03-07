@@ -32,17 +32,16 @@ To get more information about Client, see:
 * How-to Guides
     * [Setting up IAP Client](https://cloud.google.com/iap/docs/authentication-howto)
 
-~> **Warning:** All arguments including the following potentially sensitive
-values will be stored in the raw state as plain text: `secret`.
-[Read more about sensitive data in state](https://www.terraform.io/language/state/sensitive-data).
+~> **Warning:** All arguments including `secret` will be stored in the raw
+state as plain-text.
 
 ## Example Usage - Iap Client
 
 
 ```hcl
 resource "google_project" "project" {
-  project_id = "tf-test%{random_suffix}"
-  name       = "tf-test%{random_suffix}"
+  project_id = "tf-test"
+  name       = "tf-test"
   org_id     = "123456789"
 }
 

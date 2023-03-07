@@ -93,7 +93,7 @@ The following arguments are supported:
 
 * `force_destroy` - (Optional, Default: false) When deleting a bucket, this
     boolean option will delete all contained objects. If you try to delete a
-    bucket that contains objects, Terraform will fail that run.
+    bucket that contains objects, the provider will fail that run.
 
 * `project` - (Optional) The ID of the project in which the resource belongs. If it
     is not provided, the provider project is used.
@@ -216,9 +216,9 @@ The following arguments are supported:
   until a relevant action has occurred which triggers its creation.
   You should use the [`google_storage_project_service_account`](/docs/providers/google/d/storage_project_service_account.html) data source to obtain the email
   address for the service account when configuring IAM policy on the Cloud KMS key.
-  This data source calls an API which creates the account if required, ensuring your Terraform applies cleanly and repeatedly irrespective of the
+  This data source calls an API which creates the account if required, ensuring your provider applies cleanly and repeatedly irrespective of the
   state of the project.
-  You should take care for race conditions when the same Terraform manages IAM policy on the Cloud KMS crypto key. See the data source page for more details.
+  You should take care for race conditions when the same provider manages IAM policy on the Cloud KMS crypto key. See the data source page for more details.
 
 <a name="nested_custom_placement_config"></a>The `custom_placement_config` block supports:
 
