@@ -43,8 +43,6 @@ To get more information about Disk, see:
 * How-to Guides
     * [Adding a persistent disk](https://cloud.google.com/compute/docs/disks/add-persistent-disk)
 
-~> **Warning:** All arguments including `disk_encryption_key.raw_key` and `disk_encryption_key.rsa_encrypted_key` will be stored in the raw
-state as plain-text. [Read more about sensitive data in state](https://www.terraform.io/language/state/sensitive-data).
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=disk_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -104,7 +102,7 @@ The following arguments are supported:
   If you specify this field along with `image` or `snapshot`,
   the value must not be less than the size of the image
   or the size of the snapshot.
-  ~>**NOTE** If you change the size, Terraform updates the disk size
+  ~>**NOTE** If you change the size, the provider updates the disk size
   if upsizing is detected but recreates the disk if downsizing is requested.
   You can add `lifecycle.prevent_destroy` in the config to prevent destroying
   and recreating.
@@ -118,7 +116,7 @@ The following arguments are supported:
   the supported values for the caller's project.
 
 * `interface` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI.
 
 * `source_disk` -
@@ -150,16 +148,16 @@ The following arguments are supported:
   These images can be referred by family name here.
 
 * `resource_policies` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Resource policies applied to this disk for automatic snapshot creations.
   ~>**NOTE** This value does not support updating the
   resource policy, as resource policies can not be updated more than
   one at a time. Use
-  [`google_compute_disk_resource_policy_attachment`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_disk_resource_policy_attachment)
+  `google_compute_disk_resource_policy_attachment`
   to allow for updating the resource policy attached to the disk.
 
 * `multi_writer` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Indicates whether or not the disk can be read/write attached to more than one instance.
 
 * `provisioned_iops` -

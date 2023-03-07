@@ -65,22 +65,41 @@ resource "google_certificate_manager_dns_authorization" "instance2" {
 }
 ```
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
-  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=certificate_manager_self_managed_certificate&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
+  <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=certificate_manager_certificate_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
-## Example Usage - Certificate Manager Self Managed Certificate
+## Example Usage - Certificate Manager Certificate Basic
 
 
 ```hcl
 resource "google_certificate_manager_certificate" "default" {
-  name        = "self-managed-cert"
+  name        = "dns-cert"
   description = "The default cert"
   scope       = "EDGE_CACHE"
-  self_managed {
-    pem_certificate = file("test-fixtures/certificatemanager/cert.pem")
-    pem_private_key = file("test-fixtures/certificatemanager/private-key.pem")
+  managed {
+    domains = [
+      google_certificate_manager_dns_authorization.instance.domain,
+      google_certificate_manager_dns_authorization.instance2.domain,
+      ]
+    dns_authorizations = [
+      google_certificate_manager_dns_authorization.instance.id,
+      google_certificate_manager_dns_authorization.instance2.id,
+      ]
   }
+}
+
+
+resource "google_certificate_manager_dns_authorization" "instance" {
+  name        = "dns-auth"
+  description = "The default dnss"
+  domain      = "subdomain.hashicorptest.com"
+}
+
+resource "google_certificate_manager_dns_authorization" "instance2" {
+  name        = "dns-auth2"
+  description = "The default dnss"
+  domain      = "subdomain2.hashicorptest.com"
 }
 ```
 
@@ -151,6 +170,7 @@ The following arguments are supported:
   (Optional)
   The certificate chain in PEM-encoded form.
   Leaf certificate comes first, followed by intermediate ones if any.
+  **Note**: This property is sensitive and will not be displayed in the plan.
 
 * `pem_private_key` -
   (Optional)

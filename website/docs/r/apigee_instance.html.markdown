@@ -60,7 +60,7 @@ resource "google_apigee_organization" "apigee_org" {
 }
 
 resource "google_apigee_instance" "apigee_instance" {
-  name     = "tf-test%{random_suffix}"
+  name     = "tf-test"
   location = "us-central1"
   org_id   = google_apigee_organization.apigee_org.id
 }
@@ -97,7 +97,7 @@ resource "google_apigee_organization" "apigee_org" {
 }
 
 resource "google_apigee_instance" "apigee_instance" {
-  name     = "tf-test%{random_suffix}"
+  name     = "tf-test"
   location = "us-central1"
   org_id   = google_apigee_organization.apigee_org.id
   peering_cidr_range = "SLASH_22"
@@ -135,7 +135,7 @@ resource "google_apigee_organization" "apigee_org" {
 }
 
 resource "google_apigee_instance" "apigee_instance" {
-  name     = "tf-test%{random_suffix}"
+  name     = "tf-test"
   location = "us-central1"
   org_id   = google_apigee_organization.apigee_org.id
   ip_range = "10.87.8.0/22"
@@ -197,7 +197,7 @@ resource "google_kms_crypto_key_iam_binding" "apigee_sa_keyuser" {
 resource "google_apigee_organization" "apigee_org" {
   analytics_region                     = "us-central1"
   display_name                         = "apigee-org"
-  description                          = "Terraform-provisioned Apigee Org."
+  description                          = "Auto-provisioned Apigee Org."
   project_id                           = data.google_client_config.current.project
   authorized_network                   = google_compute_network.apigee_network.id
   runtime_database_encryption_key_name = google_kms_crypto_key.apigee_key.id
@@ -209,10 +209,10 @@ resource "google_apigee_organization" "apigee_org" {
 }
 
 resource "google_apigee_instance" "apigee_instance" {
-  name                     = "tf-test%{random_suffix}"
+  name                     = "tf-test"
   location                 = "us-central1"
-  description              = "Terraform-managed Apigee Runtime Instance"
-  display_name             = "tf-test%{random_suffix}"
+  description	             = "Auto-managed Apigee Runtime Instance"
+  display_name             = "tf-test"
   org_id                   = google_apigee_organization.apigee_org.id
   disk_encryption_key_name = google_kms_crypto_key.apigee_key.id
 }
