@@ -573,8 +573,13 @@ func resourceBigQueryDatasetRead(d *schema.ResourceData, meta interface{}) error
 	if err := d.Set("default_encryption_configuration", flattenBigQueryDatasetDefaultEncryptionConfiguration(res["defaultEncryptionConfiguration"], d, config)); err != nil {
 		return fmt.Errorf("Error reading Dataset: %s", err)
 	}
-	if err := d.Set("self_link", ConvertSelfLinkToV1(res["selfLink"].(string))); err != nil {
-		return fmt.Errorf("Error reading Dataset: %s", err)
+	if res["selfLink"] != nil {
+		if err := d.Set("self_link", ConvertSelfLinkToV1(res["selfLink"].(string))); err != nil {
+			return fmt.Errorf("Error reading Dataset: %s", err)
+		}
+	} else {
+		// we don't have a self_link so we set an empty string
+		d.Set("self_link", "")
 	}
 
 	return nil
