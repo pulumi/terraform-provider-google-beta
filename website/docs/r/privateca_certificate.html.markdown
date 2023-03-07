@@ -23,7 +23,7 @@ description: |-
 A Certificate corresponds to a signed X.509 certificate issued by a Certificate.
 
 
-~> **Note:** The Certificate Authority that is referenced by this resource **must** be 
+~> **Note:** The Certificate Authority that is referenced by this resource **must** be
 `tier = "ENTERPRISE"`
 
 
@@ -722,7 +722,7 @@ In addition to the arguments listed above, the following computed attributes are
   The resource name of the issuing CertificateAuthority in the format `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
 
 * `revocation_details` -
-  Output only. Details regarding the revocation of this Certificate. This Certificate is 
+  Output only. Details regarding the revocation of this Certificate. This Certificate is
   considered revoked if and only if this field is present.
   Structure is [documented below](#nested_revocation_details).
 

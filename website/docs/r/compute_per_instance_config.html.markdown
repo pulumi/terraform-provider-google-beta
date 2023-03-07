@@ -23,7 +23,6 @@ description: |-
 A config defined for a single managed instance that belongs to an instance group manager. It preserves the instance name
 across instance group manager operations and can define stateful disks or metadata that are unique to the instance.
 
-
 To get more information about PerInstanceConfig, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/v1/instanceGroupManagers)

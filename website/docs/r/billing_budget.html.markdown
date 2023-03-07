@@ -22,7 +22,6 @@ description: |-
 
 Budget configuration for a billing account.
 
-
 To get more information about Budget, see:
 
 * [API documentation](https://cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets)
@@ -71,7 +70,7 @@ data "google_project" "project" {
 resource "google_billing_budget" "budget" {
   billing_account = data.google_billing_account.account.id
   display_name = "Example Billing Budget"
-  
+
   budget_filter {
     projects = ["projects/${data.google_project.project.number}"]
   }
@@ -159,7 +158,7 @@ resource "google_billing_budget" "budget" {
     threshold_percent = 1.0
     spend_basis       = "FORECASTED_SPEND"
   }
-  
+
   all_updates_rule {
     monitoring_notification_channels = [
       google_monitoring_notification_channel.notification_channel.id,
@@ -171,7 +170,7 @@ resource "google_billing_budget" "budget" {
 resource "google_monitoring_notification_channel" "notification_channel" {
   display_name = "Example Notification Channel"
   type         = "email"
-  
+
   labels = {
     email_address = "address@example.com"
   }

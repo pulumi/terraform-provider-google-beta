@@ -128,6 +128,7 @@ resource "google_cloud_run_service" "default" {
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
+
 ## Example Usage - Cloud Run Service Sql
 
 
@@ -165,6 +166,7 @@ resource "google_sql_database_instance" "instance" {
   deletion_protection  = "true"
 }
 ```
+
 ## Example Usage - Cloud Run Service Noauth
 
 

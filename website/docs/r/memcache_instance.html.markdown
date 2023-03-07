@@ -22,7 +22,6 @@ description: |-
 
 A Google Cloud Memcache instance.
 
-
 To get more information about Instance, see:
 
 * [API documentation](https://cloud.google.com/memorystore/docs/memcached/reference/rest/v1/projects.locations.instances)

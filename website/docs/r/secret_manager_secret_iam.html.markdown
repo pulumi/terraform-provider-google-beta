@@ -29,9 +29,6 @@ Three different resources help you manage your IAM policy for Secret Manager Sec
 
 ~> **Note:** `google_secret_manager_secret_iam_binding` resources **can be** used in conjunction with `google_secret_manager_secret_iam_member` resources **only if** they do not grant privilege to the same role.
 
-
-
-
 ## google\_secret\_manager\_secret\_iam\_policy
 
 ```hcl

@@ -23,7 +23,6 @@ description: |-
 This represents the rollout state. This is part of the game server
 deployment.
 
-
 To get more information about GameServerDeploymentRollout, see:
 
 * [API documentation](https://cloud.google.com/game-servers/docs/reference/rest/v1beta/GameServerDeploymentRollout)

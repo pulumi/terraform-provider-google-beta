@@ -24,7 +24,6 @@ Represents a VPN gateway running in GCP. This virtual device is managed
 by Google, but used only by you. This type of VPN Gateway allows for the creation
 of VPN solutions with higher availability than classic Target VPN Gateways.
 
-
 To get more information about HaVpnGateway, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/v1/vpnGateways)

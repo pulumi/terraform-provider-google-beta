@@ -27,7 +27,6 @@ A Cloud AI Platform Notebook instance.
 in this resource do not properly detect drift. These fields will also not
 appear in state once imported.
 
-
 To get more information about Instance, see:
 
 * [API documentation](https://cloud.google.com/ai-platform/notebooks/docs/reference/rest)

@@ -24,7 +24,6 @@ description: |-
 A policy is a collection of DNS rules applied to one or more Virtual
 Private Cloud resources.
 
-
 To get more information about Policy, see:
 
 * [API documentation](https://cloud.google.com/dns/docs/reference/v1beta2/policies)
@@ -36,6 +35,7 @@ To get more information about Policy, see:
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
+
 ## Example Usage - Dns Policy Basic
 
 

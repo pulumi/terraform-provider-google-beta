@@ -26,12 +26,9 @@ balancing. Global forwarding rules can only be used for HTTP load
 balancing.
 
 For more information, see
-https://cloud.google.com/compute/docs/load-balancing/http/
-
-
+<https://cloud.google.com/compute/docs/load-balancing/http/>
 
 ## Example Usage - External Ssl Proxy Lb Mig Backend
-
 
 ```hcl
 # External SSL proxy load balancer with managed instance group backend
@@ -220,13 +217,13 @@ resource "google_compute_firewall" "default" {
   target_tags = ["allow-health-check"]
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=external_tcp_proxy_lb_mig_backend&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
 ## Example Usage - External Tcp Proxy Lb Mig Backend
-
 
 ```hcl
 # External TCP proxy load balancer with managed instance group backend
@@ -373,13 +370,13 @@ resource "google_compute_firewall" "default" {
   target_tags = ["allow-health-check"]
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=external_http_lb_mig_backend_custom_header&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
 ## Example Usage - External Http Lb Mig Backend Custom Header
-
 
 ```hcl
 # External HTTP load balancer with a CDN-enabled managed instance group backend
@@ -538,13 +535,13 @@ resource "google_compute_firewall" "default" {
   target_tags = ["allow-health-check"]
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=global_forwarding_rule_http&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
 ## Example Usage - Global Forwarding Rule Http
-
 
 ```hcl
 resource "google_compute_global_forwarding_rule" "default" {
@@ -596,13 +593,13 @@ resource "google_compute_http_health_check" "default" {
   timeout_sec        = 1
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=global_forwarding_rule_internal&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
 ## Example Usage - Global Forwarding Rule Internal
-
 
 ```hcl
 resource "google_compute_global_forwarding_rule" "default" {
@@ -713,13 +710,13 @@ resource "google_compute_health_check" "default" {
   }
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=global_forwarding_rule_external_managed&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
 ## Example Usage - Global Forwarding Rule External Managed
-
 
 ```hcl
 resource "google_compute_global_forwarding_rule" "default" {
@@ -764,13 +761,13 @@ resource "google_compute_backend_service" "default" {
   load_balancing_scheme = "EXTERNAL_MANAGED"
 }
 ```
+
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=global_forwarding_rule_hybrid&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
 ## Example Usage - Global Forwarding Rule Hybrid
-
 
 ```hcl
 // Roughly mirrors https://cloud.google.com/load-balancing/docs/https/setting-up-ext-https-hybrid
@@ -904,8 +901,10 @@ resource "google_compute_global_forwarding_rule" "default" {
   port_range = "80"
 }
 ```
+
 ## Example Usage - Private Service Connect Google Apis
 
+## Example Usage - Private Service Connect Google Apis
 
 ```hcl
 resource "google_compute_network" "network" {
@@ -950,7 +949,6 @@ resource "google_compute_global_forwarding_rule" "default" {
 
 The following arguments are supported:
 
-
 * `name` -
   (Required)
   Name of the resource; provided by the client when the resource is
@@ -970,9 +968,7 @@ The following arguments are supported:
   For global address with a purpose of PRIVATE_SERVICE_CONNECT and
   addressType of INTERNAL, only "all-apis" and "vpc-sc" are valid.
 
-
 - - -
-
 
 * `description` -
   (Optional)
@@ -1075,7 +1071,6 @@ The following arguments are supported:
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.
 
-
 <a name="nested_metadata_filters"></a>The `metadata_filters` block supports:
 
 * `filter_match_criteria` -
@@ -1094,7 +1089,6 @@ The following arguments are supported:
   provided metadata based on filterMatchCriteria
   This list must not be empty and can have at the most 64 entries.
   Structure is [documented below](#nested_filter_labels).
-
 
 <a name="nested_filter_labels"></a>The `filter_labels` block supports:
 
@@ -1120,25 +1114,23 @@ In addition to the arguments listed above, the following computed attributes are
   internally during updates.
 * `self_link` - The URI of the created resource.
 
-
 ## Timeouts
 
 This resource provides the following
 [customTimeouts](https://www.pulumi.com/docs/intro/concepts/programming-model/#customtimeouts) configuration options:
 
-- `create` - Default is 20 minutes.
-- `update` - Default is 20 minutes.
-- `delete` - Default is 20 minutes.
+* `create` - Default is 20 minutes.
+* `update` - Default is 20 minutes.
+* `delete` - Default is 20 minutes.
 
 ## Import
-
 
 GlobalForwardingRule can be imported using any of these accepted formats:
 
 ```
-$ terraform import google_compute_global_forwarding_rule.default projects/{{project}}/global/forwardingRules/{{name}}
-$ terraform import google_compute_global_forwarding_rule.default {{project}}/{{name}}
-$ terraform import google_compute_global_forwarding_rule.default {{name}}
+terraform import google_compute_global_forwarding_rule.default projects/{{project}}/global/forwardingRules/{{name}}
+terraform import google_compute_global_forwarding_rule.default {{project}}/{{name}}
+terraform import google_compute_global_forwarding_rule.default {{name}}
 ```
 
 ## User Project Overrides

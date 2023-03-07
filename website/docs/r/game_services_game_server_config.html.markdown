@@ -22,7 +22,6 @@ description: |-
 
 A game server config resource. Configs are global and immutable.
 
-
 To get more information about GameServerConfig, see:
 
 * [API documentation](https://cloud.google.com/game-servers/docs/reference/rest/v1beta/projects.locations.gameServerDeployments.configs)

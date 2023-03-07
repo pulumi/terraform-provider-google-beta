@@ -375,9 +375,10 @@ subnetwork in which the cluster's instances are launched.
 
 <a name="nested_default_snat_status"></a>The `default_snat_status` block supports
 
-*  `disabled` - (Required) Whether the cluster disables default in-node sNAT rules. In-node sNAT rules will be disabled when defaultSnatStatus is disabled.When disabled is set to false, default IP masquerade rules will be applied to the nodes to prevent sNAT on cluster internal traffic
+* `disabled` - (Required) Whether the cluster disables default in-node sNAT rules. In-node sNAT rules will be disabled when defaultSnatStatus is disabled.When disabled is set to false, default IP masquerade rules will be applied to the nodes to prevent sNAT on cluster internal traffic
 
 <a name="nested_cluster_telemetry"></a>The `cluster_telemetry` block supports
+
 * `type` - Telemetry integration for the cluster. Supported values (`ENABLED, DISABLED, SYSTEM_ONLY`);
    `SYSTEM_ONLY` (Only system components are monitored and logged) is only available in GKE versions 1.15 and later.
 
@@ -592,6 +593,7 @@ This block also contains several computed attributes, documented below.
 * `enabled` - (Required) Whether or not the managed collection is enabled.
 
 <a name="nested_maintenance_policy"></a>The `maintenance_policy` block supports:
+
 * `daily_maintenance_window` - (Optional) structure documented below.
 * `recurring_window` - (Optional) structure documented below
 * `maintenance_exclusion` - (Optional) structure documented below
@@ -603,6 +605,7 @@ In beta, one or the other of `recurring_window` and `daily_maintenance_window` i
     where HH : \[00-23\] and MM : \[00-59\] GMT. For example:
 
 Examples:
+
 ```hcl
 maintenance_policy {
   daily_maintenance_window {
@@ -619,6 +622,7 @@ the initial date that the window starts, and the end time is used for calculatin
 Note that GKE may accept other formats, but will return values in UTC, causing a permanent diff.
 
 Examples:
+
 ```
 maintenance_policy {
   recurring_window {
@@ -770,13 +774,11 @@ gcfs_config {
 }
 ```
 
-
 * `gvnic` - (Optional) Google Virtual NIC (gVNIC) is a virtual network interface.
     Installing the gVNIC driver allows for more efficient traffic transmission across the Google network infrastructure.
     gVNIC is an alternative to the virtIO-based ethernet driver. GKE nodes must use a Container-Optimized OS node image.
     GKE node version 1.15.11-gke.15 or later
     Structure is [documented below](#nested_gvnic).
-
 
 ```hcl
 gvnic {
@@ -1049,16 +1051,16 @@ not.
 * `sandbox_type` (Required) Which sandbox to use for pods in the node pool.
     Accepted values are:
 
-    * `"gvisor"`: Pods run within a gVisor sandbox.
+  * `"gvisor"`: Pods run within a gVisor sandbox.
 
 <a name="nested_release_channel"></a>The `release_channel` block supports:
 
 * `channel` - (Required) The selected release channel.
     Accepted values are:
-    * UNSPECIFIED: Not set.
-    * RAPID: Weekly upgrade cadence; Early testers and developers who requires new features.
-    * REGULAR: Multiple per month upgrade cadence; Production users who need features not yet offered in the Stable channel.
-    * STABLE: Every few months upgrade cadence; Production users who need stability above all else, and for whom frequent upgrades are too risky.
+  * UNSPECIFIED: Not set.
+  * RAPID: Weekly upgrade cadence; Early testers and developers who requires new features.
+  * REGULAR: Multiple per month upgrade cadence; Production users who need features not yet offered in the Stable channel.
+  * STABLE: Every few months upgrade cadence; Production users who need stability above all else, and for whom frequent upgrades are too risky.
 
 <a name="nested_cost_management_config"></a>The `cost_management_config` block supports:
 
@@ -1203,10 +1205,10 @@ exported:
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 40 minutes.
-- `read`   - Default is 40 minutes.
-- `update` - Default is 60 minutes.
-- `delete` - Default is 40 minutes.
+* `create` - Default is 40 minutes.
+* `read`   - Default is 40 minutes.
+* `update` - Default is 60 minutes.
+* `delete` - Default is 40 minutes.
 
 ## Import
 
@@ -1214,19 +1216,19 @@ GKE clusters can be imported using the `project` , `location`, and `name`. If th
 provider value will be used. Examples:
 
 ```
-$ terraform import google_container_cluster.mycluster projects/my-gcp-project/locations/us-east1-a/clusters/my-cluster
+terraform import google_container_cluster.mycluster projects/my-gcp-project/locations/us-east1-a/clusters/my-cluster
 
-$ terraform import google_container_cluster.mycluster my-gcp-project/us-east1-a/my-cluster
+terraform import google_container_cluster.mycluster my-gcp-project/us-east1-a/my-cluster
 
-$ terraform import google_container_cluster.mycluster us-east1-a/my-cluster
+terraform import google_container_cluster.mycluster us-east1-a/my-cluster
 ```
 
 ~> **Note:** This resource has several fields that control Terraform-specific behavior and aren't present in the API. If they are set in config and you import a cluster, Terraform may need to perform an update immediately after import. Most of these updates should be no-ops but some may modify your cluster if the imported state differs.
 
 For example, the following fields will show diffs if set in config:
 
-- `min_master_version`
-- `remove_default_node_pool`
+* `min_master_version`
+* `remove_default_node_pool`
 
 ## User Project Overrides
 

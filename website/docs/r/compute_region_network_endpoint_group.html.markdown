@@ -65,7 +65,7 @@ resource "google_storage_bucket" "bucket" {
   location = "US"
 }
 
-resource "google_storage_bucket_object" "archive" { 
+resource "google_storage_bucket_object" "archive" {
   name   = "index.zip"
   bucket = google_storage_bucket.bucket.name
   source = "path/to/index.zip"

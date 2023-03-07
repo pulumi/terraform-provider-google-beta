@@ -22,7 +22,6 @@ description: |-
 
 A configuration for an external identity provider.
 
-
 To get more information about WorkloadIdentityPoolProvider, see:
 
 * [API documentation](https://cloud.google.com/iam/docs/reference/rest/v1/projects.locations.workloadIdentityPools.providers)

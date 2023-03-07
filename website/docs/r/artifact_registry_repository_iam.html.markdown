@@ -31,7 +31,6 @@ Three different resources help you manage your IAM policy for Artifact Registry 
 
 
 
-
 ## google\_artifact\_registry\_repository\_iam\_policy
 
 ```hcl

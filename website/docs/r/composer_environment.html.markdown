@@ -44,6 +44,7 @@ Storage](https://cloud.google.com/composer/docs/concepts/cloud-storage).* Please
 ## Example Usage
 
 ### Basic Usage (Cloud Composer 1)
+
 ```hcl
 resource "google_composer_environment" "test" {
   name   = "example-composer-env"
@@ -52,6 +53,7 @@ resource "google_composer_environment" "test" {
 ```
 
 ### Basic Usage (Cloud Composer 2)
+
 ```hcl
 resource "google_composer_environment" "test" {
   name   = "example-composer-env"
@@ -240,6 +242,7 @@ resource "google_composer_environment" "test" {
   }
 }
 ```
+
 ## Argument Reference - Cloud Composer 1
 
 The following arguments are supported:
@@ -430,6 +433,7 @@ The following arguments are supported:
   Environment variable names must match the regular expression `[a-zA-Z_][a-zA-Z0-9_]*`.
   They cannot specify Apache Airflow software configuration overrides (they cannot match the regular expression
   `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`), and they cannot match any of the following reserved names:
+
   ```
   AIRFLOW_HOME
   C_FORCE_ROOT
@@ -578,6 +582,7 @@ The `web_server_network_access_control` supports:
   i.e. projects/project-id/locations/location/keyRings/keyring/cryptoKeys/key. Cannot be updated.
 
 <a name="nested_maintenance_window"></a>The `maintenance_window` block supports:
+
 * `start_time` -
   (Required)
   Start time of the first recurrence of the maintenance window.
@@ -594,6 +599,7 @@ The `web_server_network_access_control` supports:
   Example values: 'FREQ=WEEKLY;BYDAY=TU,WE', 'FREQ=DAILY'.
 
 <a name="nested_master_authorized_networks_config"></a>The `master_authorized_networks_config` block supports:
+
 * `enabled` -
   (Required)
   Whether or not master authorized networks is enabled.
@@ -753,6 +759,7 @@ The `software_config` block supports:
   Environment variable names must match the regular expression `[a-zA-Z_][a-zA-Z0-9_]*`.
   They cannot specify Apache Airflow software configuration overrides (they cannot match the regular expression
   `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`), and they cannot match any of the following reserved names:
+
   ```
   AIRFLOW_HOME
   C_FORCE_ROOT
@@ -788,8 +795,6 @@ The `software_config` block supports:
   `composer-1.16.x` to `composer-1.17.x`, or from `airflow-2.1.x` to `airflow-2.2.x`. You cannot upgrade between
   major Cloud Composer or Apache Airflow versions (from `1.x.x` to `2.x.x`). To do so, create a new environment.
 
-
-
 See [documentation](https://cloud.google.com/composer/docs/how-to/managing/configuring-private-ip) for setting up private environments. The `private_environment_config` block supports:
 
 * `enable_private_endpoint` -
@@ -822,7 +827,6 @@ See [documentation](https://cloud.google.com/composer/docs/how-to/managing/confi
   to Cloud SQL in the Tenant Project, and the PSC endpoint in the Customer Project will use an IP
   address from this subnetwork. This field is supported for Cloud Composer environments in
   versions `composer-2.*.*-airflow-*.*.*` and newer.
-
 
 The `ip_allocation_policy` block supports:
 
@@ -1019,16 +1023,16 @@ In addition to the arguments listed above, the following computed attributes are
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 60 minutes.
-- `update` - Default is 60 minutes.
-- `delete` - Default is 6 minutes.
+* `create` - Default is 60 minutes.
+* `update` - Default is 60 minutes.
+* `delete` - Default is 6 minutes.
 
 ## Import
 
 Environment can be imported using any of these accepted formats:
 
 ```
-$ terraform import google_composer_environment.default projects/{{project}}/locations/{{region}}/environments/{{name}}
-$ terraform import google_composer_environment.default {{project}}/{{region}}/{{name}}
-$ terraform import google_composer_environment.default {{name}}
+terraform import google_composer_environment.default projects/{{project}}/locations/{{region}}/environments/{{name}}
+terraform import google_composer_environment.default {{project}}/{{region}}/{{name}}
+terraform import google_composer_environment.default {{name}}
 ```

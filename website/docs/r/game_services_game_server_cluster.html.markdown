@@ -22,7 +22,6 @@ description: |-
 
 A game server cluster resource.
 
-
 To get more information about GameServerCluster, see:
 
 * [API documentation](https://cloud.google.com/game-servers/docs/reference/rest/v1beta/projects.locations.realms.gameServerClusters)
@@ -39,7 +38,7 @@ To get more information about GameServerCluster, see:
 
 ```hcl
 resource "google_game_services_game_server_cluster" "default" {
-    
+
   cluster_id = ""
   realm_id   = google_game_services_realm.default.realm_id
 

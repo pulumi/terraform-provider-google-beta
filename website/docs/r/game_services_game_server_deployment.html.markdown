@@ -22,7 +22,6 @@ description: |-
 
 A game server deployment resource.
 
-
 To get more information about GameServerDeployment, see:
 
 * [API documentation](https://cloud.google.com/game-servers/docs/reference/rest/v1beta/projects.locations.gameServerDeployments)

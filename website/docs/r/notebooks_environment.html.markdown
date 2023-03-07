@@ -22,7 +22,6 @@ description: |-
 
 A Cloud AI Platform Notebook environment.
 
-
 To get more information about Environment, see:
 
 * [API documentation](https://cloud.google.com/ai-platform/notebooks/docs/reference/rest)
@@ -43,7 +42,7 @@ resource "google_notebooks_environment" "environment" {
   location = "us-west1-a"  
   container_image {
     repository = "gcr.io/deeplearning-platform-release/base-cpu"
-  } 
+  }
 }
 ```
 

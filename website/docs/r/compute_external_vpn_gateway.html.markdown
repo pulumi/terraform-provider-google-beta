@@ -22,7 +22,6 @@ description: |-
 
 Represents a VPN gateway managed outside of GCP.
 
-
 To get more information about ExternalVpnGateway, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/v1/externalVpnGateways)

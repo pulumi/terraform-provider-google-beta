@@ -22,7 +22,6 @@ description: |-
 
 A Secret is a logical secret whose value and versions can be accessed.
 
-
 To get more information about Secret, see:
 
 * [API documentation](https://cloud.google.com/secret-manager/docs/reference/rest/v1/projects.secrets)
@@ -32,13 +31,14 @@ To get more information about Secret, see:
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
+
 ## Example Usage - Secret Config Basic
 
 
 ```hcl
 resource "google_secret_manager_secret" "secret-basic" {
   secret_id = "secret"
-  
+
   labels = {
     label = "my-label"
   }

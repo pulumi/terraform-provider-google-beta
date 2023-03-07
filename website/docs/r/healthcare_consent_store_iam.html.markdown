@@ -29,9 +29,6 @@ Three different resources help you manage your IAM policy for Cloud Healthcare C
 
 ~> **Note:** `google_healthcare_consent_store_iam_binding` resources **can be** used in conjunction with `google_healthcare_consent_store_iam_member` resources **only if** they do not grant privilege to the same role.
 
-
-
-
 ## google\_healthcare\_consent\_store\_iam\_policy
 
 ```hcl

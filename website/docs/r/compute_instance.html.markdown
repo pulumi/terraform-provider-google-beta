@@ -159,7 +159,7 @@ is desired, you will need to modify your state file.
 * `tags` - (Optional) A list of network tags to attach to the instance.
 
 * `shielded_instance_config` - (Optional) Enable [Shielded VM](https://cloud.google.com/security/shielded-cloud/shielded-vm) on this instance. Shielded VM provides verifiable integrity to prevent against malware and rootkits. Defaults to disabled. Structure is [documented below](#nested_shielded_instance_config).
-	**Note**: [`shielded_instance_config`](#shielded_instance_config) can only be used with boot images with shielded vm support. See the complete list [here](https://cloud.google.com/compute/docs/images#shielded-images).
+ **Note**: [`shielded_instance_config`](#shielded_instance_config) can only be used with boot images with shielded vm support. See the complete list [here](https://cloud.google.com/compute/docs/images#shielded-images).
   **Note**: [`allow_stopping_for_update`](#allow_stopping_for_update) must be set to true or your instance must have a `desired_status` of `TERMINATED` in order to update this field.
 
 * `enable_display` - (Optional) Enable [Virtual Displays](https://cloud.google.com/compute/docs/instances/enable-instance-virtual-display#verify_display_driver) on this instance.
@@ -195,7 +195,7 @@ is desired, you will need to modify your state file.
   or `READ_ONLY`. If not specified, the default is to attach the disk in `READ_WRITE` mode.
 
 * `disk_encryption_key_raw` - (Optional) A 256-bit [customer-supplied encryption key]
-    (https://cloud.google.com/compute/docs/disks/customer-supplied-encryption),
+    (<https://cloud.google.com/compute/docs/disks/customer-supplied-encryption>),
     encoded in [RFC 4648 base64](https://tools.ietf.org/html/rfc4648#section-4)
     to encrypt this disk. Only one of `kms_key_self_link` and `disk_encryption_key_raw`
     may be set.
@@ -249,7 +249,7 @@ is desired, you will need to modify your state file.
     attach it to one or more instances in read-only mode.
 
 * `disk_encryption_key_raw` - (Optional) A 256-bit [customer-supplied encryption key]
-    (https://cloud.google.com/compute/docs/disks/customer-supplied-encryption),
+    (<https://cloud.google.com/compute/docs/disks/customer-supplied-encryption>),
     encoded in [RFC 4648 base64](https://tools.ietf.org/html/rfc4648#section-4)
     to encrypt this disk. Only one of `kms_key_self_link` and `disk_encryption_key_raw` may be set.
 
@@ -268,7 +268,7 @@ is desired, you will need to modify your state file.
     Either `network` or `subnetwork` must be provided. If network isn't provided it will
     be inferred from the subnetwork.
 
-*  `subnetwork` - (Optional) The name or self_link of the subnetwork to attach this
+* `subnetwork` - (Optional) The name or self_link of the subnetwork to attach this
     interface to. Either `network` or `subnetwork` must be provided. If network isn't provided
     it will be inferred from the subnetwork. The subnetwork must exist in the same region this
     instance will be created in. If the network resource is in
@@ -276,7 +276,7 @@ is desired, you will need to modify your state file.
     network is in auto subnet mode, specifying the subnetwork is optional. If the network is
     in custom subnet mode, specifying the subnetwork is required.
 
-*  `subnetwork_project` - (Optional) The project in which the subnetwork belongs.
+* `subnetwork_project` - (Optional) The project in which the subnetwork belongs.
    If the `subnetwork` is a self_link, this field is ignored in favor of the project
    defined in the subnetwork self_link. If the `subnetwork` is a name and this
    field is not provided, the provider project is used.
@@ -286,8 +286,8 @@ is desired, you will need to modify your state file.
 
 * `access_config` - (Optional) Access configurations, i.e. IPs via which this
     instance can be accessed via the Internet. Omit to ensure that the instance
-    is not accessible from the Internet. If omitted, ssh provisioners will not
-    work unless Terraform can send traffic to the instance's network (e.g. via
+    is not accessible from the Internet. If omitted, ssh will not
+    work unless this provider can send traffic to the instance's network (e.g. via
     tunnel or because it is running on another cloud instance on that network).
     This block can be repeated multiple times. Structure [documented below](#nested_access_config).
 
@@ -304,7 +304,6 @@ Currently, only one IPv6 access config, DIRECT_IPV6, is supported. If there is n
 specified, then this instance will have no external IPv6 Internet access. Structure [documented below](#nested_ipv6_access_config).
 
 * `queue_count` - (Optional) The networking queue count that's specified by users for the network interface. Both Rx and Tx queues will be set to this number. It will be empty if not specified.
-
 
 <a name="nested_access_config"></a>The `access_config` block supports:
 
@@ -372,7 +371,7 @@ specified, then this instance will have no external IPv6 Internet access. Struct
 
 * `min_node_cpus` - (Optional) The minimum number of virtual CPUs this instance will consume when running on a sole-tenant node.
 
-* `provisioning_model` - (Optional) Describe the type of preemptible VM. This field accepts the value `STANDARD` or `SPOT`. If the value is `STANDARD`, there will be no discount. If this   is set to `SPOT`, 
+* `provisioning_model` - (Optional) Describe the type of preemptible VM. This field accepts the value `STANDARD` or `SPOT`. If the value is `STANDARD`, there will be no discount. If this   is set to `SPOT`,
     `preemptible` should be `true` and `auto_restart` should be
     `false`. For more info about
     `SPOT`, read [here](https://cloud.google.com/compute/docs/instances/spot)
@@ -477,38 +476,37 @@ The field is output only, an IPv6 address from a subnetwork associated with the 
 
 * `attached_disk.0.disk_encryption_key_sha256` - The [RFC 4648 base64](https://tools.ietf.org/html/rfc4648#section-4)
     encoded SHA-256 hash of the [customer-supplied encryption key]
-    (https://cloud.google.com/compute/docs/disks/customer-supplied-encryption) that protects this resource.
+    (<https://cloud.google.com/compute/docs/disks/customer-supplied-encryption>) that protects this resource.
 
 * `boot_disk.disk_encryption_key_sha256` - The [RFC 4648 base64](https://tools.ietf.org/html/rfc4648#section-4)
     encoded SHA-256 hash of the [customer-supplied encryption key]
-    (https://cloud.google.com/compute/docs/disks/customer-supplied-encryption) that protects this resource.
+    (<https://cloud.google.com/compute/docs/disks/customer-supplied-encryption>) that protects this resource.
 
 * `disk.0.disk_encryption_key_sha256` - The [RFC 4648 base64](https://tools.ietf.org/html/rfc4648#section-4)
     encoded SHA-256 hash of the [customer-supplied encryption key]
-    (https://cloud.google.com/compute/docs/disks/customer-supplied-encryption) that protects this resource.
+    (<https://cloud.google.com/compute/docs/disks/customer-supplied-encryption>) that protects this resource.
 
 ## Timeouts
 
 This resource provides the following
 [customTimeouts](https://www.pulumi.com/docs/intro/concepts/programming-model/#customtimeouts) configuration options:
 
-- `create` - Default is 20 minutes.
-- `update` - Default is 20 minutes.
-- `delete` - Default is 20 minutes.
+* `create` - Default is 20 minutes.
+* `update` - Default is 20 minutes.
+* `delete` - Default is 20 minutes.
 
 ## Import
 
 ~> **Note:** The fields `boot_disk.0.disk_encryption_raw` and `attached_disk.*.disk_encryption_key_raw` cannot be imported automatically. The API doesn't return this information. If you are setting one of these fields in your config, you will need to update your state manually after importing the resource.
 
--> **Note:** The `desired_status` field will not be set on import. If you have it set, Terraform will update the field on the next `terraform apply`, bringing your instance to the desired status.
-
+-> **Note:** The `desired_status` field will not be set on import. If you have it set, the provider will update the field on the next `pulumi update`, bringing your instance to the desired status.
 
 Instances can be imported using any of these accepted formats:
 
 ```
-$ terraform import google_compute_instance.default projects/{{project}}/zones/{{zone}}/instances/{{name}}
-$ terraform import google_compute_instance.default {{project}}/{{zone}}/{{name}}
-$ terraform import google_compute_instance.default {{name}}
+terraform import google_compute_instance.default projects/{{project}}/zones/{{zone}}/instances/{{name}}
+terraform import google_compute_instance.default {{project}}/{{zone}}/{{name}}
+terraform import google_compute_instance.default {{name}}
 ```
 
 [custom-vm-types]: https://cloud.google.com/dataproc/docs/concepts/compute/custom-machine-types

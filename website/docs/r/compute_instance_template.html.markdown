@@ -12,7 +12,6 @@ Manages a VM instance template resource within GCE. For more information see
 and
 [API](https://cloud.google.com/compute/docs/reference/latest/instanceTemplates).
 
-
 ## Example Usage
 
 ```hcl
@@ -353,7 +352,7 @@ The following arguments are supported:
 `Intel Haswell` or `Intel Skylake`. See the complete list [here](https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform).
 
 * `shielded_instance_config` - (Optional) Enable [Shielded VM](https://cloud.google.com/security/shielded-cloud/shielded-vm) on this instance. Shielded VM provides verifiable integrity to prevent against malware and rootkits. Defaults to disabled. Structure is [documented below](#nested_shielded_instance_config).
-	**Note**: [`shielded_instance_config`](#shielded_instance_config) can only be used with boot images with shielded vm support. See the complete list [here](https://cloud.google.com/compute/docs/images#shielded-images).
+ **Note**: [`shielded_instance_config`](#shielded_instance_config) can only be used with boot images with shielded vm support. See the complete list [here](https://cloud.google.com/compute/docs/images#shielded-images).
 
 * `enable_display` - (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html)) Enable [Virtual Displays](https://cloud.google.com/compute/docs/instances/enable-instance-virtual-display#verify_display_driver) on this instance.
 **Note**: [`allow_stopping_for_update`](#allow_stopping_for_update) must be set to true in order to update this field.
@@ -650,17 +649,17 @@ exported:
 This resource provides the following
 [Timeouts](/docs/configuration/resources.html#timeouts) configuration options:
 
-- `create` - Default is 4 minutes.
-- `delete` - Default is 4 minutes.
+* `create` - Default is 4 minutes.
+* `delete` - Default is 4 minutes.
 
 ## Import
 
 Instance templates can be imported using any of these accepted formats:
 
 ```
-$ terraform import google_compute_instance_template.default projects/{{project}}/global/instanceTemplates/{{name}}
-$ terraform import google_compute_instance_template.default {{project}}/{{name}}
-$ terraform import google_compute_instance_template.default {{name}}
+terraform import google_compute_instance_template.default projects/{{project}}/global/instanceTemplates/{{name}}
+terraform import google_compute_instance_template.default {{project}}/{{name}}
+terraform import google_compute_instance_template.default {{name}}
 ```
 
 [custom-vm-types]: https://cloud.google.com/dataproc/docs/concepts/compute/custom-machine-types

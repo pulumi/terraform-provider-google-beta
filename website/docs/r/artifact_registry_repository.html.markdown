@@ -22,7 +22,6 @@ description: |-
 
 A repository for storing artifacts
 
-
 To get more information about Repository, see:
 
 * [API documentation](https://cloud.google.com/artifact-registry/docs/reference/rest/v1/projects.locations.repositories)

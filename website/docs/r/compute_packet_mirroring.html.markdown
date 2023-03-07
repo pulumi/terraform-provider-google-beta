@@ -24,7 +24,6 @@ Packet Mirroring mirrors traffic to and from particular VM instances.
 You can use the collected traffic to help you detect security threats
 and monitor application performance.
 
-
 To get more information about PacketMirroring, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/v1/packetMirrorings)

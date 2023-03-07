@@ -27,7 +27,6 @@ managed by Google.
 For a resource where you provide the key, see the
 SSL Certificate resource.
 
-
 To get more information about ManagedSslCertificate, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/v1/sslCertificates)

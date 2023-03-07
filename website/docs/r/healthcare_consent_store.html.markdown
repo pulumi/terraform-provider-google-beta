@@ -22,7 +22,6 @@ description: |-
 
 The Consent Management API is a tool for tracking user consents and the documentation associated with the consents.
 
-
 To get more information about ConsentStore, see:
 
 * [API documentation](https://cloud.google.com/healthcare/docs/reference/rest/v1/projects.locations.datasets.consentStores)

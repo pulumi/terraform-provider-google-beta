@@ -22,8 +22,6 @@ description: |-
 
 A secret version resource.
 
-
-
 ~> **Warning:** All arguments including `payload.secret_data` will be stored in the raw
 state as plain-text.
 
@@ -32,13 +30,14 @@ state as plain-text.
     <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
   </a>
 </div>
+
 ## Example Usage - Secret Version Basic
 
 
 ```hcl
 resource "google_secret_manager_secret" "secret-basic" {
   secret_id = "secret-version"
-  
+
   labels = {
     label = "my-label"
   }

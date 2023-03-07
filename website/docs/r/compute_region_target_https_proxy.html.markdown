@@ -24,7 +24,6 @@ description: |-
 Represents a RegionTargetHttpsProxy resource, which is used by one or more
 forwarding rules to route incoming HTTPS requests to a URL map.
 
-
 To get more information about RegionTargetHttpsProxy, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/v1/regionTargetHttpsProxies)

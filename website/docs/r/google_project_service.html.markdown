@@ -7,7 +7,7 @@ description: |-
 
 # google\_project\_service
 
-Allows management of a single API service for a Google Cloud Platform project. 
+Allows management of a single API service for a Google Cloud Platform project.
 
 For a list of services available, visit the [API library page](https://console.cloud.google.com/apis/library)
 or run `gcloud services list --available`.
