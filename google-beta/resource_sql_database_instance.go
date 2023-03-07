@@ -1818,6 +1818,10 @@ func resourceSqlDatabaseInstanceImport(d *schema.ResourceData, meta interface{})
 }
 
 func flattenSettings(settings *sqladmin.Settings) []map[string]interface{} {
+	if settings == nil {
+		return nil
+	}
+
 	data := map[string]interface{}{
 		"version":                     settings.SettingsVersion,
 		"tier":                        settings.Tier,
@@ -1885,6 +1889,10 @@ func flattenSettings(settings *sqladmin.Settings) []map[string]interface{} {
 }
 
 func flattenBackupConfiguration(backupConfiguration *sqladmin.BackupConfiguration) []map[string]interface{} {
+	if backupConfiguration == nil {
+		return nil
+	}
+
 	data := map[string]interface{}{
 		"binary_log_enabled":             backupConfiguration.BinaryLogEnabled,
 		"enabled":                        backupConfiguration.Enabled,
@@ -1966,6 +1974,10 @@ func flattenDatabaseFlags(databaseFlags []*sqladmin.DatabaseFlags) []map[string]
 }
 
 func flattenIpConfiguration(ipConfiguration *sqladmin.IpConfiguration) interface{} {
+	if ipConfiguration == nil {
+		return nil
+	}
+
 	data := map[string]interface{}{
 		"ipv4_enabled":       ipConfiguration.Ipv4Enabled,
 		"private_network":    ipConfiguration.PrivateNetwork,
@@ -1998,6 +2010,10 @@ func flattenAuthorizedNetworks(entries []*sqladmin.AclEntry) interface{} {
 }
 
 func flattenLocationPreference(locationPreference *sqladmin.LocationPreference) interface{} {
+	if locationPreference == nil {
+		return nil
+	}
+
 	data := map[string]interface{}{
 		"follow_gae_application": locationPreference.FollowGaeApplication,
 		"zone":                   locationPreference.Zone,
@@ -2008,6 +2024,10 @@ func flattenLocationPreference(locationPreference *sqladmin.LocationPreference) 
 }
 
 func flattenMaintenanceWindow(maintenanceWindow *sqladmin.MaintenanceWindow) interface{} {
+	if maintenanceWindow == nil {
+		return nil
+	}
+
 	data := map[string]interface{}{
 		"day":          maintenanceWindow.Day,
 		"hour":         maintenanceWindow.Hour,
@@ -2082,6 +2102,10 @@ func flattenServerCaCerts(caCerts []*sqladmin.SslCert) []map[string]interface{} 
 }
 
 func flattenInsightsConfig(insightsConfig *sqladmin.InsightsConfig) interface{} {
+	if insightsConfig == nil {
+		return nil
+	}
+
 	data := map[string]interface{}{
 		"query_insights_enabled":  insightsConfig.QueryInsightsEnabled,
 		"query_string_length":     insightsConfig.QueryStringLength,
