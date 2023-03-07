@@ -38,4 +38,4 @@ The following arguments are supported:
 
 ## Attributes Reference
 
-See [google_runtimeconfig_variable](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/runtimeconfig_variable#argument-reference) resource for details of the available attributes.
+See google_runtimeconfig_variable resource for details of the available attributes.
