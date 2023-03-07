@@ -22,9 +22,6 @@ description: |-
 
 A rule for the OrganizationSecurityPolicy.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about OrganizationSecurityPolicyRule, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/beta/organizationSecurityPolicies/addRule)
@@ -37,7 +34,7 @@ To get more information about OrganizationSecurityPolicyRule, see:
 ```hcl
 resource "google_compute_organization_security_policy" "policy" {
   provider = google-beta
-  display_name = "tf-test%{random_suffix}"
+  display_name = "tf-test"
   parent       = "organizations/123456789"
 }
 

@@ -144,7 +144,7 @@ The following arguments are supported:
 
 
 * `network` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The URL of the network this target instance uses to forward traffic. If not specified, the traffic will be forwarded to the network that the default network interface belongs to.
 
 * `description` -

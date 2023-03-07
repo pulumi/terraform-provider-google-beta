@@ -43,15 +43,11 @@ To get more information about ManagedZone, see:
 ```hcl
 resource "google_dns_managed_zone" "example-zone" {
   name        = "example-zone"
-  dns_name    = "example-${random_id.rnd.hex}.com."
+  dns_name    = "my-domain.com."
   description = "Example DNS zone"
   labels = {
     foo = "bar"
   }
-}
-
-resource "random_id" "rnd" {
-  byte_length = 4
 }
 ```
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
@@ -93,8 +89,8 @@ resource "google_compute_network" "network-2" {
   auto_create_subnetworks = false
 }
 ```
-## Example Usage - Dns Managed Zone Private Forwarding
 
+## Example Usage - Dns Managed Zone Private Forwarding
 
 ```hcl
 resource "google_dns_managed_zone" "private-zone" {
@@ -331,13 +327,11 @@ The following arguments are supported:
   User assigned name for this resource.
   Must be unique within the project.
 
-
 - - -
-
 
 * `description` -
   (Optional)
-  A textual description field. Defaults to 'Managed by Terraform'.
+  A textual description field. Defaults to 'Managed by Pulumi'.
 
 * `dnssec_config` -
   (Optional)
@@ -375,13 +369,13 @@ The following arguments are supported:
   Structure is [documented below](#nested_peering_config).
 
 * `reverse_lookup` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Specifies if this is a managed reverse lookup zone. If true, Cloud DNS will resolve reverse
   lookup queries using automatically configured records for VPC resources. This only applies
   to networks listed under `private_visibility_config`.
 
 * `service_directory_config` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The presence of this field indicates that this zone is backed by Service Directory. The value of this field contains information related to the namespace associated with the zone.
   Structure is [documented below](#nested_service_directory_config).
 

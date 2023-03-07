@@ -1,4 +1,4 @@
----
++---
 subcategory: "Cloud Bigtable"
 page_title: "Google: google_bigtable_instance"
 description: |-
@@ -12,17 +12,6 @@ Creates a Google Bigtable instance. For more information see:
 * [API documentation](https://cloud.google.com/bigtable/docs/reference/admin/rest/v2/projects.instances.clusters)
 * How-to Guides
     * [Official Documentation](https://cloud.google.com/bigtable/docs)
-
-
--> **Note**: It is strongly recommended to set `lifecycle { prevent_destroy = true }`
-on instances in order to prevent accidental data loss. See
-[Terraform docs](https://www.terraform.io/docs/configuration/resources.html#prevent_destroy)
-for more information on lifecycle parameters.
-
--> **Note**: On newer versions of the provider, you must explicitly set `deletion_protection=false`
-(and run `terraform apply` to write the field to state) in order to destroy an instance.
-It is recommended to not set this field (or set it to true) until you're ready to destroy.
-
 
 ## Example Usage - Simple Instance
 
@@ -98,8 +87,8 @@ to default to the backend value. See [structure below](#nested_cluster).
 
 * `display_name` - (Optional) The human-readable display name of the Bigtable instance. Defaults to the instance `name`.
 
-* `deletion_protection` - (Optional) Whether or not to allow Terraform to destroy the instance. Unless this field is set to false
-in Terraform state, a `terraform destroy` or `terraform apply` that would delete the instance will fail.
+* `deletion_protection` - (Optional) Whether or not to allow this provider to destroy the instance. Unless this field is set to false
+in the statefile, a `pulumi destroy` or `pulumi up` that would delete the instance will fail.
 
 * `labels` - (Optional) A set of key/value label pairs to assign to the resource. Label keys must follow the requirements at https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements.
 
@@ -133,8 +122,10 @@ Required, with a minimum of `1` for each cluster in an instance.
 
 -> **Note**: Removing the field entirely from the config will cause the provider to default to the backend value.
 
+!> **Warning**: Modifying this field will cause the provider to delete/recreate the entire resource.
+
 !> **Warning:** Modifying the `storage_type`, `zone` or `kms_key_name` of an existing cluster (by
-`cluster_id`) will cause Terraform to delete/recreate the entire
+`cluster_id`) will cause the provider to delete/recreate the entire
 `google_bigtable_instance` resource. If these values are changing, use a new
 `cluster_id`.
 

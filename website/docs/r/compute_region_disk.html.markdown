@@ -45,7 +45,7 @@ To get more information about RegionDisk, see:
     * [Adding or Resizing Regional Persistent Disks](https://cloud.google.com/compute/docs/disks/regional-persistent-disk)
 
 ~> **Warning:** All arguments including `disk_encryption_key.raw_key` will be stored in the raw
-state as plain-text. [Read more about sensitive data in state](https://www.terraform.io/language/state/sensitive-data).
+state as plain-text.
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=region_disk_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -137,7 +137,7 @@ The following arguments are supported:
   create the disk. Provide this when creating the disk.
 
 * `interface` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI.
 
 * `source_disk` -
@@ -213,7 +213,7 @@ The following arguments are supported:
   RFC 4648 base64 to either encrypt or decrypt this resource.
 
 * `kms_key_name` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The name of the encryption key that is stored in Google Cloud KMS.
 
 * `sha256` -

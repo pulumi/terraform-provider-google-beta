@@ -28,7 +28,7 @@ Four different resources help you manage your IAM policy for a project. Each of 
    from anyone without organization-level access to the project. Proceed with caution.
    It's not recommended to use `google_project_iam_policy` with your provider project
    to avoid locking yourself out, and it should generally only be used with projects
-   fully managed by Terraform. If you do use this resource, it is recommended to **import** the policy before
+   fully managed by this provider. If you do use this resource, it is recommended to **import** the policy before
    applying the change.
 
 ```hcl
@@ -199,8 +199,8 @@ inferred from the provider.
 
 * `description` - (Optional) An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.
 
-~> **Warning:** Terraform considers the `role` and condition contents (`title`+`description`+`expression`) as the
-  identifier for the binding. This means that if any part of the condition is changed out-of-band, Terraform will
+~> **Warning:** This provider considers the `role` and condition contents (`title`+`description`+`expression`) as the
+  identifier for the binding. This means that if any part of the condition is changed out-of-band, the provider will
   consider it to be an entirely different resource and will treat it as such.
 
 ## Attributes Reference

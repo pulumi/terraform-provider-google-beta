@@ -30,7 +30,7 @@ There are many types of Dataflow jobs.  Some Dataflow jobs run constantly,
 getting new data from (e.g.) a GCS bucket, and outputting data continuously.
 Some jobs process a set amount of data then terminate. All jobs can fail while
 running due to programming errors or other issues. In this way, Dataflow jobs
-are different from most other Terraform / Google resources.
+are different from most other provider / Google resources.
 
 The Dataflow resource is considered 'existing' while it is in a nonterminal
 state.  If it reaches a terminal state (e.g. 'FAILED', 'COMPLETE',
@@ -43,7 +43,7 @@ A Dataflow job which is 'destroyed' may be "cancelled" or "drained".  If
 new data will be processed.  If "drained", no new data will enter the pipeline,
 but any data currently in the pipeline will finish being processed.  The default
 is "cancelled", but if a user sets `on_delete` to `"drain"` in the
-configuration, you may experience a long wait for your `terraform destroy` to
+configuration, you may experience a long wait for your `pulumi destroy` to
 complete.
 
 You can potentially short-circuit the wait by setting `skip_wait_on_job_termination`
@@ -95,13 +95,14 @@ such as `serviceAccount`, `workerMachineType`, etc can be specified here.
 
 * `labels` - (Optional) User labels to be specified for the job. Keys and values
 should follow the restrictions specified in the [labeling restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
-page. 
+page. **Note**: This field is marked as deprecated as the API does not currently
+support adding labels.
 **NOTE**: Google-provided Dataflow templates often provide default labels
 that begin with `goog-dataflow-provided`. Unless explicitly set in config, these
 labels will be ignored to prevent diffs on re-apply.
 
 * `on_delete` - (Optional) One of "drain" or "cancel". Specifies behavior of
-deletion during `terraform destroy`.  See above note.
+deletion during `pulumi destroy`.  See above note.
 
 * `skip_wait_on_job_termination` - (Optional)  If set to `true`, terraform will
 treat `DRAINING` and `CANCELLING` as terminal states when deleting the resource,

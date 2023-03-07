@@ -273,7 +273,7 @@ The following arguments are supported:
 
 * `region` -
   (Optional)
-  Region where the scheduler job resides. If it is not provided, Terraform will use the provider default.
+  Region where the scheduler job resides. If it is not provided, this provider will use the provider default.
 
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.

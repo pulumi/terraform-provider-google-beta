@@ -1261,7 +1261,7 @@ The following arguments are supported:
   Otherwise only allows from the local region the ILB is located at.
 
 * `labels` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Labels to apply to this forwarding rule.  A list of key->value pairs.
 
 * `all_ports` -

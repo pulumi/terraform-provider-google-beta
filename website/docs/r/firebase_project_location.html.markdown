@@ -29,9 +29,6 @@ GCP Project already has an App Engine application or defaultLocation.finalize wa
 specified locationId. Any new calls to defaultLocation.finalize with a different specified locationId will
 return a 409 error.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about ProjectLocation, see:
 
 * [API documentation](https://firebase.google.com/docs/reference/firebase-management/rest/v1beta1/projects.defaultLocation/finalize)
@@ -45,8 +42,8 @@ To get more information about ProjectLocation, see:
 resource "google_project" "default" {
   provider = google-beta
 
-  project_id = "tf-test%{random_suffix}"
-  name       = "tf-test%{random_suffix}"
+  project_id = "tf-test"
+  name       = "tf-test"
   org_id     = "123456789"
 }
 

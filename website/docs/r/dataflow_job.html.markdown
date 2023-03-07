@@ -24,44 +24,47 @@ resource "google_dataflow_job" "big_data_job" {
   }
 }
 ```
+
 ## Example Usage - Streaming Job
+
 ```hcl
 resource "google_pubsub_topic" "topic" {
-	name     = "dataflow-job1"
+ name     = "dataflow-job1"
 }
 resource "google_storage_bucket" "bucket1" {
-	name          = "tf-test-bucket1"
-	location      = "US"
-	force_destroy = true
+ name          = "tf-test-bucket1"
+ location      = "US"
+ force_destroy = true
 }
 resource "google_storage_bucket" "bucket2" {
-	name          = "tf-test-bucket2"
-	location      = "US"
-	force_destroy = true
+ name          = "tf-test-bucket2"
+ location      = "US"
+ force_destroy = true
 }
 resource "google_dataflow_job" "pubsub_stream" {
-	name = "tf-test-dataflow-job1"
-	template_gcs_path = "gs://my-bucket/templates/template_file"
-	temp_gcs_location = "gs://my-bucket/tmp_dir"
-	enable_streaming_engine = true
-	parameters = {
-	  inputFilePattern = "${google_storage_bucket.bucket1.url}/*.json"
-	  outputTopic    = google_pubsub_topic.topic.id
-	}
-	transform_name_mapping = {
-		name = "test_job"
-		env = "test"
-	}
-	on_delete = "cancel"
+ name = "tf-test-dataflow-job1"
+ template_gcs_path = "gs://my-bucket/templates/template_file"
+ temp_gcs_location = "gs://my-bucket/tmp_dir"
+ enable_streaming_engine = true
+ parameters = {
+   inputFilePattern = "${google_storage_bucket.bucket1.url}/*.json"
+   outputTopic    = google_pubsub_topic.topic.id
+ }
+ transform_name_mapping = {
+  name = "test_job"
+  env = "test"
+ }
+ on_delete = "cancel"
 }
 ```
 
 ## Note on "destroy" / "apply"
-There are many types of Dataflow jobs.  Some Dataflow jobs run constantly, getting new data from (e.g.) a GCS bucket, and outputting data continuously.  Some jobs process a set amount of data then terminate.  All jobs can fail while running due to programming errors or other issues.  In this way, Dataflow jobs are different from most other Terraform / Google resources.
+
+There are many types of Dataflow jobs.  Some Dataflow jobs run constantly, getting new data from (e.g.) a GCS bucket, and outputting data continuously.  Some jobs process a set amount of data then terminate.  All jobs can fail while running due to programming errors or other issues.  In this way, Dataflow jobs are different from most other Google resources.
 
 The Dataflow resource is considered 'existing' while it is in a nonterminal state.  If it reaches a terminal state (e.g. 'FAILED', 'COMPLETE', 'CANCELLED'), it will be recreated on the next 'apply'.  This is as expected for jobs which run continuously, but may surprise users who use this resource for other kinds of Dataflow jobs.
 
-A Dataflow job which is 'destroyed' may be "cancelled" or "drained".  If "cancelled", the job terminates - any data written remains where it is, but no new data will be processed.  If "drained", no new data will enter the pipeline, but any data currently in the pipeline will finish being processed.  The default is "drain". When `on_delete` is set to `"drain"` in the configuration, you may experience a long wait for your `terraform destroy` to complete.
+A Dataflow job which is 'destroyed' may be "cancelled" or "drained".  If "cancelled", the job terminates - any data written remains where it is, but no new data will be processed.  If "drained", no new data will enter the pipeline, but any data currently in the pipeline will finish being processed.  The default is "drain". When `on_delete` is set to `"drain"` in the configuration, you may experience a long wait for your `pulumi destroy` to complete.
 
 You can potentially short-circuit the wait by setting `skip_wait_on_job_termination` to `true`, but beware that unless you take active steps to ensure that the job `name` parameter changes between instances, the name will conflict and the launch of the new job will fail. One way to do this is with a [random_id](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) resource, for example:
 
@@ -107,8 +110,8 @@ The following arguments are supported:
    Unless explicitly set in config, these labels will be ignored to prevent diffs on re-apply.
 * `transform_name_mapping` - (Optional) Only applicable when updating a pipeline. Map of transform name prefixes of the job to be replaced with the corresponding name prefixes of the new job. This field is not used outside of update.
 * `max_workers` - (Optional) The number of workers permitted to work on the job.  More workers may improve processing speed at additional cost.
-* `on_delete` - (Optional) One of "drain" or "cancel".  Specifies behavior of deletion during `terraform destroy`.  See above note.
-* `skip_wait_on_job_termination` - (Optional)  If set to `true`, terraform will treat `DRAINING` and `CANCELLING` as terminal states when deleting the resource, and will remove the resource from terraform state and move on.  See above note.
+* `on_delete` - (Optional) One of "drain" or "cancel".  Specifies behavior of deletion during `pulumi destroy`.  See above note.
+* `skip_wait_on_job_termination` - (Optional)  If set to `true`, Pulumi will treat `DRAINING` and `CANCELLING` as terminal states when deleting the resource, and will remove the resource from Pulumi state and move on.  See above note.
 * `project` - (Optional) The project in which the resource belongs. If it is not provided, the provider project is used.
 * `zone` - (Optional) The zone in which the created job should run. If it is not provided, the provider zone is used.
 * `region` - (Optional) The region in which the created job should run.

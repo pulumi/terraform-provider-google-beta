@@ -13,7 +13,7 @@ Manages an organization-level logging exclusion. For more information see:
 * How-to Guides
     * [Excluding Logs](https://cloud.google.com/logging/docs/exclusions)
 
-~> You can specify exclusions for log sinks created by terraform by using the exclusions field of `google_logging_organization_sink`
+~> You can specify exclusions for log sinks created by the provider by using the exclusions field of `google_logging_organization_sink`
 
 ## Example Usage
 

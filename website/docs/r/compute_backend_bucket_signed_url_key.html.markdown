@@ -30,7 +30,7 @@ To get more information about BackendBucketSignedUrlKey, see:
     * [Using Signed URLs](https://cloud.google.com/cdn/docs/using-signed-urls/)
 
 ~> **Warning:** All arguments including `key_value` will be stored in the raw
-state as plain-text. [Read more about sensitive data in state](https://www.terraform.io/language/state/sensitive-data).
+state as plain-text.
 
 ## Example Usage - Backend Bucket Signed Url Key
 

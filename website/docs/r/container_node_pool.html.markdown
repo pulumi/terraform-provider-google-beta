@@ -7,14 +7,11 @@ description: |-
 
 # google\_container\_node\_pool
 
--> See the [Using GKE with Terraform](/docs/providers/google/guides/using_gke_with_terraform.html)
-guide for more information about using GKE with Terraform.
-
 Manages a node pool in a Google Kubernetes Engine (GKE) cluster separately from
 the cluster control plane. For more information see [the official documentation](https://cloud.google.com/container-engine/docs/node-pools)
 and [the API reference](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters.nodePools).
 
-### Example Usage - using a separately managed node pool (recommended)
+## Example Usage - using a separately managed node pool (recommended)
 
 ```hcl
 resource "google_service_account" "default" {
@@ -51,7 +48,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 }
 ```
 
-### Example Usage - 2 node pools, 1 separately managed + the default node pool
+## Example Usage - 2 node pools, 1 separately managed + the default node pool
 
 ```hcl
 resource "google_service_account" "default" {
@@ -116,9 +113,9 @@ resource "google_container_cluster" "primary" {
     regional or multi-zonal clusters, this is the number of nodes per zone. Changing
     this will force recreation of the resource. WARNING: Resizing your node pool manually
     may change this value in your existing cluster, which will trigger destruction
-    and recreation on the next Terraform run (to rectify the discrepancy).  If you don't
-    need this value, don't set it.  If you do need it, you can [use a lifecycle block to
-    ignore subsequent changes to this field](https://github.com/hashicorp/terraform-provider-google/issues/6901#issuecomment-667369691).
+    and recreation on the next provider run (to rectify the discrepancy).  If you don't
+    need this value, don't set it.  If you do need it, you can use a lifecycle block to
+    ignore subsqeuent changes to this field.
 
 * `management` - (Optional) Node management configuration, wherein auto-repair and
     auto-upgrade is configured. Structure is [documented below](#nested_management).
@@ -139,7 +136,7 @@ cluster's zone for zonal clusters. If unspecified, the cluster-level
 upon being unset. You must manually reconcile the list of zones with your
 cluster.
 
-* `name` - (Optional) The name of the node pool. If left blank, Terraform will
+* `name` - (Optional) The name of the node pool. If left blank, the provider will
     auto-generate a unique name.
 
 * `name_prefix` - (Optional) Creates a unique name for the node pool beginning
@@ -164,9 +161,9 @@ cluster.
 * `version` - (Optional) The Kubernetes version for the nodes in this pool. Note that if this field
     and `auto_upgrade` are both specified, they will fight each other for what the node version should
     be, so setting both is highly discouraged. While a fuzzy version can be specified, it's
-    recommended that you specify explicit versions as Terraform will see spurious diffs
+    recommended that you specify explicit versions as the provider will see spurious diffs
     when fuzzy versions are used. See the `google_container_engine_versions` data source's
-    `version_prefix` field to approximate fuzzy versions in a Terraform-compatible way.
+    `version_prefix` field to approximate fuzzy versions in a provider-compatible way.
 
 * `placement_policy` - (Optional) Specifies a custom placement policy for the
   nodes.

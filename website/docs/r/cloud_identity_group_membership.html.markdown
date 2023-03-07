@@ -30,9 +30,9 @@ To get more information about GroupMembership, see:
     * [Official Documentation](https://cloud.google.com/identity/docs/how-to/memberships-google-groups)
 
 ~> **Warning:** If you are using User ADCs (Application Default Credentials) with this resource,
-you must specify a `billing_project` and set `user_project_override` to true 
-in the provider configuration. Otherwise the Cloud Identity API will return a 403 error. 
-Your account must have the `serviceusage.services.use` permission on the 
+you must specify a `billing_project` and set `user_project_override` to true
+in the provider configuration. Otherwise the Cloud Identity API will return a 403 error.
+Your account must have the `serviceusage.services.use` permission on the
 `billing_project` you defined.
 
 ## Example Usage - Cloud Identity Group Membership
@@ -141,7 +141,7 @@ The following arguments are supported:
 
 
 * `member_key` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   EntityKey of the member.
   Structure is [documented below](#nested_member_key).
 

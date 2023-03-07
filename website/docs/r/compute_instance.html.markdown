@@ -88,7 +88,7 @@ The following arguments are supported:
 
 - - -
 
-* `allow_stopping_for_update` - (Optional) If true, allows Terraform to stop the instance to update its properties.
+* `allow_stopping_for_update` - (Optional) If true, allows this prvider to stop the instance to update its properties.
   If you try to update a property that requires stopping the instance without setting this field, the update will fail.
 
 * `attached_disk` - (Optional) Additional disks to attach to the instance. Can be repeated multiple times for multiple disks. Structure is [documented below](#nested_attached_disk).
@@ -103,7 +103,7 @@ The following arguments are supported:
 `"RUNNING"` or `"TERMINATED"`.
 
 * `deletion_protection` - (Optional) Enable deletion protection on this instance. Defaults to false.
-    **Note:** you must disable deletion protection before removing the resource (e.g., via `terraform destroy`), or the instance cannot be deleted and the Terraform run will not complete successfully.
+    **Note:** you must disable deletion protection before removing the resource (e.g., via `pulumi destroy`), or the instance cannot be deleted and the provider run will not complete successfully.
 
 * `hostname` - (Optional) A custom hostname for the instance. Must be a fully qualified DNS name and RFC-1035-valid.
   Valid format is a series of labels 1-63 characters long matching the regular expression `[a-z]([-a-z0-9]*[a-z0-9])`, concatenated with periods.
@@ -111,11 +111,6 @@ The following arguments are supported:
 
 * `guest_accelerator` - (Optional) List of the type and count of accelerator cards attached to the instance. Structure [documented below](#nested_guest_accelerator).
     **Note:** GPU accelerators can only be used with [`on_host_maintenance`](#on_host_maintenance) option set to TERMINATE.
-    **Note**: This field uses [attr-as-block mode](https://www.terraform.io/docs/configuration/attr-as-blocks.html) to avoid
-    breaking users during the 0.12 upgrade. To explicitly send a list
-    of zero objects you must use the following syntax:
-    `example=[]`
-    For more details about this behavior, see [this section](https://www.terraform.io/docs/configuration/attr-as-blocks.html#defining-a-fixed-object-collection-value).
 
 * `labels` - (Optional) A map of key/value label pairs to assign to the instance.
 
@@ -142,8 +137,7 @@ only distinction is that this separate attribute will cause a recreate on
 modification.  On import, `metadata_startup_script` will not be set - if you
 choose to specify it you will see a diff immediately after import causing a
 destroy/recreate operation. If importing an instance and specifying this value
-is desired, you will need to modify your state file manually using
-`terraform state` commands.
+is desired, you will need to modify your state file.
 
 * `min_cpu_platform` - (Optional) Specifies a minimum CPU platform for the VM instance. Applicable values are the friendly names of CPU platforms, such as
 `Intel Haswell` or `Intel Skylake`. See the complete list [here](https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform).

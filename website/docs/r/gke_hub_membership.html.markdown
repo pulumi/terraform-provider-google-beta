@@ -93,7 +93,7 @@ The following arguments are supported:
 
 
 * `description` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   The name of this entity type to be displayed on the console. This field is unavailable in v1 of the API.
 
 * `labels` -

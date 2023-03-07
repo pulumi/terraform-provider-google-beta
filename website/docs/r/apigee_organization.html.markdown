@@ -116,7 +116,7 @@ resource "google_kms_crypto_key_iam_binding" "apigee_sa_keyuser" {
 resource "google_apigee_organization" "org" {
   analytics_region                     = "us-central1"
   display_name                         = "apigee-org"
-  description                          = "Terraform-provisioned Apigee Org."
+  description                          = "Auto-provisioned Apigee Org."
   project_id                           = data.google_client_config.current.project
   authorized_network                   = google_compute_network.apigee_network.id
   runtime_database_encryption_key_name = google_kms_crypto_key.apigee_key.id
