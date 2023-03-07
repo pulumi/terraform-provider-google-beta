@@ -155,11 +155,7 @@ resource "google_certificate_manager_certificate" "default" {
   name        = "tf-test-self-managed-cert%{random_suffix}"
   description = "Regional cert"
   location    = "us-central1"
-  self_managed {
     pem_certificate = file("test-fixtures/certificatemanager/cert.pem")
-    pem_private_key = file("test-fixtures/certificatemanager/private-key.pem")
-  }
-}
 `, context)
 }
 
