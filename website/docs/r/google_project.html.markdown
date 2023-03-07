@@ -11,14 +11,12 @@ Allows creation and management of a Google Cloud Platform project.
 Projects created with this resource must be associated with an Organization.
 See the [Organization documentation](https://cloud.google.com/resource-manager/docs/quickstarts) for more details.
 
-The user or service account that is running Terraform when creating a `google_project`
+The user or service account that is running this provider when creating a `google_project`
 resource must have `roles/resourcemanager.projectCreator` on the specified organization. See the
 [Access Control for Organizations Using IAM](https://cloud.google.com/resource-manager/docs/access-control-org)
 doc for more information.
 
 ~> This resource reads the specified billing account on every terraform apply and plan operation so you must have permissions on the specified billing account.
-
-~> It is recommended to use the `constraints/compute.skipDefaultNetworkCreation` [constraint](/docs/providers/google/r/google_organization_policy.html) to remove the default network instead of setting `auto_create_network` to false, when possible.
 
 To get more information about projects, see:
 
@@ -73,12 +71,12 @@ The following arguments are supported:
    project to be migrated to the newly specified folder.
 
 * `billing_account` - (Optional) The alphanumeric ID of the billing account this project
-    belongs to. The user or service account performing this operation with Terraform
-    must have at minimum Billing Account User privileges (`roles/billing.user`) on the billing account.
+    belongs to. The user or service account performing this operation with the provider
+    must have at mininum Billing Account User privileges (`roles/billing.user`) on the billing account.
     See [Google Cloud Billing API Access Control](https://cloud.google.com/billing/docs/how-to/billing-access)
     for more details.
 
-* `skip_delete` - (Optional) If true, the Terraform resource can be deleted
+* `skip_delete` - (Optional) If true, the resource can be deleted
     without deleting the Project via the Google API.
 
 * `labels` - (Optional) A set of key/value label pairs to assign to the project.

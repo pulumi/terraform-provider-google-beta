@@ -53,8 +53,8 @@ resource "google_data_catalog_entry_group" "basic_entry_group" {
 resource "google_data_catalog_entry_group" "basic_entry_group" {
   entry_group_id = "my_group"
 
-  display_name = "terraform entry group"
-  description = "entry group created by Terraform"
+  display_name = "entry group"
+  description = "example entry group"
 }
 ```
 

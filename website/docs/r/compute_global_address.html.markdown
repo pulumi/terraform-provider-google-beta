@@ -97,7 +97,7 @@ The following arguments are supported:
   An optional description of this resource.
 
 * `labels` -
-  (Optional, [Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html))
+  (Optional)
   Labels to apply to this address.  A list of key->value pairs.
 
 * `ip_version` -
@@ -124,7 +124,7 @@ The following arguments are supported:
   (Optional)
   The purpose of the resource. Possible values include:
   * VPC_PEERING - for peer networks
-  * PRIVATE_SERVICE_CONNECT - for ([Beta](https://terraform.io/docs/providers/google/guides/provider_versions.html) only) Private Service Connect networks
+  * PRIVATE_SERVICE_CONNECT - for Private Service Connect networks
 
 * `network` -
   (Optional)

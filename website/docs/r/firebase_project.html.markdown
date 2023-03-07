@@ -24,9 +24,6 @@ Since a FirebaseProject is actually also a GCP Project, a FirebaseProject uses u
 identifiers (most importantly, the projectId) as its own for easy interop with GCP APIs.
 Once Firebase has been added to a Google Project it cannot be removed.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about Project, see:
 
 * [API documentation](https://firebase.google.com/docs/reference/firebase-management/rest/v1beta1/projects)
@@ -40,8 +37,8 @@ To get more information about Project, see:
 resource "google_project" "default" {
   provider = google-beta
 
-  project_id = "tf-test%{random_suffix}"
-  name       = "tf-test%{random_suffix}"
+  project_id = "tf-test"
+  name       = "tf-test"
   org_id     = "123456789"
 
   labels = {

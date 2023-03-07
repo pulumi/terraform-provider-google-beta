@@ -30,7 +30,7 @@ and labels to configure that channel. Each `type` has specific labels that need 
 present for that channel to be correctly configured. The labels that are required to be
 present for one channel `type` are often different than those required for another.
 Due to these loose constraints it's often best to set up a channel through the UI
-and import to Terraform when setting up a brand new channel type to determine which
+and import it to the provider when setting up a brand new channel type to determine which
 labels are required.
 
 A list of supported channels per project the `list` endpoint can be
@@ -45,9 +45,8 @@ To get more information about NotificationChannel, see:
     * [Notification Options](https://cloud.google.com/monitoring/support/notification-options)
     * [Monitoring API Documentation](https://cloud.google.com/monitoring/api/v3/)
 
-~> **Warning:** All arguments including the following potentially sensitive
-values will be stored in the raw state as plain text: `sensitive_labels.auth_token`, `sensitive_labels.password`, `sensitive_labels.service_key`.
-[Read more about sensitive data in state](https://www.terraform.io/language/state/sensitive-data).
+~> **Warning:** All arguments including `sensitive_labels.auth_token`, `sensitive_labels.password`, and `sensitive_labels.service_key` will be stored in the raw
+state as plain-text.
 
 <div class = "oics-button" style="float: right; margin: 0 0 -15px">
   <a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fdocs-examples.git&cloudshell_working_dir=notification_channel_basic&cloudshell_image=gcr.io%2Fgraphite-cloud-shell-images%2Fterraform%3Alatest&open_in_editor=main.tf&cloudshell_print=.%2Fmotd&cloudshell_tutorial=.%2Ftutorial.md" target="_blank">
@@ -101,7 +100,7 @@ The following arguments are supported:
   Configuration fields that define the channel and its behavior. The
   permissible and required labels are specified in the
   NotificationChannelDescriptor corresponding to the type field.
-  Labels with sensitive data are obfuscated by the API and therefore Terraform cannot
+  Labels with sensitive data are obfuscated by the API and therefore the provider cannot
   determine if there are upstream changes to these fields. They can also be configured via
   the sensitive_labels block, but cannot be configured in both places.
 

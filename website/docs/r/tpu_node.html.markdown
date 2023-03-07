@@ -71,7 +71,7 @@ resource "google_tpu_node" "tpu" {
 
   tensorflow_version = data.google_tpu_tensorflow_versions.available.versions[0]
 
-  description = "Terraform Google Provider test TPU"
+  description = "Google Provider test TPU"
   use_service_networking = true
   network = google_service_networking_connection.private_service_connection.network
 
