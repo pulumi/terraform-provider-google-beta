@@ -11,7 +11,7 @@ Creates a table resource in a dataset for Google BigQuery. For more information 
 [API](https://cloud.google.com/bigquery/docs/reference/rest/v2/tables).
 
 -> **Note**: On newer versions of the provider, you must explicitly set `deletion_protection=false`
-(and run `terraform apply` to write the field to state) in order to destroy an instance.
+(and run `pulumi update` to write the field to state) in order to destroy an instance.
 It is recommended to not set this field (or set it to true) until you're ready to destroy.
 
 
@@ -141,8 +141,8 @@ The following arguments are supported:
 * `materialized_view` - (Optional) If specified, configures this table as a materialized view.
     Structure is [documented below](#nested_materialized_view).
 
-* `deletion_protection` - (Optional) Whether or not to allow Terraform to destroy the instance. Unless this field is set to false
-in Terraform state, a `terraform destroy` or `terraform apply` that would delete the instance will fail.
+* `deletion_protection` - (Optional) Whether or not to allow the provider to destroy the instance. Unless this field is set to false
+in state, a `=destroy` or `=update` that would delete the instance will fail.
 
 <a name="nested_external_data_configuration"></a>The `external_data_configuration` block supports:
 
@@ -212,8 +212,8 @@ in Terraform state, a `terraform destroy` or `terraform apply` that would delete
     CSV file. If your data does not contain quoted sections, set the
     property value to an empty string. If your data contains quoted newline
     characters, you must also set the `allow_quoted_newlines` property to true.
-    The API-side default is `"`, specified in Terraform escaped as `\"`. Due to
-    limitations with Terraform default values, this value is required to be
+    The API-side default is `"`, specified in the provider escaped as `\"`. Due to
+    limitations with default values, this value is required to be
     explicitly set.
 
 * `allow_jagged_rows` (Optional) - Indicates if BigQuery should accept rows

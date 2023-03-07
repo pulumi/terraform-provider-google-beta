@@ -26,9 +26,10 @@ Four different resources help you manage your IAM policy for a organization. Eac
    resources. This resource makes it easy to remove your own access to
    an organization, which will require a call to Google Support to have
    fixed, and can take multiple days to resolve.
-   <br /><br />
+
+
    In general, this resource should only be used with organizations
-   fully managed by Terraform.If you do use this resource,
+   fully managed by this provider.I f you do use this resource,
    the best way to be sure that you are not making dangerous changes is to start
    by **importing** your existing policy, and examining the diff very closely.
 
@@ -203,8 +204,8 @@ will not be inferred from the provider.
 
 * `description` - (Optional) An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.
 
-~> **Warning:** Terraform considers the `role` and condition contents (`title`+`description`+`expression`) as the
-  identifier for the binding. This means that if any part of the condition is changed out-of-band, Terraform will
+~> **Warning:** This provider considers the `role` and condition contents (`title`+`description`+`expression`) as the
+  identifier for the binding. This means that if any part of the condition is changed out-of-band, the provider will
   consider it to be an entirely different resource and will treat it as such.
 
 ## Attributes Reference

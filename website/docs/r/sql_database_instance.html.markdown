@@ -10,12 +10,12 @@ Creates a new Google SQL Database Instance. For more information, see the [offic
 or the [JSON API](https://cloud.google.com/sql/docs/admin-api/v1beta4/instances).
 
 ~> **NOTE on `google_sql_database_instance`:** - Second-generation instances include a
-default 'root'@'%' user with no password. This user will be deleted by Terraform on
+default 'root'@'%' user with no password. This user will be deleted by the provider on
 instance creation. You should use `google_sql_user` to define a custom user with
 a restricted host and strong password.
 
 -> **Note**: On newer versions of the provider, you must explicitly set `deletion_protection=false`
-(and run `terraform apply` to write the field to state) in order to destroy an instance.
+(and run `pulumi update` to write the field to state) in order to destroy an instance.
 It is recommended to not set this field (or set it to true) until you're ready to destroy the instance and its databases.
 
 ## Example Usage
@@ -180,7 +180,7 @@ SQL Server version to use. Supported values include `MYSQL_5_6`,
 includes an up-to-date reference of supported versions.
 
 * `name` - (Optional, Computed) The name of the instance. If the name is left
-    blank, Terraform will randomly generate one when the instance is first
+    blank, the provider will randomly generate one when the instance is first
     created. This is done because after a name is used, it cannot be reused for
     up to [one week](https://cloud.google.com/sql/docs/delete-instance).
 
@@ -200,7 +200,7 @@ includes an up-to-date reference of supported versions.
 
 * `encryption_key_name` - (Optional)
     The full path to the encryption key used for the CMEK disk encryption.  Setting
-    up disk encryption currently requires manual steps outside of Terraform.
+    up disk encryption currently requires manual steps outside of this provider.
     The provided key must be in the same region as the SQL instance.  In order
     to use this feature, a special kind of service account must be created and
     granted permission on this key.  This step can currently only be done
@@ -208,18 +208,16 @@ includes an up-to-date reference of supported versions.
     That service account needs the `Cloud KMS > Cloud KMS CryptoKey Encrypter/Decrypter` role on your
     key - please see [this step](https://cloud.google.com/sql/docs/mysql/configure-cmek#grantkey).
 
-* `deletion_protection` - (Optional) Whether or not to allow Terraform to destroy the instance. Unless this field is set to false
-in Terraform state, a `terraform destroy` or `terraform apply` command that deletes the instance will fail. Defaults to `true`.
-
-  ~> **NOTE:** This flag only protects instances from deletion within Terraform. To protect your instances from accidental deletion across all surfaces (API, gcloud, Cloud Console and Terraform), use the API flag `settings.deletion_protection_enabled`.
+* `deletion_protection` - (Optional) Whether or not to allow the provider to destroy the instance. Unless this field is set to false
+in state, a `destroy` or `update` command that deletes the instance will fail. Defaults to `true`.
 
 * `restore_backup_context` - (optional) The context needed to restore the database to a backup run. This field will
-    cause Terraform to trigger the database to restore from the backup run indicated. The configuration is detailed below.
-    **NOTE:** Restoring from a backup is an imperative action and not recommended via Terraform. Adding or modifying this
+    cause the provider to trigger the database to restore from the backup run indicated. The configuration is detailed below.
+    **NOTE:** Restoring from a backup is an imperative action and not recommended via this provider. Adding or modifying this
     block during resource creation/update will trigger the restore action after the resource is created/updated.
 
 * `clone` - (Optional) The context needed to create this instance as a clone of another instance. When this field is set during
-    resource creation, Terraform will attempt to clone another instance as indicated in the context. The
+    resource creation, this provider will attempt to clone another instance as indicated in the context. The
     configuration is detailed below.
 
 The `settings` block supports:
@@ -431,7 +429,7 @@ The optional `clone` block supports:
 * `allocated_ip_range` -  (Optional) The name of the allocated ip range for the private ip CloudSQL instance. For example: "google-managed-services-default". If set, the cloned instance ip will be created in the allocated range. The range name must comply with [RFC 1035](https://tools.ietf.org/html/rfc1035). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?.
 
 The optional `restore_backup_context` block supports:
-**NOTE:** Restoring from a backup is an imperative action and not recommended via Terraform. Adding or modifying this
+**NOTE:** Restoring from a backup is an imperative action and not recommended via this provider. Adding or modifying this
 block during resource creation/update will trigger the restore action after the resource is created/updated.
 
 * `backup_run_id` - (Required) The ID of the backup run to restore from.
@@ -467,21 +465,13 @@ instance.
 
   * A `PRIVATE` address is an address for an instance which has been configured to use private networking see: [Private IP](https://cloud.google.com/sql/docs/mysql/private-ip).
 
-* `first_ip_address` - The first IPv4 address of any type assigned. This is to
-support accessing the [first address in the list in a terraform output](https://github.com/hashicorp/terraform-provider-google/issues/912)
-when the resource is configured with a `count`.
+* `first_ip_address` - The first IPv4 address of any type assigned.
 
 * `available_maintenance_versions`  - The list of all maintenance versions applicable on the instance.
 
-* `public_ip_address` - The first public (`PRIMARY`) IPv4 address assigned. This is
-a workaround for an [issue fixed in Terraform 0.12](https://github.com/hashicorp/terraform/issues/17048)
-but also provides a convenient way to access an IP of a specific type without
-performing filtering in a Terraform config.
+* `public_ip_address` - The first public (`PRIMARY`) IPv4 address assigned.
 
-* `private_ip_address` - The first private (`PRIVATE`) IPv4 address assigned. This is
-a workaround for an [issue fixed in Terraform 0.12](https://github.com/hashicorp/terraform/issues/17048)
-but also provides a convenient way to access an IP of a specific type without
-performing filtering in a Terraform config.
+* `private_ip_address` - The first private (`PRIVATE`) IPv4 address assigned.
 
 * `instance_type` - The type of the instance. The supported values are `SQL_INSTANCE_TYPE_UNSPECIFIED`, `CLOUD_SQL_INSTANCE`, `ON_PREMISES_INSTANCE` and `READ_REPLICA_INSTANCE`.
 

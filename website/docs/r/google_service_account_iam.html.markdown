@@ -18,7 +18,9 @@ Three different resources help you manage your IAM policy for a service account.
 
 ~> **Note:** `google_service_account_iam_binding` resources **can be** used in conjunction with `google_service_account_iam_member` resources **only if** they do not grant privilege to the same role.
 
-## google\_service\_account\_iam\_policy
+## Example Usage
+
+### Service Account IAM Policy
 
 ```hcl
 data "google_iam_policy" "admin" {
@@ -42,7 +44,7 @@ resource "google_service_account_iam_policy" "admin-account-iam" {
 }
 ```
 
-## google\_service\_account\_iam\_binding
+### Service Account IAM Binding
 
 ```hcl
 resource "google_service_account" "sa" {
@@ -60,7 +62,7 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
 }
 ```
 
-With IAM Conditions:
+### Service Account IAM Binding With IAM Conditions:
 
 ```hcl
 resource "google_service_account" "sa" {
@@ -84,7 +86,7 @@ resource "google_service_account_iam_binding" "admin-account-iam" {
 }
 ```
 
-## google\_service\_account\_iam\_member
+### Service Account IAM Member
 
 ```hcl
 data "google_compute_default_service_account" "default" {
@@ -109,7 +111,7 @@ resource "google_service_account_iam_member" "gce-default-account-iam" {
 }
 ```
 
-With IAM Conditions:
+### Service Account IAM Member With IAM Conditions:
 
 ```hcl
 resource "google_service_account" "sa" {
@@ -163,8 +165,8 @@ The following arguments are supported:
 
 * `description` - (Optional) An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.
 
-~> **Warning:** Terraform considers the `role` and condition contents (`title`+`description`+`expression`) as the
-  identifier for the binding. This means that if any part of the condition is changed out-of-band, Terraform will
+~> **Warning:** This provider considers the `role` and condition contents (`title`+`description`+`expression`) as the
+  identifier for the binding. This means that if any part of the condition is changed out-of-band, the provider will
   consider it to be an entirely different resource and will treat it as such.
 
 ## Attributes Reference

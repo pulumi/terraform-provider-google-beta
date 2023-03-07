@@ -21,9 +21,6 @@ description: |-
 
 Organization security policies are used to control incoming/outgoing traffic.
 
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
 To get more information about OrganizationSecurityPolicy, see:
 
 * [API documentation](https://cloud.google.com/compute/docs/reference/rest/beta/organizationSecurityPolicies)
@@ -36,7 +33,7 @@ To get more information about OrganizationSecurityPolicy, see:
 ```hcl
 resource "google_compute_organization_security_policy" "policy" {
   provider = google-beta
-  display_name = "tf-test%{random_suffix}"
+  display_name = "tf-test"
   parent       = "organizations/123456789"
 }
 ```

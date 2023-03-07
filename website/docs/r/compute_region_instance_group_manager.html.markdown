@@ -141,7 +141,7 @@ The following arguments are supported:
     not affect existing instances.
 
 * `wait_for_instances` - (Optional) Whether to wait for all instances to be created/updated before
-    returning. Note that if this is set to true and the operation does not succeed, Terraform will
+    returning. Note that if this is set to true and the operation does not succeed, the provider will
     continue trying until it times out.
 
 * `wait_for_instances_status` - (Optional) When used with `wait_for_instances` it specifies the status to wait for.

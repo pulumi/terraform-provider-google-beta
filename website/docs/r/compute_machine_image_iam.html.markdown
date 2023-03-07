@@ -29,11 +29,6 @@ Three different resources help you manage your IAM policy for Compute Engine Mac
 ~> **Note:** `google_compute_machine_image_iam_binding` resources **can be** used in conjunction with `google_compute_machine_image_iam_member` resources **only if** they do not grant privilege to the same role.
 
 ~> **Note:**  This resource supports IAM Conditions but they have some known limitations which can be found [here](https://cloud.google.com/iam/docs/conditions-overview#limitations). Please review this article if you are having issues with IAM Conditions.
-
-~> **Warning:** This resource is in beta, and should be used with the terraform-provider-google-beta provider.
-See [Provider Versions](https://terraform.io/docs/providers/google/guides/provider_versions.html) for more details on beta resources.
-
-
 ## google\_compute\_machine\_image\_iam\_policy
 
 ```hcl
@@ -184,9 +179,6 @@ The `condition` block supports:
 
 * `description` - (Optional) An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.
 
-~> **Warning:** Terraform considers the `role` and condition contents (`title`+`description`+`expression`) as the
-  identifier for the binding. This means that if any part of the condition is changed out-of-band, Terraform will
-  consider it to be an entirely different resource and will treat it as such.
 ## Attributes Reference
 
 In addition to the arguments listed above, the following computed attributes are
