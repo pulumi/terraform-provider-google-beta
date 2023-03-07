@@ -67,7 +67,6 @@ resource "google_notebooks_instance" "instance" {
   machine_type = "e2-medium"
   metadata = {
     proxy-mode = "service_account"
-    terraform  = "true"
   }
   container_image {
     repository = "gcr.io/deeplearning-platform-release/base-cpu"
@@ -129,10 +128,6 @@ resource "google_notebooks_instance" "instance" {
 
   labels = {
     k = "val"
-  }
-
-  metadata = {
-    terraform = "true"
   }
 }
 

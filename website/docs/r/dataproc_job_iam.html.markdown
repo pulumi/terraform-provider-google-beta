@@ -85,10 +85,10 @@ For `google_dataproc_job_iam_member` or `google_dataproc_job_iam_binding`:
 - - -
 
 * `project` - (Optional) The project in which the job belongs. If it
-    is not provided, Terraform will use the provider default.
+    is not provided, the provider will use a default.
 
 * `region` - (Optional) The region in which the job belongs. If it
-    is not provided, Terraform will use the provider default.
+    is not provided, the provider will use a default.
 
 ## Attributes Reference
 

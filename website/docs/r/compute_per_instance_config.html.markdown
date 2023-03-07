@@ -60,7 +60,7 @@ resource "google_compute_instance_template" "igm-basic" {
 }
 
 resource "google_compute_instance_group_manager" "igm-no-tp" {
-  description = "Terraform test instance group manager"
+  description = "Test instance group manager"
   name        = "my-igm"
 
   version {
