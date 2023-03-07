@@ -1,4 +1,5 @@
 module github.com/hashicorp/terraform-provider-google-beta
+
 go 1.18
 
 require (
