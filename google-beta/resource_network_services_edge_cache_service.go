@@ -24,7 +24,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceNetworkServicesEdgeCacheService() *schema.Resource {
+func ResourceNetworkServicesEdgeCacheService() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceNetworkServicesEdgeCacheServiceCreate,
 		Read:   resourceNetworkServicesEdgeCacheServiceRead,
@@ -749,7 +749,7 @@ This translates to the Access-Control-Allow-Credentials response header.`,
 																			Description: `Specifies the list of origins that will be allowed to do CORS requests.
 
 This translates to the Access-Control-Allow-Origin response header.`,
-																			MaxItems: 5,
+																			MaxItems: 25,
 																			Elem: &schema.Schema{
 																				Type: schema.TypeString,
 																			},

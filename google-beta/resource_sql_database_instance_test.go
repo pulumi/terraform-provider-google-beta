@@ -208,8 +208,7 @@ func TestAccSqlDatabaseInstance_deleteDefaultUserBeforeSubsequentApiCalls(t *tes
 
 	databaseName := "tf-test-" + randString(t, 10)
 	addressName := "tf-test-" + randString(t, 10)
-	networkName := "tf-bootstrap-net-sql-instance-private-clone"
-	// networkName := BootstrapSharedTestNetwork(t, "sql-instance-private-clone")
+	networkName := BootstrapSharedTestNetwork(t, "sql-instance-private-clone-2")
 
 	// 1. Create an instance.
 	// 2. Add a root@'%' user.
@@ -1308,8 +1307,6 @@ func TestAccSqlDatabaseInstance_SqlServerAuditConfig(t *testing.T) {
 	t.Parallel()
 	databaseName := "tf-test-" + randString(t, 10)
 	rootPassword := randString(t, 15)
-	addressName := "tf-test-" + randString(t, 10)
-	networkName := BootstrapSharedTestNetwork(t, "sql-instance-sqlserver-audit")
 	bucketName := fmt.Sprintf("%s-%d", "tf-test-bucket", randInt(t))
 	uploadInterval := "900s"
 	retentionInterval := "86400s"
@@ -1323,7 +1320,7 @@ func TestAccSqlDatabaseInstance_SqlServerAuditConfig(t *testing.T) {
 		CheckDestroy: testAccSqlDatabaseInstanceDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testGoogleSqlDatabaseInstance_SqlServerAuditConfig(networkName, addressName, databaseName, rootPassword, bucketName, uploadInterval, retentionInterval),
+				Config: testGoogleSqlDatabaseInstance_SqlServerAuditConfig(databaseName, rootPassword, bucketName, uploadInterval, retentionInterval),
 			},
 			{
 				ResourceName:            "google_sql_database_instance.instance",
@@ -1332,7 +1329,7 @@ func TestAccSqlDatabaseInstance_SqlServerAuditConfig(t *testing.T) {
 				ImportStateVerifyIgnore: []string{"root_password", "deletion_protection"},
 			},
 			{
-				Config: testGoogleSqlDatabaseInstance_SqlServerAuditConfig(networkName, addressName, databaseName, rootPassword, bucketNameUpdate, uploadIntervalUpdate, retentionIntervalUpdate),
+				Config: testGoogleSqlDatabaseInstance_SqlServerAuditConfig(databaseName, rootPassword, bucketNameUpdate, uploadIntervalUpdate, retentionIntervalUpdate),
 			},
 			{
 				ResourceName:            "google_sql_database_instance.instance",
@@ -1374,8 +1371,6 @@ func TestAccSqlDatabaseInstance_Timezone(t *testing.T) {
 
 	databaseName := "tf-test-" + randString(t, 10)
 	rootPassword := randString(t, 15)
-	addressName := "tf-test-" + randString(t, 10)
-	networkName := BootstrapSharedTestNetwork(t, "sql-instance-sqlserver-audit")
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -1383,41 +1378,7 @@ func TestAccSqlDatabaseInstance_Timezone(t *testing.T) {
 		CheckDestroy: testAccSqlDatabaseInstanceDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testGoogleSqlDatabaseInstance_Timezone(networkName, addressName, databaseName, rootPassword, "Pacific Standard Time"),
-			},
-			{
-				ResourceName:            "google_sql_database_instance.instance",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"root_password", "deletion_protection"},
-			},
-		},
-	})
-}
-
-func TestAccSqlDatabaseInstance_mysqlMajorVersionUpgrade(t *testing.T) {
-	t.Parallel()
-
-	databaseName := "tf-test-" + randString(t, 10)
-
-	vcrTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccSqlDatabaseInstanceDestroyProducer(t),
-		Steps: []resource.TestStep{
-			{
-				Config: fmt.Sprintf(
-					testGoogleSqlDatabaseInstance_basic3, databaseName),
-			},
-			{
-				ResourceName:            "google_sql_database_instance.instance",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"root_password", "deletion_protection"},
-			},
-			{
-				Config: fmt.Sprintf(
-					testGoogleSqlDatabaseInstance_basic3_update, databaseName),
+				Config: testGoogleSqlDatabaseInstance_Timezone(databaseName, rootPassword, "Pacific Standard Time"),
 			},
 			{
 				ResourceName:            "google_sql_database_instance.instance",
@@ -1521,6 +1482,291 @@ func TestAccSqlDatabaseInstance_rootPasswordShouldBeUpdatable(t *testing.T) {
 				Config: testGoogleSqlDatabaseInstance_updateRootPassword(databaseName, databaseVersion, ""),
 				ExpectError: regexp.MustCompile(
 					`Error, root password cannot be empty for SQL Server instance.`),
+			},
+		},
+	})
+}
+
+func TestAccSqlDatabaseInstance_activationPolicy(t *testing.T) {
+	t.Parallel()
+
+	instanceName := "tf-test-" + randString(t, 10)
+
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccSqlDatabaseInstanceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testGoogleSqlDatabaseInstance_activationPolicy(instanceName, "MYSQL_5_7", "ALWAYS", true),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection", "root_password"},
+			},
+			{
+				Config: testGoogleSqlDatabaseInstance_activationPolicy(instanceName, "MYSQL_5_7", "NEVER", true),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection", "root_password"},
+			},
+			{
+				Config: testGoogleSqlDatabaseInstance_activationPolicy(instanceName, "MYSQL_8_0_18", "ALWAYS", true),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection", "root_password"},
+			},
+			{
+				Config: testGoogleSqlDatabaseInstance_activationPolicy(instanceName, "MYSQL_8_0_26", "NEVER", true),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection", "root_password"},
+			},
+			{
+				Config: testGoogleSqlDatabaseInstance_activationPolicy(instanceName, "MYSQL_8_0_26", "ALWAYS", false),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection", "root_password"},
+			},
+		},
+	})
+}
+
+func TestAccSqlDatabaseInstance_ReplicaPromoteSuccessful(t *testing.T) {
+	t.Parallel()
+
+	databaseName := "sql-instance-test-" + randString(t, 10)
+	failoverName := "sql-instance-test-failover-" + randString(t, 10)
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccSqlDatabaseInstanceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testGoogleSqlDatabaseInstanceConfig_withReplica(databaseName, failoverName),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				Config: googleSqlDatabaseInstance_replicaPromote(databaseName, failoverName),
+				Check:  resource.ComposeTestCheckFunc(checkPromoteReplicaConfigurations("google_sql_database_instance.instance-failover")),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+		},
+	})
+}
+
+func TestAccSqlDatabaseInstance_ReplicaPromoteFailedWithMasterInstanceNamePresent(t *testing.T) {
+	t.Parallel()
+	databaseName := "sql-instance-test-" + randString(t, 10)
+	failoverName := "sql-instance-test-failover-" + randString(t, 10)
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccSqlDatabaseInstanceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testGoogleSqlDatabaseInstanceConfig_withReplica(databaseName, failoverName),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				Config:      googleSqlDatabaseInstance_replicaPromoteWithMasterInstanceName(databaseName, failoverName),
+				ExpectError: regexp.MustCompile("Replica promote configuration check failed. Please remove master_instance_name and try again."),
+				Check:       resource.ComposeTestCheckFunc(checkPromoteReplicaSkipConfigurations("google_sql_database_instance.instance-failover")),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+		},
+	})
+}
+
+func TestAccSqlDatabaseInstance_ReplicaPromoteFailedWithReplicaConfigurationPresent(t *testing.T) {
+	t.Parallel()
+
+	databaseName := "sql-instance-test-" + randString(t, 10)
+	failoverName := "sql-instance-test-failover-" + randString(t, 10)
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccSqlDatabaseInstanceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testGoogleSqlDatabaseInstanceConfig_withReplica(databaseName, failoverName),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				Config:      googleSqlDatabaseInstance_replicaPromoteWithReplicaConfiguration(databaseName, failoverName),
+				ExpectError: regexp.MustCompile("Replica promote configuration check failed. Please remove replica_configuration and try again."),
+				Check:       resource.ComposeTestCheckFunc(checkPromoteReplicaSkipConfigurations("google_sql_database_instance.instance-failover")),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+		},
+	})
+}
+
+func TestAccSqlDatabaseInstance_ReplicaPromoteFailedWithMasterInstanceNameAndReplicaConfigurationPresent(t *testing.T) {
+	t.Parallel()
+
+	databaseName := "sql-instance-test-" + randString(t, 10)
+	failoverName := "sql-instance-test-failover-" + randString(t, 10)
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccSqlDatabaseInstanceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testGoogleSqlDatabaseInstanceConfig_withReplica(databaseName, failoverName),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				Config:      googleSqlDatabaseInstance_replicaPromoteWithMasterInstanceNameAndReplicaConfiguration(databaseName, failoverName),
+				ExpectError: regexp.MustCompile("Replica promote configuration check failed. Please remove master_instance_name and try again."),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+		},
+	})
+}
+
+func TestAccSqlDatabaseInstance_ReplicaPromoteSkippedWithNoMasterInstanceNameAndNoReplicaConfigurationPresent(t *testing.T) {
+	t.Parallel()
+
+	databaseName := "sql-instance-test-" + randString(t, 10)
+	failoverName := "sql-instance-test-failover-" + randString(t, 10)
+	vcrTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccSqlDatabaseInstanceDestroyProducer(t),
+		Steps: []resource.TestStep{
+			{
+				Config: testGoogleSqlDatabaseInstanceConfig_withReplica(databaseName, failoverName),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				Config: googleSqlDatabaseInstance_replicaPromoteSkippedWithNoMasterInstanceNameAndNoReplicaConfiguration(databaseName, failoverName),
+				Check:  resource.ComposeTestCheckFunc(checkPromoteReplicaSkipConfigurations("google_sql_database_instance.instance-failover")),
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
+			},
+			{
+				ResourceName:            "google_sql_database_instance.instance-failover",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"deletion_protection"},
 			},
 		},
 	})
@@ -1673,7 +1919,7 @@ resource "google_sql_database_instance" "instance" {
 }`, databaseName, endDate, startDate, time)
 }
 
-func testGoogleSqlDatabaseInstance_SqlServerAuditConfig(networkName, addressName, databaseName, rootPassword, bucketName, uploadInterval, retentionInterval string) string {
+func testGoogleSqlDatabaseInstance_SqlServerAuditConfig(databaseName, rootPassword, bucketName, uploadInterval, retentionInterval string) string {
 	return fmt.Sprintf(`
 resource "google_storage_bucket" "gs-bucket" {
   name                      	= "%s"
@@ -1681,26 +1927,7 @@ resource "google_storage_bucket" "gs-bucket" {
   uniform_bucket_level_access = true
 }
 
-data "google_compute_network" "servicenet" {
-  name = "%s"
-}
-
-resource "google_compute_global_address" "foobar" {
-  name          = "%s"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  prefix_length = 16
-  network       = data.google_compute_network.servicenet.self_link
-}
-
-resource "google_service_networking_connection" "foobar" {
-  network                 = data.google_compute_network.servicenet.self_link
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.foobar.name]
-}
-
 resource "google_sql_database_instance" "instance" {
-	depends_on = [google_service_networking_connection.foobar]
   name             = "%s"
   region           = "us-central1"
   database_version = "SQLSERVER_2017_STANDARD"
@@ -1709,8 +1936,7 @@ resource "google_sql_database_instance" "instance" {
   settings {
     tier = "db-custom-1-3840"
     ip_configuration {
-      ipv4_enabled       = "false"
-      private_network    = data.google_compute_network.servicenet.self_link
+      ipv4_enabled       = "true"
     }
     sql_server_audit_config {
       bucket = "gs://%s"
@@ -1719,7 +1945,7 @@ resource "google_sql_database_instance" "instance" {
     }
   }
 }
-`, bucketName, networkName, addressName, databaseName, rootPassword, bucketName, retentionInterval, uploadInterval)
+`, bucketName, databaseName, rootPassword, bucketName, retentionInterval, uploadInterval)
 }
 
 func testGoogleSqlDatabaseInstance_SqlServerAuditOptionalBucket(databaseName, rootPassword, uploadInterval, retentionInterval string) string {
@@ -1741,27 +1967,9 @@ resource "google_sql_database_instance" "instance" {
 `, databaseName, rootPassword, retentionInterval, uploadInterval)
 }
 
-func testGoogleSqlDatabaseInstance_Timezone(networkName, addressName, databaseName, rootPassword, timezone string) string {
+func testGoogleSqlDatabaseInstance_Timezone(databaseName, rootPassword, timezone string) string {
 	return fmt.Sprintf(`
-data "google_compute_network" "servicenet" {
-  name = "%s"
-}
-
-resource "google_compute_global_address" "foobar" {
-  name          = "%s"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  prefix_length = 16
-  network       = data.google_compute_network.servicenet.self_link
-}
-
-resource "google_service_networking_connection" "foobar" {
-  network                 = data.google_compute_network.servicenet.self_link
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.foobar.name]
-}
 resource "google_sql_database_instance" "instance" {
-	depends_on = [google_service_networking_connection.foobar]
   name             = "%s"
   region           = "us-central1"
   database_version = "SQLSERVER_2017_STANDARD"
@@ -1770,13 +1978,12 @@ resource "google_sql_database_instance" "instance" {
   settings {
     tier = "db-custom-1-3840"
     ip_configuration {
-      ipv4_enabled       = "false"
-      private_network    = data.google_compute_network.servicenet.self_link
+      ipv4_enabled       = "true"
     }
     time_zone = "%s"
   }
 }
-`, networkName, addressName, databaseName, rootPassword, timezone)
+`, databaseName, rootPassword, timezone)
 }
 
 func testGoogleSqlDatabaseInstanceConfig_withoutReplica(instanceName string) string {
@@ -1830,6 +2037,179 @@ resource "google_sql_database_instance" "instance-failover" {
     failover_target = "true"
   }
 
+  settings {
+    tier = "db-n1-standard-1"
+  }
+}
+`, instanceName, failoverName)
+}
+
+func googleSqlDatabaseInstance_replicaPromote(instanceName, failoverName string) string {
+	return fmt.Sprintf(`
+resource "google_sql_database_instance" "instance" {
+  name                = "%s"
+  region              = "us-central1"
+  database_version    = "MYSQL_5_7"
+  deletion_protection = false
+
+  settings {
+    tier = "db-n1-standard-1"
+
+    backup_configuration {
+      binary_log_enabled = "true"
+      enabled            = "true"
+      start_time         = "18:00"
+    }
+  }
+}
+
+resource "google_sql_database_instance" "instance-failover" {
+  name                 = "%s"
+  region               = "us-central1"
+  database_version     = "MYSQL_5_7"
+  deletion_protection  = false
+
+  instance_type = "CLOUD_SQL_INSTANCE"
+  settings {
+    tier = "db-n1-standard-1"
+  }
+}
+`, instanceName, failoverName)
+}
+
+func googleSqlDatabaseInstance_replicaPromoteWithMasterInstanceName(instanceName, failoverName string) string {
+	return fmt.Sprintf(`
+resource "google_sql_database_instance" "instance" {
+  name                = "%s"
+  region              = "us-central1"
+  database_version    = "MYSQL_5_7"
+  deletion_protection = false
+
+  settings {
+    tier = "db-n1-standard-1"
+
+    backup_configuration {
+      binary_log_enabled = "true"
+      enabled            = "true"
+      start_time         = "18:00"
+    }
+  }
+}
+
+resource "google_sql_database_instance" "instance-failover" {
+  name                 = "%s"
+  region               = "us-central1"
+  master_instance_name = google_sql_database_instance.instance.name
+  database_version     = "MYSQL_5_7"
+  deletion_protection  = false
+  instance_type = "CLOUD_SQL_INSTANCE"
+  settings {
+    tier = "db-n1-standard-1"
+  }
+}
+`, instanceName, failoverName)
+}
+
+func googleSqlDatabaseInstance_replicaPromoteWithMasterInstanceNameAndReplicaConfiguration(instanceName string, failoverName string) string {
+	return fmt.Sprintf(`
+resource "google_sql_database_instance" "instance" {
+  name                = "%s"
+  region              = "us-central1"
+  database_version    = "MYSQL_5_7"
+  deletion_protection = false
+
+  settings {
+    tier = "db-n1-standard-1"
+
+    backup_configuration {
+      binary_log_enabled = "true"
+      enabled            = "true"
+      start_time         = "18:00"
+    }
+  }
+}
+
+resource "google_sql_database_instance" "instance-failover" {
+  name                 = "%s"
+  region               = "us-central1"
+  master_instance_name = google_sql_database_instance.instance.name
+  database_version     = "MYSQL_5_7"
+  deletion_protection  = false
+
+  replica_configuration {
+    failover_target = "true"
+  }
+
+  instance_type = "CLOUD_SQL_INSTANCE"
+  settings {
+    tier = "db-n1-standard-1"
+  }
+}
+`, instanceName, failoverName)
+}
+
+func googleSqlDatabaseInstance_replicaPromoteSkippedWithNoMasterInstanceNameAndNoReplicaConfiguration(instanceName string, failoverName string) string {
+	return fmt.Sprintf(`
+resource "google_sql_database_instance" "instance" {
+  name                = "%s"
+  region              = "us-central1"
+  database_version    = "MYSQL_5_7"
+  deletion_protection = false
+
+  settings {
+    tier = "db-n1-standard-1"
+
+    backup_configuration {
+      binary_log_enabled = "true"
+      enabled            = "true"
+      start_time         = "18:00"
+    }
+  }
+}
+
+resource "google_sql_database_instance" "instance-failover" {
+  name                 = "%s"
+  region               = "us-central1"
+  database_version     = "MYSQL_5_7"
+  deletion_protection  = false
+  settings {
+    tier = "db-n1-standard-1"
+  }
+  depends_on = [google_sql_database_instance.instance]
+}
+`, instanceName, failoverName)
+}
+
+func googleSqlDatabaseInstance_replicaPromoteWithReplicaConfiguration(instanceName string, failoverName string) string {
+	return fmt.Sprintf(`
+resource "google_sql_database_instance" "instance" {
+  name                = "%s"
+  region              = "us-central1"
+  database_version    = "MYSQL_5_7"
+  deletion_protection = false
+
+  settings {
+    tier = "db-n1-standard-1"
+
+    backup_configuration {
+      binary_log_enabled = "true"
+      enabled            = "true"
+      start_time         = "18:00"
+    }
+  }
+}
+
+resource "google_sql_database_instance" "instance-failover" {
+  name                 = "%s"
+  region               = "us-central1"
+  database_version     = "MYSQL_5_7"
+  deletion_protection  = false
+
+  replica_configuration {
+    failover_target = "true"
+  }
+
+  instance_type = "CLOUD_SQL_INSTANCE"
   settings {
     tier = "db-n1-standard-1"
   }
@@ -2141,9 +2521,10 @@ resource "google_sql_database_instance" "instance" {
   deletion_protection = false
   settings {
     tier                   = "db-f1-micro"
+    availability_type      = "REGIONAL"
     location_preference {
       zone           = "us-central1-f"
-	  secondary_zone = "us-central1-a"
+      secondary_zone = "us-central1-a"
     }
 
     ip_configuration {
@@ -2158,6 +2539,7 @@ resource "google_sql_database_instance" "instance" {
     backup_configuration {
       enabled    = "true"
       start_time = "19:19"
+      binary_log_enabled = true
     }
 
     activation_policy = "ALWAYS"
@@ -2804,6 +3186,61 @@ data "google_sql_backup_run" "backup" {
 `, context)
 }
 
+func checkPromoteReplicaSkipConfigurations(resourceName string) func(*terraform.State) error {
+	return func(s *terraform.State) error {
+		resource, ok := s.RootModule().Resources[resourceName]
+		if !ok {
+			return fmt.Errorf("Can't find %s in state", resourceName)
+		}
+
+		resourceAttributes := resource.Primary.Attributes
+		instanceType, ok := resourceAttributes["instance_type"]
+		if !ok {
+			return fmt.Errorf("Instance type is not present in state for %s", resourceName)
+		}
+		if instanceType != "READ_REPLICA_INSTANCE" {
+			return fmt.Errorf("instance_type is %s, it should be READ_REPLICA_INSTANCE.", instanceType)
+		}
+
+		masterInstanceName, ok := resourceAttributes["master_instance_name"]
+		if !ok && masterInstanceName != "" {
+			return fmt.Errorf("master_instance_name should be present in %s state.", resourceName)
+		}
+
+		return nil
+	}
+}
+
+func checkPromoteReplicaConfigurations(resourceName string) func(*terraform.State) error {
+	return func(s *terraform.State) error {
+		resource, ok := s.RootModule().Resources[resourceName]
+		if !ok {
+			return fmt.Errorf("Can't find %s in state", resourceName)
+		}
+
+		resourceAttributes := resource.Primary.Attributes
+		instanceType, ok := resourceAttributes["instance_type"]
+		if !ok {
+			return fmt.Errorf("Instance type is not present in state for %s", resourceName)
+		}
+		if instanceType != "CLOUD_SQL_INSTANCE" {
+			return fmt.Errorf("Error in replica promotion. instance_type is %s, it should be CLOUD_SQL_INSTANCE.", instanceType)
+		}
+
+		masterInstanceName, ok := resourceAttributes["master_instance_name"]
+		if ok && masterInstanceName != "" {
+			return fmt.Errorf("Error in replica promotion. master_instance_name should not be present in %s state.", resourceName)
+		}
+
+		replicaConfiguration, ok := resourceAttributes["replica_configuration"]
+		if ok && replicaConfiguration != "" {
+			return fmt.Errorf("Error in replica promotion. replica_configuration should not be present in %s state.", resourceName)
+		}
+
+		return nil
+	}
+}
+
 func checkInstanceTypeIsPresent(resourceName string) func(*terraform.State) error {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
@@ -2973,4 +3410,19 @@ resource "google_sql_database_instance" "main" {
 		tier = "db-custom-2-13312"
 	}
 }`, instance, databaseVersion, rootPassword)
+}
+
+func testGoogleSqlDatabaseInstance_activationPolicy(instance, databaseVersion, activationPolicy string, deletionProtection bool) string {
+	return fmt.Sprintf(`
+resource "google_sql_database_instance" "instance" {
+  name                = "%s"
+  region              = "us-central1"
+  database_version    = "%s"
+  deletion_protection = %t
+  settings {
+    tier              = "db-f1-micro"
+    activation_policy = "%s"
+  }
+}
+`, instance, databaseVersion, deletionProtection, activationPolicy)
 }

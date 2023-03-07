@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccorkstationsWorkstationCluster_update(t *testing.T) {
+func TestAccWorkstationsWorkstationCluster_update(t *testing.T) {
 	t.Parallel()
 
 	context := map[string]interface{}{
@@ -28,7 +28,7 @@ func TestAccorkstationsWorkstationCluster_update(t *testing.T) {
 				ImportStateVerifyIgnore: []string{"etag"},
 			},
 			{
-				Config: testAccorkstationsWorkstationCluster_update(context),
+				Config: testAccWorkstationsWorkstationCluster_update(context),
 			},
 			{
 				ResourceName:            "google_workstations_workstation_cluster.default",
@@ -40,7 +40,7 @@ func TestAccorkstationsWorkstationCluster_update(t *testing.T) {
 	})
 }
 
-func testAccorkstationsWorkstationCluster_update(context map[string]interface{}) string {
+func testAccWorkstationsWorkstationCluster_update(context map[string]interface{}) string {
 	return Nprintf(`
 resource "google_workstations_workstation_cluster" "default" {
   provider   		      	 = google-beta
@@ -50,7 +50,7 @@ resource "google_workstations_workstation_cluster" "default" {
   location   		        = "us-central1"
 
   labels = {
-	  update = "true"
+	foo = "bar"
   }
 }
 
@@ -58,10 +58,6 @@ resource "google_compute_network" "default" {
   provider                = google-beta
   name                    = "tf-test-workstation-cluster%{random_suffix}"
   auto_create_subnetworks = false
-}
-
-data "google_project" "project" {
-  provider = google-beta
 }
 
 resource "google_compute_subnetwork" "default" {

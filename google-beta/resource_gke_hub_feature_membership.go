@@ -27,7 +27,7 @@ import (
 	gkehub "github.com/GoogleCloudPlatform/declarative-resource-client-library/services/google/gkehub/beta"
 )
 
-func resourceGkeHubFeatureMembership() *schema.Resource {
+func ResourceGkeHubFeatureMembership() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceGkeHubFeatureMembershipCreate,
 		Read:   resourceGkeHubFeatureMembershipRead,
@@ -382,7 +382,8 @@ func GkeHubFeatureMembershipMeshSchema() *schema.Resource {
 			"control_plane": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Whether to automatically manage Service Mesh control planes. Possible values: CONTROL_PLANE_MANAGEMENT_UNSPECIFIED, AUTOMATIC, MANUAL",
+				Description: "**DEPRECATED** Whether to automatically manage Service Mesh control planes. Possible values: CONTROL_PLANE_MANAGEMENT_UNSPECIFIED, AUTOMATIC, MANUAL",
+				Deprecated:  "Deprecated in favor of the `management` field",
 			},
 
 			"management": {

@@ -23,56 +23,47 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccCloudIdentityGroup_cloudIdentityGroupsBasicExample(t *testing.T) {
+func TestAccSecurityCenterMuteConfig_sccMuteConfigExample(t *testing.T) {
 	t.Parallel()
 
 	context := map[string]interface{}{
-		"org_domain":    getTestOrgDomainFromEnv(t),
-		"cust_id":       getTestCustIdFromEnv(t),
+		"org_id":        getTestOrgFromEnv(t),
 		"random_suffix": randString(t, 10),
 	}
 
 	vcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckCloudIdentityGroupDestroyProducer(t),
+		CheckDestroy: testAccCheckSecurityCenterMuteConfigDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCloudIdentityGroup_cloudIdentityGroupsBasicExample(context),
+				Config: testAccSecurityCenterMuteConfig_sccMuteConfigExample(context),
 			},
 			{
-				ResourceName:            "google_cloud_identity_group.cloud_identity_group_basic",
+				ResourceName:            "google_scc_mute_config.default",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"initial_group_config"},
+				ImportStateVerifyIgnore: []string{"mute_config_id", "parent"},
 			},
 		},
 	})
 }
 
-func testAccCloudIdentityGroup_cloudIdentityGroupsBasicExample(context map[string]interface{}) string {
+func testAccSecurityCenterMuteConfig_sccMuteConfigExample(context map[string]interface{}) string {
 	return Nprintf(`
-resource "google_cloud_identity_group" "cloud_identity_group_basic" {
-  display_name         = "tf-test-my-identity-group%{random_suffix}"
-  initial_group_config = "WITH_INITIAL_OWNER"
-
-  parent = "customers/%{cust_id}"
-
-  group_key {
-  	id = "tf-test-my-identity-group%{random_suffix}@%{org_domain}"
-  }
-
-  labels = {
-    "cloudidentity.googleapis.com/groups.discussion_forum" = ""
-  }
+resource "google_scc_mute_config" "default" {
+  mute_config_id = "tf-test-my-config%{random_suffix}"
+  parent         = "organizations/%{org_id}"
+  filter         = "category: \"OS_VULNERABILITY\""
+  description    = "My Mute Config"
 }
 `, context)
 }
 
-func testAccCheckCloudIdentityGroupDestroyProducer(t *testing.T) func(s *terraform.State) error {
+func testAccCheckSecurityCenterMuteConfigDestroyProducer(t *testing.T) func(s *terraform.State) error {
 	return func(s *terraform.State) error {
 		for name, rs := range s.RootModule().Resources {
-			if rs.Type != "google_cloud_identity_group" {
+			if rs.Type != "google_scc_mute_config" {
 				continue
 			}
 			if strings.HasPrefix(name, "data.") {
@@ -81,7 +72,7 @@ func testAccCheckCloudIdentityGroupDestroyProducer(t *testing.T) func(s *terrafo
 
 			config := googleProviderConfig(t)
 
-			url, err := replaceVarsForTest(config, rs, "{{CloudIdentityBasePath}}{{name}}")
+			url, err := replaceVarsForTest(config, rs, "{{SecurityCenterBasePath}}{{name}}")
 			if err != nil {
 				return err
 			}
@@ -94,7 +85,7 @@ func testAccCheckCloudIdentityGroupDestroyProducer(t *testing.T) func(s *terrafo
 
 			_, err = sendRequest(config, "GET", billingProject, url, config.userAgent, nil)
 			if err == nil {
-				return fmt.Errorf("CloudIdentityGroup still exists at %s", url)
+				return fmt.Errorf("SecurityCenterMuteConfig still exists at %s", url)
 			}
 		}
 

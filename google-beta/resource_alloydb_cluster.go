@@ -24,7 +24,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAlloydbCluster() *schema.Resource {
+func ResourceAlloydbCluster() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceAlloydbClusterCreate,
 		Read:   resourceAlloydbClusterRead,
@@ -127,7 +127,7 @@ A duration in seconds with up to nine fractional digits, terminated by 's'. Exam
 						"enabled": {
 							Type:        schema.TypeBool,
 							Optional:    true,
-							Description: `Whether automated automated backups are enabled.`,
+							Description: `Whether automated backups are enabled.`,
 						},
 						"labels": {
 							Type:        schema.TypeMap,
