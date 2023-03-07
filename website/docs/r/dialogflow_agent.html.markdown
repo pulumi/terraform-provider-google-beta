@@ -130,8 +130,7 @@ The following arguments are supported:
   * TIER_ENTERPRISE: Enterprise tier (Essentials).
   * TIER_ENTERPRISE_PLUS: Enterprise tier (Plus).
   NOTE: Due to consistency issues, the provider will not read this field from the API. Drift is possible between
-  the Terraform state and Dialogflow if the agent tier is changed outside of Terraform.
-  Possible values are: `TIER_STANDARD`, `TIER_ENTERPRISE`, `TIER_ENTERPRISE_PLUS`.
+  the the provider state and Dialogflow if the agent tier is changed outside of the provider.
 
 * `project` - (Optional) The ID of the project in which the resource belongs.
     If it is not provided, the provider project is used.
