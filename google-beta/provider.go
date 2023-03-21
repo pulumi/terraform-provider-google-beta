@@ -1822,7 +1822,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 	}
 	userAgent := fmt.Sprintf("Pulumi/3.0 (%shttps://www.pulumi.com) pulumi-gcp/%s", partnerString, version.ProviderVersion)
 
-	config.userAgent = userAgent
+	config.UserAgent = userAgent
 
 	// opt in extension for adding to the User-Agent header
 	if ext := os.Getenv("GOOGLE_TERRAFORM_USERAGENT_EXTENSION"); ext != "" {
