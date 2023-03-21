@@ -1121,9 +1121,9 @@ func Provider() *schema.Provider {
 	return provider
 }
 
-// Generated resources: 305
+// Generated resources: 310
 // Generated IAM resources: 204
-// Total generated resources: 509
+// Total generated resources: 514
 func ResourceMap() map[string]*schema.Resource {
 	resourceMap, _ := ResourceMapWithErrors()
 	return resourceMap
@@ -1142,6 +1142,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_access_context_manager_access_policy_iam_binding":      ResourceIamBinding(AccessContextManagerAccessPolicyIamSchema, AccessContextManagerAccessPolicyIamUpdaterProducer, AccessContextManagerAccessPolicyIdParseFunc),
 			"google_access_context_manager_access_policy_iam_member":       ResourceIamMember(AccessContextManagerAccessPolicyIamSchema, AccessContextManagerAccessPolicyIamUpdaterProducer, AccessContextManagerAccessPolicyIdParseFunc),
 			"google_access_context_manager_access_policy_iam_policy":       ResourceIamPolicy(AccessContextManagerAccessPolicyIamSchema, AccessContextManagerAccessPolicyIamUpdaterProducer, AccessContextManagerAccessPolicyIdParseFunc),
+			"google_access_context_manager_authorized_orgs_desc":           ResourceAccessContextManagerAuthorizedOrgsDesc(),
 			"google_access_context_manager_gcp_user_access_binding":        ResourceAccessContextManagerGcpUserAccessBinding(),
 			"google_access_context_manager_service_perimeter":              ResourceAccessContextManagerServicePerimeter(),
 			"google_access_context_manager_service_perimeter_resource":     ResourceAccessContextManagerServicePerimeterResource(),
@@ -1166,6 +1167,8 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_api_gateway_gateway_iam_policy":                        ResourceIamPolicy(ApiGatewayGatewayIamSchema, ApiGatewayGatewayIamUpdaterProducer, ApiGatewayGatewayIdParseFunc),
 			"google_apigee_addons_config":                                  ResourceApigeeAddonsConfig(),
 			"google_apigee_endpoint_attachment":                            ResourceApigeeEndpointAttachment(),
+			"google_apigee_env_keystore":                                   ResourceApigeeEnvKeystore(),
+			"google_apigee_env_references":                                 ResourceApigeeEnvReferences(),
 			"google_apigee_envgroup":                                       ResourceApigeeEnvgroup(),
 			"google_apigee_envgroup_attachment":                            ResourceApigeeEnvgroupAttachment(),
 			"google_apigee_environment":                                    ResourceApigeeEnvironment(),
@@ -1215,6 +1218,7 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_bigquery_datapolicy_data_policy_iam_member":            ResourceIamMember(BigqueryDatapolicyDataPolicyIamSchema, BigqueryDatapolicyDataPolicyIamUpdaterProducer, BigqueryDatapolicyDataPolicyIdParseFunc),
 			"google_bigquery_datapolicy_data_policy_iam_policy":            ResourceIamPolicy(BigqueryDatapolicyDataPolicyIamSchema, BigqueryDatapolicyDataPolicyIamUpdaterProducer, BigqueryDatapolicyDataPolicyIdParseFunc),
 			"google_bigquery_data_transfer_config":                         ResourceBigqueryDataTransferConfig(),
+			"google_bigquery_capacity_commitment":                          ResourceBigqueryReservationCapacityCommitment(),
 			"google_bigquery_reservation":                                  ResourceBigqueryReservationReservation(),
 			"google_bigtable_app_profile":                                  ResourceBigtableAppProfile(),
 			"google_billing_budget":                                        ResourceBillingBudget(),
@@ -1639,12 +1643,16 @@ func ResourceMapWithErrors() (map[string]*schema.Resource, error) {
 			"google_vertex_ai_tensorboard":                                 ResourceVertexAITensorboard(),
 			"google_vpc_access_connector":                                  ResourceVPCAccessConnector(),
 			"google_workflows_workflow":                                    ResourceWorkflowsWorkflow(),
+			"google_workstations_workstation":                              ResourceWorkstationsWorkstation(),
 			"google_workstations_workstation_cluster":                      ResourceWorkstationsWorkstationCluster(),
 			"google_workstations_workstation_config":                       ResourceWorkstationsWorkstationConfig(),
 		},
 		map[string]*schema.Resource{
 			// ####### START handwritten resources ###########
 			"google_app_engine_application":                ResourceAppEngineApplication(),
+			"google_apigee_sharedflow":                     ResourceApigeeSharedFlow(),
+			"google_apigee_sharedflow_deployment":          ResourceApigeeSharedFlowDeployment(),
+			"google_apigee_flowhook":                       ResourceApigeeFlowhook(),
 			"google_bigquery_table":                        ResourceBigQueryTable(),
 			"google_bigtable_gc_policy":                    ResourceBigtableGCPolicy(),
 			"google_bigtable_instance":                     ResourceBigtableInstance(),
@@ -1798,7 +1806,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 		Zone:                d.Get("zone").(string),
 		UserProjectOverride: d.Get("user_project_override").(bool),
 		BillingProject:      d.Get("billing_project").(string),
-		userAgent:           p.UserAgent("terraform-provider-google-beta", version.ProviderVersion),
+		UserAgent:           p.UserAgent("terraform-provider-google-beta", version.ProviderVersion),
 	}
 
 	disablePartnerName := d.Get("disable_google_partner_name").(bool)
@@ -1818,8 +1826,8 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, p *schema.Pr
 
 	// opt in extension for adding to the User-Agent header
 	if ext := os.Getenv("GOOGLE_TERRAFORM_USERAGENT_EXTENSION"); ext != "" {
-		ua := config.userAgent
-		config.userAgent = fmt.Sprintf("%s %s", ua, ext)
+		ua := config.UserAgent
+		config.UserAgent = fmt.Sprintf("%s %s", ua, ext)
 	}
 
 	if v, ok := d.GetOk("request_timeout"); ok {

@@ -27,12 +27,12 @@ func TestAccWorkstationsWorkstationConfig_workstationConfigBasicExample(t *testi
 	t.Parallel()
 
 	context := map[string]interface{}{
-		"random_suffix": randString(t, 10),
+		"random_suffix": RandString(t, 10),
 	}
 
-	vcrTest(t, resource.TestCase{
+	VcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProvidersOiCS,
+		Providers:    TestAccProvidersOiCS,
 		CheckDestroy: testAccCheckWorkstationsWorkstationConfigDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
@@ -101,12 +101,12 @@ func TestAccWorkstationsWorkstationConfig_workstationConfigContainerExample(t *t
 	t.Parallel()
 
 	context := map[string]interface{}{
-		"random_suffix": randString(t, 10),
+		"random_suffix": RandString(t, 10),
 	}
 
-	vcrTest(t, resource.TestCase{
+	VcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProvidersOiCS,
+		Providers:    TestAccProvidersOiCS,
 		CheckDestroy: testAccCheckWorkstationsWorkstationConfigDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
@@ -183,12 +183,12 @@ func TestAccWorkstationsWorkstationConfig_workstationConfigPersistentDirectories
 	t.Parallel()
 
 	context := map[string]interface{}{
-		"random_suffix": randString(t, 10),
+		"random_suffix": RandString(t, 10),
 	}
 
-	vcrTest(t, resource.TestCase{
+	VcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProvidersOiCS,
+		Providers:    TestAccProvidersOiCS,
 		CheckDestroy: testAccCheckWorkstationsWorkstationConfigDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
@@ -269,12 +269,12 @@ func TestAccWorkstationsWorkstationConfig_workstationConfigShieldedInstanceConfi
 	t.Parallel()
 
 	context := map[string]interface{}{
-		"random_suffix": randString(t, 10),
+		"random_suffix": RandString(t, 10),
 	}
 
-	vcrTest(t, resource.TestCase{
+	VcrTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProvidersOiCS,
+		Providers:    TestAccProvidersOiCS,
 		CheckDestroy: testAccCheckWorkstationsWorkstationConfigDestroyProducer(t),
 		Steps: []resource.TestStep{
 			{
@@ -343,108 +343,6 @@ resource "google_workstations_workstation_config" "default" {
 `, context)
 }
 
-func TestAccWorkstationsWorkstationConfig_workstationConfigEncryptionKeyExample(t *testing.T) {
-	t.Parallel()
-
-	context := map[string]interface{}{
-		"random_suffix": randString(t, 10),
-	}
-
-	vcrTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProvidersOiCS,
-		CheckDestroy: testAccCheckWorkstationsWorkstationConfigDestroyProducer(t),
-		Steps: []resource.TestStep{
-			{
-				Config: testAccWorkstationsWorkstationConfig_workstationConfigEncryptionKeyExample(context),
-			},
-			{
-				ResourceName:            "google_workstations_workstation_config.default",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"workstation_config_id", "workstation_cluster_id", "location"},
-			},
-		},
-	})
-}
-
-func testAccWorkstationsWorkstationConfig_workstationConfigEncryptionKeyExample(context map[string]interface{}) string {
-	return Nprintf(`
-resource "google_compute_network" "default" {
-  provider                = google-beta
-  name                    = "tf-test-workstation-cluster%{random_suffix}"
-  auto_create_subnetworks = false
-}
-
-resource "google_compute_subnetwork" "default" {
-  provider      = google-beta
-  name          = "tf-test-workstation-cluster%{random_suffix}"
-  ip_cidr_range = "10.0.0.0/24"
-  region        = "us-central1"
-  network       = google_compute_network.default.name
-}
-
-resource "google_workstations_workstation_cluster" "default" {
-  provider               = google-beta
-  workstation_cluster_id = "tf-test-workstation-cluster%{random_suffix}"
-  network                = google_compute_network.default.id
-  subnetwork             = google_compute_subnetwork.default.id
-  location               = "us-central1"
-  
-  labels = {
-    "label" = "key"
-  }
-
-  annotations = {
-    label-one = "value-one"
-  }
-}
-
-resource "google_kms_key_ring" "default" {
-  name     = "tf-test-workstation-cluster%{random_suffix}"
-  location = "global"
-  provider = google-beta
-}
-
-resource "google_kms_crypto_key" "default" {
-  name            = "tf-test-workstation-cluster%{random_suffix}"
-  key_ring        = google_kms_key_ring.default.id
-  rotation_period = "100000s"
-  provider        = google-beta
-}
-
-resource "google_service_account" "default" {
-  account_id   = "cloud-workstations-kms"
-  display_name = "Service Account for Cloud Workstations"
-  provider     = google-beta
-}
-
-resource "google_workstations_workstation_config" "default" {
-  provider               = google-beta
-  workstation_config_id  = "tf-test-workstation-config%{random_suffix}"
-  workstation_cluster_id = google_workstations_workstation_cluster.default.workstation_cluster_id
-  location   		         = "us-central1"
-
-  host {
-    gce_instance {
-      machine_type                = "e2-standard-4"
-      boot_disk_size_gb           = 35
-      disable_public_ip_addresses = true
-      shielded_instance_config {
-        enable_secure_boot = true
-        enable_vtpm        = true
-      }
-    }
-  }
-
-  encryption_key {
-    kms_key                 = google_kms_crypto_key.default.id
-    kms_key_service_account = google_service_account.default.email
-  }
-}
-`, context)
-}
-
 func testAccCheckWorkstationsWorkstationConfigDestroyProducer(t *testing.T) func(s *terraform.State) error {
 	return func(s *terraform.State) error {
 		for name, rs := range s.RootModule().Resources {
@@ -455,7 +353,7 @@ func testAccCheckWorkstationsWorkstationConfigDestroyProducer(t *testing.T) func
 				continue
 			}
 
-			config := googleProviderConfig(t)
+			config := GoogleProviderConfig(t)
 
 			url, err := replaceVarsForTest(config, rs, "{{WorkstationsBasePath}}projects/{{project}}/locations/{{location}}/workstationClusters/{{workstation_cluster_id}}/workstationConfigs/{{workstation_config_id}}")
 			if err != nil {
@@ -468,7 +366,7 @@ func testAccCheckWorkstationsWorkstationConfigDestroyProducer(t *testing.T) func
 				billingProject = config.BillingProject
 			}
 
-			_, err = sendRequest(config, "GET", billingProject, url, config.userAgent, nil)
+			_, err = SendRequest(config, "GET", billingProject, url, config.UserAgent, nil)
 			if err == nil {
 				return fmt.Errorf("WorkstationsWorkstationConfig still exists at %s", url)
 			}

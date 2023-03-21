@@ -139,19 +139,18 @@ domain. If not specified, the value will default to AVAILABILITY_DOMAIN_ANY.`,
 				ForceNew:     true,
 				ValidateFunc: validateEnum([]string{"NONE", "IPSEC", ""}),
 				Description: `Indicates the user-supplied encryption option of this interconnect
-attachment:
+attachment. Can only be specified at attachment creation for PARTNER or
+DEDICATED attachments.
 
-NONE is the default value, which means that the attachment carries
-unencrypted traffic. VMs can send traffic to, or receive traffic
-from, this type of attachment.
+* NONE - This is the default value, which means that the VLAN attachment
+carries unencrypted traffic. VMs are able to send traffic to, or receive
+traffic from, such a VLAN attachment.
 
-IPSEC indicates that the attachment carries only traffic encrypted by
-an IPsec device such as an HA VPN gateway. VMs cannot directly send
-traffic to, or receive traffic from, such an attachment. To use
-IPsec-encrypted Cloud Interconnect create the attachment using this
-option.
-
-Not currently available publicly. Default value: "NONE" Possible values: ["NONE", "IPSEC"]`,
+* IPSEC - The VLAN attachment carries only encrypted traffic that is
+encrypted by an IPsec device, such as an HA VPN gateway or third-party
+IPsec VPN. VMs cannot directly send traffic to, or receive traffic from,
+such a VLAN attachment. To use HA VPN over Cloud Interconnect, the VLAN
+attachment must be created with this option. Default value: "NONE" Possible values: ["NONE", "IPSEC"]`,
 				Default: "NONE",
 			},
 			"interconnect": {
@@ -167,24 +166,23 @@ be set if type is PARTNER.`,
 				Type:     schema.TypeList,
 				Optional: true,
 				ForceNew: true,
-				Description: `URL of addresses that have been reserved for the interconnect
-attachment, Used only for interconnect attachment that has the
-encryption option as IPSEC.
+				Description: `URL of addresses that have been reserved for the interconnect attachment,
+Used only for interconnect attachment that has the encryption option as
+IPSEC.
 
-The addresses must be RFC 1918 IP address ranges. When creating HA
-VPN gateway over the interconnect attachment, if the attachment is
-configured to use an RFC 1918 IP address, then the VPN gateway's IP
-address will be allocated from the IP address range specified
-here.
+The addresses must be RFC 1918 IP address ranges. When creating HA VPN
+gateway over the interconnect attachment, if the attachment is configured
+to use an RFC 1918 IP address, then the VPN gateway's IP address will be
+allocated from the IP address range specified here.
 
 For example, if the HA VPN gateway's interface 0 is paired to this
-interconnect attachment, then an RFC 1918 IP address for the VPN
-gateway interface 0 will be allocated from the IP address specified
-for this interconnect attachment.
+interconnect attachment, then an RFC 1918 IP address for the VPN gateway
+interface 0 will be allocated from the IP address specified for this
+interconnect attachment.
 
 If this field is not specified for interconnect attachment that has
-encryption option as IPSEC, later on when creating HA VPN gateway on
-this interconnect attachment, the HA VPN gateway's IP address will be
+encryption option as IPSEC, later on when creating HA VPN gateway on this
+interconnect attachment, the HA VPN gateway's IP address will be
 allocated from regional external IP address pool.`,
 				Elem: &schema.Schema{
 					Type:             schema.TypeString,
@@ -297,7 +295,7 @@ Google and the customer, going to and from this network and region.`,
 
 func resourceComputeInterconnectAttachmentCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
-	userAgent, err := generateUserAgentString(d, config.userAgent)
+	userAgent, err := generateUserAgentString(d, config.UserAgent)
 	if err != nil {
 		return err
 	}
@@ -407,7 +405,7 @@ func resourceComputeInterconnectAttachmentCreate(d *schema.ResourceData, meta in
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
+	res, err := SendRequestWithTimeout(config, "POST", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return fmt.Errorf("Error creating InterconnectAttachment: %s", err)
 	}
@@ -419,7 +417,7 @@ func resourceComputeInterconnectAttachmentCreate(d *schema.ResourceData, meta in
 	}
 	d.SetId(id)
 
-	err = computeOperationWaitTime(
+	err = ComputeOperationWaitTime(
 		config, res, project, "Creating InterconnectAttachment", userAgent,
 		d.Timeout(schema.TimeoutCreate))
 
@@ -440,7 +438,7 @@ func resourceComputeInterconnectAttachmentCreate(d *schema.ResourceData, meta in
 
 func resourceComputeInterconnectAttachmentRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
-	userAgent, err := generateUserAgentString(d, config.userAgent)
+	userAgent, err := generateUserAgentString(d, config.UserAgent)
 	if err != nil {
 		return err
 	}
@@ -463,7 +461,7 @@ func resourceComputeInterconnectAttachmentRead(d *schema.ResourceData, meta inte
 		billingProject = bp
 	}
 
-	res, err := sendRequest(config, "GET", billingProject, url, userAgent, nil)
+	res, err := SendRequest(config, "GET", billingProject, url, userAgent, nil)
 	if err != nil {
 		return handleNotFoundError(err, d, fmt.Sprintf("ComputeInterconnectAttachment %q", d.Id()))
 	}
@@ -544,7 +542,7 @@ func resourceComputeInterconnectAttachmentRead(d *schema.ResourceData, meta inte
 
 func resourceComputeInterconnectAttachmentUpdate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
-	userAgent, err := generateUserAgentString(d, config.userAgent)
+	userAgent, err := generateUserAgentString(d, config.UserAgent)
 	if err != nil {
 		return err
 	}
@@ -601,7 +599,7 @@ func resourceComputeInterconnectAttachmentUpdate(d *schema.ResourceData, meta in
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
+	res, err := SendRequestWithTimeout(config, "PATCH", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutUpdate))
 
 	if err != nil {
 		return fmt.Errorf("Error updating InterconnectAttachment %q: %s", d.Id(), err)
@@ -609,7 +607,7 @@ func resourceComputeInterconnectAttachmentUpdate(d *schema.ResourceData, meta in
 		log.Printf("[DEBUG] Finished updating InterconnectAttachment %q: %#v", d.Id(), res)
 	}
 
-	err = computeOperationWaitTime(
+	err = ComputeOperationWaitTime(
 		config, res, project, "Updating InterconnectAttachment", userAgent,
 		d.Timeout(schema.TimeoutUpdate))
 
@@ -622,7 +620,7 @@ func resourceComputeInterconnectAttachmentUpdate(d *schema.ResourceData, meta in
 
 func resourceComputeInterconnectAttachmentDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
-	userAgent, err := generateUserAgentString(d, config.userAgent)
+	userAgent, err := generateUserAgentString(d, config.UserAgent)
 	if err != nil {
 		return err
 	}
@@ -651,12 +649,12 @@ func resourceComputeInterconnectAttachmentDelete(d *schema.ResourceData, meta in
 		billingProject = bp
 	}
 
-	res, err := sendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
+	res, err := SendRequestWithTimeout(config, "DELETE", billingProject, url, userAgent, obj, d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return handleNotFoundError(err, d, "InterconnectAttachment")
 	}
 
-	err = computeOperationWaitTime(
+	err = ComputeOperationWaitTime(
 		config, res, project, "Deleting InterconnectAttachment", userAgent,
 		d.Timeout(schema.TimeoutDelete))
 
@@ -749,7 +747,7 @@ func flattenComputeInterconnectAttachmentPrivateInterconnectInfo(v interface{}, 
 func flattenComputeInterconnectAttachmentPrivateInterconnectInfoTag8021q(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
-		if intVal, err := stringToFixed64(strVal); err == nil {
+		if intVal, err := StringToFixed64(strVal); err == nil {
 			return intVal
 		}
 	}
@@ -793,7 +791,7 @@ func flattenComputeInterconnectAttachmentName(v interface{}, d *schema.ResourceD
 func flattenComputeInterconnectAttachmentVlanTag8021q(v interface{}, d *schema.ResourceData, config *Config) interface{} {
 	// Handles the string fixed64 format
 	if strVal, ok := v.(string); ok {
-		if intVal, err := stringToFixed64(strVal); err == nil {
+		if intVal, err := StringToFixed64(strVal); err == nil {
 			return intVal
 		}
 	}

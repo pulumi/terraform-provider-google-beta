@@ -31,10 +31,16 @@ A Certificate corresponds to a signed X.509 certificate issued by a Certificate.
 
 
 ```hcl
-resource "google_privateca_certificate_authority" "test-ca" {
-  certificate_authority_id = "my-certificate-authority"
+resource "google_privateca_ca_pool" "default" {
   location = "us-central1"
-  pool = ""
+  name = "my-pool"
+  tier = "ENTERPRISE"
+}
+
+resource "google_privateca_certificate_authority" "default" {
+  location = "us-central1"
+  pool = google_privateca_ca_pool.default.name
+  certificate_authority_id = "my-authority"
   config {
     subject_config {
       subject {
@@ -71,10 +77,10 @@ resource "google_privateca_certificate_authority" "test-ca" {
 }
 
 resource "google_privateca_certificate" "default" {
-  pool = ""
   location = "us-central1"
-  certificate_authority = google_privateca_certificate_authority.test-ca.certificate_authority_id
-  lifetime = "860s"
+  pool = google_privateca_ca_pool.default.name
+  certificate_authority = google_privateca_certificate_authority.default.certificate_authority_id
+  lifetime = "86000s"
   name = "my-certificate"
   config {
     subject_config  {
@@ -95,7 +101,7 @@ resource "google_privateca_certificate" "default" {
     }
     x509_config {
       ca_options {
-        is_ca = false
+        is_ca = true
       }
       key_usage {
         base_key_usage {
@@ -105,6 +111,17 @@ resource "google_privateca_certificate" "default" {
         extended_key_usage {
           server_auth = false
         }
+      }
+      name_constraints {
+        critical                  = true
+        permitted_dns_names       = ["*.example.com"]
+        excluded_dns_names        = ["*.deny.example.com"]
+        permitted_ip_ranges       = ["10.0.0.0/8"]
+        excluded_ip_ranges        = ["10.1.1.0/24"]
+        permitted_email_addresses = [".example.com"]
+        excluded_email_addresses  = [".deny.example.com"]
+        permitted_uris            = [".example.com"]
+        excluded_uris             = [".deny.example.com"]
       }
     }
     public_key {
@@ -118,7 +135,13 @@ resource "google_privateca_certificate" "default" {
 
 
 ```hcl
-resource "google_privateca_certificate_template" "template" {
+resource "google_privateca_ca_pool" "default" {
+  location = "us-central1"
+  name = "my-pool"
+  tier = "ENTERPRISE"
+}
+
+resource "google_privateca_certificate_template" "default" {
   location    = "us-central1"
   name = "my-certificate-template"
   description = "An updated sample certificate template"
@@ -193,10 +216,10 @@ resource "google_privateca_certificate_template" "template" {
   }
 }
 
-resource "google_privateca_certificate_authority" "test-ca" {
-  pool = ""
-  certificate_authority_id = "my-certificate-authority"
+resource "google_privateca_certificate_authority" "default" {
   location = "us-central1"
+  pool = google_privateca_ca_pool.default.name
+  certificate_authority_id = "my-authority"
   config {
     subject_config {
       subject {
@@ -236,23 +259,29 @@ resource "google_privateca_certificate_authority" "test-ca" {
 
 
 resource "google_privateca_certificate" "default" {
-  pool = ""
   location = "us-central1"
-  certificate_authority = google_privateca_certificate_authority.test-ca.certificate_authority_id
-  lifetime = "860s"
+  pool = google_privateca_ca_pool.default.name
+  certificate_authority = google_privateca_certificate_authority.default.certificate_authority_id
   name = "my-certificate"
+  lifetime = "860s"
   pem_csr = file("test-fixtures/rsa_csr.pem")
-  certificate_template = google_privateca_certificate_template.template.id
+  certificate_template = google_privateca_certificate_template.default.id
 }
 ```
 ## Example Usage - Privateca Certificate Csr
 
 
 ```hcl
-resource "google_privateca_certificate_authority" "test-ca" {
-  pool = ""
-  certificate_authority_id = "my-certificate-authority"
+resource "google_privateca_ca_pool" "default" {
   location = "us-central1"
+  name = "my-pool"
+  tier = "ENTERPRISE"
+}
+
+resource "google_privateca_certificate_authority" "default" {
+  location = "us-central1"
+  pool = google_privateca_ca_pool.default.name
+  certificate_authority_id = "my-authority"
   config {
     subject_config {
       subject {
@@ -292,11 +321,11 @@ resource "google_privateca_certificate_authority" "test-ca" {
 
 
 resource "google_privateca_certificate" "default" {
-  pool = ""
   location = "us-central1"
-  certificate_authority = google_privateca_certificate_authority.test-ca.certificate_authority_id
-  lifetime = "860s"
+  pool = google_privateca_ca_pool.default.name
+  certificate_authority = google_privateca_certificate_authority.default.certificate_authority_id
   name = "my-certificate"
+  lifetime = "860s"
   pem_csr = file("test-fixtures/rsa_csr.pem")
 }
 ```
@@ -304,12 +333,16 @@ resource "google_privateca_certificate" "default" {
 
 
 ```hcl
-resource "google_privateca_certificate_authority" "authority" {
-  // This example assumes this pool already exists.
-  // Pools cannot be deleted in normal test circumstances, so we depend on static pools
-  pool = ""
-  certificate_authority_id = "my-authority"
+resource "google_privateca_ca_pool" "default" {
   location = "us-central1"
+  name = "my-pool"
+  tier = "ENTERPRISE"
+}
+
+resource "google_privateca_certificate_authority" "default" {
+  location = "us-central1"
+  pool = google_privateca_ca_pool.default.name
+  certificate_authority_id = "my-authority"
   config {
     subject_config {
       subject {
@@ -349,10 +382,10 @@ resource "google_privateca_certificate_authority" "authority" {
 
 
 resource "google_privateca_certificate" "default" {
-  pool = ""
   location = "us-central1"
-  lifetime = "860s"
+  pool = google_privateca_ca_pool.default.name
   name = "my-certificate"
+  lifetime = "860s"
   config {
     subject_config  {
       subject {
@@ -386,7 +419,7 @@ resource "google_privateca_certificate" "default" {
   }
   // Certificates require an authority to exist in the pool, though they don't
   // need to be explicitly connected to it
-  depends_on = [google_privateca_certificate_authority.authority]
+  depends_on = [google_privateca_certificate_authority.default]
 }
 ```
 
@@ -494,6 +527,11 @@ The following arguments are supported:
   (Required)
   Indicates the intended use for keys that correspond to a certificate.
   Structure is [documented below](#nested_key_usage).
+
+* `name_constraints` -
+  (Optional)
+  Describes the X.509 name constraints extension.
+  Structure is [documented below](#nested_name_constraints).
 
 
 <a name="nested_additional_extensions"></a>The `additional_extensions` block supports:
@@ -635,6 +673,68 @@ The following arguments are supported:
   (Required)
   An ObjectId specifies an object identifier (OID). These provide context and describe types in ASN.1 messages.
 
+<a name="nested_name_constraints"></a>The `name_constraints` block supports:
+
+* `critical` -
+  (Required)
+  Indicates whether or not the name constraints are marked critical.
+
+* `permitted_dns_names` -
+  (Optional)
+  Contains permitted DNS names. Any DNS name that can be
+  constructed by simply adding zero or more labels to
+  the left-hand side of the name satisfies the name constraint.
+  For example, `example.com`, `www.example.com`, `www.sub.example.com`
+  would satisfy `example.com` while `example1.com` does not.
+
+* `excluded_dns_names` -
+  (Optional)
+  Contains excluded DNS names. Any DNS name that can be
+  constructed by simply adding zero or more labels to
+  the left-hand side of the name satisfies the name constraint.
+  For example, `example.com`, `www.example.com`, `www.sub.example.com`
+  would satisfy `example.com` while `example1.com` does not.
+
+* `permitted_ip_ranges` -
+  (Optional)
+  Contains the permitted IP ranges. For IPv4 addresses, the ranges
+  are expressed using CIDR notation as specified in RFC 4632.
+  For IPv6 addresses, the ranges are expressed in similar encoding as IPv4
+  addresses.
+
+* `excluded_ip_ranges` -
+  (Optional)
+  Contains the excluded IP ranges. For IPv4 addresses, the ranges
+  are expressed using CIDR notation as specified in RFC 4632.
+  For IPv6 addresses, the ranges are expressed in similar encoding as IPv4
+  addresses.
+
+* `permitted_email_addresses` -
+  (Optional)
+  Contains the permitted email addresses. The value can be a particular
+  email address, a hostname to indicate all email addresses on that host or
+  a domain with a leading period (e.g. `.example.com`) to indicate
+  all email addresses in that domain.
+
+* `excluded_email_addresses` -
+  (Optional)
+  Contains the excluded email addresses. The value can be a particular
+  email address, a hostname to indicate all email addresses on that host or
+  a domain with a leading period (e.g. `.example.com`) to indicate
+  all email addresses in that domain.
+
+* `permitted_uris` -
+  (Optional)
+  Contains the permitted URIs that apply to the host part of the name.
+  The value can be a hostname or a domain with a
+  leading period (like `.example.com`)
+
+* `excluded_uris` -
+  (Optional)
+  Contains the excluded URIs that apply to the host part of the name.
+  The value can be a hostname or a domain with a
+  leading period (like `.example.com`)
+
 <a name="nested_subject_config"></a>The `subject_config` block supports:
 
 * `subject` -
@@ -751,45 +851,55 @@ In addition to the arguments listed above, the following computed attributes are
 <a name="nested_revocation_details"></a>The `revocation_details` block contains:
 
 * `revocation_state` -
+  (Output)
   Indicates why a Certificate was revoked.
 
 * `revocation_time` -
+  (Output)
   The time at which this Certificate was revoked.
 
 <a name="nested_certificate_description"></a>The `certificate_description` block contains:
 
 * `subject_description` -
+  (Output)
   Describes some of the values in a certificate that are related to the subject and lifetime.
   Structure is [documented below](#nested_subject_description).
 
 * `x509_description` -
+  (Output)
   A structured description of the issued X.509 certificate.
   Structure is [documented below](#nested_x509_description).
 
 * `config_values` -
-  (Deprecated)
+  (Output, Deprecated)
   Describes some of the technical fields in a certificate.
   Structure is [documented below](#nested_config_values).
 
 * `public_key` -
+  (Output)
   A PublicKey describes a public key.
   Structure is [documented below](#nested_public_key).
 
 * `subject_key_id` -
+  (Output)
   Provides a means of identifiying certificates that contain a particular public key, per https://tools.ietf.org/html/rfc5280#section-4.2.1.2.
   Structure is [documented below](#nested_subject_key_id).
 
 * `authority_key_id` -
+  (Output)
   Identifies the subjectKeyId of the parent certificate, per https://tools.ietf.org/html/rfc5280#section-4.2.1.1
   Structure is [documented below](#nested_authority_key_id).
 
 * `crl_distribution_points` -
+  (Output)
   Describes a list of locations to obtain CRL information, i.e. the DistributionPoint.fullName described by https://tools.ietf.org/html/rfc5280#section-4.2.1.13
 
 * `aia_issuing_certificate_urls` -
+  (Output)
   Describes lists of issuer CA certificate URLs that appear in the "Authority Information Access" extension in the certificate.
 
 * `cert_fingerprint` -
+  (Output)
   The hash of the x.509 certificate.
   Structure is [documented below](#nested_cert_fingerprint).
 
@@ -797,67 +907,86 @@ In addition to the arguments listed above, the following computed attributes are
 <a name="nested_subject_description"></a>The `subject_description` block contains:
 
 * `subject` -
+  (Output)
   Contains distinguished name fields such as the location and organization.
   Structure is [documented below](#nested_subject).
 
 * `subject_alt_name` -
+  (Output)
   The subject alternative name fields.
   Structure is [documented below](#nested_subject_alt_name).
 
 * `hex_serial_number` -
+  (Output)
   The serial number encoded in lowercase hexadecimal.
 
 * `lifetime` -
+  (Output)
   For convenience, the actual lifetime of an issued certificate. Corresponds to 'notAfterTime' - 'notBeforeTime'.
 
 * `not_before_time` -
+  (Output)
   The time at which the certificate becomes valid.
 
 * `not_after_time` -
+  (Output)
   The time at which the certificate expires.
 
 
 <a name="nested_subject"></a>The `subject` block contains:
 
 * `country_code` -
+  (Output)
   The country code of the subject.
 
 * `organization` -
+  (Output)
   The organization of the subject.
 
 * `organizational_unit` -
+  (Output)
   The organizationalUnit of the subject.
 
 * `locality` -
+  (Output)
   The locality or city of the subject.
 
 * `province` -
+  (Output)
   The province of the subject.
 
 * `street_address` -
+  (Output)
   The streetAddress or city of the subject.
 
 * `postal_code` -
+  (Output)
   The postalCode or city of the subject.
 
 * `common_name` -
+  (Output)
   The "common name" of the distinguished name.
 
 <a name="nested_subject_alt_name"></a>The `subject_alt_name` block contains:
 
 * `dns_names` -
+  (Output)
   Contains only valid, fully-qualified host names.
 
 * `uris` -
+  (Output)
   Contains only valid RFC 3986 URIs.
 
 * `email_addresses` -
+  (Output)
   Contains only valid RFC 2822 E-mail addresses.
 
 * `ip_addresses` -
+  (Output)
   Contains only valid 32-bit IPv4 addresses or RFC 4291 IPv6 addresses.
 
 * `custom_sans` -
+  (Output)
   Contains additional subject alternative name values.
   Structure is [documented below](#nested_custom_sans).
 
@@ -865,47 +994,62 @@ In addition to the arguments listed above, the following computed attributes are
 <a name="nested_custom_sans"></a>The `custom_sans` block contains:
 
 * `obect_id` -
+  (Output)
   Describes how some of the technical fields in a certificate should be populated.
   Structure is [documented below](#nested_obect_id).
 
 * `critical` -
+  (Output)
   Required. Indicates whether or not this extension is critical (i.e., if the client does not know how to handle this extension, the client should consider this to be an error).
 
 * `value` -
+  (Output)
   The value of this X.509 extension.
 
 
 <a name="nested_obect_id"></a>The `obect_id` block contains:
 
 * `object_id_path` -
+  (Output)
   An ObjectId specifies an object identifier (OID). These provide context and describe types in ASN.1 messages.
 
 <a name="nested_x509_description"></a>The `x509_description` block contains:
 
 * `additional_extensions` -
+  (Output)
   Describes custom X.509 extensions.
   Structure is [documented below](#nested_additional_extensions).
 
 * `policy_ids` -
+  (Output)
   Describes the X.509 certificate policy object identifiers, per https://tools.ietf.org/html/rfc5280#section-4.2.1.4.
   Structure is [documented below](#nested_policy_ids).
 
 * `aia_ocsp_servers` -
+  (Output)
   Describes Online Certificate Status Protocol (OCSP) endpoint addresses that appear in the
   "Authority Information Access" extension in the certificate.
 
 * `ca_options` -
+  (Output)
   Describes values that are relevant in a CA certificate.
   Structure is [documented below](#nested_ca_options).
 
 * `key_usage` -
+  (Output)
   Indicates the intended use for keys that correspond to a certificate.
   Structure is [documented below](#nested_key_usage).
+
+* `name_constraints` -
+  (Output)
+  Describes the X.509 name constraints extension.
+  Structure is [documented below](#nested_name_constraints).
 
 
 <a name="nested_additional_extensions"></a>The `additional_extensions` block contains:
 
 * `critical` -
+  (Output)
   Indicates whether or not this extension is critical (i.e., if the client does not know how to
   handle this extension, the client should consider this to be an error).
 
@@ -914,6 +1058,7 @@ In addition to the arguments listed above, the following computed attributes are
   The value of this X.509 extension. A base64-encoded string.
 
 * `object_id` -
+  (Output)
   Describes values that are relevant in a CA certificate.
   Structure is [documented below](#nested_object_id).
 
@@ -921,33 +1066,40 @@ In addition to the arguments listed above, the following computed attributes are
 <a name="nested_object_id"></a>The `object_id` block contains:
 
 * `object_id_path` -
+  (Output)
   An ObjectId specifies an object identifier (OID). These provide context and describe types in ASN.1 messages.
 
 <a name="nested_policy_ids"></a>The `policy_ids` block contains:
 
 * `object_id_path` -
+  (Output)
   An ObjectId specifies an object identifier (OID). These provide context and describe types in ASN.1 messages.
 
 <a name="nested_ca_options"></a>The `ca_options` block contains:
 
 * `is_ca` -
+  (Output)
   When true, the "CA" in Basic Constraints extension will be set to true.
 
 * `max_issuer_path_length` -
+  (Output)
   Refers to the "path length constraint" in Basic Constraints extension. For a CA certificate, this value describes the depth of
   subordinate CA certificates that are allowed. If this value is less than 0, the request will fail.
 
 <a name="nested_key_usage"></a>The `key_usage` block contains:
 
 * `base_key_usage` -
+  (Output)
   Describes high-level ways in which a key may be used.
   Structure is [documented below](#nested_base_key_usage).
 
 * `extended_key_usage` -
+  (Output)
   Describes high-level ways in which a key may be used.
   Structure is [documented below](#nested_extended_key_usage).
 
 * `unknown_extended_key_usages` -
+  (Output)
   An ObjectId specifies an object identifier (OID). These provide context and describe types in ASN.1 messages.
   Structure is [documented below](#nested_unknown_extended_key_usages).
 
@@ -955,60 +1107,139 @@ In addition to the arguments listed above, the following computed attributes are
 <a name="nested_base_key_usage"></a>The `base_key_usage` block contains:
 
 * `digital_signature` -
+  (Output)
   The key may be used for digital signatures.
 
 * `content_commitment` -
+  (Output)
   The key may be used for cryptographic commitments. Note that this may also be referred to as "non-repudiation".
 
 * `key_encipherment` -
+  (Output)
   The key may be used to encipher other keys.
 
 * `data_encipherment` -
+  (Output)
   The key may be used to encipher data.
 
 * `key_agreement` -
+  (Output)
   The key may be used in a key agreement protocol.
 
 * `cert_sign` -
+  (Output)
   The key may be used to sign certificates.
 
 * `crl_sign` -
+  (Output)
   The key may be used sign certificate revocation lists.
 
 * `encipher_only` -
+  (Output)
   The key may be used to encipher only.
 
 * `decipher_only` -
+  (Output)
   The key may be used to decipher only.
 
 <a name="nested_extended_key_usage"></a>The `extended_key_usage` block contains:
 
 * `server_auth` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.1. Officially described as "TLS WWW server authentication", though regularly used for non-WWW TLS.
 
 * `client_auth` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.2. Officially described as "TLS WWW client authentication", though regularly used for non-WWW TLS.
 
 * `code_signing` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.3. Officially described as "Signing of downloadable executable code client authentication".
 
 * `email_protection` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.4. Officially described as "Email protection".
 
 * `time_stamping` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.8. Officially described as "Binding the hash of an object to a time".
 
 * `ocsp_signing` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.9. Officially described as "Signing OCSP responses".
 
 <a name="nested_unknown_extended_key_usages"></a>The `unknown_extended_key_usages` block contains:
 
 * `object_id_path` -
+  (Output)
   An ObjectId specifies an object identifier (OID). These provide context and describe types in ASN.1 messages.
+
+<a name="nested_name_constraints"></a>The `name_constraints` block contains:
+
+* `critical` -
+  (Output)
+  Indicates whether or not the name constraints are marked critical.
+
+* `permitted_dns_names` -
+  (Output)
+  Contains permitted DNS names. Any DNS name that can be
+  constructed by simply adding zero or more labels to
+  the left-hand side of the name satisfies the name constraint.
+  For example, `example.com`, `www.example.com`, `www.sub.example.com`
+  would satisfy `example.com` while `example1.com` does not.
+
+* `excluded_dns_names` -
+  (Output)
+  Contains excluded DNS names. Any DNS name that can be
+  constructed by simply adding zero or more labels to
+  the left-hand side of the name satisfies the name constraint.
+  For example, `example.com`, `www.example.com`, `www.sub.example.com`
+  would satisfy `example.com` while `example1.com` does not.
+
+* `permitted_ip_ranges` -
+  (Output)
+  Contains the permitted IP ranges. For IPv4 addresses, the ranges
+  are expressed using CIDR notation as specified in RFC 4632.
+  For IPv6 addresses, the ranges are expressed in similar encoding as IPv4
+  addresses.
+
+* `excluded_ip_ranges` -
+  (Output)
+  Contains the excluded IP ranges. For IPv4 addresses, the ranges
+  are expressed using CIDR notation as specified in RFC 4632.
+  For IPv6 addresses, the ranges are expressed in similar encoding as IPv4
+  addresses.
+
+* `permitted_email_addresses` -
+  (Output)
+  Contains the permitted email addresses. The value can be a particular
+  email address, a hostname to indicate all email addresses on that host or
+  a domain with a leading period (e.g. `.example.com`) to indicate
+  all email addresses in that domain.
+
+* `excluded_email_addresses` -
+  (Output)
+  Contains the excluded email addresses. The value can be a particular
+  email address, a hostname to indicate all email addresses on that host or
+  a domain with a leading period (e.g. `.example.com`) to indicate
+  all email addresses in that domain.
+
+* `permitted_uris` -
+  (Output)
+  Contains the permitted URIs that apply to the host part of the name.
+  The value can be a hostname or a domain with a
+  leading period (like `.example.com`)
+
+* `excluded_uris` -
+  (Output)
+  Contains the excluded URIs that apply to the host part of the name.
+  The value can be a hostname or a domain with a
+  leading period (like `.example.com`)
 
 <a name="nested_config_values"></a>The `config_values` block contains:
 
 * `key_usage` -
+  (Output)
   Indicates the intended use for keys that correspond to a certificate.
   Structure is [documented below](#nested_key_usage).
 
@@ -1016,14 +1247,17 @@ In addition to the arguments listed above, the following computed attributes are
 <a name="nested_key_usage"></a>The `key_usage` block contains:
 
 * `base_key_usage` -
+  (Output)
   Describes high-level ways in which a key may be used.
   Structure is [documented below](#nested_base_key_usage).
 
 * `extended_key_usage` -
+  (Output)
   Describes high-level ways in which a key may be used.
   Structure is [documented below](#nested_extended_key_usage).
 
 * `unknown_extended_key_usages` -
+  (Output)
   An ObjectId specifies an object identifier (OID). These provide context and describe types in ASN.1 messages.
   Structure is [documented below](#nested_unknown_extended_key_usages).
 
@@ -1031,6 +1265,7 @@ In addition to the arguments listed above, the following computed attributes are
 <a name="nested_base_key_usage"></a>The `base_key_usage` block contains:
 
 * `key_usage_options` -
+  (Output)
   Describes high-level ways in which a key may be used.
   Structure is [documented below](#nested_key_usage_options).
 
@@ -1038,55 +1273,71 @@ In addition to the arguments listed above, the following computed attributes are
 <a name="nested_key_usage_options"></a>The `key_usage_options` block contains:
 
 * `digital_signature` -
+  (Output)
   The key may be used for digital signatures.
 
 * `content_commitment` -
+  (Output)
   The key may be used for cryptographic commitments. Note that this may also be referred to as "non-repudiation".
 
 * `key_encipherment` -
+  (Output)
   The key may be used to encipher other keys.
 
 * `data_encipherment` -
+  (Output)
   The key may be used to encipher data.
 
 * `key_agreement` -
+  (Output)
   The key may be used in a key agreement protocol.
 
 * `cert_sign` -
+  (Output)
   The key may be used to sign certificates.
 
 * `crl_sign` -
+  (Output)
   The key may be used sign certificate revocation lists.
 
 * `encipher_only` -
+  (Output)
   The key may be used to encipher only.
 
 * `decipher_only` -
+  (Output)
   The key may be used to decipher only.
 
 <a name="nested_extended_key_usage"></a>The `extended_key_usage` block contains:
 
 * `server_auth` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.1. Officially described as "TLS WWW server authentication", though regularly used for non-WWW TLS.
 
 * `client_auth` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.2. Officially described as "TLS WWW client authentication", though regularly used for non-WWW TLS.
 
 * `code_signing` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.3. Officially described as "Signing of downloadable executable code client authentication".
 
 * `email_protection` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.4. Officially described as "Email protection".
 
 * `time_stamping` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.8. Officially described as "Binding the hash of an object to a time".
 
 * `ocsp_signing` -
+  (Output)
   Corresponds to OID 1.3.6.1.5.5.7.3.9. Officially described as "Signing OCSP responses".
 
 <a name="nested_unknown_extended_key_usages"></a>The `unknown_extended_key_usages` block contains:
 
 * `obect_id` -
+  (Output)
   Required. Describes how some of the technical fields in a certificate should be populated.
   Structure is [documented below](#nested_obect_id).
 
@@ -1094,29 +1345,35 @@ In addition to the arguments listed above, the following computed attributes are
 <a name="nested_obect_id"></a>The `obect_id` block contains:
 
 * `object_id_path` -
+  (Output)
   An ObjectId specifies an object identifier (OID). These provide context and describe types in ASN.1 messages.
 
 <a name="nested_public_key"></a>The `public_key` block contains:
 
 * `key` -
+  (Output)
   Required. A public key. When this is specified in a request, the padding and encoding can be any of the options described by the respective 'KeyType' value. When this is generated by the service, it will always be an RFC 5280 SubjectPublicKeyInfo structure containing an algorithm identifier and a key. A base64-encoded string.
 
 * `format` -
+  (Output)
   The format of the public key. Currently, only PEM format is supported.
 
 <a name="nested_subject_key_id"></a>The `subject_key_id` block contains:
 
 * `key_id` -
+  (Output)
   Optional. The value of this KeyId encoded in lowercase hexadecimal. This is most likely the 160 bit SHA-1 hash of the public key.
 
 <a name="nested_authority_key_id"></a>The `authority_key_id` block contains:
 
 * `key_id` -
+  (Output)
   Optional. The value of this KeyId encoded in lowercase hexadecimal. This is most likely the 160 bit SHA-1 hash of the public key.
 
 <a name="nested_cert_fingerprint"></a>The `cert_fingerprint` block contains:
 
 * `sha256_hash` -
+  (Output)
   The SHA 256 hash, encoded in hexadecimal, of the DER x509 certificate.
 
 ## Timeouts
