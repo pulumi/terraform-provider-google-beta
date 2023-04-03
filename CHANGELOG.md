@@ -158,7 +158,6 @@ BUG FIXES:
 * datacatalog: fixed `google_data_catalog_tag` only allowing 10 tags by increasing the page size to 1000 ([#5362](https://github.com/hashicorp/terraform-provider-google-beta/pull/5362))
 * firebase: fixed `google_firebase_project` to succeed on apply when the project already has firebase enabled ([#5379](https://github.com/hashicorp/terraform-provider-google-beta/pull/5379))
 
-
 ## 4.59.0 (March 28, 2023)
 
 FEATURES:
