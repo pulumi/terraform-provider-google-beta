@@ -667,6 +667,14 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
+			// Reverted framework conversions
+			"google_client_config":             DataSourceGoogleClientConfigSdk(),
+			"google_client_openid_userinfo":    DataSourceGoogleClientOpenIDUserinfoSdk(),
+			"google_dns_keys":                  DataSourceDNSKeysSdk(),
+			"google_dns_managed_zone":          DataSourceDnsManagedZoneSdk(),
+			"google_dns_record_set":            DataSourceDnsRecordSetSdk(),
+			"google_firebase_apple_app_config": DataSourceGoogleFirebaseAppleAppConfigSdk(),
+
 			// ####### START datasources ###########
 			"google_access_approval_folder_service_account":       DataSourceAccessApprovalFolderServiceAccount(),
 			"google_access_approval_organization_service_account": DataSourceAccessApprovalOrganizationServiceAccount(),
