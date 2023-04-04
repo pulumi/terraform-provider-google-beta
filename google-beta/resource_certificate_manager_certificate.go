@@ -595,15 +595,15 @@ func flattenCertificateManagerCertificateSelfManaged(v interface{}, d *schema.Re
 	return []interface{}{transformed}
 }
 
-func flattenCertificateManagerCertificateSelfManagedCertificatePem(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+func flattenCertificateManagerCertificateSelfManagedCertificatePem(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
 	return v
 }
 
-func flattenCertificateManagerCertificateSelfManagedPrivateKeyPem(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+func flattenCertificateManagerCertificateSelfManagedPrivateKeyPem(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
 	return v
 }
 
-func flattenCertificateManagerCertificateManaged(v interface{}, d *schema.ResourceData, config *Config) interface{} {
+func flattenCertificateManagerCertificateManaged(v interface{}, d *schema.ResourceData, config *transport_tpg.Config) interface{} {
 	if v == nil {
 		return nil
 	}
