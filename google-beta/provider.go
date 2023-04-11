@@ -676,6 +676,7 @@ func Provider() *schema.Provider {
 			"google_dns_managed_zone":          DataSourceDnsManagedZoneSdk(),
 			"google_dns_record_set":            DataSourceDnsRecordSetSdk(),
 			"google_firebase_apple_app_config": DataSourceGoogleFirebaseAppleAppConfigSdk(),
+			"google_firebase_web_app_config":   DataSourceGoogleFirebaseWebAppConfigSdk(),
 
 			// ####### START datasources ###########
 			"google_access_approval_folder_service_account":       DataSourceAccessApprovalFolderServiceAccount(),
