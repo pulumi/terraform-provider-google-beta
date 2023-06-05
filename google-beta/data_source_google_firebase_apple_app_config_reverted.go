@@ -56,9 +56,15 @@ func dataSourceGoogleFirebaseAppleAppConfigRead(d *schema.ResourceData, meta int
 		return err
 	}
 
-	res, err := SendRequest(config, "GET", project, url, userAgent, nil)
+	res, err := transport_tpg.SendRequest(transport_tpg.SendRequestOptions{
+		Config:    config,
+		Method:    "GET",
+		Project:   project,
+		RawURL:    url,
+		UserAgent: userAgent,
+	})
 	if err != nil {
-		return handleNotFoundError(err, d, fmt.Sprintf("FirebaseAppleApp config %q", d.Id()))
+		return transport_tpg.HandleNotFoundError(err, d, fmt.Sprintf("FirebaseAppleApp config %q", d.Id()))
 	}
 
 	if err = d.Set("config_filename", res["configFilename"]); err != nil {

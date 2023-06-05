@@ -73,7 +73,7 @@ func dataSourceDnsManagedZoneRead(d *schema.ResourceData, meta interface{}) erro
 	zone, err := config.NewDnsClient(userAgent).ManagedZones.Get(
 		project, name).Do()
 	if err != nil {
-		return handleNotFoundError(err, d, fmt.Sprintf("DataSourceDnsManagedZone %q", name))
+		return transport_tpg.HandleNotFoundError(err, d, fmt.Sprintf("DataSourceDnsManagedZone %q", name))
 	}
 
 	if err := d.Set("dns_name", zone.DnsName); err != nil {

@@ -67,7 +67,7 @@ func dataSourceDnsRecordSetRead(d *schema.ResourceData, meta interface{}) error 
 
 	resp, err := config.NewDnsClient(userAgent).ResourceRecordSets.List(project, zone).Name(name).Type(dnsType).Do()
 	if err != nil {
-		return handleNotFoundError(err, d, fmt.Sprintf("DataSourceDnsRecordSet %q", name))
+		return transport_tpg.HandleNotFoundError(err, d, fmt.Sprintf("DataSourceDnsRecordSet %q", name))
 	}
 	if len(resp.Rrsets) != 1 {
 		return fmt.Errorf("Only expected 1 record set, got %d", len(resp.Rrsets))

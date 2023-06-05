@@ -94,9 +94,15 @@ func dataSourceGoogleFirebaseWebappConfigRead(d *schema.ResourceData, meta inter
 		return err
 	}
 
-	res, err := SendRequest(config, "GET", project, url, userAgent, nil)
+	res, err := transport_tpg.SendRequest(transport_tpg.SendRequestOptions{
+		Config:    config,
+		Method:    "GET",
+		Project:   project,
+		RawURL:    url,
+		UserAgent: userAgent,
+	})
 	if err != nil {
-		return handleNotFoundError(err, d, fmt.Sprintf("FirebaseWebApp config %q", d.Id()))
+		return transport_tpg.HandleNotFoundError(err, d, fmt.Sprintf("FirebaseWebApp config %q", d.Id()))
 	}
 
 	err = d.Set("api_key", res["apiKey"])
